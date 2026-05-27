@@ -1,0 +1,289 @@
+---
+title: "Friestallet"
+lang: da
+format:
+  html:
+    embed-resources: true
+    code-fold: true
+    include-after-body:
+      ../../../aux/footerDA.html
+filters:
+ - pyodide
+crossref:
+  sec-prefix: Delopgave
+---
+
+## Introduktion{-}
+I denne workshop skal I arbejde med *polycykliske aromatiske kulbrinter*, som er en familie af stoffer indenfor organisk kemi. Sådanne forbindelser dannes for eksempel ved afbrænding af træ eller fossile brændsler.
+For disse forbindelser viser det sig, at det maksimale antal ikke-overlappende benzenringe i strukturen^[Dette kaldes forbindelsens *Clar-tal* efter Erich Clar] kan bruges til at karakterisere kulbrintets egenskaber.
+Vi ser her på et simplere problem, hvor vi tillader, at benzenringene overlapper. Igen er vi interesseret i det maksimale antal af disse ringe, og dette tal kaldes *Fries-tallet* for kulbrintet efter Karl Theophil Fries.
+
+Som eksempel ses på @fig-benzopyrene to kulbrinter med samme overordnede ringstruktur, men dobbeltbindinger på forskellige placeringer. Da kulbrintet i @fig-fries4 har fire benzenringe, har ringstrukturen et Fries-tal på mindst fire. I Delopgave&nbsp;3 vil I se, at Fries-tallet *er* fire.
+
+::: {#fig-benzopyrene layout-ncol=2}
+
+![](fries3.svg){#fig-fries3 width=80% fig-alt="Ringsystem med Friestal 3"}
+
+![](fries4.svg){#fig-fries4 width=80% fig-alt="Ringsystem med Friestal 4"}
+
+To Fries-strukturer for samme ringsystem. Strukturens (potentielt overlappende) benzenringe er markeret med $\ast$. Stoffet i @fig-fries4 kaldes benzopyren.
+:::
+
+Når vi har et givet ringsystem for et kulbrinte, skal vi altså se på alle mulige måder, dobbeltbindingerne kan placeres. De placeringer, der giver flest benzenringe, giver strukturens Fries-tal. Reglerne for placeringen kan opsummeres i to regler:
+
+A. Hvert hjørnepunkt i en sekskant er forbundet til præcist én dobbeltbinding
+
+A. Vi kalder en sekskant for en benzenring, hvis dens kanter indeholder tre dobbeltbindinger
+
+Der kan være mange måder at placere dobbeltbindingerne, så begge regler er opfyldt, og derfor er dette generelt ikke en effektiv måde at finde Fries-tallet. Som I skal se i Delopgave&nbsp;2, kan vi i stedet opskrive et lineært programmeringsproblem til at finde løsningen.
+
+## Delopgave 1{#sec-opg1}
+Programmeringsproblemet til at finde Fries-tallet for selv det simpleste polycykliske aromatiske kulbrinte har for mange variable og bibetingelser til, at vi vil løse det i hånden.
+Vi betragter derfor følgende simplere lineære programmeringsproblem.
+$$\begin{align}
+  &\begin{array}{@{}lrrrrl}
+    \text{Minimér} & 8x_1 & + & 6x_2\\
+    \text{u.b.b.} & x_1 &&&\leq&10\\
+                   &&& x_2&\leq& 6\\
+                   &x_1 & + & x_2 & = & 12
+  \end{array}\\
+  &\text{og } x_1\geq0, x_2\geq 0\nonumber
+\end{align}$${#eq-minProblem}
+
+1. Tegn bibetingelserne ind i et koordinatsystem, og markér det brugbare område.
+  
+1. Omskriv problemet i @eq-minProblem for at opnå et lineært programmeringsproblem på kanonisk form.
+
+1. Er $x_1=x_2=0$ en brugbar løsning til @eq-minProblem? Begrund dit svar.
+
+1. Opstil simplex-tabellen for det kanoniske problem, I fandt ovenfor, og bestem en optimal løsning til problemet.
+
+1. Opskriv det duale problem til det kanoniske problem fra ovenfor, og brug løsningen fra det primale problem til at aflæse en optimal løsning til dette duale problem.
+
+1. Tjek, at værdierne for det primære og duale problem er identiske.
+
+## Delopgave 2{#sec-opg2}
+I de følgende opgaver skal I argumentere for, hvordan de to regler A og B oversættes til bibetingelser for et lineært programmeringsproblem. Derudover skal I finde den objektfunktion, vi ønsker at maksimere.
+
+Inden vi opstiller programmeringsproblemet, indfører vi først en række notationer. Vi lader $\mathcal{V}$ betegne mængden af alle hjørnepunkter i ringsystemet, $\mathcal{E}$ betegne mængden af alle bindinger, og $\mathcal{H}$ betegne mængden af sekskanter i systemet. Hvis $v$ i $\mathcal{V}$ er et hjørnepunkt i systemet, lader vi desuden $E(v)$ være alle de bindinger, der har $v$ som det ene endepunkt. Slutteligt vil vi for hver $h_i$ i $\mathcal{H}$ bruge $E_1(h_i)$ til at betegne tre sider af $h_i$, sådan at disse ikke har nogen fælles endepunkter, og én af dem er siden med laveste indeks. De resterende tre sider betegnes med $E_2(h_i)$.
+
+![Et tricyklisk aromatisk kulbrinte. For at gøre indekseringen mere overskuelig har vi undladt $v$'erne i hjørnepunkterne. Med passende dobbeltbindinger fås antracen.](antracene.svg){#fig-antracene width=70% fig-alt="Ringsystem for antracen"}
+
+For at illustrere disse notationer, bruger vi ringsystemet på @fig-antracene. Her har vi hjørnerne $\mathcal{V}=\{v_1,v_2,\ldots,v_{15}\}$, bindingerne $\mathcal{E}=\{e_1,e_2,\ldots,e_{16}\}$ og sekskanterne $\mathcal{H}=\{h_1,h_2,h_3\}$. Derudover har vi f.eks. $E(v_2)=\{e_1,e_2\}$ og $E(v_{10})=\{e_9,e_{10},e_{11}\}$, da det er disse bindinger, der er forbundet til henholdsvist $v_2$ og $v_{10}$. Slutteligt er $E_1(h_2)=\{e_3, e_{10}, e_{12}\}$, da disse tre bindinger er sider i $h_2$ som ikke deler endepunkter, og $e_3$ er siden med laveste indeks. Dette giver samtidigt $E_2(h_2)=\{e_4, e_{11}, e_{13}\}$, da disse er de resterende sider i $h_2$.
+
+Bibetingelserne i programmeringsproblemet repræsenteres ved at summere over alle elementer i en mængde. Når $\mathcal{A}=\{a_1,a_2,\ldots,a_n\}$ er en mængde, kan summen af alle elementerne beskrives kort ved
+$$\sum_{a\in \mathcal{A}} a\stackrel{\mathrm{def}}{=}a_1+a_2+\cdots+a_n.$$
+
+Udtrykket under sumtegnet &ndash; det store sigma, $\Sigma$ &ndash; indikerer, hvilke led, der indgår i summen. I dette tilfælde skal variablen $a$ erstattes af hvert element i $\mathcal{A}$, og de resulterende udtryk skal lægges sammen.
+
+Med notationen på plads, definerer vi nu vores variable i programmeringsproblemet.
+For hver binding $e_i$ i $\mathcal{E}$ definerer vi en variabel $x_i$, der indikerer, om bindingen er en dobbeltbinding. Altså, $x_i=1$ hvis $e_i$ er en dobbeltbinding, og $x_i=0$ ellers.
+For hver sekskant $h_i$ i $\mathcal{H}$ definerer vi to variable $y_1(h_i)$ og $y_2(h_i)$, da der er to tildelinger af dobbeltbindinger, der gør $h_i$ til en benzenring. Mere præcist, indikerer $y_1(h_i)=1$, at bindingerne i $E_1(h_i)$ alle er dobbeltbindinger, så disse gør $h_i$ til en benzenring. Tilsvarende indikerer $y_2(h_i)$, at alle bindinger i $E_2(h_i)$ er dobbeltbindinger, så disse gør $h_i$ til en benzenring. Variablene i programmeringsproblemet bliver altså
+$$x_1,x_2,\ldots,x_m,y_1(h_1),y_2(h_1),y_1(h_2),\ldots,y_2(h_m),$$
+som skal overholde $x_i\geq 0$, $y_1(h_i)\geq 0$ og $y_2(h_i)\geq 0$. Vi ønsker desuden at alle variablene er maksimalt $1$, men som I skal vise herunder, følger de fra andre bibetingelser i problemet.^[I løsningen ønsker vi også, at alle variablene er heltal. Dette gælder ikke nødvendigvis for generelle lineære programmeringsproblemer, men det viser sig at gælde for dette specifikke problem.]
+
+1. Betragt ringsystemet på @fig-antracene, og skriv de to summer
+$$\sum_{e_i\in E(v_3)} x_i
+\hspace{1cm}\text{og}\hspace{1cm}
+\sum_{h_i\in \mathcal{H}} y_1(h_i)$$
+ud, så alle led fremgår.
+
+1. \label{item:sumBenzenes} Argumenter via reglen A for, at maksimalt én af $y_1(h_i)$ og $y_2(h_i)$ kan være $1$.
+
+   Brug dette til at forklare, at $h_i$ er en benzenring præcist når $y_1(h_i)+y_2(h_i)=1$.
+  
+1. Forklar, at reglen A er ækvivalent med følgende bibetingelse: For enhver $v$ i $\mathcal{V}$ gælder
+$$\sum_{e_i\in E(v)}x_i=1.$${#eq-sumDoubleBonds}
+
+1. Lad $h_i$ i $\mathcal{H}$, og lad $E_1(h_i)=\{e_{j_1}, e_{j_2}, e_{j_3}\}$. Forklar, at bibetingelserne
+$$x_{j_1}-y_1(h_i)\geq 0,
+		\quad
+		x_{j_2}-y_1(h_i)\geq 0
+		\quad\text{og}\quad
+		x_{j_3}-y_1(h_i)\geq 0$${#eq-sufficientDoubleBonds}
+sikrer, at $y_1(h_i)$ kun kan være $1$, hvis $x_{j_1}=x_{j_2}=x_{j_3}=1$.
+  
+   Opskriv herefter de tilsvarende bibetingelser for $y_2(h_i)$ og $E_2(h_i)$.
+  
+1. Vi skal kræve, at $x_i\leq 1$ for alle $e_i$ i $\mathcal{E}$.
+Argumenter for, at disse bibetingelser følger direkte fra @eq-sumDoubleBonds og bibetingelserne $x_i\geq 0$.
+
+1. \label{item:boundBenzeneRings} Kombiner $x_i\leq 1$ fra punktet ovenfor med bibetingelserne i @eq-sufficientDoubleBonds for at få $y_1(h_i)\leq 1$.
+
+1. Benyt dine observationer i punkt&nbsp;1 og 5 til at redegøre for, at vi kan finde Fries-tallet ved at maksimere objektfunktionen
+$$\sum_{h_i\in\mathcal{H}} \big( y_1(h_i)+y_2(h_i) \big)$$
+under bibetingelserne, der blev udledt ovenfor.
+
+
+## Delopgave 3{#sec-opg3}
+I denne opgave skal I bruge Python-koden nederst til at finde Fries-tallet. Der er én kodeblok, hvor de nødvendige funktioner defineres, og én kodeblok, hvor I selv kan tilføje kode og kalde funktionen.
+
+Koden indeholder en funktion `friesNumber(M)`, som opstiller og løser det lineære programmeringsproblem for at finde Fries-tallet.
+Som input tager funktionen en $n\times 6$-matrix, hvis rækker er defineret på følgende måde: $i$'te række indeholder indeksene for de $e_j$, der danner siderne i sekskanten $h_i$. Hvilket indeks man starter med er underordnet, men indeksene skal aflæses i *positiv omløbsretning* &ndash; altså mod uret. Denne del er vigtig, da funktionen ellers ikke kan sætte sekskanterne rigtigt sammen. Som eksempel kan inputtet for ringsystemet på @fig-antracene være
+$$M=\left[
+    \begin{array}{*{6}{c}}
+      1 & 2 & 13 & 14 & 15 & 16\\
+      3 & 4 & 10 & 11 & 12 & 13\\
+      5 & 6 & 7 & 8 & 9 & 10
+    \end{array}
+  \right].$${#eq-pythonInput}
+
+1. Kig først på @fig-antracene, og giv et bud på, hvad Fries-tallet er. Kør derefter Python-funktionen på $M$ som i @eq-pythonInput. Indtegn de resulterende dobbeltbindinger på en skitse.
+
+   Er det samme resultat, som I forventede?
+
+1. Opstil til sidst matricen for ringsystemet i @fig-benzopyrene, og brug Python-funktionen til at bestemme Fries-tallet. Tjek, at bindingerne er de samme som i @fig-fries4.
+
+```{pyodide-python}
+#| read-only: true
+import numpy
+import scipy.optimize
+
+def findIndices(A, x):
+    return [(r, c) for r in range(A.shape[0]) for c in range(A.shape[1]) if A[r,c]==x]
+
+def friesNumber(M):
+    """
+    friesNumber computes the Fries number of a PAH.
+    This function computes the Fries number of a polycyclic aromatic
+    hydrocarbon using linear programming.
+
+    Inputs:
+    	- M: nx6 matrix, whose i'th row contains the indices of the
+    	     edges of the i'th hexagon. The indices must be ordered by traversing
+    	     the boundary of the hexagon in positive direction of rotation (i.e.
+    	     counter-clockwise).
+    """
+    if M.shape[1]!=6:
+        raise ValueError("Input matrix must have six columns")
+
+    nEdges = numpy.max(M)
+    nRings = M.shape[0]
+    nVars = nEdges+2*nRings
+
+    # Variables will be ordered as
+    # x_1 x_2 ... x_nEdges y_1(h_1) y_2(h_1) y_1(h_2) ... y_2(h_nRings)
+
+    # Construct the objective function
+    # The linprog method of scipy minimizes, so scale by -1
+    f = -1*numpy.hstack(
+        [numpy.zeros([1,nEdges]),
+         numpy.ones([1, 2*nRings])]
+    )
+
+    # Define constraint matrices ensuring that a benzene ring is only counted
+    # when all three of the corresponding edges are 1
+    ABenzene = numpy.zeros([0, nVars])
+    bBenzene = numpy.zeros([3*2*nRings, 1])
+
+    for i in range(nRings):
+        for offset in range(2):
+            objectIndex = nEdges + 2*i + offset
+            for j in range(3):
+                edgeIndex = M[i, 2*j + offset] - 1
+
+                # Construct corresponding constraint vector and append it to the
+                # full matrix
+                tmp = numpy.zeros([1, nVars])
+                tmp[0, edgeIndex] = -1
+                tmp[0, objectIndex] = 1
+
+                ABenzene = numpy.vstack([ABenzene, tmp])
+
+    # Define constraint matrix ensuring that all vertives are connected to
+    # exactly one double bond. (This is an equality constraint matrix)
+    ADoubleBond = numpy.empty([0, nVars])
+
+    for i in range(1, nEdges+1):
+        # Find rings where edge i appears
+        matches = findIndices(M, i)
+
+        if len(matches)==0:
+            # No edge has index i
+            continue
+
+        tmp = numpy.zeros([1, nVars])
+        
+        if len(matches)==1:
+            # edge i only appears once
+
+            # Find the next edge when traversing the ring (the condition
+            # containing edge i and the preceding edge will be added when
+            # processing the previous edge)
+            nextEdge = M[matches[0][0], (matches[0][1] + 1)%6]
+
+            if len(findIndices(M, nextEdge))>1:
+                # nextEdge is found in multiple rings. The constraints will be
+                # handled when that edge is handled by the loop.
+                continue
+
+            # Construct the row corresponding to the equality condition
+            # edge_i + nextEdge = 1
+            tmp[0, i-1] = 1
+            tmp[0, nextEdge-1] = 1
+
+        elif len(matches)==2:
+            # edge i appears in two separate rings
+
+            # Find the next and previoys edges in both of the rings
+            nextEdge1 = M[matches[0][0], (matches[0][1] + 1)%6]
+            nextEdge2 = M[matches[1][0], (matches[1][1] + 1)%6]
+
+            prevEdge1 = M[matches[0][0], (matches[0][1] + 5)%6]
+            prevEdge2 = M[matches[1][0], (matches[1][1] + 5)%6]
+
+            # To construct the conditions, note edge i is traversed in opposite
+            # directions in both rings. Thus, we take the previous edge from one
+            # traversal and the next edge from the other traversal (and vice
+            # versa.)
+            tmp[0, i-1] = 1
+            tmp[0, nextEdge1-1] = 1
+            tmp[0, prevEdge2-1] = 1
+
+            tmp = numpy.vstack([tmp, numpy.zeros([1, nVars])])
+            tmp[1, i-1] = 1
+            tmp[1, nextEdge2-1] = 1
+            tmp[1, prevEdge1-1] = 1
+        else:
+            raise ValueError('Edge {0:d} is found in more than two rows of input.'.format(i))
+
+        # Extend the full condition matrix
+        ADoubleBond = numpy.vstack([ADoubleBond, tmp])
+
+    # The right-hand side is simply a one-vector of same length as the condition
+    # matrix.
+    bDoubleBond = numpy.ones([ADoubleBond.shape[0], 1])
+
+    res = scipy.optimize.linprog(f, ABenzene, bBenzene, ADoubleBond, bDoubleBond, bounds=(0,None))
+
+    if not res.success:
+        # No solution was found
+        return
+
+    # Pretty-print the Fries number
+    print('The Fries number is {0:.0f}\n'.format(-res.fun)) # Recall that linprog minimizes
+
+    # Pretty-print the indices with double bonds
+    print("The double bonds are in positions:")
+    print([i+1 for i in range(nEdges) if res.x[i]==1])
+
+```
+::: {.callout-tip}
+Kør kodeblokken ovenfor for at indlæse funktionerne i hukommelsen. Ellers får I en fejl, når I forsøger at kalde funktionen i blokken nedenfor.
+:::
+
+
+```{pyodide-python}
+## Skriv din matrix ind her
+M = numpy.array([
+	[1, 2, 13, ...],
+	[3, ...],
+	[5, ...]
+]);
+
+friesNumber(M)
+```
+
+::: {.callout-warning}
+Husk at gemme jeres ændrede Python-kode i en anden fil. Hvis I lukker denne HTML-fil og åbner den igen, vil den vise den oprindelige kode med <code>???</code>.
+:::
