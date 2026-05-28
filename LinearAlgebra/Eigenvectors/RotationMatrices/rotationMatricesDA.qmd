@@ -1,0 +1,162 @@
+---
+title: "Rotationsmatricer"
+lang: da
+format:
+  html:
+    embed-resources: true
+    code-fold: true
+    include-after-body:
+      ../../../aux/footerDA.html
+filters:
+ - pyodide
+crossref:
+  sec-prefix: Delopgave
+---
+
+# Introduktion{-}
+Når en person bruger et virtual reality-headset, kan orienteringen af headsettet beskrives ved et treben, som består af tre ortogonale vektorer i $\mathbb{R}^3$. I kan tænke på trebenet på den måde, at vi i begyndelsen kalibrerer det til at være de tre standardbasisvektorer $[1,0,0]^T$, $[0,1,0]^T$ og $[0,0,1]^T$, sådan at $[1,0,0]^T$ er den retning brugeren kigger. Når brugeren herefter drejer hovedet, vil trebenet drejes tilsvarende.
+
+I denne workshop skal I undersøge, hvordan sådanne rotationer i $\mathbb{R}^3$ kan beskrives ved hjælp af matricer. Her benytter vi en simpel model, hvor headsettet er fastlåst i Origo. Hvis man vil have en mere realistisk model og beskrive en vilkårlig position i rummet, kan man modellere dette ved at tilføje en vektor, der forskyder headsettet til en position væk fra Origo. I det følgende holder vi os dog til kun at beskrive rotationerne.
+
+En rotation i $\mathbb{R}^3$ med vinkel $\theta$ omkring $x$-aksen kan beskrives ved matricen
+$$R_x(\theta)=\left[
+    \begin{array}{rrr}
+      1 & 0 & 0\\
+      0 & \cos\theta & -\sin\theta\\
+      0 & \sin\theta & \cos\theta
+    \end{array}
+  \right].$$
+Rotationens retning følger den såkaldte højrehåndsregel. Dette betyder, at hvis højre tommelfinger peger i aksens retning, vil de fire andre fingre bøje i positiv rotationsretning. Dette er illustreret på @fig-righthand.
+
+Tilsvarende kan rotationer omkring $y$- og $z$-aksen repræsenteres ved
+$$R_y(\theta)=\left[
+    \begin{array}{rrr}
+      \cos\theta & 0 & \sin\theta\\
+      0 & 1 & 0\\
+      -\sin\theta & 0 & \cos\theta
+    \end{array}
+  \right]
+  \quad\text{og}\quad
+  R_z(\theta)=\left[
+    \begin{array}{rrr}
+      \cos\theta & -\sin\theta & 0\\
+      \sin\theta & \cos\theta & 0\\
+      0 & 0 & 1
+    \end{array}
+  \right],$$
+og en vilkårlig rotation i $\mathbb{R}^3$ kan beskrives ved et produkt af matricerne $R_x(\theta_x)$, $R_y(\theta_y)$ og $R_z(\theta_z)$ for passende værdier af $\theta_x$, $\theta_y$ og $\theta_z$. Bemærk dog, at ligesom for generelle matrixprodukter vil rækkefølgen af matricerne $R_x(\theta_x)$, $R_y(\theta_y)$ og $R_z(\theta_z)$ være afgørende for, hvilken rotation der beskrives. Ændres denne rækkefølge, er det nødvendigt at bruge andre vinkler, og der er forskellige konventioner for, hvilken rækkefølge der anses for at være standarden.
+
+![Illustration af højrehåndsreglen ([kilde](https://en.wikipedia.org/wiki/File:Right-hand_grip_rule.svg))](righthand.svg){width=30% #fig-righthand fig-alt="Illustration af højrehåndsreglen"}
+
+
+# Delopgave 1{#sec-opg1}
+1. Vis, at $\det(R_x(\theta))=1$, og at $R_x(\theta)$ derfor har fuld rang. Hvad er dimensionen af dens nulrum?
+
+1. Konkludér ud fra 1., at $R_x(\theta)$ er inverterbar, og forklar geometrisk, at den inverse må være $R_x(-\theta)$.
+  
+1. Vis, at det karakteristiske polynomium for $R_x(\theta)$ er $(1-\lambda)(\lambda^2-2\cos(\theta)\lambda+1)$.
+  
+1. Konkludér ud fra det karakteristiske polynomium, at $1$ altid er en egenværdi for $R_x(\theta)$. Vis derefter, at $[1,\,0,\,0]^T$ altid er en tilhørende egenvektor, og forklar geometrisk, hvorfor dette er tilfældet.
+  
+1. Udregn diskriminanten for $\lambda^2-2\cos(\theta)\lambda+1$, og forklar, hvorfor dette andengradspolynomium kun har reelle rødder, når $\theta$ er et multiplum af $\pi$.
+  
+1. Vis, at $R_x(\pi)$ ud over $\lambda_1=1$ har egenværdien $\lambda_2=-1$ med multiplicitet $2$. Bestem egenvektorerne hørende til $-1$.
+  
+1. Brug opgaverne ovenfor til at bestemme en basis for $\mathbb{R}^3$ bestående af egenvektorer for $R_x(\pi)$. Tegn disse basisvektorer ind på en skitse.
+
+
+# Delopgave 2{#sec-opg2}
+Vi betragter nu en rotation med vinkel $\theta$ omkring linjen med retning $\mathbf{u}=[1,1,\sqrt{2}]^T$. Matrixrepræsentationen $R_{\mathbf{u}}(\theta)$ af denne rotation kan beskrives som $R_{\mathbf{u}}(\theta)=TR_x(\theta)T^{-1}$, hvor $T$ er en matricen givet ved
+$$T=R_z\left(\frac{\pi}{4}\right) R_y\left(\frac{-\pi}{4}\right)
+  =\frac{1}{2}\left[
+    \begin{array}{rrr}
+      1 & -\sqrt{2} & -1\\
+      1 & \sqrt{2} & -1\\
+      \sqrt{2} & 0 & \sqrt{2}
+    \end{array}
+\right].$$
+
+
+1. Konkludér, at $R_x(\theta)$ og $R_{\mathbf{u}}(\theta)$ er similære matricer, og vis at
+$$T^{-1}=\frac{1}{2}\left[
+      \begin{array}{rrr}
+        1 & 1 & \sqrt{2}\\
+        -\sqrt{2} & \sqrt{2} & 0\\
+        -1 & -1 & \sqrt{2}
+      \end{array}
+    \right].$$
+
+1. Bestem rangen af $R_{\mathbf{u}}(\theta)$ og dimensionen af nulrummet for $R_{\mathbf{u}}(\theta)$.
+
+   ::: {.callout-tip title="Vink" collapse="true"}
+   $R_{\mathbf{u}}(\theta)$ og $R_x(\theta)$ er similære.
+   :::
+
+1. Forklar, hvorfor $\mathbf{u}$ skal være en egenvektor for $R_{\mathbf{u}}(\theta)$ med egenværdi $1$. Tjek, at det er tilfældet ved at udregne $TR_x(\theta)T^{-1}\mathbf{u}$.
+
+1. Antag nu, at $\mathbf{v}$ er en egenvektor for $R_x(\theta)$ med egenværdi $\lambda$. Vis så, at $T\mathbf{v}$ er en egenvektor for $R_{\mathbf{u}}(\theta)$ med egenværdi $\lambda$.
+
+   Det kan tilsvarende vises -- men I behøver ikke gøre det -- at hvis $\mathbf{v}$ er en egenvektor for $R_{\mathbf{u}}(\theta)$ med egenværdi $\lambda$, så er $T^{-1}\mathbf{v}$ en egenvektor for $R_x(\theta)$ med egenværdi $\lambda$.
+
+1. Forklar ud fra 4., at $R_{\mathbf{u}}(\theta)$ og $R_x(\theta)$ må have samme egenværdier.
+
+1. Da $R_{\mathbf{u}}(\theta)$ og $R_x(\theta)$ er similære, beskriver de den samme lineære transformation, men i forskellige baser. $R_{\mathbf{u}}(\theta)$ er matrixrepræsentationen i standardbasen for $\mathbb{R}^3$. Brug matricerne $T$ og $T^{-1}$ til at afgøre, hvilken basis for $\mathbb{R}^3$ matricen $R_x(\theta)$ da svarer til. Tegn basen ind på en skitse.
+
+# Delopgave 3{#sec-opg3}
+I denne opgave bruger vi Python til at bestemme rotationsakser ud fra givne rotationsmatricer.
+Ved hjælp af `numpy`- og `numpy.linalg`-bibliotekerne, kan vi bruge `linalg.eigvals` til at bestemme egenværdierne for en matrix af typen `numpy.array`.
+Hvis vi også ønsker egenværdierne, kan vi bruge `linalg.eig`, som har to outputs: først en liste med egenværdierne, og dernæst en matrix med de tilhørende egenvektorer.
+
+I filen `rotationsmatricer.py` og i kodeblokken nederst findes begyndelsen af et script til at løse nedenstående opgaver. Du kan bruge dette som en hjælp til at komme i gang.
+
+1. Bestem egenværdierne og egenvektorerne for matricen
+$$A=\frac{1}{8}\left[
+      \begin{array}{ccc}
+        -1 & 6 & -3\sqrt{3}\\
+        -6 & -4 & -2\sqrt{3}\\
+        -3\sqrt{3} & 2\sqrt{3} & 5
+      \end{array}
+    \right]$$
+ved at bruge \texttt{linalg.eig}. Omkring hvilken linje er $A$ en rotation?
+
+   ::: {.callout-note title="Bemærk"}
+   Numpy vil i dette tilfælde give egenværdier på formen $a+bj$. I skal kun bruge de egenværdier, hvor $b=0$. De andre kaldes *komplekse* egenværdier.
+   :::
+
+1. Brug \texttt{eigvals} til at bestemme egenværdierne for
+$$B=\frac{1}{2}\left[
+      \begin{array}{ccc}
+        2 & 0 & 0\\
+        0 & 1 & \sqrt{3}\\
+        0 & \sqrt{3} & -1
+      \end{array}
+    \right]$$
+Kan $B$ være en rotationsmatrix?
+
+   ::: {.callout-tip title="Vink" collapse="true"}
+   Dimensionen af egenrummet hørende til $\lambda=1$ er altid $1$ for en ikke-triviel rotation.
+   :::
+
+```{pyodide-python}
+import numpy
+from numpy import linalg, sqrt
+
+# (i)
+A = 1/8 * numpy.array([
+    [ -1, 6, -3*sqrt(3)],
+    [ , ,],
+    [ , ,]
+])
+
+(D, V) = linalg.eig(A)
+
+with numpy.printoptions(linewidth=numpy.inf, precision=2): # Specify linewidth and precision for printing
+    print(D, "\n")
+    print(V)
+
+# (ii)
+B = ...
+```
+::: {.callout-warning}
+Husk at gemme jeres ændrede Python-kode i en anden fil. Hvis I lukker denne HTML-fil og åbner den igen, vil den vise den oprindelige kode uden jeres ændringer.
+:::
