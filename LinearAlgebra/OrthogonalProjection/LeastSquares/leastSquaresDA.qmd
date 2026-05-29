@@ -1,0 +1,262 @@
+---
+title: "Ortogonalprojektion og mindste kvadrater"
+lang: da
+format:
+  html:
+    embed-resources: true
+    code-fold: true
+    include-after-body:
+      ../../../aux/footerDA.html
+filters:
+ - pyodide
+crossref:
+  sec-prefix: Delopgave
+---
+
+## Introduktion{-}
+I denne workshop skal I arbejde med parametrisk kurvetilpasning, som er en vigtig anvendelse af mindste kvadraters metode. I en sådan kurvetilpasning vælges parametrene for en funktion $F_P(X)$, sådan at den tilpasser sig et givet datasæt bedst muligt.
+Mere præcist betyder dette, at vi givet $(x_i,y_i)_{1\leq i \leq m}$ forsøger at finde et parametersæt $P$, sådan at
+$$\left\lVert \left(F_{P}(x_i)\right)_{1\leq i \leq m} - \left(y_i\right)_{1\leq i \leq m} \right\rVert = \sqrt{\sum_{i=1}^m (F_P(x_i)-y_i)^2 }$$
+minimeres.
+
+![Et eksempel på et kurvetilpasning. Kurven for parametersættet $P$ er indtegnet i mørkeblå, mens datapunkterne er de orange cirkler. Linjestykkerne fra hvert datapunkt til kurven viser residualfejlene](figure.svg){#fig-fries3 width=60% fig-alt="Eksempel på kurvetilpasning"}
+
+## Delopgave 1{#sec-opg1}
+Normalligningen $A^TA \mathbf{x} = A^T \mathbf{b}$ har en entydig løsning, hvis matricen $A^TA$ er inverterbar. I skal herunder vise, at dette er tilfældet, når $A$ har fuld søjlerang; dvs. når søjlerne i $A$ er lineært uafhængige.
+
+1. Vis, at det for enhver matrix $A$ holder, at hvis $A\mathbf{x}=\mathbf{0}$, så gælder $A^TA\mathbf{x}=\mathbf{0}$.
+
+1. Vis, at hvis $A^TA\mathbf{x}=\mathbf{0}$, så har vi $A\mathbf{x}=\mathbf{0}$.
+
+   :::{.callout-tip title="Vink" collapse=true}
+   Hvis $A^TA\mathbf{x}=\mathbf{0}$, så har vi $\mathbf{x}^TA^TA\mathbf{x}=0$. Omskriv dette som længden af en vektor.
+   :::
+   
+1. Forklar, at de to ovenstående observationer beviser, at $A$ og $A^\top A$ har samme nulrum.
+
+1. Antag nu, at søjlerne i $A$ er lineært uafhængige. Vis, at $A$ da har trivielt nulrum. Altså: argumenter for, at den eneste vektor $\mathbf{x}$, der opfylder $A\mathbf{x}=\mathbf{0}$ er nulvektoren $\mathbf{x}=\mathbf{0}$.
+
+1. Kombiner de tidligere observationer for at konkludere, at $A^TA$ er inverterbar, hvis $A$ har fuld søjlerang.
+
+
+## Delopgave 2{#sec-opg2}
+I denne opgave skal I forsøge at løse normalligningen, hvis I kender en diagonalisering af $A^TA$. Vi antager herunder, at $A$ er $m\times n$, så $A^TA$ er $n\times n$.
+
+1. Argumenter for, at uanset hvilke værdier $A$ indeholder, vil $A^TA$ altid have en diagonalisering $A^TA=PDP^{-1}$.
+
+   Forklar yderligere, hvorfor vi kan vælge $P$, så dens søjler danner en ortonormal basis for $\mathbb{R}^n$.
+
+   :::{.callout-tip title="Vink" collapse="true"}
+   Tjek, at $A^TA$ er symmetrisk
+   :::
+   
+1. Antag nu, at $A$ har fuld rang. Brug sidste spørgsmål i @sec-opg1 til at konkludere, at $D$ må være inverterbar. Hvad fortæller det om egenværdierne for $A^TA$?
+
+   :::{.callout-tip title="Vink" collapse="true"}
+   Kan $0$ f.eks. være en egenværdi?
+   :::
+   
+1. Forklar, hvorfor den entydige løsning $\mathbf{x}$ til normalligningen er givet ved
+$$\mathbf{x}=(A^TA)^{-1}A^T\mathbf{b},$${#eq-normalSolution}
+når $A$ har fuld rang.
+
+   Brug diagonaliseringen $A^TA=PDP^{-1}$ til at omskrive @eq-normalSolution, så $D$ er den eneste matrix, der skal inverteres.
+
+   :::{.callout-tip title="Vink" collapse="true"}
+   Husk på, at $P$ er ortogonal. Hvad er den inverse da?
+   :::
+
+
+## Delopgave 3{#sec-opg3}
+Vi ønsker at bruge mindste kvadraters metode til at finde den bedst mulige linje gennem et datasæt $\{ (x_1, y_1), \dots, (x_m,y_m) \}$. En linje
+$$ax+b=y$$
+er bestemt ud fra to parametre $a,b \in \mathbb{R}$. Valgte parametre $\hat{a}, \hat{b}$ kan benyttes til at udregne estimater $\hat{y}_i$ for værdierne $y_i$ i punkterne $x_i$ ved
+$$\hat{a}x_i+\hat{b} = \hat{y}_i.$$
+Målet er at bestemme de værdier af $\hat{a}$ og $\hat{b}$, som minimerer alle fejlene
+$$\lVert\hat{y}_i-y_i\rVert = \lVert\hat{a}x_i+\hat{b}-y_i\rVert$$
+samlet set. Mere præcist ønsker vi at minimere størrelsen af den totale fejl målt ved
+$$\sqrt{\sum_{i=1}^m (\hat{y}_i-y_i)^2}=  \left\lVert \begin{pmatrix} \hat{y}_1-y_1 \\ \vdots \\ \hat{y}_m-y_m \end{pmatrix}\right\rVert.$${#eq-mini}
+
+(@) Vis, at minimeringsproblemet i @eq-mini kan omskrives til et mindste kvadrater-problem med matrix
+$$A=\begin{bmatrix} 1 & x_1\\ \vdots & \vdots \\ 1 & x_m \end{bmatrix}$${#eq-vanderMonde}
+
+    Mindste kvadraters løsning af problemet er da at finde $a,b$, sådan at følgende udtryk minimeres:
+$$\left\lVert A\begin{pmatrix} b \\ a \end{pmatrix} - \begin{pmatrix} y_1 \\ \vdots \\ y_m \end{pmatrix} \right\rVert.$$
+
+(@) Vis, at enhver matrix på formen i @eq-vanderMonde har fuld søjlerang. Du må her antage, at $x_i$'erne ikke alle er ens. Konkluder fra @sec-opg1, at mindste kvadraters løsning til @eq-mini er entydig.
+
+Vi bruger nu denne metode til at tilpasse en linje til tre forskellige datasæt. Alle tre datasæt har samme $x$-koordinater, så de bruger alle den samme matrix $A$. Dataene vises i tabellen herunder.
+
+```{=html}
+<table>
+  <caption>De tre forskellige datasæt.</caption>
+  <tbody>
+	<tr style="vertical-align:middle;">
+      <th>$$x_i$$</th>
+	  <td>10.0</td>
+	  <td>8.0</td>
+	  <td>13.0</td>
+	  <td>9.0</td>
+	  <td>11.0</td>
+	  <td>14.0</td>
+	  <td>6.0</td>
+	  <td>4.0</td>
+	  <td>12.0</td>
+	  <td>7.0</td>
+	  <td>5.0</td>
+	</tr>
+	<tr style="vertical-align:middle;">
+	  <th>$$y_i^{(1)}$$</th>
+	  <td>8.04</td>
+	  <td>6.95</td>
+	  <td>7.58</td>
+	  <td>8.81</td>
+	  <td>8.33</td>
+	  <td>9.96</td>
+	  <td>7.24</td>
+	  <td>4.26</td>
+	  <td>10.84</td>
+	  <td>4.82</td>
+	  <td>5.68</td>
+	</tr>
+	<tr style="vertical-align:middle;">
+	  <th>$$y_i^{(2)}$$</th>
+	  <td>9.14</td>
+	  <td>8.14</td>
+	  <td>8.74</td>
+	  <td>8.77</td>
+	  <td>9.26</td>
+	  <td>8.1</td>
+	  <td>6.13</td>
+	  <td>3.1</td>
+	  <td>9.13</td>
+	  <td>7.26</td>
+	  <td>4.74</td>
+	</tr>
+	<tr style="vertical-align:middle;">
+	  <th>$$y_i^{(3)}$$</th>
+	  <td>7.46</td>
+	  <td>6.77</td>
+	  <td>12.74</td>
+	  <td>7.11</td>
+	  <td>7.81</td>
+	  <td>8.84</td>
+	  <td>6.08</td>
+	  <td>5.39</td>
+	  <td>8.15</td>
+	  <td>6.42</td>
+	  <td>5.73</td>
+	</tr>
+  </tbody>
+</table>
+```
+	
+Som et eksempel indeholder det første datasæt punktet $(10.0, 8.04)$, mens det andet datasæt indeholder $(10.0, 9.14)$.
+
+I det følgende kan du udføre udregningerne manuelt eller bruge Python-blokkene nederst i denne opgave.
+
+(@) Vis, at
+$$A^TA= \begin{bmatrix}11 & 99 \\ 99 & 1001 \end{bmatrix}.$$
+
+(@) For alle tre datasæt har vi (cirka)
+$$A^T y^{(i)} = \begin{pmatrix} 82.5 \\ 797.6 \end{pmatrix}.$$
+Find mindste kvadraters løsning ved at løse til normalligningen.
+
+Vi kan tjekke, at den samlede fejl er omkring 3.71 for alle tre datasæt. Altså lader det til, at den tilpassede linje beskriver alle tre datasæt lige godt.
+
+```{pyodide-python}
+#| read-only: true
+import numpy
+
+## Definer de tre datasæt
+x = numpy.array([[10.0, 8.0, 13.0, 9.0, 11.0, 14.0, 6.0, 4.0, 12.0, 7.0, 5.0]]).T;
+y1 = numpy.array([[8.04, 6.95, 7.58, 8.81, 8.33, 9.96, 7.24, 4.26, 10.84, 4.82, 5.68]]).T;
+y2 = numpy.array([[9.14, 8.14, 8.74, 8.77, 9.26, 8.1, 6.13, 3.1, 9.13, 7.26, 4.74]]).T;
+y3 = numpy.array([[7.46, 6.77, 12.74, 7.11, 7.81, 8.84, 6.08, 5.39, 8.15, 6.42, 5.73]]).T;
+```
+::: {.callout-tip}
+Kør kodeblokken ovenfor for at indlæse de fire vektorer i hukommelsen. Ellers får I en fejl, når I forsøger at kalde funktionen i blokken nedenfor.
+:::
+
+
+```{pyodide-python}
+from numpy.linalg import lstsq
+
+A = numpy.hstack([
+	numpy.ones((x.size, 1)),
+	x
+])
+
+## Med Numpy kan en matrix transponeres med '.T' ligesom i blokken ovenfor.
+## Matrixprodukt skrives med @.
+print("Opg. 3.3:")
+print(A.T@A)
+
+print("\nOpg. 3.4:")
+print(A.T@y1)
+## fortsæt selv koden for de andre datasæt
+
+## Løsning af normalligning
+print("\nDatasæt 1:")
+sol1 = lstsq(A.T@A, A.T@y1)[0]
+residual1 = y1 - A@sol1
+print("Parametre:\n{}\nFejl: {}".format(
+	sol1,
+	numpy.sqrt(residual1.T@residual1)[0,0]
+))
+## fortsæt selv koden for de andre datasæt
+```
+
+::: {.callout-warning}
+Husk at gemme jeres ændrede Python-kode i en anden fil. Hvis I lukker denne HTML-fil og åbner den igen, vil den vise den oprindelige kode med <code>???</code>.
+:::
+
+(@) Kør koden herunder for at lave en grafisk sammenligning af de tre datasæt med linjen fra mindste kvadraters løsning. Hvad ser I? Ser linjen ud til at være en god beskrivelse af alle tre datasæt?
+
+```{pyodide-python}
+import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots(2,2)	# Opret et 2x2-gitter til plots
+
+## Plot hvert af de tre datasæt
+ax[0,0].set_title("Datasæt 1")
+ax[0,0].scatter(x, y1, color="orange")
+ax[0,0].plot(x, sol1[0]+sol1[1]*x, color="navy")
+
+ax[0,1].set_title("Datasæt 2")
+ax[0,1].scatter(x, y2, color="orange")
+ax[0,1].plot(x, sol2[0]+sol2[1]*x, color="navy")
+
+ax[1,0].set_title("Datasæt 3")
+ax[1,0].scatter(x, y3, color="orange")
+ax[1,0].plot(x, sol3[0]+sol3[1]*x, color="navy")
+
+## Fjern det overskydende plotvindue, og juster afstand
+ax[1,1].remove()
+plt.subplots_adjust(hspace=0.4)
+
+plt.show()
+```
+
+## Delopgave 4
+Mange processer i naturen følger en eksponentiel kurve. Disse kurver beskrives af to parametre $a$ og $b$ via formelen
+$$d_{a,b}(t)= b e^{at}.$$
+Parameteren $b$ antages at være positiv, og den beskriver processens tilstand ved tid $t=0$. For positive $a$ beskriver funktionen en eksponentielt voksende størrelse, som kunne være tilvækst af bakterier. Negative værdier af $a$ beskriver derimod eksponentielt aftagende størrelser, såsom henfaldet af en radioaktiv kilde.
+
+Idet $d_{a,b}$ ikke er en linearkombination af forskellige variable &ndash; såsom eksempelvis polynomier er det &ndash; er det ikke åbenlyst, hvordan mindste kvadraters metode kan bruges til at finde gode parametre $a, b$, der tilpasser kurven til et givet datasæt.
+
+Et ofte brugt trick er at bruge logaritmen til at transformere funktionen og datasættet. I stedet for at minimere
+$$\lVert d_{a,b}(t_i)-y_i \rVert= \lVert b e^{at_i}-y_i \rVert,$$
+betragtes i stedet
+$$\lVert \log(b e^{at_i})-\log(y_i) \rVert = \lVert \log(b)+ a t_i-\log(y_i) \rVert.$$
+Problemet er nu ækvivalent til det i @sec-opg3: linjen $\log(b)+ a t$ skal tilpasses datasættet $(t_i,\log(y_i))$.
+
+1. Brug mindste kvadraters metode til at tilpasse en kurve på formen $be^{at}$ til datasættet $D=\{(1,e^1), (2,e^2), (10,e^{11})\}$.
+
+1. Det viser sig, at den logaritmiske version af problemet vægter fejlene anderledes end det oprindelige. Betragt funktionen $d_{-2,1}(t)=1e^{-2t}$, og antag, at den bruges til at tilnærme et datasæt, der indeholder punkterne $(t_1,y_1)=(1,0.15)$ and $(t_2,y_2)=(2,0.008)$.
+
+    a. Udregn residualfejlene $\lVert d_{-2,1}(t_i)-y_i \rVert$ for disse to punkter.
+
+    a. Udregn residualfejlene $\lVert -2t_i-\log(y_i) \rVert$ for den logaritmiske omskrivning af problemet.
+
+Vi ser altså, at fejlene ikke skaleres ens. Det betyder, at mindste kvadraters metode ikke vil finde den optimale løsning for det oprindelige problem, da den vil vægte nogle datapunkter højere end andre. Metoden giver dog stadig et fornuftigt udgangspunkt, som evt. kan forbedres ved at bruge numeriske metoder, der approksimerer en optimal løsning til det oprindelige problem.

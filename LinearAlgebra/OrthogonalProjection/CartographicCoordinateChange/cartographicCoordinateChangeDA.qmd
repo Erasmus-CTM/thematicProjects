@@ -1,0 +1,276 @@
+---
+title: "Mindste kvadraters metode og kvadratiske former"
+lang: da
+format:
+  html:
+    embed-resources: true
+    code-fold: true
+    include-after-body:
+      ../../../aux/footerDA.html
+filters:
+ - pyodide
+crossref:
+  sec-prefix: Delopgave
+---
+
+# Introduktion{-}
+I skal nu kigge på &lsquo;koordinatskift&rsquo; mellem to kort. Man kan tænke på at skifte fra koordinater mht. kortene DKTM og UTM eller måske mellem projektionerne for Femern Bælt og DKTM3 eller en lokal projektion, jeres firma har lavet.
+Omregning af koordinater og eksempler på systemer i Danmark kan f.eks. findes i fikspunktsregistret [Valdemar](https://valdemar.dataforsyningen.dk/).
+
+Vi ønsker at bestemme en afbildning, som til ethvert punkt med koordinater $(u,v)$ i det ene kort giver koordinaterne $\big(x(u,v), y(y,v)\big)$ i det andet kort.
+Funktionerne $x(u,v)$ og $y(u,v)$ skal være andengradspolynomier. Vi tænker på disse polynomier som en tilnærmelse til &lsquo;den rigtige&rsquo; koordinattransformation, ligesom i tidligere har set tangentlinje som tilnærmelse til en funktion i et punkt.^[Koordinater i den gamle danske projektion _System34_, omregnes til den nye standardrepræsentation UTM/ETRS89 Zone 32 ved at bruge to polynomier af grad 11. Det slipper I for i denne workshop.]
+
+Vi kender koordinatoversættelsen i nogle punkter
+$$(u_1, v_1)\sim (x_1,y_1),\,
+(u_2,v_2)\sim (x_2, y_2),\,
+\ldots,
+(u_k, v_k)\sim (x_k, y_k),$$
+som vi så skal bruge til at bestemme afbildningen mellem de to kort.
+For at få et andengradspolynomium af to variable, skal vi finde en afbildning på formen
+$$x(u,v) = c_0 + c_1u + c_2v +c_3u^2 + c_4 v^2 + c_5 uv.$$
+Altså har vi seks koefficienter, der skal estimeres for $x$-afbildningen. Tilsvarende har vi seks koefficienter for $y$, så vi samlet set skal bestemme $12$ ubekendte.
+
+Vi har heldigvis ekstra information, som gør problemet lidt lettere. De to kort er begge vinkeltro &ndash; de bevarer altså vinkler fra kuglefladen til planen. Dermed skal koordinatskiftet også bevare vinkler^[Det kaldes dermed et _konformt_ koordinatskift.]
+Den betingelse giver med nogen eftertanke, at $x(u,v)$ og $y(u,v)$ kun har seks koefficienter i alt:
+$$\left[
+\begin{array}{c}
+x(u,v)\\ y(u,v)
+\end{array}
+\right]
+=
+\left[
+\begin{array}{c}
+a_0 + a_1u -b_1 v + a_2 u^2 -a_2 v^2 -2b_2 uv\\
+b_0 + b_1u +a_1 v + b_2 u^2 -b_2 v^2 -2a_1 uv
+\end{array}
+\right].$${#eq-afbildning}
+
+På @fig-illustration ses den type afbildning i fire forskellige tilfælde. De blå kurver svarer til at holde $u$ konstant, mens de røde kurver svarer til at holde $v$ konstant. Læg mærke til, at konformiteten gør, at de blå og røde kurver altid skærer hinanden vinkelret. Det sidste eksempel viser en rotation, som er en lineær afbildning.
+
+:::{#fig-illustration layout-ncol=2}
+
+![$\mathbf{a}=[0,0,1], \mathbf{b}=\mathbf{0}$](z_i_anden.png){width=80% fig-alt="Eksempel på koordinatskift"}
+
+![$\mathbf{a}=[0,1,0], \mathbf{b}=[0,1,1]$](zplusizianden.png){width=80% fig-alt="Eksempel på koordinatskift"}
+
+![$\mathbf{a}=[0,2,1], \mathbf{b}=[0,1,0]$](tominusizpluszianden.png){width=80% fig-alt="Eksempel på koordinatskift"}
+
+![$\mathbf{a}=[0,2,0], \mathbf{b}=[0,5,0]$](lineaer2minus5iz.png){width=80% fig-alt="Eksempel på lineært koordinatskift"}
+
+Illustrationer af koordinatskift. Vektorerne $\mathbf{a}$ og $\mathbf{b}$ angiver koefficienterne i @eq-afbildning.
+:::
+
+Vi kender altså afbildningen $(u,v)\mapsto (x,y)$ i nogle punkter, og vores opgave er at bestemme $a_0,a_1,a_2,b_0,b_1,b_2$, sådan at @eq-afbildning giver den bedst mulige approksimation ift. de punkter, vi kender.
+Vi vil gøre dette vha. mindste kvadraters metode, som kræver at vi minimerer
+$$\begin{align*}
+F(a_0, b_0, a_1, b_1, a_2, b_2) = \sum_{i=1}^k \bigg[
+\big(&a_0 + a_1u_i -b_1 v_i + a_2 u_i^2 -a_2 v_i^2 -2b_2 u_iv_i -x_i\big)^2\\
++
+\big(&b_0 + b_1u_i +a_1 v_i + b_2 u_i^2 -b_2 v_i^2 -2a_1 u_iv_i -y_i\big)^2
+\bigg].
+\end{align*}$${#eq-mindsteKvadrater}
+
+# Delopgave 1{#sec-opg1}
+
+1. Lad $A$ være en $2k\times 6$-matrix givet ud fra data:
+$$A= 
+\begin{bmatrix}
+1 & 0& u_1&-v_1&u_1^2-v_1^2&-2u_1v_1\\
+0&1 &v_1&u_1&2u_1v_1&u_1^2-v_1^2\\
+1 & 0& u_2&-v_2&u_2^2-v_2^2&-2u_2v_2\\
+0&1 &v_2&u_2&2u_2v_2&u_2^2-v_2^2\\
+\vdots & \vdots& \vdots & \vdots&\vdots&\vdots\\
+1 & 0& u_k&-v_k&u_k^2-v_k^2&-2u_kv_k\\
+0&1 &v_k&u_k&2u_kv_k&u_k^2-v_k^2
+\end{bmatrix}.$$
+
+   Vi indfører notationen $\mathbf{x}=[a_0,b_0,a_1,b_1,a_2,b_2]^\top$ og $\mathbf{b}=[x_1,y_1, x_2,y_2, \ldots, x_k,y_k]^\top$. Vis, at @eq-mindsteKvadrater da kan omskrives til
+   $$F(\mathbf{x}) = \lVert \mathbf{b} - A\mathbf{x}\rVert^2.$$
+
+   Et minimum for $F(\mathbf{x})$ er dermed en vektor $\hat{\mathbf{x}}$, som opfylder $\lVert\mathbf{x}-A\hat{\mathbf{x}}\rVert \leq \lVert\mathbf{b}-A\mathbf{x}\rVert$ for alle $\mathbf{x}$. Per definition betyder dette, at $\hat{\mathbf{x}}$ er en mindste kvadraters løsning til matrixligningen $A\mathbf{x}=\mathbf{b}$.
+
+1. Normalligningen for dette mindste kvadraters problem er
+$$A^\top A\hat{\mathbf{x}} = A^\top \mathbf{b}.$$
+
+   Hvad er betingelsen for, at der eksisterer en _entydig_ løsning til denne ligning? Hvor mange datapunkter skal vi mindst have, for at dette er opfyldt?
+   
+   ::: {.callout-tip title="Vink" collapse=true}
+   Find en passende sætning i afsnit&nbsp;6.5 i lærebogen (Lay, Lay &amp; McDonald).
+   :::
+   
+1. Vi betragter nu et lidt simplere problem, hvor vi antager, at Origo bevares. Gør rede for, at vi da skal løse et mindste kvadraters problem med matricen
+$$B= 
+\begin{bmatrix}
+ u_1&-v_1&u_1^2-v_1^2&-2u_1v_1\\
+v_1&u_1&2u_1v_1&u_1^2-v_1^2\\
+ u_2&-v_2&u_2^2-v_2^2&-2u_2v_2\\
+v_2&u_2&2u_2v_2&u_2^2-v_2^2\\
+ \vdots & \vdots &\vdots &\vdots\\
+ u_k&-v_k&u_k^2-v_k^2&-2u_kv_k\\
+v_k&u_k&2u_kv_k&u_k^2-v_k^2
+\end{bmatrix}$$
+
+1. Antag, at vi har data
+$$\begin{align*}
+(u_1,v_1,x_1,y_1) &=(1,0,2,0)\\
+(u_2,v_2,x_2,y_2) &=(0,1,1,-1)\\
+(u_3,v_3,x_3,y_3) &=(1,1,-2,2).
+\end{align*}$$
+
+   Opskriv den $6\times 4$-matrix, der svarer til $B$, og vis, at
+   $$B^TB=\begin{bmatrix} 4 & 0  & 3 & -3\\0 & 4 & 3 & 3\\3 & 3 & 6 & 0\\-3 & 3 & 0 & 6\end{bmatrix}$$
+   
+   Opstil derefter normalligningen for dette problem.
+   
+1. Løses normalligningen ovenfor, får man $\hat{\mathbf{x}}=[1,-2,4/3, 7/3]^\top$. Gør rede for, at dette svarer til den approksimerede funktion
+$$\left[
+\begin{array}{c}
+x(u,v)\\ y(u,v)
+\end{array}
+\right]
+=
+\left[
+\begin{array}{c}
+u +2v + \frac{4}{3}(u^2-v^2) -2\cdot\frac{7}{3}uv\\
+-2u + v + \frac{7}{3}(u^2-u^2)+2\cdot\frac{4}{3}uv
+\end{array}
+\right].$$
+
+   Indsæt de tre punkter $(u_i, v_i)$ og find afstandene fra $\big(x(u_i,v_i), y(u_i,v_i)\big)$ til dataværdierne $(x_i,y_i)$. Find den samlede kvadratiske afstand $F(0,0,1,-2,4/3, 7/3)$.
+   
+   Tegn punkterne $(x_i,y_i)$ og $\big(x(u_i,v_i), y(u_i,v_i)\big)$ ind i et plant koordinatsystem (I må gerne bbruge Python, GeoGebra eller et andet CAS-værktøj).
+   
+   :::{.callout-tip title="Facit" collapse=true}
+   De estimerede koordinater er
+   $$\begin{align*}
+   \big(x(u_1,v_1), y(u_1,v_1)\big) &= \left(\frac{7}{3}, \frac{1}{3}\right)\\
+   \big(x(u_i,v_i), y(u_i,v_i)\big) &= \left(\frac{2}{3}, -\frac{4}{3}\right)\\
+   \big(x(u_i,v_i), y(u_i,v_i)\big) &= \left(-\frac{5}{3}, \frac{5}{3}\right).
+   \end{align*}$$
+   :::
+
+# Delopgave 2{#sec-opg2}
+Vi vender nu tilbage til målforholdet, som I så på i blok&nbsp;2. For den lineære afbildning $\mathbf{x}\mapsto B\mathbf{x}$ er målforholdet i retning $\mathbf{v}$ givet ved $m(B,\mathbf{v}) = \sqrt{\frac{\mathbf{v}\cdot B^\top B\mathbf{v}}{\mathbf{v}\cdot\mathbf{v}}}$.
+
+1. Gør rede for, at tælleren $\mathbf{v}\cdot B^\top B\mathbf{v}$ er en kvadratisk form. Notér denne med $Q_B$.
+
+1. Brug at $\lVert B\mathbf{v}\rVert^2 = \mathbf{v}\cdot B^\top B\mathbf{v}$ til at indse, at $Q_B$ er positivt semidefinit.
+
+   :::{.callout-tip title="Vink" collapse=true}
+   Kan man få $\lVert B\mathbf{v}\rVert^2<0$?
+   :::
+   
+1. Argumenter for følgende udsagn: Hvis der eksisterer et $\mathbf{v}\neq\mathbf{0}$, som opfylder $Q_B(\mathbf{v})=\mathbf{0}$, så er $B\mathbf{v}=\mathbf{0}$.
+
+   Konkluder deraf, at $Q_B$ er positivt definit, hvis $\mathrm{Null}(B) = \{\mathbf{0}\}$.
+
+# Delopgave 3{#sec-opg3}
+I @sec-opg1 regnede I på det simplificerede problem med matricen $B$. I skal nu bruge Python til at løse det oprindelige problem med matricen $A$.
+
+(@) Gennemgå scriptet herunder, og forklar de enkelte trin. Kør koden, og forklar at dette giver et approksimeret polynomium
+$$\left[
+\begin{array}{c}
+x(u,v)\\ y(u,v)
+\end{array}
+\right]
+=
+\left[
+\begin{array}{c}
+-1 + u +4v +2u^2 -2v^2 -6uv\\
+1 -4u +v +3u^2 -3v^2 +4uv
+\end{array}
+\right].$$
+
+```{pyodide-python}
+import numpy
+from numpy.linalg import inv, norm
+
+## Definer først en funktion, der genererer A for
+## givne vektorer u og v.
+def generateA(u, v):
+	if len(u)!=len(v):
+		raise ValueError("Vektorerne u og v skal have samme længde")
+		
+	A = numpy.empty([2*len(u), 6])
+	for i in range(len(u)):
+		A[2*i,:] = numpy.array(
+			[1, 0, u[i], -v[i], u[i]**2 - v[i]**2, -2*u[i]*v[i]]
+		)
+		A[2*i+1,:] = numpy.array(
+			[0, 1, v[i], u[i], 2*u[i]*v[i], u[i]**2 - v[i]**2]
+		)
+		
+	return A
+
+## Definer de kendte værdier
+u1, v1, x1, y1 = 1, 0, 2, 0
+u2, v2, x2, y2 = 0, 1, 1, -1
+u3, v3, x3, y3 = 1, 1, -2, 2
+
+u = numpy.array([u1, u2, u3])
+v = numpy.array([v1, v2, v3])
+
+b = numpy.array([x1, y1, x2, y2, x3, y3])
+A = generateA(u,v)
+
+## Løs normalligningen
+xHat = inv(A.T @ A) @ A.T @ b
+print("xHat = {}\n".format(xHat))
+
+## Udregn residualet
+res = norm(A @ xHat - b)
+print("Residual:\t{}".format(res))
+```
+
+(@) Kig på residualet, I fik ovenfor. Bortset fra afrundingsfejl, ser det ud til, at $\lVert\mathbf{b}-A\mathbf{x}\rVert^2=0$.
+
+    Kan man derfra konkludere, at det approksimerede polynomium i virkeligheden er det sande polynomium?
+	
+	:::{.callout-tip title="Vink" collapse=true}
+	Når residualet er $0$, tilpasser polynomiet sig præcist de kendte punkter. Er vi garanteret, at det nødvendigvis også passer, hvis vi indsamler nye datapunkter?
+	:::
+	
+(@) Argumenter for, at observationen omkring residualet medfører, at $\mathbf{b}$ er i $\mathrm{Col}(A)$.
+
+    Brug derefter kodeblokken herunder til at efterprøve dette ved at vise, at $A$ er inverterbar.
+	
+	:::{.callout-tip title="Vink" collapse=true}
+	Man kan f.eks. bruge `numpy.linalg.det(A)` til at udregne determinanten eller `sympy.Matrix(A).rref()` til at bestemme den reducerede trappeform.
+	:::
+
+```{pyodide-python}
+## Skriv din egen kode for at afgøre, om A er inverterbar
+```
+
+(@) Vi tilføjer nu to ekstra datapunkter
+$$(u_4,v_4,x_4,y_4) = (0,0,0,0),\quad
+(u_5,v_4,x_4,y_4) = (-1,0,-2,2)$$
+
+    Færdiggør koden herunder, så den løser mindste kvadraters problem for både $A$ og $B$ med disse nye datapunkter sammen med de oprindelige.
+	
+	Hvad sker der med størrelserne $\lVert\mathbf{b}-A\hat{\mathbf{x}}_A\rVert^2$ og $\lVert\mathbf{b}-A\hat{\mathbf{x}}_B\rVert^2$ i forhold til tidligere, hvor vi kun havde tre datapunkter? Hvorfor ser man denne ændring?
+
+```{pyodide-python}
+uExt = numpy.append(u, [0, -1])
+vExt = numpy.append(v, [0, 0])
+bExt = numpy.append(b, [0, 0, -2, 2])
+
+AExt = genererA(uExt, vExt)
+
+## B har samme indgange som A, bare uden de første
+## to søjler
+BExt = AExt.copy()
+BExt = numpy.delete(BExt, [0,1], axis=1)
+
+xA = inv(AExt.T @ AExt) @ AExt.T @ bExt
+resA = ???
+print("xA = {}\nresA = {}\n\n".format(xA, resA))
+
+xB = ???
+resB = ???
+print("xB = {}\nresB = {}\n\n".format(xB, resB))
+```
+
+<!-- Local Variables: -->
+<!-- ispell-local-dictionary: "da_DK" -->
+<!-- End: -->
