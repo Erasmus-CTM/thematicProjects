@@ -1,0 +1,7 @@
+The files 'Mercator_projection_SW.jpg' and 'Lambert_cylindrical_equal-area_projection_SW.jpg' were published by WikiMedia user Strebe under a CC-BY-SA 3.0 license. The original files are found at
+https://commons.wikimedia.org/wiki/File:Mercator_projection_SW.jpg
+and
+https://commons.wikimedia.org/wiki/File:Lambert_cylindrical_equal-area_projection_SW.jpg
+
+The full license text may be found at
+https://creativecommons.org/licenses/by-sa/3.0/deed.en
