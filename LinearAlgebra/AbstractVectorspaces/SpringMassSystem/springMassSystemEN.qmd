@@ -1,0 +1,181 @@
+---
+title: "Spring-mass systems"
+lang: en-GB
+format:
+  html:
+    embed-resources: true
+    code-fold: true
+    include-after-body:
+      ../../../aux/footerEN.html
+filters:
+ - pyodide
+crossref:
+  sec-prefix: Exercise
+---
+
+# Introduction{-}
+Physical systems can often be described by differential equations. A simple example is a system of two identical masses connected by three springs as in @fig-fjedre.
+
+![A system with two identical masses and three identical springs.](figure.svg){width=75% #fig-fjedre fig-alt="Spring system with two masses and three springs"}
+
+We describe the positions of the masses as functions of time by considering $y_1(t)$ and $y_2(t)$ as in the figure, i.e. the positions are the displacements of the masses from the equilibrium position.
+
+When the springs are identical with spring constant $k$, the functions $y_1$ and $y_2$ have to satisfy a system of two second order differential equations, which is derived from Hooke's law and Newton's second law:
+
+$$\begin{align}
+  m y_1''(t)&=-2k y_1(t)+k y_2(t), \\
+  m y_2''(t)&=k y_1(t) -2k y_2(t).
+\end{align}$${#eq-1}
+
+which can be rewritten as
+$$\begin{bmatrix}y_1''(t)\\y_2''(t)\end{bmatrix}=\frac{k}{m}\begin{bmatrix}-2&1\\1&-2\end{bmatrix}\begin{bmatrix}y_1(t)\\y_2(t)\end{bmatrix}$$
+These equations have to be satisfied for all real numbers $t$. It is thus equations of functions:
+$$\begin{bmatrix}y_1''\\y_2''\end{bmatrix}=\frac{k}{m}\begin{bmatrix}-2&1\\1&-2\end{bmatrix}\begin{bmatrix}y_1\\y_2\end{bmatrix}$$
+
+In this assignment, we will use linear algebra to solve such *systems of linear ordinary differential equations*. The following result from e.g. calculus may be considered given:
+
+The set of solutions to $y''=-ay$ with $a>0$ is $$y(t)=c_1\cos(\sqrt{a}t)+c_2\sin(\sqrt{a}t)$$ where $c_1,c_2$ are real numbers.
+
+# Exercise 1{#sec-opg1}
+1. Let $B$ be a $2\times 2$ matrix given by 
+$$B = \frac{k}{m}
+    \begin{bmatrix}
+      2 & -1 \\
+      - 1 & 2 
+    \end{bmatrix}.$$
+
+   Define the column vector
+$$\begin{equation*}
+    Y(t)=
+    \begin{bmatrix}
+      y_1(t) \\
+      y_2(t)
+    \end{bmatrix}.
+  \end{equation*}$$
+Show that the system in @eq-1 can be rewritten as $Y''(t)=-BY(t)$.
+
+
+1. Show that $B$ is orthogonally diagonalizable, i.e. that $B=QDQ^T$ where $D$ is a diagonal matrix and $Q$ is an orthogonal matrix given by
+$$D=\begin{bmatrix}\frac{k}{m}&0\\0&3\frac{k}{m}\end{bmatrix}
+\quad\text{and}\quad
+Q=\begin{bmatrix}\frac{\sqrt{2}}{2}&\frac{\sqrt{2}}{2}\\\frac{\sqrt{2}}{2}&-\frac{\sqrt{2}}{2}\end{bmatrix},$$
+respectively.
+
+1. Now, rewrite the system in @eq-1 as $$(Q^TY)''=-DQ^TY,$$ and let $F=\begin{bmatrix}f_1\\f_2\end{bmatrix}=Q^TY$.
+
+1. Solve the system
+$$\begin{equation*}
+    \begin{bmatrix}
+      f_1\\f_2\end{bmatrix}''=-D\begin{bmatrix}f_1\\f_2\end{bmatrix}
+  \end{equation*}$$
+and show that
+$$\begin{bmatrix}f_1(t)\\f_2(t)\end{bmatrix}
+    =\begin{bmatrix}
+      c_1\cos\left(\sqrt{\frac{k}{m}}t\right)+c_2\sin\left(\sqrt{\frac{k}{m}}t\right)\\
+      c_3\cos\left(\sqrt{3\frac{k}{m}}t\right)+c_4\sin\left(\sqrt{3\frac{k}{m}}t\right)
+    \end{bmatrix}$${#eq-solution}
+	where $c_1,c_2, c_3, c_4$ are real numbers.
+   
+1. Now, find the solution to the original problem by realizing that $Y(t)=QF(t)$. Also solve the *initial value problem*
+$$Y(0)=\begin{bmatrix}0\\0
+  \end{bmatrix}$$
+  $$Y'(0)=\begin{bmatrix}1\\0\end{bmatrix}$$
+  
+1. The eigenvectors $V_1=\begin{bmatrix}\frac{\sqrt{2}}{2}\\\frac{\sqrt{2}}{2}\end{bmatrix}$ and $V_2=\begin{bmatrix}\frac{\sqrt{2}}{2}\\-\frac{\sqrt{2}}{2}\end{bmatrix}$ are together with the eigenvalues part of the solution: 
+  $$Y(t)=f_1(t)V_1+f_2(t)V_2.$$ 
+  (Why?).
+  Explain that a solution where $c_3= c_4=0$ corresponds to the situation where the masses oscillate with period $2\pi\sqrt{\frac{m}{k}}$, same amplitude, and in the same direction (in phase). Similarly, the case $c_1=c_2=0$ means that they oscillate with period $2\pi\sqrt{\frac{m}{3k}}$, same amplitude, and in opposite direction of each other.
+
+
+# Exercise 2{#sec-opg2}
+In this exercise, we investigate the solution in @eq-solution based on the vector space
+$$V=\left\{\left[
+        \begin{array}{c}
+            f\\
+            g 
+        \end{array}
+    \right] : \text{$f$ and $g$ are real functions}\right\},$$
+where vector addition and scalar multiplication are defined by
+$$\left[\begin{array}{c} f_1\\g_1 \end{array}\right]+
+    \left[\begin{array}{c} f_2\\g_2 \end{array}\right]=
+    \left[\begin{array}{c} f_1+f_2\\g_1+g_2 \end{array}\right]
+    \quad\text{and}\quad
+    c\left[\begin{array}{c} f\\g \end{array}\right]=\left[\begin{array}{c} cf\\cg \end{array}\right].$$
+You do not need to show that this is a vector space.
+
+Below, we use the notation
+$$\mathbf{b}_1(t)=\left[
+        \begin{array}{c}
+            \cos\left(\sqrt{\frac{k}{m}}t\right) \\
+            0 
+        \end{array}
+    \right],\quad
+    \mathbf{b}_2(t)=\left[
+        \begin{array}{c}
+            \sin\left(\sqrt{\frac{k}{m}}t\right) \\
+            0 
+        \end{array}
+    \right]$$
+$$\mathbf{b}_3(t)=\left[
+        \begin{array}{c}
+            0\\
+            \cos\left(\sqrt{3\frac{k}{m}}t\right)
+        \end{array}
+    \right],\quad
+    \mathbf{b}_4(t)=\left[
+        \begin{array}{c}
+            0\\
+            \sin\left(\sqrt{3\frac{k}{m}}t\right)
+        \end{array}
+    \right]$$
+
+1. Show that any solution of the form @eq-solution lies in $\mathrm{Span}\{\mathbf{b}_1,\mathbf{b}_2,\mathbf{b}_3,\mathbf{b}_4\}$.
+
+1. Let $s\neq 0$ be a (fixed) real number. Show that the equality
+$$c_1\cos(st)+c_2\sin(st)=0$$
+can only be satisfied *for all* $t$ if $c_1=c_2=0$
+
+   ::: {.callout-tip title="Hint" collapse="true"}
+   For example, find a $t_1$ such that $\cos(st_1)=1$ and $\sin(st_1)=0$, as well as a $t_2$ such that $\cos(st_2)=0$ and $\sin(st_2)=1$.
+   :::
+    
+1. Conclude from the previous question that $\{\mathbf{b}_1,\mathbf{b}_2,\mathbf{b}_3,\mathbf{b}_4\}$ is linearly independent.
+    
+1. What do the above exercises tell us about $\{\mathbf{b}_1,\mathbf{b}_2,\mathbf{b}_3,\mathbf{b}_4\}$ and about the solution set of @eq-1?
+
+1. What is the smallest number of initial conditions for which it is possible to find a unique solution?
+
+# Delopgave 3{#sec-opg3}
+The file `animateSolution.py` contains a Python function which shows an animation of the system in @fig-fjedre, when $k$ and $m$ as well as $\mathbf{c}=[c_1,c_2,c_3,c_4]$ are given. In the exercises below, we use $k=m=1$.
+
+::: {.callout-warning title="OBS"}
+Currently, the animations from `matplotlib` cannot be run directly in the browser. To see the animation you will therefore need to download the file and run it locally (if you have a Python distribution installed).
+
+Regardless of whether you can run the code or not, you can still solve the initial value problems.
+:::
+
+1. First, run the animation for the solution $c_1=c_2=1$ and $c_3=c_4=0$, and then for the solution $c_1=c_2=0$ and $c_3=c_4=1$. Check that the masses oscillate in phase or in antiphase as described in the last part of @sec-opg1.
+  
+1. Explain why the system of equations for the initial value problem
+$$Y(0)=\frac{\sqrt{2}}{4}\begin{bmatrix}1\\-1 \end{bmatrix}
+    \quad\text{and}\quad
+    Y'\left(\frac{2\pi}{\sqrt{3}}\right)=\frac{\sqrt{6}}{4}\begin{bmatrix}1\\-1 \end{bmatrix}$$
+has augmented matrix
+$$\renewcommand{\arraystretch}{1.8}
+    \left[
+      \begin{array}{cccc|c}
+        \frac{\sqrt{2}}{2} & 0 & \frac{\sqrt{2}}{2} & 0 & \frac{\sqrt{2}}{4}\\
+        \frac{\sqrt{2}}{2} & 0 & -\frac{\sqrt{2}}{2} & 0 & -\frac{\sqrt{2}}{4}\\
+        -\frac{\sqrt{2}}{2}\sin(\frac{2\pi}{\sqrt{3}}) & \frac{\sqrt{2}}{2}\cos(\frac{2\pi}{\sqrt{3}}) & 0 & \frac{\sqrt{6}}{2} & \frac{\sqrt{6}}{4}\\
+        -\frac{\sqrt{2}}{2}\sin(\frac{2\pi}{\sqrt{3}}) & \frac{\sqrt{2}}{2}\cos(\frac{2\pi}{\sqrt{3}}) & 0 & -\frac{\sqrt{6}}{2} & -\frac{\sqrt{6}}{4}\\
+      \end{array}
+    \right].$$
+
+   Solve the system of equations (you are allowed to use Python or another CAS-tool), and use `animateSolution` to illustrate the solution.
+  
+1. Finally, consider the initial value problem
+$$Y(0)=\begin{bmatrix}1\\1 \end{bmatrix}
+    \quad\text{and}\quad
+    Y(2\pi)=\begin{bmatrix}1\\1\end{bmatrix}.$$
+How many equations and how many unknowns does the system have? How many of these equations involve $c_2$? Is there a unique solution in this case?
+

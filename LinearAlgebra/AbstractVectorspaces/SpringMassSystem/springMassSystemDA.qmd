@@ -1,0 +1,179 @@
+---
+title: "Fjedersystemer"
+lang: da
+format:
+  html:
+    embed-resources: true
+    code-fold: true
+    include-after-body:
+      ../../../aux/footerDA.html
+filters:
+ - pyodide
+crossref:
+  sec-prefix: Delopgave
+---
+
+# Introduktion{-}
+Fysiske systemer kan ofte beskrives ved differentialligninger. Et simpelt eksempel er et system af to identiske masser sat op med tre fjedre som på @fig-fjedre.
+
+![Et system med to identiske masser og tre identiske fjedre.](figure.svg){width=75% #fig-fjedre fig-alt="Fjedersystem med to masser og tre fjedre"}
+
+Vi vil beskrive positionen af masserne som funktion af tiden ved at se på $y_1(t)$ og $y_2(t)$ som på figuren, altså positionerne som afvigelsen fra ligevægtspositionen.
+
+Med identiske fjedre med fjederkonstant $k$ skal $y_1$ og $y_2$ opfylde et system af to andenordens differentialligninger, som udledes fra Hookes lov og Newtons anden lov:
+
+$$\begin{align}
+  m y_1''(t)&=-2k y_1(t)+k y_2(t), \\
+  m y_2''(t)&=k y_1(t) -2k y_2(t).
+\end{align}$${#eq-1}
+
+som kan omskrives til 
+$$\begin{bmatrix}y_1''(t)\\y_2''(t)\end{bmatrix}=\frac{k}{m}\begin{bmatrix}-2&1\\1&-2\end{bmatrix}\begin{bmatrix}y_1(t)\\y_2(t)\end{bmatrix}$$
+Disse ligninger skal være opfyldt for alle reelle tal $t$ -- det er altså ligninger mellem funktioner: 
+$$\begin{bmatrix}y_1''\\y_2''\end{bmatrix}=\frac{k}{m}\begin{bmatrix}-2&1\\1&-2\end{bmatrix}\begin{bmatrix}y_1\\y_2\end{bmatrix}$$
+
+I denne opgave vil vi anvende lineær algebra til at løse sådanne *systemer af lineære sædvanlige differentialligninger*. Følgende resultater fra f.eks. calculus kan tages for givet:
+
+Løsningsmængden til $y''=-ay$ , hvor $a>0$, er $$y(t)=c_1\cos(\sqrt{a}t)+c_2\sin(\sqrt{a}t)$$ hvor $c_1,c_2$ er reelle tal.
+
+# Delopgave 1{#sec-opg1}
+1. Lad $B$ være en $2\times 2$ matrix givet ved 
+$$B = \frac{k}{m}
+    \begin{bmatrix}
+      2 & -1 \\
+      - 1 & 2 
+    \end{bmatrix}.$$
+
+   Definer søjlevektoren
+$$\begin{equation*}
+    Y(t)=
+    \begin{bmatrix}
+      y_1(t) \\
+      y_2(t)
+    \end{bmatrix}.
+  \end{equation*}$$
+Vis, at systemet @eq-1 kan omskrives som $Y''(t)=-BY(t)$.
+
+
+1. Vis, at $B$ er ortogonalt diagonaliserbar, i.e., at $B=QDQ^T$, hvor $D$ er diagonal og $Q$ er ortogonal. 
+$D=\begin{bmatrix}\frac{k}{m}&0\\0&3\frac{k}{m}\end{bmatrix}$
+og 
+$Q=\begin{bmatrix}\frac{\sqrt{2}}{2}&\frac{\sqrt{2}}{2}\\\frac{\sqrt{2}}{2}&-\frac{\sqrt{2}}{2}\end{bmatrix}$.
+
+1. Omskriv nu systemet @eq-1 til $$(Q^TY)''=-DQ^TY,$$ og lad $F=\begin{bmatrix}f_1\\f_2\end{bmatrix}=Q^TY$.
+
+1. Løs systemet 
+$$\begin{equation*}
+    \begin{bmatrix}
+      f_1\\f_2\end{bmatrix}''=-D\begin{bmatrix}f_1\\f_2\end{bmatrix}
+  \end{equation*}$$
+og vis, at
+$$\begin{bmatrix}f_1(t)\\f_2(t)\end{bmatrix}
+    =\begin{bmatrix}
+      c_1\cos\left(\sqrt{\frac{k}{m}}t\right)+c_2\sin\left(\sqrt{\frac{k}{m}}t\right)\\
+      c_3\cos\left(\sqrt{3\frac{k}{m}}t\right)+c_4\sin\left(\sqrt{3\frac{k}{m}}t\right)
+    \end{bmatrix}$${#eq-solution}
+   hvor $c_1,c_2, c_3, c_4$ er reelle tal.
+   
+1. Find nu løsningen til det oprindelige problem ved at indse, at $Y(t)=QF(t)$. Løs også *begyndelsesværdiproblemet*
+$$Y(0)=\begin{bmatrix}0\\0
+  \end{bmatrix}$$
+  $$Y'(0)=\begin{bmatrix}1\\0\end{bmatrix}$$
+  
+1. Egenvektorerne $V_1=\begin{bmatrix}\frac{\sqrt{2}}{2}\\\frac{\sqrt{2}}{2}\end{bmatrix}$ $V_2=\begin{bmatrix}\frac{\sqrt{2}}{2}\\-\frac{\sqrt{2}}{2}\end{bmatrix}$ indgår sammen med egenværdierne i løsningen: 
+  $$Y(t)=f_1(t)V_1+f_2(t)V_2.$$ 
+  (Hvorfor?). Forklar, at en løsning, hvor $c_3= c_4=0$, svarer til, at masserne svinger med periode $2\pi\sqrt{\frac{m}{k}}$, samme amplitude og i samme retning (i takt). Tilsvarende, at $c_1=c_2=0$ betyder, at de svinger med periode $2\pi\sqrt{\frac{m}{3k}}$, samme amplitude og modsat retning af hinanden.
+
+
+# Delopgave 2{#sec-opg2}
+I denne delopgave undersøger vi løsningerne i @eq-solution med udgangspunkt i vektorrummet
+$$V=\left\{\left[
+        \begin{array}{c}
+            f\\
+            g 
+        \end{array}
+    \right] : \text{$f$ og $g$ er reelle funktioner}\right\},$$
+hvor vektoraddition og skalarmultiplikation er defineret ved
+$$\left[\begin{array}{c} f_1\\g_1 \end{array}\right]+
+    \left[\begin{array}{c} f_2\\g_2 \end{array}\right]=
+    \left[\begin{array}{c} f_1+f_2\\g_1+g_2 \end{array}\right]
+    \quad\text{og}\quad
+    c\left[\begin{array}{c} f\\g \end{array}\right]=\left[\begin{array}{c} cf\\cg \end{array}\right].$$
+I behøver ikke vise, at dette er et vektorrum.
+
+Herunder bruger vi notationen
+$$\mathbf{b}_1(t)=\left[
+        \begin{array}{c}
+            \cos\left(\sqrt{\frac{k}{m}}t\right) \\
+            0 
+        \end{array}
+    \right],\quad
+    \mathbf{b}_2(t)=\left[
+        \begin{array}{c}
+            \sin\left(\sqrt{\frac{k}{m}}t\right) \\
+            0 
+        \end{array}
+    \right]$$
+$$\mathbf{b}_3(t)=\left[
+        \begin{array}{c}
+            0\\
+            \cos\left(\sqrt{3\frac{k}{m}}t\right)
+        \end{array}
+    \right],\quad
+    \mathbf{b}_4(t)=\left[
+        \begin{array}{c}
+            0\\
+            \sin\left(\sqrt{3\frac{k}{m}}t\right)
+        \end{array}
+    \right]$$
+
+1. Vis, at enhver løsning på formen @eq-solution ligger i $\mathrm{Span}\{\mathbf{b}_1,\mathbf{b}_2,\mathbf{b}_3,\mathbf{b}_4\}$
+
+1. Lad $s\neq 0$ være et (fastlagt) reelt tal. Vis, at ligheden
+$$c_1\cos(st)+c_2\sin(st)=0$$
+kun kan være opfyldt *for alle* $t$, hvis $c_1=c_2=0$
+
+   ::: {.callout-tip title="Vink" collapse="true"}
+   Find for eksempel $t_1$, sådan at $\cos(st_1)=1$ og $\sin(st_1)=0$, samt et $t_2$, sådan at $\cos(st_2)=0$ og $\sin(st_2)=1$.
+   :::
+    
+1. Konkluder fra forrige spørgsmål, at $\{\mathbf{b}_1,\mathbf{b}_2,\mathbf{b}_3,\mathbf{b}_4\}$ er lineært uafhængig.
+    
+1. Hvad fortæller de ovenstående opgaver om $\{\mathbf{b}_1,\mathbf{b}_2,\mathbf{b}_3,\mathbf{b}_4\}$ og om løsningsmængden til @eq-1?
+
+1. Hvor mange begyndelsesbetingelser skal der til som minimum for at fastlægge en løsning entydigt? 
+
+# Delopgave 3{#sec-opg3}
+Filen `animateSolution.py` indeholder en Python-funktion, der viser en animation af systemet i @fig-fjedre, når $k$ og $m$ samt $\mathbf{c}=[c_1,c_2,c_3,c_4]$ er givet. I opgaverne herunder, sætter vi $k=m=1$.
+
+::: {.callout-warning title="OBS"}
+På nuværende tidspunkt kan animationer fra `matplotlib` ikke køres direkte i browseren. For at se animationen, er I derfor nødt til at hente den og køre den lokalt (hvis I har en Python-installation).
+
+Uanset, om I kan køre koden eller ej, kan I stadig løse begyndelsesværdiproblemerne.
+:::
+
+1. Kør først animationen for løsningen $c_1=c_2=1$ og $c_3=c_4=0$, og derefter med $c_1=c_2=0$, og $c_3=c_4=1$. Tjek at masserne svinger i takt eller i modsat takt ligesom beskrevet i sidste del af @sec-opg1.
+  
+1. Forklar, hvorfor ligningssystemet for begyndelsesværdiproblemet
+$$Y(0)=\frac{\sqrt{2}}{4}\begin{bmatrix}1\\-1 \end{bmatrix}
+    \quad\text{og}\quad
+    Y'\left(\frac{2\pi}{\sqrt{3}}\right)=\frac{\sqrt{6}}{4}\begin{bmatrix}1\\-1 \end{bmatrix}$$
+har totalmatrix
+$$\renewcommand{\arraystretch}{1.8}
+    \left[
+      \begin{array}{cccc|c}
+        \frac{\sqrt{2}}{2} & 0 & \frac{\sqrt{2}}{2} & 0 & \frac{\sqrt{2}}{4}\\
+        \frac{\sqrt{2}}{2} & 0 & -\frac{\sqrt{2}}{2} & 0 & -\frac{\sqrt{2}}{4}\\
+        -\frac{\sqrt{2}}{2}\sin(\frac{2\pi}{\sqrt{3}}) & \frac{\sqrt{2}}{2}\cos(\frac{2\pi}{\sqrt{3}}) & 0 & \frac{\sqrt{6}}{2} & \frac{\sqrt{6}}{4}\\
+        -\frac{\sqrt{2}}{2}\sin(\frac{2\pi}{\sqrt{3}}) & \frac{\sqrt{2}}{2}\cos(\frac{2\pi}{\sqrt{3}}) & 0 & -\frac{\sqrt{6}}{2} & -\frac{\sqrt{6}}{4}\\
+      \end{array}
+    \right].$$
+
+   Løs ligningssystemet (I må gerne bruge Python eller et andet CAS-værktøj), og brug `animateSolution` til at illustrere løsningen.
+  
+1. Betragt begyndelsesværdiproblemet
+$$Y(0)=\begin{bmatrix}1\\1 \end{bmatrix}
+    \quad\text{og}\quad
+    Y(2\pi)=\begin{bmatrix}1\\1\end{bmatrix}.$$
+Hvor mange ligninger og hvor mange ubekendte har systemet? I hvor mange af disse ligninger indgår $c_2$? Eksisterer der da en entydig løsning?
+
