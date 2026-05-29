@@ -1,0 +1,220 @@
+---
+title: "Maxwells ligninger"
+lang: da
+format:
+  html:
+    embed-resources: true
+    code-fold: true
+    include-after-body:
+      ../../../aux/footerDA.html
+filters:
+ - pyodide
+crossref:
+  sec-prefix: Delopgave
+---
+
+## Introduktion{-}
+I denne workshop skal I arbejde med Maxwells ligninger, der danner grundlag for klassisk elektromagnetisk teori.
+Der er tale om fire partielle differentialligninger, som blev samlet af J.C. Maxwell i sidste halvdel af 1800-tallet. Lignignernes løsninger beskriver elektromagnetiske vektorfelter over tid &ndash; det vil sige, at en løsning til hvert tidspunkt $t$ tildeler ethvert punkt i rummet en tredimensionel vektor. Denne vektor repræsenterer det elektromagnetiske felts retning og styrke i det givne punkt.
+
+Gennem workshoppen bruger her vektornotationen $\mathbf{r}=[x_1,x_2,x_2]^\top$ ligesom Calculusbogen, men det er værd at bemærke, at en del ingeniørtekster i stedet bruger notationen $x_1\mathbf{i}+x_2\mathbf{j}+x_3\mathbf{k}$.
+
+De to elektromagnetiske vektorfelter, vi skal beskæftige os med er
+
+* $\mathbf{E}(\mathbf{x}, t)$: Den elektriske feltstyrke
+* $\mathbf{B}(\mathbf{x}, t)$: Den magnetiske fluxtæthed
+
+Når punktet $\mathbf{x}$ ligger i et område af rummet, hvor både ladningstætheden $\rho$ og strømtætheden $\mathbf{J}$ er lig nul, så er de fire Maxwell-ligninger givet ved
+$$\begin{align*}
+\mathrm{div}(\mathbf{E})(\mathbf{x}, t) &= 0 && \text{(Gauss)}\\
+\mathrm{div}(\mathbf{B})(\mathbf{x}, t) &= 0 && \text{(Gauss)}\\
+\mathrm{curl}(\mathbf{E})(\mathbf{x}, t) &= -\frac{\partial\mathbf{B}}{\partial t} && \text{(Faraday)}\\
+\mathrm{curl}(\mathbf{B})(\mathbf{x}, t) &= \mu_0\varepsilon_0\frac{\partial\mathbf{E}}{\partial t} && \text{(Ampère \& Maxwell)},
+\end{align*}$$
+hvor $\mu_0$ er vakuummets magnetiske permeabilitet og $\varepsilon_0$ er vakuummets elektriske permittivitet.^[Det viser sig, at lysets hastighed i vakuum er $c=1/\sqrt{\mu_0\varepsilon_0}$, og det er ikke tilfældigt. Senere i workshoppen skal I vise, at Maxwell-ligningerne har planbølge-løsninger, som netop udbreder sig med lysets hastighed.]
+
+Notationen $\mathrm{div}$ betegner en differentialoperator kaldet *divergensen*, og denne er givet ved
+$$
+\mathrm{div}(\mathbf{E})(\mathbf{x}, t) =
+\frac{\partial E_1}{\partial x_1}(\mathbf{x}, t) +
+\frac{\partial E_2}{\partial x_2}(\mathbf{x}, t) +
+\frac{\partial E_3}{\partial x_3}(\mathbf{x}, t)
+$$
+Bemærk, at den oprindelige funktion $\mathbf{E}$ er en vektorfunktion, mens $\mathrm{div}(\mathbf{E})$ er en skalarfunktion (altså at funktionsværdier er skalarer).
+
+Notationen $\mathrm{curl}$ er også en differentialoperator, og denne kaldes *rotationen* og er defineret ved
+$$
+\mathrm{curl}(\mathbf{E})(\mathbf{x}, t) = \left[
+\frac{\partial E_3}{\partial x_2} - \frac{\partial E_2}{\partial x_3},
+\frac{\partial E_1}{\partial x_3} - \frac{\partial E_3}{\partial x_1},
+\frac{\partial E_2}{\partial x_1} - \frac{\partial E_1}{\partial x_2}
+\right]^\top.
+$$
+Denne sender altså en vektorfunktion over i en ny vektorfunktion.
+
+::: {.callout-info title="Bemærk"}
+Divergensen og rotationen noteres nogle steder med $\mathrm{div}_{\mathbf{x}}$ og $\mathrm{curl}_{\mathbf{x}}$ for at markere, at vi kun afleder mht. $\mathbf{x}$ og ikke mht. $t$.
+Vi undlader dette, da vi ikke skal aflede mht. til tiden i denne workshop.
+:::
+
+## Delopgave 1{#sec-opg1}
+Vi betragter først et *statisk* felt, hvilket betyder, at tiden er konstant. I skal så undersøge nogle generelle, matematiske egenskaber for divergensen og rotationen.
+
+1. Det statiske elektriske felt frembragt af en elektrisk ladning $q$ i Origo er givet ved
+$$
+\mathbf{E}(\mathbf{x})=\frac{q}{4\pi\varepsilon_0\lvert\mathbf{x}\rvert^3} \mathbf{x},
+$$
+hvor $\lvert\mathbf{x}\rvert=\sqrt{x_1^2+x_2^2+x_3^2}$ betegner den sædvanlige (altså, Euklidiske) længde.
+
+   Vis, at $\mathbf{E}=-\nabla V$, hvor $V(\mathbf{x})=\frac{q}{4\pi\varepsilon_0\lvert\mathbf{x}\rvert}$ er det tilhørende elektrostatiske potentiale.
+
+1. Betragt nu en glat kurve i rummet, der starter i $\mathbf{y}\neq \mathbf{0}$, slutter i $\mathbf{x}\neq\mathbf{0}$ og ikke går gennem Origo. Det vil sige, at kurven kan beskrives ved en afbildning $\gamma\colon [0,1]\rightarrow\mathbb{R}^3$ med $\gamma(s)=[\gamma_1(s), \gamma_2(s), \gamma_3(s)]^\top$, som opfylder $\gamma(0)=\mathbf{y}$, $\gamma(1)=\mathbf{x}$ og $\gamma(s)\neq\mathbf{0}$ for ethvert $s\in [0,1]$.
+
+   Vis, at
+   $$
+   V(\mathbf{x}) = V(\mathbf{y}) - \int_0^1 \mathbf{E}(\gamma(s))\cdot \frac{\mathrm{d}\gamma}{\mathrm{d}s}\,\mathrm{d}s.
+   $$
+   
+   ::: {.callout-tip title="Vink" collapse=true}
+   Kædereglen for funktioner af flere variable medfører
+   $$\begin{align*}
+   \frac{\mathrm{d}}{\mathrm{d}s} V(\gamma(s)) &=
+   \frac{\partial V}{\partial x_1}\big(\gamma(s)\big)\gamma_1'(s) +
+   \frac{\partial V}{\partial x_2}\big(\gamma(s)\big)\gamma_2'(s) +
+   \frac{\partial V}{\partial x_3}\big(\gamma(s)\big)\gamma_3'(s)\\
+   &= (\nabla V)\big(\gamma(s)\big) \cdot \gamma'(s)\\
+   &= -\mathbf{E}\big(\gamma(s)\big)\cdot \gamma'(s).
+   \end{align*}$$
+   :::
+   
+1. Lad $G(\mathbf{x})$ være et glat skalarfelt, hvilket betyder, at $G$ er en glat funktion fra $\mathbb{R}^3$ til $\mathbb{R}$. Definer så vektorfeltet $\mathbf{F}(\mathbf{x})=\nabla G(\mathbf{x})$, og vis, at
+$$\mathrm{curl}(\mathbf{F})(\mathbf{x}) = \mathbf{0}.$$
+
+   ::: {.callout-tip title="Vink" collapse=true}
+   Brug identiteten $\frac{\partial^2 G}{\partial x_j\partial x_k} = \frac{\partial^2 G}{\partial x_k\partial x_j}$.
+   :::
+   
+1. Vis, at hvis $\mathbf{H}\colon\mathbb{R}^3\rightarrow\mathbb{R}^3$ er et glat vektorfelt, så gælder
+$$\mathrm{div}\big(\mathrm{curl}(\mathbf{H})\big)(\mathbf{x}) = \mathbf{0}.$$
+
+1. Lad til sidst $\mathbf{F}$ være et glat vektorfelt, og definér Laplace-operatoren på et vektorfelt ved
+$$\Delta\mathbf{F} = \frac{\partial^2\mathbf{F}}{\partial x_1^2} + \frac{\partial^2\mathbf{F}}{\partial x_2^2} + \frac{\partial^2\mathbf{F}}{\partial x_3^2}.$$
+
+   Vi ønsker at tjekke, at
+$$\mathrm{curl}\big(\mathrm{curl}(\mathbf{F})\big) = \nabla\big(\mathrm{div}(\mathbf{F})\big) - \Delta\mathbf{F}.$${#eq-curlcurl}
+Dette kan gøres i hånden, men bliver hurtigt uoverskueligt, så I skal i stedet udnytte koden herunder. Der mangler nogle udtryk `curl(f)` og `gradient(f)` (markeret med `???`). Kig på syntaksen i de andre linjer og udfyld det, der mangler.
+Kør derefter koden for at tjekke, at @eq-curlcurl holder.
+
+```{pyodide-python}
+import sympy
+
+## Definer vores variable og funktionen F
+x1, x2, x3 = sympy.symbols("x_1 x_2 x_3", real=True)
+F1 = sympy.Function("E_1")(x1, x2, x3)
+F2 = sympy.Function("E_2")(x1, x2, x3)
+F3 = sympy.Function("E_3")(x1, x2, x3)
+F = [F1, F2, F3]
+
+## Definer divergensen. Her antages f at være en vektor med tre indgange.
+## Bemærk, at Python indekserer fra 0, så første indgang i f er f[0].
+def div(f):
+	return sympy.Derivative(f[0], x1) + sympy.Derivative(f[1], x2) + sympy.Derivative(f[2], x3)
+
+## Definer rotationen. Igen antages f at være en vektor med tre indgange.
+def curl(f):
+	return sympy.Matrix([
+		sympy.Derivative(f[2], x2) - sympy.Derivative(f[1], x3),
+		???
+		sympy.Derivative(f[1], x1) - sympy.Derivative(f[0], x2)
+	])
+
+## Definer gradienten. Bemærk, at f her skal være en skalarfunktion
+## (altså at f skal have én indgang).
+def gradient(f):
+	return sympy.Matrix([
+		sympy.Derivative(f, x1),
+		???,
+		???
+	])
+
+## Definer Laplace-operatoren. Igen antages f at være en vektor med tre indgange.
+## Notationen (x1,2) betyder, at der skal differentieres mht. x1 to gange.
+def Laplace(f):
+	return sympy.Matrix([
+		sympy.Derivative(f[0], (x1,2)) + sympy.Derivative(f[0], (x2,2)) + sympy.Derivative(f[0], (x3,2)),
+		sympy.Derivative(f[1], (x1,2)) + sympy.Derivative(f[1], (x2,2)) + sympy.Derivative(f[1], (x3,2)),
+		sympy.Derivative(f[2], (x1,2)) + sympy.Derivative(f[2], (x2,2)) + sympy.Derivative(f[2], (x3,2))
+	])
+
+lhs = curl(curl(F))
+rhs = gradient(div(F))-Laplace(F)
+
+## Sympy har ikke nødvendigvis samlet de afledede.
+## Vi kan gøre dette med simplify:
+print("Venstresiden før simplificering:")
+sympy.pprint(lhs)
+lhs = lhs.applyfunc(sympy.simplify)
+rhs = rhs.applyfunc(sympy.simplify)
+print("\nVenstresiden efter simplificering:")
+sympy.pprint(lhs)
+
+print("\nForskel mellem venstre- og højresiden:")
+sympy.pprint(lhs-rhs)
+```
+
+::: {.callout-warning}
+Husk at gemme jeres ændrede Python-kode i en anden fil. Hvis I lukker denne HTML-fil og åbner den igen, vil den vise den oprindelige kode med <code>???</code>.
+:::
+
+## Delopgave 2
+Vi lader nu feltet være tidsafhængigt. Via nedenstående opgaver skal I så konstruere oscillerende løsninger til de tidsafhængige Maxwell-ligninger i et vakuum.
+
+(@) Brug Faradays og Ampères love til at vise, at
+$$\mathrm{curl}\big(\mathrm{curl}(\mathbf{E})\big)(\mathbf{x}, t)
+= -\frac{\partial}{\partial t}\mathrm{curl}(\mathbf{B})(\mathbf{x}, t)
+= -\frac{1}{c^2}\frac{\partial^2\mathbf{E}}{\partial t^2}(\mathbf{x}, t).
+$${#eq-curlcurl2}
+
+(@) Kombiner @eq-curlcurl, @eq-curlcurl2 og Gauss' lov til at vise, at $\mathbf{E}(\mathbf{x},t)$ løser *bølgeligningen*
+$$
+\Delta\mathbf{E}(\mathbf{x}, t)
+= \frac{1}{c^2}\frac{\partial^2\mathbf{E}}{\partial t^2}(\mathbf{x}, t).
+$${#eq-wave}
+
+Lad nu $\mathbf{k}\in\mathbb{R}^3$ være en *bølgevektor* (en arbitrær konstant vektor), og definer *bølgefrekvensen* $\omega=c\lvert\mathbf{k}\rvert$.
+Antag desuden, at $\mathcal{E}\in\mathbb{R}^3$ er en konstant vektor som står vinkelret på $\mathbf{k}$ &ndash; altså $\mathcal{E}\cdot\mathbf{k}=0$.
+
+Vi betragter nu funktionen
+$$
+\mathbf{E}_{\mathrm{osc}}(\mathbf{x}, t) = \mathcal{E}\cos(\omega t-\mathbf{k}\cdot\mathbf{x})
+$$
+og viser, at den løser Maxwell-ligningerne.
+
+(@) Tjek, at $\mathbf{E}_{\mathrm{osc}}(\mathbf{x}, t)$ løser bølgeligningen @eq-wave.
+
+    ::: {.callout-tip title="Vink" collapse=true}
+	Vis, at $\Delta\cos(\omega t-\mathbf{k}\cdot\mathbf{x}) = -\lvert\mathbf{k}\rvert^2 \cos(\omega t - \mathbf{k}\cdot\mathbf{x})$.
+	:::
+
+(@) Vis, at $\mathrm{div}(\mathbf{E}_{\mathrm{osc}})(\mathbf{x}, t) = (\mathcal{E}\cdot\mathbf{k})\sin(\omega t - \mathbf{k}\cdot\mathbf{x})$, og konkluder deraf, at $\mathbf{E}_{\mathrm{osc}}(\mathbf{x}, t)$ opfylder Gauss' lov.
+
+(@) Vis, at $\mathrm{curl}(\mathbf{E}_{\mathrm{osc}})(\mathbf{x}, t) = (\mathbf{k}\times\mathcal{E})\sin(\omega t - \mathbf{k}\cdot\mathbf{x})$.
+
+(@) Hvis vi lader $\mathcal{B}=\omega^{-1}\mathbf{k}\times\mathcal{E}$, kan vi definere funktionen
+$$
+\mathbf{B}_{\mathrm{osc}}(\mathbf{x}, t) = \mathcal{B}\cos(\omega t - \mathbf{k}\cdot\mathbf{x}).
+$$
+Ved at lave udregninger som ovenfor, kan man vise (men I behøver ikke gøre det), at
+
+    - $\mathrm{div}(\mathbf{B}_{\mathrm{osc}})(\mathbf{x}, t) = (\mathcal{B}\cdot\mathbf{k})\sin(\omega t - \mathbf{k}\cdot\mathbf{x})$
+	- $\mathrm{curl}(\mathbf{B}_{\mathrm{osc}})(\mathbf{x}, t) = (\mathbf{k}\times\mathcal{B})\sin(\omega t-\mathbf{k}\cdot\mathbf{x})$
+	
+	Brug disse egenskaber sammen med observationerne om $\mathbf{E}_{\mathrm{osc}}$ til at vise, at $\mathbf{E}_{\mathrm{osc}}$ og $\mathbf{B}_{\mathrm{osc}}$ danner løsninger til Maxwell-ligningerne.
+	
+	::: {.callout-tip title="Vink" collapse=true}
+	Brug, at $\mathbf{k}$, $\mathcal{E}$ og $\mathcal{B}$ alle er ortogonale, samt at $\mathbf{k}\times\mathcal{B}=-\frac{\omega}{c^2}\mathcal{E}$.
+	:::
+
+<!-- Local Variables: -->
+<!-- ispell-local-dictionary: "da_DK" -->
+<!-- End: -->
