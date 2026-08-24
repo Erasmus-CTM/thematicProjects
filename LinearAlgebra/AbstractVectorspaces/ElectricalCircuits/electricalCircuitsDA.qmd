@@ -1,0 +1,282 @@
+---
+title: "Kredsløb"
+lang: da
+format:
+  html:
+    embed-resources: true
+    code-fold: true
+    include-after-body:
+      ../../../aux/footerDA.html
+filters:
+ - pyodide
+crossref:
+  sec-prefix: Delopgave
+---
+
+# Introduktion{-}
+Strømmene $I_1(t)$ og $I_2(t)$ i kredsløbet på @fig-simpleCircuit kan beskrives ved et system af koblede differentialligninger:
+$$\begin{align*}
+  I_1'(t) &=-5I_1(t)+2I_2(t)+\frac{V_1}{2}\\[0.5em]
+  I_2'(t) &=2I_1(t)-2I_2(t)+\frac{V_2}{2}.
+\end{align*}$$
+Ved at løse systemet, kan vi bestemme $I_1(t)$ og $I_2(t)$, og den sidste strøm findes ved Kirchoffs strømlov $I_3=I_1-I_2$. Differentialligningssystemet kan omskrives til matrixformen
+$$\left[
+    \begin{array}{c}
+      I_1'\\
+      I_2'
+    \end{array}
+  \right]=
+  \left[
+    \begin{array}{rr}
+      -5 & 2\\
+      2  & -2
+    \end{array}
+  \right]\left[
+    \begin{array}{c}
+      I_1\\
+      I_2
+    \end{array}
+  \right]+
+  \frac{1}{2}
+  \left[
+    \begin{array}{c}
+      V_1\\
+      V_2
+    \end{array}
+  \right],$${#eq-matrixSystem}
+hvor vi har undladt $t$ i notationen.
+
+I denne workshop vil vi anvende lineær algebra til at løse sådanne _systemer af inhomogene sædvanlige differentialligninger_. Vi bruger, at løsningsmængden til $y'(t)=ay(t)+b$ er givet ved
+$$y(t)=c e^{at}-\frac{b}{a},$$
+hvor $c$ er et reelt tal. Dette resultat kan I tage for givet.
+
+![Et kredsløb med to spændingskilder, to resistorer og to spoler.](circuit.svg){width=75% #fig-simpleCircuit}
+
+
+# Delopgave 1{#sec-opg1}
+1. Lad $A$ være en $2\times 2$-matrix givet ved
+$$A=\left[
+      \begin{array}{rr}
+        -5 & 2\\
+        2 & -2
+      \end{array}
+    \right],$$
+og definer vektorerne $I(t)=\left[
+    \begin{array}{c}
+      I_1\\ I_2
+    \end{array}
+  \right]$ og $V=\left[
+    \begin{array}{c}
+      V_1\\ V_2
+    \end{array}
+  \right]$.
+
+   Forklar, at systemet i @eq-matrixSystem er ækvivalent med $I'(t)=AI(t)+\frac{1}{2}V$.
+
+1. Vis at $A$ er ortogonalt diagonaliserbar; altså, at $A=QDQ^T$, hvor $D$ er en diagonalmatrix, og $Q$ er en ortogonalmatrix. Vis, at disse matricer kan vælges til
+$$D=\left[
+      \begin{array}{cc}
+        -6 & 0\\
+        0 & -1
+      \end{array}
+    \right]
+    \quad\text{og}\quad
+    Q=\frac{1}{\sqrt{5}}\left[
+      \begin{array}{rr}
+        -2 & 1\\
+        1 & 2
+      \end{array}
+    \right].$$
+
+1. Omskriv nu systemet @eq-matrixSystem til
+$$(Q^TI)'=DQ^TI+\frac{1}{2}Q^TV,$$
+og lad $Y=\left[
+    \begin{array}{c}
+      y_1\\ y_2
+    \end{array}
+  \right]=Q^TI$.
+
+1. Løs systemet $Y'=DY+\frac{1}{2}Q^TV$, og vis, at
+$$\renewcommand{\arraystretch}{1.4}
+    \left[
+      \begin{array}{c}
+        y_1(t)\\ y_2(t)
+      \end{array}
+    \right]=
+    \left[
+      \begin{array}{c}
+        c_1e^{-6t}\\
+        c_2e^{-t}\\
+      \end{array}
+    \right]+
+    \frac{1}{12\sqrt{5}}
+    \left[
+      \begin{array}{c}
+        -2V_1+V_2\\
+        6(V_1+2V_2)\\
+      \end{array}
+    \right],$${#eq-solution}
+  hvor $c_1$ og $c_2$ er reelle tal.
+
+1. Find nu løsningen til det oprindelige problem ved at indse, at $I(t)=QY(t)$. Find desuden de konstanter $c_1$ og $c_2$, som opfylder _begyndelsesværdibetingelserne_
+$$I(0)=\left[
+      \begin{array}{c}
+        0\\ 0
+      \end{array}
+    \right].$$
+	
+   :::{.callout-tip title="Vink" collapse=true}
+   For at finde $c_1$ og $c_2$ med få udregninger, kan man løse $Y(0)=[0,\,0]^T$, og derefter argumentere for, at $I(0)=[0,\,0]^T$ hvis og kun hvis $Y(0)=[0,\,0]^T$.
+   :::
+
+
+# Delopgave 2{#sec-opg2}
+I denne delopgave undersøger vi løsningerne i @eq-solution med udgangspunkt i vektorrummet
+$$V=\left\{\left[
+        \begin{array}{c}
+            f\\
+            g 
+        \end{array}
+    \right] : \text{$f$ og $g$ er reelle funktioner}\right\},$$
+hvor vektoraddition og skalarmultiplikation er defineret ved
+$$\left[\begin{array}{c} f_1\\g_1 \end{array}\right]+
+    \left[\begin{array}{c} f_2\\g_2 \end{array}\right]=
+    \left[\begin{array}{c} f_1+f_2\\g_1+g_2 \end{array}\right]
+    \quad\text{og}\quad
+    c\left[\begin{array}{c} f\\g \end{array}\right]=\left[\begin{array}{c} cf\\cg \end{array}\right].$$
+
+I behøver ikke vise, at dette er et vektorrum.
+
+Herunder bruger vi notationen
+$$\mathbf{b}_1(t)=\left[
+    \begin{array}{c}
+      e^{-6t} \\
+      0 
+    \end{array}
+  \right],\quad
+  \mathbf{b}_2(t)=\left[
+    \begin{array}{c}
+      0 \\
+      e^{-t} 
+    \end{array}
+  \right],\quad
+  \boldsymbol\Delta=\frac{1}{12\sqrt{5}}\left[
+    \begin{array}{c}
+      -2V_1+V_2 \\
+      6(V_1+V_2)
+    \end{array}
+  \right]$$
+  
+1. Sæt først $V_1=V_2=0$. Argumenter i dette tilfælde for, at løsningerne på formen @eq-solution netop er $\mathrm{Span}\{\mathbf{b}_1,\mathbf{b}_2\}$.
+
+1. Forklar, hvorfor $\mathbf{b}_1$ og $\mathbf{b}_2$ er lineært uafhængige.
+
+1. Hvad fortæller de ovenstående opgaver om $\{\mathbf{b}_1,\mathbf{b}_2\}$ og om løsningsmængden til @eq-matrixSystem i tilfældet $V_1=V_2=0$?
+
+1. Hvor mange begyndelsesværdibetingelser skal der _som minimum_ til for at fastlægge en løsning entydigt (når $V_1=V_2=0$)?
+
+1. Er løsningsmængden til @eq-matrixSystem et underrum af $V$, hvis $V_1$ og $V_2$ ikke begge er $0$ (altså, hvis $\boldsymbol\Delta\neq\mathbf{0}$)?
+
+# Delopgave 3{#sec-opg3}
+Kodeblokken nedenfor definerer en Python-funktion, der plotter de tre strømme $I_1$, $I_2$ og $I_3$, når spændingsfaldene $V_1,V_2$ og konstanterne $c_1,c_2$ er givet; altså, når vi har løst et begyndelsesværdiproblem. Når I har kørt kodeblokken, kan funktionen køres i de efterfølgende kodeblokke som <code>plotSolution([V1,V2], [c1,c2])</code>.
+
+```{pyodide-python}
+#| read-only: true
+import sympy
+import numpy
+import matplotlib.pyplot as plt
+
+def plotSolution(V, C, endTime=None):
+    """
+    Plot the solution to the differential equations describing the
+    electrical currents in the given circuit.
+    
+    Args:
+    	- V = [V1, V2]: Input voltages
+    	- C = [c1, c2]: Constants in solution
+    	- endTime: Optional input determining the plotting interval.
+    	  The value None (default) computes the endTime automatically.
+    """
+    # Define matrices Q and Y symbolically
+    t = sympy.Symbol("t")
+    Q = 1/sympy.sqrt(5) * sympy.Matrix([
+        [-2, 1],
+        [1,  2]
+    ])
+
+    Y = sympy.Matrix([
+        C[0]*sympy.exp(-6*t)+1/(12*sympy.sqrt(5))*(-2*V[0]+V[1]),
+        C[1]*sympy.exp(-t)+1/(2*sympy.sqrt(5))*(V[0]+2*V[1])
+    ])
+
+    I = sympy.Matrix([[1, 0], [0, 1], [1, -1]])*Q*Y
+
+    iFunc = sympy.lambdify(t, I) # Turn I into a function that numpy can use
+
+    # Auto-compute endtime if not given
+    if endTime==None:
+        threshold = 1e-1
+
+        tmp1 = -numpy.log(threshold/numpy.abs(C[0]))/6
+        if C[0]==0:
+            tmp1 = 1
+
+        tmp2 = -numpy.log(threshold/numpy.abs(C[1]))
+        if C[1]==0:
+            tmp2 = 1
+
+        endTime = numpy.ceil(numpy.max([tmp1, tmp2]))
+
+    # Sample I at regularly spaced points between 0 and endTime
+    samples = numpy.arange(0, endTime, step=1e-2)
+    iVals = iFunc(samples)
+
+    # Create plot, set limits, and show legend
+    fig, ax = plt.subplots()
+    ax.plot(samples, iVals[0].T, label="$I_1$")
+    ax.plot(samples, iVals[1].T, label="$I_2$")
+    ax.plot(samples, iVals[2].T, label="$I_3$")
+
+    ax.set_xlim(left=0)
+    ax.set_xlabel("t")
+    ax.set_ylabel("Current")
+    ax.legend()
+    
+    plt.show()
+```
+
+1. Plot først løsningen fra sidste punkt af @sec-opg1, når $V_1=5$ og $V_2=20$.
+
+   ```{pyodide-python}
+plotSolution([5, 20], ???) ## Indsæt c1 og c2 her
+   ```
+   
+1. Brug stadig $V_1=5$ og $V_2=20$, og vis at løsningen til begyndelsesværdiproblemet
+$$I(0)=\left[
+      \begin{array}{c}
+        10\\
+        5
+      \end{array}
+    \right]$$
+	fås ved $c_1=\frac{-95}{6\sqrt{5}}$ og $c_2=\frac{-\sqrt{5}}{2}$. Plot løsningen.
+	
+   ```{pyodide-python}
+plotSolution([5, 20], ???) ## Indsæt c1 og c2 her
+   ```
+   
+1. Kan vi sige noget generelt om, hvordan strømmene $I_1$, $I_2$ og $I_3$ udvikler sig over tid i tilfældene fra de to plots?
+
+1. Hvis $V_1=V_2=0$, er løsningen til begyndelsesværdiproblemet
+$$I(0)=\frac{1}{6}\left[
+      \begin{array}{c}
+        25\\
+        55
+      \end{array}
+    \right].$$
+  givet ved $c_1=\frac{5}{6\sqrt{5}}$ og $c_2=\frac{135}{6\sqrt{5}}$.
+  
+   Hvad repræsenterer dette begyndelsesværdiproblem og dets løsningen i forhold til kredsløbet?
+   
+   :::{.callout-tip title="Vink" collapse=true}
+   Til tiden $t=0$ har vi strøm i alle tre ledninger, men for $t\geq 0$ er spændingskilderne slået fra. Hvad kunne man forestille sig om spændingskilderne for $t<0$?
+   :::
