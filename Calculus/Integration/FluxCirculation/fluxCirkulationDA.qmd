@@ -1,0 +1,162 @@
+---
+title: "Flux og cirkulation"
+lang: da
+format:
+  html:
+    embed-resources: true
+    code-fold: true
+    include-after-body:
+      ../../../aux/footerDA.html
+filters:
+ - pyodide
+crossref:
+  sec-prefix: Delopgave
+---
+
+# Introduktion{-}
+Denne workshop handler om integration af funktioner af flere variable i forbindelse med én af Maxwells ligninger: Ampères lov.  Ampères lov beskriver sammenhængen mellem en givet _stationær_ -- altså tidsuafhængig -- elektrisk strøm af ladede partikler og det _statiske_  magnetiske felt genereret af den. 
+
+Vi skal antage, at både den magnetiske fluxtæthed $\mathbf{B}(\mathbf{r},t)$ og den elektriske strømtæthed $\mathbf{J}(\mathbf{r},t)$ er uafhængige af tidsvariablen $t$ og kun afhængige af de rumlige variable $\mathbf{r}=[x,y,z]^\top=x\mathbf{i} +y \mathbf{j} +z\mathbf{k}$.
+Den &lsquo;mikroskopiske&rsquo; udgave af Ampères lov er
+$$\mathrm{curl}(\mathbf{B})(\mathbf{r})=\mu_0 \mathbf{J}(\mathbf{r}),$${#eq-juli12}
+hvor $\mu_0$ står for vakuumets magnetiske permeabilitet. 
+
+Den anden vigtig ligning som den magnetiske fluxtæthed skal opfylde er Gauss' ligning: 
+$$\mathrm{div}(\mathbf{B})(\mathbf{r})=0.$${#eq-juli15}
+
+Man kan vise, at i det statiske tilfælde er Ampères og Gauss' love nok til at bestemme $\mathbf{B}$  _op til en konstant vektor_.
+Derfor gælder, at hvis man som en ekstra betingelse indfører, at længden af $\mathbf{B}$ bliver mindre og mindre, når man går væk fra det område hvor strømtætheden $\mathbf{J}$ er koncentreret, så er $\mathbf{B}$ entydigt bestemt af de to ligninger.
+Det betyder også, at hvis man kan gætte sig frem (ved at udnytte eventuelle symmetrier) til et vektorfelt, som både løser de to ligninger og &ldquo;går mod nul mod uendelig&rdquo;, så må det være den rigtige, entydige løsning. 
+
+I denne workshop skal vi antage, at strømtætheden $\mathbf{J}(\mathbf{r})$ er parallel med $z$-aksen og kan skrives som $J(x,y) \mathbf{k}$, hvor skalarfunktionen $J$ er uafhængig af $z$-variablen.
+Den modellerer en elektrisk strøm i en uendeligt lang ledning, som er parallel med $z$-aksen.
+Derfor er det naturligt at forvente, at $\mathbf{B}$ også kun er afhængig af $x$ og $y$ og kan skrives som
+$$\mathbf{B}(\mathbf{r}) =B_1(x,y)\mathbf{i} +B_2(x,y)\mathbf{j},\quad \text{hvor}\quad \mathrm{curl}(\mathbf{B})(\mathbf{r})=\left (\frac{\partial B_2}{\partial x}-\frac{\partial B_1}{\partial y}\right )\mathbf{k}.$${#eq-juli14}
+
+I dette tilfælde har vi reduceret problemet til at finde to skalarfunktioner $B_1$ og $B_2$ som opfylder de to lignigner
+$$\frac{\partial B_2}{\partial x}-\frac{\partial B_1}{\partial y}=\mu_0 J,\quad \mathrm{div}(\mathbf{B})=\frac{\partial B_1}{\partial x}+\frac{\partial B_2}{\partial y}=0.$${#eq-juli13}
+
+Hvis $\Omega$ betegner et &lsquo;pænt&rsquo; område i $xy$-planen, er den elektriske strøm som flyder gennem tværsnittet $\Omega$ givet ved
+$$I_\Omega=\int_\Omega J(x,y)dA.$${#eq-juli16}
+
+Lad os betegne randen af $\Omega$ med $\partial\Omega$.
+Vi antager, at den består af en &lsquo;pæn&rsquo; lukket kurve som kan parameterfremstilles ved hjælp af en (stykkevis kontinuert differentiabel) funktion $\gamma\colon [0,1]\rightarrow \mathbb{R}^3$, hvor $\gamma(t)=\gamma_1(t)\mathbf{i} +\gamma_2(t)\mathbf{j}$ og $\gamma(0)=\gamma(1)$. Vi antager desuden, at $\gamma$ gennemløber kurven præcist én gang mod uret, når $t$ varierer fra $0$ til $1$.
+
+Et klassisk matematisk resultat som vi skal anvende i @sec-opg2 er Stokes' formel, der under vores betingelser kan formuleres som
+$$\int_\Omega \mathrm{curl}(\mathbf{B})(\mathbf{r})\cdot \mathbf{k}\;  dA= \int_{\partial \Omega} \mathbf{B}\cdot d\gamma =\int_0^1 \mathbf{B}(\gamma(t))\cdot \gamma'(t)\; dt.$$
+
+For $\gamma(t)=\gamma_1(t)\mathbf{i} +\gamma_2(t)\mathbf{j}$ og $\gamma'(t)=\gamma_1'(t)\mathbf{i} +\gamma_2'(t)\mathbf{j}$ kan dette omskrives til
+$$\mu_0 \int_\Omega J(x,y)\; dA= \mu_0I_\Omega=\int_0^1 \Big ( B_1(\gamma(t))\gamma_1'(t)+ B_2(\gamma(t))\gamma_2'(t)\Big )dt.$${#eq-juli18}
+
+# Delopgave 1{#sec-opg1}
+Vi ser først på beregningen af den elektriske strøm, når man kender strømtætheden og ledningens tværsnit.
+
+1. Lad $\Omega$ være en kvartcirkel som i @fig-plot og lad $J(x,y)=xy$. Vis, at $I_\Omega=1/8$.
+
+   ![Tværsnittet $\Omega$.](figure.svg){#fig-plot width=50%}
+   
+   :::{.callout-tip title="Vink" collapse=true}
+   Brug polære koordinater og formlen $\sin(2\theta)=2\sin(\theta)\cos(\theta)$. 
+   :::
+   
+1. Lad $\Omega_R$ være en disk med centrum i Origo og radius $R$. Antag, at $$J(x,y)=\frac{1}{1+x^2+y^2},\quad x^2+y^2\leq R^2.$$
+
+   Vis, at $I_{\Omega_R}= \pi \ln (1+R^2)$. 
+
+
+1. Lad $\Omega$ være en trekant med hjørnerne $A=\mathbf{0}$, $B=\mathbf{i}$ og $C=3\mathbf{j}$. Lad $J(x,y)=e^{3x+y}$. Vis, at 
+$$I_\Omega=\int_0^1 \int_0^{3-3x} e^{3x} e^y dy\; dx= \int_0^3 \int_0^{1-y/3} e^y e^{3x} dx\; dy=\frac{2e^3+1}{3}.$$
+
+# Delopgave 2{#sec-opg2}
+Vi vil nu bestemme den magnetiske fluxtæthed ved hjælp af Stokes' formel i en cylindrisk symmetri.
+Ligesom i punkt&nbsp;2 ovenfor vil vi betragte en ledning med disk-formet tværsnit med radius $R$, og vi genbruger notationen fra den tidligere opgave. Strømtætheden $J$  er lig med nul udenfor $\Omega_R$.
+
+1. Lad $\rho(x,y)=\sqrt{x^2+y^2}$. Vis, at vi for alle punkter bortset fra Origo har
+$$\frac{\partial \rho}{\partial x}=\frac{x}{\rho},\quad \frac{\partial \rho}{\partial y}=\frac{y}{\rho}.$$
+
+1. Antag, at $F\colon\mathbb{R}\to \mathbb{R}$ er en vilkårlig differentiabel funktion. Vis, at vektorfeltet 
+$$\mathbf{B}(x,y)= -F(\rho(x,y))\; y\; \mathbf{i} +F(\rho(x,y))\; x\; \mathbf{j}$$
+opfylder Gauss' ligning @eq-juli15.
+
+   :::{.callout-tip title="Vink" collapse=true}
+   Brug kædereglen for funktioner af flere variable og vis at 
+   $$\frac{\partial B_1}{\partial x}(x,y)=-F'(\rho(x,y)) xy/\rho(x,y),\quad \frac{\partial B_2}{\partial y}(x,y)=F'(\rho(x,y)) xy/\rho(x,y). $$
+   :::
+
+1. Lad $\Omega_\rho$ være en disk med centrum i Origo og radius $\rho>0$.
+Vis, at randen $\partial\Omega_\rho$ kan parameterfremstiles som 
+$$\gamma_\rho(t)= \rho \cos(2\pi t)\; \mathbf{i} + \rho \sin(2\pi t)\; \mathbf{j},\quad 0\leq t\leq 1,$$
+og 
+$$\mathbf{B}(\gamma_\rho(t))= -F(\rho) \rho \sin(2\pi t)\mathbf{i} + F(\rho) \rho \cos(2\pi t)\mathbf{j}. $$
+
+1. Vis, at $\mathbf{B}(\gamma_\rho(t))\cdot \gamma_\rho(t)=0$ og
+$$\mathbf{B}(\gamma_\rho(t))\cdot \gamma_\rho'(t)=2\pi F(\rho) \rho^2.$$
+
+   Brug derefter formlen @eq-juli18 med $\Omega$ erstattet med $\Omega_\rho$ og punkt&nbsp;2 fra den tidligere delopgave til at vise, at 
+$$F(\rho)=\frac{\mu_0\ln(1+\rho^2)}{2\rho^2},\quad 0<\rho<R$$
+og 
+$$\mathbf{B}(x,y)= -\frac{\mu_0y\ln(1+x^2+y^2)}{2(x^2+y^2)} \mathbf{i} +\frac{\mu_0x\ln(1+x^2+y^2)}{2(x^2+y^2)} \mathbf{j}\;\; \text{når} \;\; x^2+y^2<R^2.$$
+
+1. Gentag det samme argument for $\rho> R$ men husk, at strømtætheden $J$ er lig med nul udenfor $\Omega_R$. Vis, at 
+$$\mathbf{B}(x,y)= -\frac{\mu_0y\ln(1+R^2)}{2(x^2+y^2)} \mathbf{i} +\frac{\mu_0x\ln(1+R^2)}{2(x^2+y^2)} \mathbf{j}$$
+og 
+$$\Vert\mathbf{B}(x,y)\Vert=\frac{\mu_0\ln(1+R^2)}{2\sqrt{x^2+y^2}}=\frac{\mu_0\; I_{\Omega_R}}{2\pi \sqrt{x^2+y^2}}\;\; \text{når} \;\; x^2+y^2>R^2.$$
+
+# Delopgave 3{#sec-opg3}
+I den sidste opgave vil vi bruge Python til at lave numerisk integration af funktioner af to variable.
+Vi tager udgangspunkt i en situation i stil med @fig-plot, men hvor randen nu afhænger af en parameter $a>0$.
+Mere præcist lader vi vinkelen $\theta$ løbe mellem $0$ og $\theta_{\mathrm{max}}\leq\pi/2$, mens radius nu varierer fra $r_{\mathrm{min}}=0$ (svarende til Origo) og $r_{\mathrm{max}}(\theta)=a\sin^2(\theta) + \cos^2(\theta)$.
+
+1. Forklar, at vi for $a=1$ og $\theta_{\mathrm{max}}=\pi/2$ opnår samme område som i @sec-opg1, punkt&nbsp;1.
+
+   Brug scriptet til at tjekke, at værdien af integralet bliver det samme som tidligere.
+
+1. Afprøv forskellige værdier af $a>1$, og formuler en hypotese om, hvad der sker med integralet, når $a$ vokser. Kan I argumentere for, at jeres hypotese er sand?
+
+```{pyodide-python}
+import numpy
+import matplotlib.pyplot as plt
+from scipy.integrate import nquad
+
+## Definer parametre samt rMax som funktion af theta
+thetaMax = numpy.pi/2
+a = 1
+
+def rMax(theta):
+	return a * numpy.sin(theta)**2 + numpy.cos(theta)**2
+
+## Evaluer rMax for 100 ligeligt fordelte værdier af theta
+thetas = numpy.linspace(0, thetaMax, num=100)
+rs = [ rMax(theta) for theta in thetas ]
+
+## Plot integrationsområdet
+plt.close('all')
+fig, ax = plt.subplots(subplot_kw=dict(projection="polar"))
+ax.set_thetamax(max(90, thetaMax*180/numpy.pi))
+ax.plot(thetas, rs)
+plt.show()
+
+## Definer strømtætheden i rektangulære samt polære
+## koordinater (inkl. integrationsfaktoren r)
+def J(x, y):
+	return x*y
+
+def JPolar(r, theta):
+	return r*J(r*numpy.cos(theta), r*numpy.sin(theta))
+
+## Definer de indre integrationsgrænser som funktion af theta
+def innerLimits(theta):
+	return [0, rMax(theta)]
+
+## nquad beregner itererede integraler numerisk.
+## Integrationsrækkefølgen svarer til rækkefølgen af
+## parametre i JPolar, så r er det indre integrale,
+## mens theta er det ydre.
+integral = nquad(JPolar, [innerLimits, [0, thetaMax]])[0]
+print("Værdi af integrale: {:.4f}".format(integral))
+```
+
+
+<!-- Local Variables: -->
+<!-- ispell-local-dictionary: "da_DK" -->
+<!-- End: -->
