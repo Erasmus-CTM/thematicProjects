@@ -1,0 +1,163 @@
+---
+title: "Kredsløb og Laplace-transformen"
+lang: da
+format:
+  html:
+    embed-resources: true
+    code-fold: true
+    include-after-body:
+      ../../../aux/footerDA.html
+filters:
+ - pyodide
+crossref:
+  sec-prefix: Delopgave
+---
+
+:::{.callout-note}
+Denne opgave er en fortsættelse af opgaven om RLC-kredsløb. Vi genopfrisker først nogle begreber og definitioner derfra.
+:::
+
+## Introduktion{-}
+Vi betragter igen et RLC-kredsløb som på @fig-rlc, hvor vi har en modstand med værdi $R$, en spole med selvinduktion $L$ og en kondensator med kapacitet $C$. Disse komponenter er serieforbundne og er koblet op til en tidsafhængig ekstern spændingskilde $V_e(t)$.
+
+![Et simpelt RLC-kredsløb](circuit.svg){width=50% #fig-rlc}
+
+Ligesom tidligere betegner vi ladningen i kondensatoren med $Q(t)$, og dermed er strømmen givet med $I(t)=Q'(t)$. Ved at bruge Kirchhoffs spændingslov og differentiere begge sider af den resulterende differentialligning, opnås ligningen
+$$LI''(t)+RI'(t)+\frac{I(t)}{C}=V_{\mathrm{e}}'(t).$${#eq-diffEq}
+
+Nu afviger vores fremgangsmetode så fra den tidligere workshop, idet vi indfører notationerne
+$$\zeta = \frac{R}{2}\sqrt{\frac{C}{L}}\quad\text{og}\quad \omega_0 = \frac{1}{\sqrt{LC}}$$
+
+Dermed kan @eq-diffEq omskrives til
+$$  I''(t)+2\zeta\omega_0 I'(t)+\omega_0^2 I(t)= \frac{1}{L} V_{\rm e}'(t).$${#eq-omskrevet}
+
+
+
+## Delopgave 1{#sec-opg1}
+Vi ser først på den homogene ligning &ndash; altså $V_e'(t)=0$ &ndash; som svarer til en konstant ekstern spæning. Det vil sige, at vi betragter ligningen
+$$  I''(t)+2\zeta\omega_0 I'(t)+\omega_0^2 I(t)= 0$${#eq-homogen}
+med givne begyndelsesværdier $I(0)$ og $I'(0)$.
+
+1. Betegn Laplace-transformen af $I(t)$ med $i(s)$ og anvend så Laplace-transformen på begge sider af @eq-homogen for at vise, at
+$$s^2\,i(s)-[s\,I(0)+I'(0)]+2\zeta\omega_0\bigl(s\,i(s)-I(0)\bigr)
+    +\omega_0^2i(s)=0.$$
+	
+   Isolér derefter $i(s)$ for at opnå
+   $$i(s)=\frac{(s+2\zeta\omega_0)I(0)+I'(0)}{s^2+2\zeta\omega_0s
+        +\omega_0^2}.$$
+		
+1. Vis, at
+$$s^2+2\zeta\omega_0s+\omega_0^2=(s+\zeta\omega_0)^2
+    +(1-\zeta^2)\omega_0^2.$${#eq-karPoly}
+	
+1. Antag først, at $\zeta=1$ og $I(0)=0$. Vis, at der under disse antagelser gælder
+$$i(s) = \frac{I'(0)}{(s+\omega_0)^2}.$$
+
+   Brug så den inverse Laplace-transform til vise, at begyndelsesværdiproblemet har løsning
+   $$ I(t) = I'(0) te^{-\omega_0 t}.$$
+   
+1. Antag nu i stedet, at $\zeta=1$ og $I'(0)=0$. Vis, at vi da har
+$$ i(s)=\frac{\omega_0I(0)}{(s+\omega_0)^2}+
+    \frac{I(0)}{(s+\omega_0)}$$
+	og
+    $$I(t)=I(0)\big(\omega_0\,te^{-\omega_0t}+e^{-\omega_0t} \big).$$
+
+## Delopgave 2
+Vi betragter nu det inhomogene tilfælde af @eq-omskrevet med $V_e(t)=-e^{-t}$. Vi antager desuden $R=0$ (hvilket medfører $\zeta=0$), $I(0)=0$ og $I'(0)=0$. Under disse antagelser kan begyndelsesværdiproblemet skrives som
+$$I''(t) + \omega_0^2 I(t) = e^{-t},\quad I(0)=0, I'(t)=0.$${#eq-inhomogen}
+
+1. Anvend Laplace-transformen på @eq-inhomogen til at opnå
+$$i(s)=\frac{1}{(s+1)(s^2+\omega_0^2)}.$$
+
+1. Vis, at vi har følgende stambrøksdekomposition^[En stambrøksdekomposition kaldes *partial fraction decomposition* på engelsk.].
+$$\frac{1}{(s+1)(s^2+\omega_0^2)}=\frac{1}{1+\omega_0^2}
+    \Big[
+    \frac{-s+1}{s^2+\omega_0^2}+\frac{1}{s+1}
+    \Big]$${#eq-stambrok}
+
+   :::{.callout-tip title="Vink" collapse=true}
+   Antag, at der eksisterer konstanter $A$, $B_1$ og $B_2$, sådan at
+   $$\frac{1}{(s+1)(s^2+\omega_0^2)}=\frac{A}{s+1}+\frac{B_1s+B_2}{s^2+\omega_0^2}.$$
+   Gang så igennem med $(s+1)(s^2+\omega_0^2)$ og sammenlign koefficienterne for konstant-, $s$- og $s^2$-leddet på begge sider af lighedstegnet.
+   :::
+
+1. Brug så den inverse Laplace-transform på @eq-stambrok til at vise, at løsningen til begyndelsesværdiproblemet @eq-inhomogen er
+$$I(t)=\frac{1}{1+\omega_0^2}
+    \Big[
+    -\cos(\omega_0t)+\frac{1}{\omega_0}\sin(\omega_0t)+e^{-t}
+    \Big].$$
+
+## Delopgave 3
+Til sidst bruger vi Python til at undersøge, hvordan løsningerne til @eq-homogen ændrer sig, når vi varierer de fire parametre $I(0)$, $I'(0)$, $\omega_0$ og $\zeta$. Her er vi særligt interesserede i at forstå, hvordan $\zeta$ påvirker løsningernes opførsel for små til moderate værdier af $t$.
+Scriptet herunder sammenligner grafisk løsningerne for tre forskellige valg af $\zeta$. Bemærk dog, at Laplace-transformen er mest nyttig, når vi vil finde en *analytisk* løsning, mens det i Python er mest oplagt at finde en *numerisk* løsning.
+
+1. Eksperimenter med scriptet og forsøg at forstå de typer af løsninger, I opnår for forskellige værdier af $\zeta$.
+
+   :::{.callout-tip title="Vink" collapse=true}
+   Løsningernes opførsel kan inddeles i fire forskellige intervaller:
+   * $\zeta=0$
+   * $0<\zeta<1$
+   * $\zeta=1$
+   * $\zeta>1$
+   :::
+   
+1. Forklar forskellene i løsningerne ud fra jeres teoretiske viden om differentialligninger.
+
+   :::{.callout-tip title="Vink" collapse=true}
+   Start med at forklare, at @eq-karPoly er det karakteristiske polynomium for @eq-homogen. Hvad sker der med dets diskriminant i de forskellige tilfælde?
+   :::
+   
+1. Antag nu, at $\zeta>0$ og $\omega_0>0$. Gør rede for, at alle løsninger $I(t)$ til @eq-homogen i dette tilfælde opfylder $I(t)\rightarrow 0$ for $t\rightarrow\infty$.
+
+   Stemmer det med de numeriske eksperimenter?
+
+```{pyodide-python}
+## Hent de nødvendige pakker
+import numpy
+import matplotlib.pyplot as plt
+from scipy.integrate import solve_ivp
+
+## I(t) er strømmen til tiden t. Begyndelsesværdierne
+## betegnes med I(0) = I0 og I'(0) = D0
+## Resultat plottes fra tiden tmin til tiden tmax
+
+## Fastlæggelse af parametre
+I0 = 0.8
+D0 = 2.5
+omega0 = 2.5
+zetas = [0.5, 1, 2] # I kan fjerne eller tilføje værdier her
+tmin = 0
+tmax = 15
+
+## Definer differentialligningen på den form, som solve_ivp forventer
+## y er her en vektor, der indeholder I(t) og I'(t). Disse hedder derfor
+## y[0] og y[1] i funktionen. Outputtet skal være de afledede af disse.
+def diffEq(zeta, omega0):
+	## For de givne zeta og omega0 defineres og returneres den funktion,
+	## som solve_ivp forventer.
+	def aux(t, y):
+		return [y[1], -2*zeta*omega0*y[1] - omega0**2 * y[0]]
+	return aux
+
+## Generer 100 ligeligt fordelte tidspunkter mellem tmin og tmax, løs
+## differentialligningen, og evaluer i de givne punkter
+ts = numpy.linspace(tmin, tmax, 100)
+solutions = [None]*len(zetas)	# Lav en tom liste med samme længde som zetas
+for i, zeta in enumerate(zetas):
+	solutions[i] = solve_ivp(diffEq(zeta, omega0), t_span=[tmin, tmax], y0=[I0, D0], t_eval=ts)
+
+## Plot hver af løsningerne
+fig, ax = plt.subplots()
+for sol in solutions:
+	ax.plot(sol.t, sol.y[0])
+
+ax.set_ylabel("$I(t)$")
+ax.legend([ "$\\zeta_{}={}$".format(i, zeta) for (i,zeta) in enumerate(zetas) ])
+
+plt.show()
+```
+
+
+<!-- Local Variables: -->
+<!-- ispell-local-dictionary: "da_DK" -->
+<!-- End: -->
