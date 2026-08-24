@@ -1,0 +1,156 @@
+---
+title: "Svingninger i en gangbro"
+lang: da
+format:
+  html:
+    embed-resources: true
+    code-fold: true
+    include-after-body:
+      ../../../aux/footerDA.html
+filters:
+ - pyodide
+crossref:
+  sec-prefix: Delopgave
+---
+Vi skal undersøge svingningerne af en gangbro, der udsættes for rytmisk personlast. Hvis broens egenfrekvens matcher fodgængernes rytme, kan svingningerne blive forstærket, ligesom man f.eks. så med [Millennium Bridge](https://en.wikipedia.org/wiki/Millennium_Bridge,_London) i London.
+Vi lader $x(t)$ angive udbøjningen midt på broen (i meter) som funktion af tiden (i sekunder):
+
+![Illustration af gangbroen](bridge.svg){#fig-gangbro}
+
+Vi antager forsimplet, at $x(t)$ kan beskrives ved følgende differentialligning
+$$x''(t)+2\lambda x'(t) +\omega_0^2 x(t)= \cos(\omega_L t),\qquad x(0)=0,\quad x'(0)=0,$${#eq-hc1}
+hvor $\omega_0,\omega_L \in \mathbb{R}$ og $\lambda>0$. Begyndelsesbetingelserne svarer til, at broen starter i hvile uden udbøjning. Parameteren $\omega_0$ kaldes den første cirkulære egenfrekvens for gangbroen, og parameteren $\omega_L$ kaldes den cirkulære frekvens af den cykliske belastning. Højresiden af differentialligningen repræsenterer de ydre kræfter på gangbroen, mens parametrene på venstresiden er tilknyttet selve broens konstruktion. Parameteren $\lambda>0$ udgør en dæmpningskonstant, som i praksis vil være svag og opfylde
+$$\lambda^2<\omega_0^2.$${#eq-hc2}
+Workshoppen består af tre delopgaver. I @sec-delopg1 løser vi den homogene ligning tilhørende @eq-hc1, og i @sec-delopg2 ser vi på, hvordan vi kan karakterisere den fuldstændige løsning til den inhomogene ligning i @eq-hc1. I @sec-delopg3 ser vi på nogle numeriske eksempler i Matlab.
+
+## Delopgave 1{#sec-delopg1}
+Vi ser først på den tilhørende homogene differentialligning
+$$\label{hc3}
+x''(t)+2\lambda x'(t) +\omega_0^2 x(t)=0.$${#eq-hc3}
+
+1. Hvad er ligningens karakteristiske polynomium? 
+
+1. Hvor mange reelle rødder har det karakteristiske polynomium?
+
+1. Vis at den fuldstændige løsning til @eq-hc3 er givet ved 
+$$\begin{align*}
+x_h(t)&=C_1x_1(t)+C_2x_2(t)\\
+&=C_1e^{-\lambda t} \cos\left(t\sqrt{\omega_0^2-\lambda^2}\right)+C_2e^{-\lambda t} \sin\left(t\sqrt{\omega_0^2-\lambda^2}\right),
+\end{align*}$${#eq-fuldstaendig}
+hvor $C_1$ og $C_2$ er arbitrære konstanter. 
+
+## Delopgave 2{#sec-delopg2}
+Vi skal nu bestemme en partikulær løsning til den inhomogene ligning i @eq-hc1. Fordi højresiden er givet ved en cosinusfunktion, så gætter vi på en partikulær løsning af formen
+$$x_p(t)=A\cos(\omega_L t) +B\sin(\omega_L t),$$
+hvor $A$ og $B$ er ukendte konstanter, som vi skal bestemme senere i denne delopgave.
+
+1. Indsæt $x_p(t)$ i @eq-hc1 og vis, at ligningen bliver 
+$$\left [ (\omega_0^2-\omega_L^2)A +2\omega_L \lambda B\right ]\cos(\omega_L t) + \left [ (\omega_0^2-\omega_L^2)B -2\omega_L \lambda A\right ]\sin(\omega_L t) =\cos(\omega_L t).$$
+
+1. Redegør for, at $A$ og $B$ skal opfylde
+$$(\omega_0^2-\omega_L^2)A +2\omega_L \lambda B =1$${#eq-delopg21}
+og
+$$(\omega_0^2-\omega_L^2)B-2\omega_L \lambda A=0.$${#eq-delopg22}
+
+1. Løs ligningssystemet og vis, at
+   $$A=\frac{\omega_0^2-\omega_L^2}{(\omega_0^2-\omega_L^2)^2 +4\omega_L^2\lambda^2},\qquad  B=\frac{2\omega_L\lambda}{(\omega_0^2-\omega_L^2)^2 +4\omega_L^2\lambda^2}.$${#eq-parAB}
+
+   ::: {.callout-tip title="Vink" collapse="true"}
+   Isoler $A$ i ligning @eq-delopg22 og indsæt udtrykket i ligning @eq-delopg21.
+   :::
+
+
+1. Lad 
+$$a:=\frac{\omega_0^2-\omega_L^2}{\sqrt{(\omega_0^2-\omega_L^2)^2+4\omega_L^2\lambda^2}},\qquad b:=\frac{2\omega_L\lambda}{\sqrt{(\omega_0^2-\omega_L^2)^2 +4\omega_L^2\lambda^2}}.$$
+Vis, at punktet $(a,b)\in \mathbb{R}^2$ ligger på enhedscirklen. Konkluder herefter, at der må eksistere en vinkel $\varphi \in [0,2\pi]$, således at $a=\cos(\varphi)$ og $b=\sin(\varphi)$.
+
+1. Brug additionsformlen $\cos(\omega_L t -\varphi)=\cos(\omega_L t)\cos(\varphi)+\sin(\omega_L t)\sin(\varphi)$ til at vise 
+$$\begin{align}
+x_p(t)&= \frac{1}{\sqrt{(\omega_0^2-\omega_L^2)^2+4\omega_L^2\lambda^2} }\left(a\cos(\omega_L t) +b\sin(\omega_L t)\right) \\
+&=\frac{1}{\sqrt{(\omega_0^2-\omega_L^2)^2+4\omega_L^2\lambda^2} }\cos(\omega_L t -\varphi).
+\end{align}$${#eq-hc4}
+
+1. Brug ovenstående samt @eq-fuldstaendig til at konkludere, at den fuldstændige løsning til den inhomogene ligning i @eq-hc1 kan skrives som 
+$$x(t)= C_1 x_1(t)+C_2 x_2(t) + \frac{1}{\sqrt{(\omega_0^2-\omega_L^2)^2+4\omega_L^2\lambda^2} }\cos(\omega_L t -\varphi),$$
+hvor $C_1$ og $C_2$ er arbitrære konstanter. 
+
+1. Lad $\omega_0=\omega_L=2$ og $\lambda=1$. Vis, at @eq-hc2 er opfyldt og at $\varphi=\tfrac{\pi}{2}$.  Vis herefter, at 
+$$x(t)= C_1 e^{-t}\cos\left(\sqrt{3} t\right)+C_2e^{-t}\sin\left(\sqrt{3} t\right)+\frac{1}{4}\cos\left(2t-\frac{\pi}{2}\right),$$
+og 
+$$x(0)=C_1,\qquad x'(0)=-C_1 +\sqrt{3} C_2 +\frac{1}{2}.$$
+Brug til sidst begyndelsesværdierne $x(0)=x'(0)=0$ til at bestemme $C_1$ og $C_2$.
+
+## Delopgave 3{#sec-delopg3}
+Vi skal nu lave et plot af $x(t)$ ved hjælp af Python for forskellige valg af $\omega_0,\omega_L$ og $\lambda>0$, der opfylder @eq-hc2. Vi vælger at skrive den partikulære løsning $x_p(t)$ fra @sec-delopg2 ved hjælp af konstanterne $A$ og $B$ i stedet for vinklen $\varphi$ (det er nemmere rent kodningsmæssigt). Den fuldstændige løsning til den inhomogene ligning @eq-hc1 skrives dermed som
+$$\begin{align*}
+x(t)&=C_1 x_1(t)+C_2 x_2(t) +x_p(t) \\
+&=C_1e^{-\lambda t} \cos\left(t\sqrt{\omega_0^2-\lambda^2}\right)+C_2e^{-\lambda t} \sin\left(t\sqrt{\omega_0^2-\lambda^2}\right)+A\cos(\omega_L t) +B\sin(\omega_L t),
+\end{align*}$$
+hvor $A$ og $B$ er givet i @eq-parAB. Vi skal nu bestemme $C_1$ og $C_2$ i dette generelle tilfælde.
+
+(@) Argumenter for, at
+$$\begin{align*}
+x'(t)&=C_1 x_1'(t)+C_2 x_2'(t) +x_p'(t) \\
+&=C_1\left\{-\lambda e^{-\lambda t} \cos\left(t\sqrt{\omega_0^2-\lambda^2}\right)-e^{-\lambda t}\sqrt{\omega_0^2-\lambda^2}\sin\left(t\sqrt{\omega_0^2-\lambda^2}\right)\right\} \\
+&+C_2\left\{-\lambda e^{-\lambda t} \sin\left(t\sqrt{\omega_0^2-\lambda^2}\right)+e^{-\lambda t}\sqrt{\omega_0^2-\lambda^2}\cos\left(t\sqrt{\omega_0^2-\lambda^2}\right)\right\} \\
+&-A\omega_L\sin(\omega_L t)+B\omega_L \cos(\omega_L t).
+\end{align*}$$
+
+(@) Brug begyndelsesværdierne $x(0)=x'(0)=0$  til at bestemme $C_1$ og $C_2$.
+
+(@) Herunder finder I et Python-script, der kan bruges til at plotte $x(t)$. Scriptet giver som udgangspunkt fejl, når I kører det, da konstanterne $C_1$ og $C_2$ blot har fået tildelt værdierne <code>???</code>. I skal nu indsætte de korrekte udtryk, som I fandt ovenfor.
+
+::: {.callout-tip collapse="true"}
+## Vink
+
+I får behov for Numpy-funktionerne <code>np.exp</code>, <code>np.cos</code>, <code>np.sin</code> og <code>np.sqrt</code>.
+:::
+
+::: {.callout-warning}
+Husk at gemme jeres ændrede Python-kode i en anden fil. Hvis I lukker denne HTML-fil og åbner den igen, vil den vise den oprindelige kode med <code>???</code>.
+:::
+
+
+```{pyodide-python}
+## Indlæs programbiblioteker
+import numpy as np
+import matplotlib.pyplot as plt
+
+## Differentialligningens parametre
+w0 = 2
+wL = 2
+l = 1
+
+## Generer 1000 ligeligt fordelte tidspunkter mellem 0 og 6*pi
+t = np.linspace(0, 6 * np.pi, 1000)
+
+## Bestemmelse af A,B, C1 og C2
+denominator = (w0**2 - wL**2)**2 + 4 * wL**2 * l**2
+A = (w0**2 - wL**2) / denominator
+B = 2 * wL * l / denominator
+
+C1 = ???
+C2 = ???
+
+## Fuldstændig løsning til den homogene ligning
+x1 = C1 * np.exp(-l * t) * np.cos(t * np.sqrt(w0**2 - l**2))
+x2 = C2 * np.exp(-l * t) * np.sin(t * np.sqrt(w0**2 - l**2))
+
+## Partikulær løsning til den inhomogene ligning
+xp = A * np.cos(wL * t) + B * np.sin(wL * t) 
+
+## Fuldstændig løsning til den inhomogene ligning
+x = x1 + x2 + xp
+
+## Plot af løsningen
+fig, ax = plt.subplots()
+ax.plot(t, x)
+ax.set_xlim(0, 6*np.pi)
+ax.set_ylim(-0.5, 0.5)
+ax.set_title('Udbøjningen midt på gangbro')
+ax.set_xlabel('t')
+ax.set_ylabel('x')
+plt.show()
+```
+
+(@) Scriptet anvender som udgangspunkt de samme parametre, som der blev angivet sidst i @sec-delopg2, nemlig $\omega_0=\omega_L=2$ og $\lambda=1$. Hvad sker der, hvis I sætter dæmpningen ned til $\lambda=0.5$ eller op til $\lambda=1.5$. Hvad sker der, hvis I sætter $\lambda=3$? Forsøg at forklare observationerne.

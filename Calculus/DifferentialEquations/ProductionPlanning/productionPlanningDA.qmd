@@ -1,0 +1,135 @@
+---
+title: "Produktionsplanlægning"
+lang: da
+format:
+  html:
+    embed-resources: true
+    code-fold: true
+    include-after-body:
+      ../../../aux/footerDA.html
+filters:
+ - pyodide
+crossref:
+  sec-prefix: Delopgave
+---
+
+## Introduktion{-}
+I denne workshop skal I bruge differentialligninger til at modellere salgstallene for en bestemt vare. Denne type analyse er f.eks. relevant i forbindelse med produktionsplanlægning, hvor den forventede efterspørgsel bruges til at fastsætte, hvor mange enheder der skal produceres.
+
+Som et konkret eksempel forestiller vi os i denne workshop en virksomhed, der producerer vintertøj. Virksomheden skal til at lancere en ny kollektion af skiundertøj, og en tidligere analyse har vist, at et produkt af den type har 8.000 potentielle købere. Produktet lanceres i januar, og vi ønsker at bestemme det forventede salg i månederne herefter. Gennem hele opgaven antages, at hver potentiel køber maksimalt køber ét eksemplar af produktet.
+
+Gennem workshoppen vil vi bruge følgende notationer.
+
+* $f(t)$: Antal solgte enheder $t$ måneder efter lancering. Vi kommer til at se på forskellige $f$ afhængigt af antagelserne i modellen.
+* $N$: Antal potentielle købere ved lancering &ndash; altså, $N=8000$.
+
+## Delopgave 1{#sec-opg1}
+Vi betragter først en model, hvor købstilbøjeligheden er konstant. Det antages med andre ord, at der hver måned er en fast procentdel af de potentielle købere, der investerer i produktet.
+
+1. Forklar, at antallet af potentielle købere efter $t$ måneder er givet ved $N-f(t)$.
+
+1. Brug antagelsen om konstant købstilbøjelighed til at argumentere for, at en fornuftig model for salget er givet ved differentialligningen
+$$\frac{\mathrm{d}f}{\mathrm{d}t} = r (N-f),\quad t\geq 0.$${#eq-konstant}
+hvor $r$ er en positiv konstant.
+
+1. Bestem den fuldstændige løsning til @eq-konstant.
+
+1. Virksomheden har en forventning om, at købstilbøjeligheden er 4%. Vis, at dette medfører $f'(0)=320$. Argumenter desuden for, at $f(0)=0$.
+
+   Kombiner disse begyndelsesværdibetingelser til at fastlægge $r$, og bestem den specifikke løsning til differentialligningen @eq-konstant.
+   
+1. Virksomheden ønsker at stoppe produktionen, når den månedlige salgsrate falder til 20 enheder. Bestem, hvornår dette sker.
+
+## Delopgave 2{#sec-opg2}
+Da efterspørgslen på skiundertøj typisk ikke er så høj om sommeren, ønsker vi at ændre modellen, så der tages højde for sæsonvariation. I denne opgave ændrer vi derfor modellen, så købstilbøjeligheden ændres over tid.
+
+1. Forklar, at $\lambda(t)=\frac{1}{2}\left(1+\cos\big(\frac{t\pi}{6}\big)\right)$ antager værdier i $[0,1]$.
+
+   Vis, at $\lambda(0)=1$ og $\lambda(6)=0$. Argumenter for, at dette stemmer overens med, at købstilbøjeligheden er så stor som mulig i januar, mens der intet salg er i juli.
+   
+   ::: {.callout-tip title="Vink" collapse="true"}
+   Husk, at $t$ er antallet af måneder *efter* januar. Det betyder f.eks. at selvom februar er anden måned, så er det kun én måned efter januar.
+   :::
+   
+1. Argumenter for, at salget med sæsonvariation kan modelleres med differentialligningen
+$$\frac{\mathrm{d}f}{\mathrm{d}t} = r \lambda(t) (N-f),\quad t\geq 0,$${#eq-saeson}
+
+1. Som tidligere kan vi antage begyndelsesværdibetingelser $f(0)=0$ og $f'(0)=320$. Vis, at $r$ i @eq-saeson derfor er den samme værdi som tidligere.
+
+1. Forklar, hvorfor @eq-saeson er separabel, og brug dette til at bestemme løsningen til differentialligningen.
+
+## Delopgave 3{#sec-opg3}
+Virksomheden forventer, at en konkurrent også vil lancere et tilsvarende produkt samtidigt. De to virksomheder kommer altså til at konkurrere om de samme $N=8000$ købere.
+
+Lad $f_1$ betegne virksomhedens salg, og lad $f_2$ betegne konkurrentens salg.
+Salget modelleres i dette tilfælde ved et system af koblede differentialligninger:
+$$\begin{align*}
+\frac{\mathrm{d}{f}_1}{\mathrm{d}t} = r_1 \lambda(t) (N-f_1-f_2)\\
+\frac{\mathrm{d}{f}_2}{\mathrm{d}t} = r_2 \lambda(t) (N-f_1-f_2).\\
+\end{align*}$${#eq-koblet}
+
+Her beskriver $r_1$ og $r_2$ de to købstilbøjeligheder ved lanceringen.
+
+Denne type systemer er ofte svære at løse analytisk, men der findes numeriske metoder til at approksimere løsningen. Koden nederst bruger netop en sådan numerisk metode fra Scipy til at beskrive salgene, og I skal bruge koden til at løse de næste to opgaver.
+
+1. Brug koden til at vise, at når $r_1=r_2=0.04$, så sælger hver virksomhed lige mange produkter. Er det overraskende?
+
+1. Antag nu, at den ene virksomhed kan øge salgsraten til $r_1=0.05$ ved at lave markedsføring. Brug koden til at estimere, hvor stor betydning dette har på salget efter 48 måneder.
+
+1. Divider de to ligninger i @eq-koblet med hinanden, og vis, at $(r_2f_1-r_1f_2)'=0$.
+
+   ::: {.callout-tip title="Vink" collapse=true}
+   Brug, at den afledede er lineær. Altså, at $f'+g'=(f+g)'$.
+   :::
+   
+1. Konkluder fra ovenstående, at der eksisterer en konstant $c$, så $r_2f_1(t)-r_1f_2(t)=c$ for alle værdier af $t$.
+
+   Vis, at $c=0$, og konkluder derfor, at $f_2(t) = \frac{r_2}{r_1} f_1(t)$. Passer det med resultaterne fra koden?
+   
+   ::: {.callout-tip title="Vink" collapse=true}
+   For at bestemme $c$ kan vi bruge, at ingen af virksomhederne har solgt nogen produkter til tid $t=0$.
+   :::
+
+```{pyodide-python}
+import numpy
+import scipy.integrate as spi
+import matplotlib.pyplot as plt
+
+## Definer parametrene for problemet
+N = 8000
+r1 = 0.04
+r2 = 0.04
+startSalg = [0,0] # Salg til tid 0
+slutMaaned = 48
+
+def l(t):
+    return (1+numpy.cos(t*numpy.pi/6))/2
+
+## Definer differentialligningen på den form, som solve_ivp forventer
+## f er her en vektor [f1, f2], og outputtet skal være de afledede af
+## hhv. f1 og f2.
+def diffEq(t, f):
+    return [r1*l(t)*(N-f[0]-f[1]), r2*l(t)*(N-f[0]-f[1])]
+    
+## Fordel 100 punkter ligeligt indtil slutMaaned, løs
+## differentialligningen, og evaluer i de givne punkter
+ts = numpy.linspace(0, slutMaaned, 100)
+solution = spi.solve_ivp(diffEq, t_span=[0,slutMaaned], y0=startSalg, t_eval=ts)
+
+## Konstruer plottet
+fig, ax = plt.subplots()
+ax.plot(solution.t, solution.y[0])
+ax.plot(solution.t, solution.y[1])
+
+ax.set_xlabel("$t$")
+ax.set_ylabel("Salg")
+ax.legend(["$f_1$", "$f_2$"])
+
+plt.show()
+print("Samlet salg (virksomhed):\t{:.1f}".format(solution.y[0][-1]))
+print("Samlet salg (konkurrent):\t{:.1f}".format(solution.y[1][-1]))
+```
+
+<!-- Local Variables: -->
+<!-- ispell-local-dictionary: "da_DK" -->
+<!-- End: -->

@@ -1,0 +1,190 @@
+---
+title: "RLC circuits"
+lang: en
+format:
+  html:
+    embed-resources: true
+    code-fold: true
+    include-after-body:
+      ../../../aux/footerEN.html
+filters:
+ - pyodide
+crossref:
+  sec-prefix: Exercise
+---
+
+## Introduction{-}
+A serial RLC circuit consists of a resistor with resistance $R$ (measured in Ohms), an inductor with inductance $L$ (measured in Henry), and a capacitor with capacitance $C$ (measured in Farad). These are connected in series and are driven by a time-dependent external voltage source $V_{\mathrm{e}}(t)$. An example is shown in @fig-rlc.
+
+![A simple RLC circuit](circuit.svg){width=50% #fig-rlc}
+
+The physical values $R$, $L$, and $C$ are all positive. If we denote the charge of the capacitor at time $t$ by $Q(t)$, the current in the circuit is given by the derivative of $Q$, i.e. $I(t)=Q'(t)$. Kirchhoff&apos;s voltage law then implies the equation
+$$LI'(t)+RI(t)+\frac{Q(t)}{C}=V_{\mathrm{e}}(t).$$
+
+By differentiating both sides of the equation, we obtain a differential equation that does not contain $Q(t)$, but only $I(t)$ and its derivatives. The result is
+$$LI''(t)+RI'(t)+\frac{I(t)}{C}=V_{\mathrm{e}}'(t).$${#eq-2}
+
+We consider a specific choice of external voltage source, such that $V_{\mathrm{e}}(t)=U\sin(\omega_{\mathrm{e}}t)$, where $U$ and
+$\omega_{\mathrm{e}}$ are constants. With this choice, @eq-2 may be rewritten as
+$$I''(t)+\frac{R}{L}I'(t)+\frac{I(t)}{LC}=\frac{U\omega_{\mathrm{e}}}{L}
+  \cos(\omega_{\mathrm{e}}t).$${#eq-3}
+  
+To simplify notation, we introduce two constants
+$$\lambda=\frac{R}{2L}\quad\text{and}\quad\omega_0=\frac{1}{\sqrt{LC}}.$$
+
+With this notation in place, @eq-3 reduces to
+$$I''(t)+2\lambda I'(t)+\omega_0^2 I(t)=\frac{U\omega_{\mathrm{e}}}{L}
+  \cos(\omega_{\mathrm{e}}t).$${#eq-4}
+  
+We assume that the energy loss in the resistor $R$ is small in the system. Mathematically, this can be formulated as requiring
+$$\omega_0^2>\lambda^2.$${#eq-5}
+
+This workshop consists of three exercises. In @sec-opg1, we consider the homogeneous equation (the case $U=0$), while @sec-opg2 focuses on determining the complete solution to the corresponding inhomogeneous equation. In @sec-opg3, we will see how the circuit can be modelled using Python.
+
+## Exercise 1{#sec-opg1}
+Consider the homogeneous equation
+$$y''(t)+2\lambda y'(t)+\omega_0^2y(t)=0.$${#eq-6}
+
+
+1. Argue that the equation has characteristic polynomial $r^2+2\lambda r+\omega_0^2$. Does the polynomial have any real roots?
+
+1. Let $y_1(t)=e^{-\lambda t}\cos\left(\sqrt{\omega_0^2-\lambda^2}\,t\right)$ and $y_2(t)=e^{-\lambda t}\sin\left(\sqrt{\omega_0^2-\lambda^2}\,t\right)$.
+
+   Show that both $y_1(t)$ and $y_2(t)$ are solutions to the homogenous equation in @eq-6.
+
+1. Now assume that $I_{\mathrm{p}}(t)$ is a given *particular solution* to @eq-4. Argue that if $I(t)$ is any arbitrary solution to @eq-4, then $I(t)-I_{\mathrm{p}}(t)$ is a solution to the homogeneous equation @eq-6.
+
+
+## Exercise 2{#sec-opg2}
+We will now determine a particular solution to the inhomogeneous equation @eq-4. Since the right-hand side is a cosine function, we guess that the particular solution must have the form
+$$I_{\mathrm{p}}(t)=A\cos(\omega_{\mathrm{e}}t)+B\sin(\omega_{\mathrm{e}}t),$$
+
+where $A$ and $B$ are constants that must be determined in this exercise.
+
+1. Insert $I_{\mathrm{p}}(t)$ into @eq-4, and show that the equation becomes
+$$\begin{align*}
+\bigl[(\omega_0^2-\omega_{\mathrm{e}}^2)A+2\omega_{\mathrm{e}}\lambda B\bigr]
+    \cos(\omega_{\mathrm{e}}t)
+    +\bigl[
+    (\omega_0^2&-\omega_{\mathrm{e}}^2)B -2\omega_{\mathrm{e}}\lambda A
+                 \bigr]\sin(\omega_{\mathrm{e}}t)\\
+               &=\frac{U\omega_{\mathrm{e}}}{L}\cos(\omega_{\mathrm{e}}t).
+\end{align*}$${#eq-guess}
+  
+1. Show that a sufficient condition for @eq-guess to be satisfied is
+$$\left.\begin{array}{r@{}c@{}l}
+(\omega_0^2-\omega_{\mathrm{e}}^2)A+2\omega_{\mathrm{e}}\lambda B &=& \frac{U\omega_{\mathrm{e}}}{L}\\
+-2\omega_{\mathrm{e}}\lambda A + (\omega_0^2-\omega_{\mathrm{e}}^2)B&=&0
+\end{array}\right\}$${#eq-sufficient}
+  
+1. Solve @eq-sufficient, and show that
+$$A=\frac{U\omega_{\mathrm{e}}}{L}
+    \frac{\omega_0^2-\omega_{\mathrm{e}}^2}{(\omega_0^2-\omega_{\mathrm{e}}^2)^2
+        +4\omega_{\mathrm{e}}^2\lambda^2},
+    \quad
+    B=\frac{U\omega_{\mathrm{e}}}{L}
+    \frac{2\omega_{\mathrm{e}}\lambda}{(\omega_0^2-\omega_{\mathrm{e}}^2)^2
+        +4\omega_{\mathrm{e}}^2\lambda^2}$$
+
+1. Now, define $a$ and $b$ by
+$$a=\frac{\omega_0^2-\omega_{\mathrm{e}}^2}{\sqrt{(\omega_0^2-\omega_{\mathrm{e}}^2)^2
+            +4\omega_{\mathrm{e}}^2\lambda^2}},
+    \quad
+    b=\frac{2\omega_{\mathrm{e}}\lambda}{\sqrt{(\omega_0^2-\omega_{\mathrm{e}}^2)^2
+            +4\omega_{\mathrm{e}}^2\lambda^2}}.$$
+
+   Show that the point with Cartesian coordinates $(a, b)$ is on the unit circle.
+   
+   Use the above to conclude the existence of an angle $\varphi\in[0,2\pi)$ such that $a=\cos(\varphi)$ and $b=\sin(\varphi)$.
+   
+1. Use the addition formula
+$$\cos(\omega_{\mathrm{e}}t-\varphi)=
+  \cos(\omega_{\mathrm{e}}t)\cos(\varphi)+
+  \sin(\omega_{\mathrm{e}}t)\sin(\varphi)$$
+to show that
+$$I_{\mathrm{p}}(t)=\frac{U\omega_{\mathrm{e}}}{L}
+    \frac{1}{\sqrt{(\omega_0^2-\omega_{\mathrm{e}}^2)^2
+            +4\omega_{\mathrm{e}}^2\lambda^2}}\cos(\omega_{\mathrm{e}}t-\varphi).$${#eq-7}
+
+1. Use @eq-7 along with the two previous questions from @sec-opg1 to conclude that the complete solution to @eq-4 can be written as
+$$I(t)=C_1y_1(t)+C_2y_2(t)+
+    \frac{U\omega_{\mathrm{e}}}{L}
+    \frac{1}{\sqrt{(\omega_0^2-\omega_{\mathrm{e}}^2)^2
+            +4\omega_{\mathrm{e}}^2\lambda^2}}\cos(\omega_{\mathrm{e}}t-\varphi),$$
+   where $C_1$ and $C_2$ are arbitrary constants.
+
+1. Finally, consider a concrete circuit where $\omega_{\mathrm{e}}=\omega_0=2$, $\lambda=1$, and $U\omega_{\mathrm{e}}/L=1$. Show that @eq-5 are satisfied and that $\varphi=\pi/2$.
+  
+   Then show that the solution is given by
+$$I(t)=C_1e^{-t}\cos(\sqrt{3}t)+C_2e^{-t}\sin(\sqrt{3}t)
+    +\frac{1}{4}\sin(2t),$${#eq-8}
+where
+$$I(0)=C_1,\quad I'(0)=-C_1+\sqrt{3}C_2+\frac{1}{2}.$${#eq-initialCond}
+
+1. Assume that our solution must satisfy the initial value conditions $I(0)=0$ and $I'(0)=0$. Use @eq-initialCond to show that this implies
+   $$I(t)=\frac14\sin(2t)-\frac{\sqrt{3}}{6}e^{-t}\sin(\sqrt{3}t).$$
+   
+## Exercise 3{#sec-opg3}
+In this exercise, we use the same concrete values for the physical constants as in the final part of @sec-opg2.
+The Python script below solves the differential equation @eq-4 for various initial value conditions.
+Your task is to use the script to explore the general properties of these solutions.
+
+1. Argue using @eq-8 that the solution will tend to $\frac{1}{4}\sin(2t)$ as $t$ becomes sufficiently large.
+
+   :::{.callout-tip title="Hint" collapse=true}
+   Think about what happens with the factors $e^{-t}$ in the first two terms.
+   :::
+
+1. Utilize the Python script below to test your hypothesis from above for different initial values.
+
+```{pyodide-python}
+## Load the necessary function libraries
+import numpy
+import matplotlib.pyplot as plt
+from scipy.integrate import solve_ivp
+
+## I(t) denotes the current at time t. The initial values
+## are denoted by I(0) = I0 and I'(0) = D0
+## The result is plotted from time tmin to tmax
+
+## Setting the parameters
+I0 = -1 
+D0 = 5
+tmin = 0
+tmax = 20
+
+## Define the differential equation on the form expected by solve_ivp.
+## Here, y is a vector containing I(t) and I'(t). Therefore, these are
+## called y[0] and y[1] in the function. The output must be the
+## derivatives of these.
+def diffEq(t, y):
+	return [y[1], numpy.cos(2*t) - 4*y[0] - 2*y[1]]
+
+## Generate 100 equally spaced instants between tmin and tmax, solve
+## the differential equation, and evaluate in the given points.
+ts = numpy.linspace(tmin, tmax, 100)
+solution = solve_ivp(diffEq, t_span=[tmin, tmax], y0=[I0, D0], t_eval=ts)
+
+## Also, define the limit as a function, which makes plotting easier
+def f(t):
+	return numpy.sin(2*t)/4
+
+
+fig, (ax1, ax2) = plt.subplots(2,1) # Two plots on top of each other
+
+## Plot I(t) and f(t) in the top coordinate system
+ax1.plot(solution.t, solution.y[0])
+ax1.plot(ts, f(ts))
+ax1.set_ylabel("$I(t)$")
+ax1.legend(["$I(t)$", "$\\frac{1}{4}\\sin(2t)$"])
+
+## Plot the absolute difference in the lower coordinate system
+ax2.plot(ts, numpy.abs(solution.y[0]-f(ts)))
+ax2.set_xlabel("$t$")
+ax2.set_ylabel("Absolute difference")
+plt.show()
+```
+
+<!-- Local Variables: -->
+<!-- ispell-local-dictionary: "en_GB" -->
+<!-- End: -->
