@@ -1,0 +1,150 @@
+---
+title: "Reaktionsafstemning og populationsudvikling"
+lang: da
+format:
+  html:
+    embed-resources: true
+    code-fold: true
+    include-after-body:
+      ../../../aux/footerDA.html
+filters:
+ - pyodide
+crossref:
+  sec-prefix: Delopgave
+---
+
+## Introduktion{-}
+I denne workshop skal I se på to separate problemstillinger, der kan behandles med lineære ligningssystemer eller matrixmultiplikation. @sec-opg1 og @sec-opg2 omhandler afstemning af reaktionsligninger ved hjælp af lineære ligningssystemer på matrixform. @sec-opg3 handler om en måde at beskrive populationsudvikling ved hjælp af matrixmultiplikation.
+
+## Delopgave 1{#sec-opg1}
+Vi betragter først en reaktion i stil med fotosyntese, hvor kuldioxid og vand omdannes til ilt og et kulhydrat. Reaktionsligningen, vi beskæftiger os med, er
+$$x_1\ce{CO_2}+x_2\ce{H_2O} \rightarrow x_3\ce{O_2} + \ce{C_m(H_2O)_n},$${#eq-photosynthesis}
+hvor $x_1$, $x_2$ og $x_3$ er (ukendte) heltal, der skal vælges, så reaktionsligningen er afstemt. Parametrene $m$ og $n$ bestemmer, hvilket kulhydrat vi er interesserede i.
+Sættes $m=n=6$, kunne kulhydratet eksempelvis være glukose eller fruktose, mens det for $m=12$ og $n=11$ kunne være laktose.
+
+1. Forklar, at mængden af kul-, brint- og iltatomer i de fire stoffer kan repræsenteres ved vektorerne
+$$\mathbf{v}_1=\left[
+      \begin{array}{c}
+        1\\ 0\\ 2
+      \end{array}
+    \right],\quad
+    \mathbf{v}_2=\left[
+      \begin{array}{c}
+        0\\ 2\\ 1
+      \end{array}
+    \right],\quad
+    \mathbf{v}_3=\left[
+      \begin{array}{c}
+        0\\ 0\\ 2
+      \end{array}
+    \right],\quad
+    \mathbf{b}=\left[
+      \begin{array}{c}
+        m\\ 2n\\ n 
+      \end{array}
+    \right]$$
+
+1. Argumenter ud fra @eq-photosynthesis, at disse vektorer skal overholde
+$$x_1\mathbf{v}_1+x_2\mathbf{v}_2-x_3\mathbf{v}_3=\mathbf{b}.$$
+
+1. Opstil totalmatricen for systemet i foregående punkt, og vis, at dens reducerede trappeform er
+$$\left[
+      \begin{array}{ccc|c}
+        1 & 0 & 0 & m\\
+        0 & 1 & 0 & n\\
+        0 & 0 & 1 & m
+      \end{array}
+    \right].$${#eq-reducedEchelon}
+    
+   Er systemet konsistent for alle værdier af $m$ og $n$?
+
+1. Find de værdier, der afstemmer reaktionsligningen, når kulhydratet er glukose &ndash; altså, når $m=n=6$.
+
+1. Brug @eq-reducedEchelon til at afgøre, om $\{\mathbf{v}_1, \mathbf{v}_2, \mathbf{v}_3\}$ er lineært afhængig eller uafhængig. Gælder det samme om $\{\mathbf{v}_1, \mathbf{v}_2, \mathbf{v}_3, \mathbf{b}\}$?
+
+## Delopgave 2{#sec-opg2}
+I denne opgave ser vi i stedet på en form for kemosyntese. Kemosyntese bruges for eksempel af mikroorganismer, der lever steder med meget lidt sollys såsom dybhavet. Vi ser i denne workshop på kemosyntese med svovl, hvor reaktionsligningen er
+$$x_1\ce{H_2S}+x_2\ce{CO_2}+x_3\ce{O_2} \rightarrow x_4\ce{H_2O} + x_5\ce{S} + \ce{C_m(H_2O)_n}.$${#eq-chemosynthesis}
+Igen er $x_i$ de koefficienter, der afstemmer reaktionsligningen.
+Benyttes samme fremgangsmetode som i @sec-opg1 på reaktionen i @eq-chemosynthesis, får man den reducerede totalmatrix
+$$\left[
+    \begin{array}{rrrrr|c}
+      1 & 0 & 0 & 0 & -1  & 0\\
+      0 & 1 & 0 & 0 &  0 & m\\
+      0 & 0 & 1 & 0 & -\frac{1}{2} & -m\\
+      0 & 0 & 0 & 1 & -1 & -n
+    \end{array}
+  \right].$${#eq-chemoSynthMatrix}
+  
+1. Opskriv den parametriserede løsning til ligningssystemet i @eq-chemoSynthMatrix.
+
+1. Kan vi ligesom i @sec-opg1 finde en entydig løsning, når blot $m$ og $n$ er kendt?
+
+1. Er det alle løsninger (i matematisk forstand) til systemet @eq-chemoSynthMatrix, der giver mening i forhold til reaktionsligningen @eq-chemosynthesis?
+
+
+## Delopgave 3{#sec-opg3}
+I denne opgave skifter vi fokus og ser i stedet på, hvordan matrixmultiplikation kan benyttes til at beskrive populationsudvikling. Vi ønsker at undersøge bestanden af en bestemt dyreart, og inddeler dens bestand i tre aldersgrupper. Mere præcist repræsenteres bestanden ved en vektor $\mathbf{v}=[v_1,\, v_2,\, v_3]^\top$, hvor $v_1$ er antallet af individer i deres første leveår, $v_2$ er antallet af individer i deres andet leveår og $v_3$ er antallet af individer i tredje leveår eller derover.
+Vores observationer indikerer, at når bestanden er $\mathbf{v}$, vil den efter ét år være $L\mathbf{v}$, hvor
+$$L=\frac{1}{10}\left[
+    \begin{array}{ccc}
+      1 & 8 & 0\\
+      7 & 0 & 0\\
+      0 & 8 & 1
+    \end{array}
+  \right].$$
+
+(@) Lad bestanden være $\mathbf{v}=[100,\, 100,\, 100]^\top$. Brug $L$ til at finde bestanden efter ét år.
+  
+(@) Vi definerer nu to matricer
+$$P=\frac{1}{8}\left[
+      \begin{array}{rrr}
+        8 & 8 & 0\\
+        7 & -8 & 0\\
+        8 & 8 & 8
+      \end{array}
+    \right]
+    \quad\text{og}\quad
+    D=\frac{1}{10}\left[
+      \begin{array}{rrr}
+        8 & 0 & 0\\
+        0 & -7 & 0\\
+        0 & 0 & 1
+      \end{array}
+    \right].$$
+    
+    Find den inverse til $P$. Tjek herefter (evt. ved brug af Python-blokken herunder), at $L=PDP^{-1}$.
+	
+```{pyodide-python}
+import numpy
+from numpy.linalg import inv
+	
+P=1/8 * numpy.matrix(
+	[[8, 8, 0],
+	 [7, -8,...], # Fyld selv resten ind
+	 [...]]
+)
+
+D = ... # Fyld selv matricen ind
+
+P @ D @ inv(P)
+```
+
+(@) Brug resultatet fra det tidligere punkt til at opskrive et udtryk for $L^{10}$ som kun bruger to matrixmultiplikationer. I behøver ikke udregne resultatet.
+
+    :::{.callout-tip title="Vink" collapse=true}
+	$L^{10}=PDP^{-1}PDP^{-1}\cdots PDP^{-1}$. Brug $P^{-1}P=I$, samt at $D^{10}$ opnås ved at opløfte hver af diagonalindgangene i tiende.
+	:::
+
+(@) Brug omskrivningen ovenfor og Python til at udregne bestanden efter 10 år, når vi starter med $\mathbf{v}=[5000,\, 4500,\, 3750]^\top$. Vil I forvente, at bestanden overlever på sigt?
+
+```{pyodide-python}
+antalAar = 10
+
+v = numpy.array([5000,4500,3750])
+## Fyld selv udtrykket ind. Du kan bruge navnene på matricerne
+## defineret i den tidligere kodeblok.
+## Bemærk, at potens noteres med ** i stedet for ^
+bestand = ??? 
+print('Bestanden efter {:} år er\n{:}'.format(antalAar, bestand))
+```

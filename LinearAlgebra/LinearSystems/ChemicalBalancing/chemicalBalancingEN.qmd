@@ -1,0 +1,149 @@
+---
+title: "Chemical balancing and population growth"
+lang: en
+format:
+  html:
+    embed-resources: true
+    code-fold: true
+    include-after-body:
+      ../../../aux/footerEN.html
+filters:
+ - pyodide
+crossref:
+  sec-prefix: Exercise
+---
+
+## Introduktion{-}
+In this workshop, you will consider two separate problems that can be solved using systems of linear equations or matrix multiplication. @sec-opg1 and @sec-opg2 treat balancing of chemical equations by means of linear equations in matrix form. @sec-opg3 treats a model for population growth based on matrix multiplication.
+
+## Delopgave 1{#sec-opg1}
+We first consider a chemical reaction similar to photosynthesis, where carbon dioxide and water combine to form oxygen and a carbohydrate. The chemical equation in question is
+$$x_1\ce{CO_2}+x_2\ce{H_2O} \rightarrow x_3\ce{O_2} + \ce{C_m(H_2O)_n},$${#eq-photosynthesis}
+where $x_1$, $x_2$, and $x_3$ are (unknown) integers, which must be chosen in such a way that the equation is balanced. The parameters $m$ and $n$ determine the carbohydrate of interest. For instance, $m=n=6$ corresponds to e.g. glucose or fructose, while $m=12$ and $n=11$ could be lactose.
+
+1. Explain why the amount of carbon, hydrogen, and oxygen atoms in the four compounds can be represented by the vectors
+$$\mathbf{v}_1=\left[
+      \begin{array}{c}
+        1\\ 0\\ 2
+      \end{array}
+    \right],\quad
+    \mathbf{v}_2=\left[
+      \begin{array}{c}
+        0\\ 2\\ 1
+      \end{array}
+    \right],\quad
+    \mathbf{v}_3=\left[
+      \begin{array}{c}
+        0\\ 0\\ 2
+      \end{array}
+    \right],\quad
+    \mathbf{b}=\left[
+      \begin{array}{c}
+        m\\ 2n\\ n 
+      \end{array}
+    \right]$$
+
+1. Use @eq-photosynthesis to argue that these vectors must satisfy
+$$x_1\mathbf{v}_1+x_2\mathbf{v}_2-x_3\mathbf{v}_3=\mathbf{b}.$$
+
+1. Construct the augmented matrix for the system in the previous item, and show that its reduced echelon form is
+$$\left[
+      \begin{array}{ccc|c}
+        1 & 0 & 0 & m\\
+        0 & 1 & 0 & n\\
+        0 & 0 & 1 & m
+      \end{array}
+    \right].$${#eq-reducedEchelon}
+    
+   Is the system consistent for all values of $m$ and $n$?
+
+1. Find the values that balance the chemical equation when the carbohydrate is glucose; that is, when $m=n=6$.
+
+1. Use @eq-reducedEchelon to decide if $\{\mathbf{v}_1, \mathbf{v}_2, \mathbf{v}_3\}$ are linearly dependent or independent. Is the same true for $\{\mathbf{v}_1, \mathbf{v}_2, \mathbf{v}_3, \mathbf{b}\}$?
+
+## Delopgave 2{#sec-opg2}
+In this exercise, we instead consider a form of chemosynthesis. Chemosynthesis is for instance used by microorganisms, whose habitat has very little sunlight such as the deep sea. Here, we focus on chemosynthesis with sulphur, and the corresponding chemical reaction is
+$$x_1\ce{H_2S}+x_2\ce{CO_2}+x_3\ce{O_2} \rightarrow x_4\ce{H_2O} + x_5\ce{S} + \ce{C_m(H_2O)_n}.$${#eq-chemosynthesis}
+Once again, $x_i$ denote the coefficients that balance the equation.
+If we use the same procedure as in @sec-opg1 on the reaction in @eq-chemosynthesis, the reduced echelon form of the augmented matrix is
+$$\left[
+    \begin{array}{rrrrr|c}
+      1 & 0 & 0 & 0 & -1  & 0\\
+      0 & 1 & 0 & 0 &  0 & m\\
+      0 & 0 & 1 & 0 & -\frac{1}{2} & -m\\
+      0 & 0 & 0 & 1 & -1 & -n
+    \end{array}
+  \right].$${#eq-chemoSynthMatrix}
+  
+1. Write out the parametrized solution to the system of equations in @eq-chemoSynthMatrix.
+
+1. Can we &ndash; as in @sec-opg1 &ndash; find a unique solution whenever $m$ and $n$ are known?
+
+1. Do all solutions (in the mathematical sense) of the system @eq-chemoSynthMatrix correspond to useable solutions in terms of the chemical equation @eq-chemosynthesis?
+
+
+## Delopgave 3{#sec-opg3}
+In this final exercise, we shift our focus and explore how matrix multiplication can be used to describe population growth. We wish to model how the population of a certain species develops over time. For our purposes, we divide the population into three age groups. More precisely, we represent the population by a vector $\mathbf{v}=[v_1,\, v_2,\, v_3]^T$ where $v_1$ denotes the number of individuals in their first year of life, $v_2$ the number in the second year of life, and $v_3$ the number in the third year of life or above.
+Our observations indicate that for population $\mathbf{v}$, the population one year later will be $L\mathbf{v}$ where
+$$L=\frac{1}{10}\left[
+    \begin{array}{ccc}
+      1 & 8 & 0\\
+      7 & 0 & 0\\
+      0 & 8 & 1
+    \end{array}
+  \right].$$
+
+(@) Let the population be $\mathbf{v}=[100,\, 100,\, 100]^T$. Use $L$ to find the population one year later.
+  
+(@) We now define two matrices
+$$P=\frac{1}{8}\left[
+      \begin{array}{rrr}
+        8 & 8 & 0\\
+        7 & -8 & 0\\
+        8 & 8 & 8
+      \end{array}
+    \right]
+    \quad\text{og}\quad
+    D=\frac{1}{10}\left[
+      \begin{array}{rrr}
+        8 & 0 & 0\\
+        0 & -7 & 0\\
+        0 & 0 & 1
+      \end{array}
+    \right].$$
+    
+    Find the inverse of $P$. Afterwards, check (potentially using Python) that $L=PDP^{-1}$.
+	
+```{pyodide-python}
+import numpy
+from numpy.linalg import inv
+	
+P=1/8 * numpy.matrix(
+	[[8, 8, 0],
+	 [7, -8,...], # Fill in the remaining entries yourself
+	 [...]]
+)
+
+D = ... # Write the matrix yourself
+
+P @ D @ inv(P)
+```
+
+(@) Use the result from the previous item to rewrite $L^{10}$ such that only two matrix multiplications are needed. You need not compute the result.
+
+    :::{.callout-tip title="Hint" collapse=true}
+	$L^{10}=PDP^{-1}PDP^{-1}\cdots PDP^{-1}$. Use that $P^{-1}P=I$ along with the fact that $D^{10}$ is obtained by raising the diagonal elements to their tenth power.
+	:::
+
+(@) Use the expression from above and Python to compute the population after 10 years when the initial population is $\mathbf{v}=[5000,\, 4500,\, 3750]^T$. Do you expect the population to survive in the long term?
+
+```{pyodide-python}
+nYears = 10
+
+v = numpy.array([5000,4500,3750])
+## Write out the expression yourself. You can use the names
+## of the matrices defined in the previous code block.
+## Note that powers are written using ** instead of ^
+population = ??? 
+print('The population after {:} years is\n{:}'.format(nYears, population))
+```
