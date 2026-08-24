@@ -1,0 +1,188 @@
+---
+title: "Integraler i kemi og biologi"
+lang: da
+format:
+  html:
+    embed-resources: true
+    code-fold: true
+    include-after-body:
+      ../../../aux/footerDA.html
+filters:
+ - pyodide
+crossref:
+  sec-prefix: Delopgave
+---
+
+## Introduktion{-}
+I denne workshop skal I se på tre forskellige måder, integraler anvendes i kemi og biologi.
+
+
+## Delopgave 1: Delvis integration{#sec-opg1}
+Vi ser først på beregning af reaktionshastigheden $v(t)$ for en givet kemisk reaktion. Vi er interesserede en bestemt kemisk forbindelse og ønsker at bestemme ændringen i koncentration over tid. Derfor er $v(t)$ målt i $\frac{\mathrm{mol}}{Ls}$.
+Her vil vi arbejde med en proces, hvis reaktionshastighed er givet ved
+$$v(t)=\left(1+\frac{7}{2}t \right) e^{-\frac{3}{2}t}.$$
+
+1. Bestem den maksimale reaktionshastighed.
+
+1. Argumenter for, at reaktionshastigheden går mod nul, når tiden går mod uendelig.
+
+1. Koncentrationen af forbindelsen $c(t)$ til tid $t$ er givet ved integralet
+$$c(t)=\int_0^t v(s)\,\mathrm{d}s.$$
+Bestem et eksplicit udtryk for $c(t)$ ved at beregne integralet.
+
+   :::{.callout-tip title="Vink" collapse="true"}
+   Brug delvis integration, som siger
+   $$\int_a^b f(x)G(x)\,\mathrm{d}x = [F(x)G(x)]_{x=a}^b - \int_a^b F(x)g(x)\,\mathrm{d}x,$$
+   hvor $F$ og $G$ betegner stamfunktioner til $f$ og $g$. I kan også læse mere i afsnit&nbsp;6.1 af calculusbogen (Adams &amp; Essex).
+   :::
+   
+1. Bestem koncentrationen, når reaktionen er afsluttet.
+
+## Delopgave 2: Voluminer og hastigheder{#sec-opg2}
+I denne delopgave skal I se, hvordan integraler kan bruges til at bestemme flow af væske. Vi kigger specifikt på, hvor meget vand, der flyder gennem en flod, men tilsvarende beregninger kunne laves på f.eks. et kar i en kemisk produktion.
+
+Vi betragter et tværsnit af floden på en bestemt placering, hvor floden er $10\mathrm{m}$ bred. Vi antager at flodbunden i dette tværsnit kan beskrives ved
+$$p(x)=-\sin\left(\frac{\pi}{10}x\right)x,$$
+hvor $x=0$ og $x=10$ svarer til en bred på hver side af floden. Flodbunden $p(x)$ er illustreret ved den sorte kurve i plottene på @fig-hastigheder.
+
+1. Bestem arealet af flodens tværsnit.
+
+   :::{.callout-tip title="Vink" collapse="true"}
+   Brug delvis integration.
+   :::
+   
+1. Vi har målt vandets hastighed ved overfladen til at være $2\frac{\mathrm{m}}{\mathrm{s}}$. Udregn mængden af vand, der flyder gennem tværsnittet, under antagelse af, at hastigheden er konstant på hele tværsnittet.
+
+1. I praksis vil hastigheden variere afhængigt af positionen $(x,y)$ i tværsnittet. Vi indfører derfor en funktion $f(x,y)$, der beskriver vandets hastighed i punktet $(x,y)$. Valget af $f$ afhænger af flodens egenskaber (som I ser eksempler på i næste opgave).
+
+   Argumenter for, at vandmængden, der strømmer gennem tværsnittet er givet ved et dobbeltintegrale af $f(x,y)$ over tværsnittet. Opstil dette integrale.
+   
+   :::{.callout-tip title="Vink" collapse="true"}
+   Brug, at tværsnittet er $y$-simpelt.
+   :::
+
+1. Vi ser nu på to forskellige valg af $f$, som begge kan være fornuftige modeller alt efter floden og årstiden.
+
+    a. I nogle sammenhænge giver det mening at antage, at vandet strømmer hurtigst omkring midten af floden, og at hastigheden ikke afhænger af dybden. Som et specifikt eksempel tager vi $f_{\mathrm{midte}}(x,y)=5 e^{\frac{1}{5}(6-x)^2}$.
+	
+	b. Om vinteren når der er is på overfladen, er en simpel model for vandhastigheden, at bliver større jo længere vi kommer fra overfladen. Som eksempel bruger vi $f_{\mathrm{vinter}}(x,y)=-y$.
+
+   Kig på figurerne i @fig-hastigheder og afgør, hvilke plots, der svarer til de to valg af $f$ ovenfor.
+
+   ::: {#fig-hastigheder layout-ncol=2 layout-nrow=2}
+
+   ![](fig3.svg){width=100%}
+
+   ![](fig1.svg){width=100%}
+
+   ![](fig2.svg){width=100%}
+
+   ![](fig4.svg){width=100%}
+
+   Eksempler på niveaukurver for forskellige valg af $f(x,y)$.
+   :::
+
+1. Opstil dobbeltintegralet fra 3 med $f_{\mathrm{midte}}$ og $f_{\mathrm{vinter}}$, og omskriv det til et enkeltintegrale ved at beregne det indre integrale i hvert tilfælde.
+
+1. Brug nedenstående kode til at beregne vandgennemstrømningen for $f_{\mathrm{midte}}$ og $f_{\mathrm{vinter}}$ samt ved en konstant hastighed på $2\frac{\mathrm{m}}{\mathrm{s}}$. Brug omskrivningen til et enkeltintegrale som ovenfor.
+
+```{pyodide-python}
+## Hent de nødvendige programbiblioteker
+import numpy
+from numpy import exp, sin, pi
+from scipy.integrate import quad
+
+## Definer de tre funktioner, der skal integreres.
+## Bemærk, at x^2 skrives som x**2
+def fKonstant(x):
+	return ## Skriv selv en funktion ind her
+
+def fMidte(x):
+	return 5*exp(-(1/5)*(6-x)**2)*sin(pi/10*x)*x
+	
+def fVinter(x):
+	return ## Skriv selv en funktion ind her
+	
+## Funktionen 'quad' fra numpy beregner integraler.
+## Første input er funktionen, og de to næste er hhv.
+## nedre og øvre grænse.
+flowKonstant = quad(fKonstant, 0, 10)[0]
+flowMidte = quad(fMidte, 0, 10)[0]
+flowVinter = quad(fVinter, 0, 10)[0]
+
+print("Flow i floden:")
+print("Konstant:\t{:.2f}".format(flowKonstant))
+print("Midte:\t\t{:.2f}".format(flowMidte))
+print("Vinter:\t\t{:.2f}".format(flowVinter))
+```
+
+
+   
+## Delopgave 3: Normalfordelingen{#sec-opg3}
+Mange fænomener i naturen følger en normalfordeling, som beskrives ved en funktion på formen
+$$g(x)=Ne^{-\frac{(x-\mu)^2}{2\sigma^2}}.$$
+Her er $\mu$ og $\sigma$ to parametre, der beskriver kurvens form, mens $N$ er en normaliseringskonstant. Den skal have en helt bestemt værdi, for at $g$ kan bruges til at beskrive sandsynligheder.
+En del af denne opgave bliver at bestemme denne værdi af $N$.
+
+(@) Brug koden herunder til at undersøge, hvilken effekt $\mu$ og $\sigma$ har.
+
+```{pyodide-python}
+import numpy
+import matplotlib.pyplot as plt
+
+N = 1
+mu = 0
+sigma = 1
+
+def normalfordeling(x):
+	return N*numpy.exp(-(x-mu)**2/(2*sigma**2))
+
+x = numpy.linspace(-5,5, num=100)
+
+plt.close('all') # 'Luk' gamle plots, når koden køres flere gange
+fig, ax = plt.subplots()
+ax.plot(x, normalfordeling(x))
+plt.show()
+```
+
+Når $N$ er valgt rigtigt, vil integralet
+$$\int_a^b g(x)\,\mathrm{d}x$$
+beskrive sandsynligheden for, at et tilfældigt udtrukket normalfordelt tal (med parametre $\mu$ og $\sigma$) ligger i intervallet $(a,b)$.
+
+(@) Argumenter for, at med parametre som ovenfor, så må $g$ opfylde
+$$\int_{-\infty}^{\infty} g(x)\,\mathrm{d}x = 1.$${#eq-intNormal}
+
+    :::{.callout-tip title="Vink" collapse="true"}
+	Hvad er sandsynligheden for, at et tilfældigt udtrukket tal ligger i $(-\infty,\infty)$?
+	:::
+	
+Værdierne af $\mu$ og $\sigma$ kan ofte estimeres ud fra dataindsamling i et forsøg, så vi antager, at disse er kendte. For at forsimple beregningerne antager vi desuden, at $\mu=0$.
+Vi ønsker så at finde dét $N$, så $g$ beskriver en sandsynlighedsfordeling.
+
+(@) Brug @eq-intNormal til at vise, at
+$$N^{-1} = \int_{-\infty}^{\infty} e^{-\frac{x^2}{2\sigma^2}}\,\mathrm{d}x,$$
+og lav en passende substitution for at opnå
+$$\big(\sqrt{2}\sigma N\big)^{-1} = \int_{-\infty}^{\infty} e^{-x^2}\,\mathrm{d}x.$$
+
+    :::{.callout-tip title="Vink" collapse="true"}
+	Forsøg med $u=\frac{x}{\sqrt{2}\sigma}$.
+	:::
+	
+(@) Forsøg at lave substitutionen $u=x^2$ i integralet
+$$\int_{-\infty}^{\infty} e^{-x^2}\,\mathrm{d}x,$$
+og forklar, hvorfor dette ikke lader til at gøre integralet lettere.
+
+Vi prøver nu en anden strategi, hvor vi beregner integralet via polære koordinater.
+
+(@) Vis, at
+$$\left(\int_{-\infty}^\infty e^{-x^2}\,\mathrm{d}x\right)^2 = \int_{-\infty}^\infty \int_{-\infty}^\infty e^{-(x^2+y^2)}\,\mathrm{d}x\mathrm{d}y.$${#eq-omskriv}
+
+(@) Omskriv @eq-omskriv til polære koordinater, og brug substitutionen $u=r^2$ i stil med opgave 4 til at beregne integralet.
+
+    Hvorfor virker substitutionen nu?
+	
+(@) Udnyt dine observationer til at bestemme værdien af $N$, så $g$ opfylder @eq-intNormal.
+
+<!-- Local Variables: -->
+<!-- ispell-local-dictionary: "da_DK" -->
+<!-- End: -->
