@@ -1,0 +1,184 @@
+---
+title: "Telegrafligningen"
+lang: da
+format:
+  html:
+    embed-resources: true
+    code-fold: true
+    include-after-body:
+      ../../../aux/footerDA.html
+filters:
+ - pyodide
+crossref:
+  sec-prefix: Delopgave
+---
+
+# Introduktion{-}
+Denne workshop omhandler anvendelsen af komplekse tal ved løsning af partielle differentialligninger.
+Vi er interesserede i at finde løsninger med _fysisk relevans_ til den såkaldte telegrafligning:
+$$\frac{\partial^2 V}{\partial x^2}(x,t)=RC\frac{\partial V}{\partial t}(x,t)+LC\frac{\partial^2 V}{\partial t^2}(x,t).$${#eq-1}
+
+Her er $x\geq 0$ et punkt på telegrafens ledning og $t\geq 0$ er tiden, mens $R$ (resistans), $C$ (kapacitans) og $L$ (induktans) er tre ikke-negative konstanter. $V(x,t)$ betegner den ukendte elektriske spænding. Fysisk relevans betyder her, at  løsningerne har reelle værdier, er mindst to gange differentiable og _begrænsede af en konstant_, når $x$ vokser.
+
+Workshoppen består af tre delopgaver. De første to håndterer teorien bag konstruktionen af fysiske løsninger til telegrafligningen, mens den tredje bruger Python til at illustrere, hvordan impedansen opfører sig som funktion af frekvensen. 
+
+# Delopgave 1{#sec-opg1}
+1. Her antager vi, at $R=0$ og $LC>0$. Lad $F$ være en vilkårlig reel funktion som er to gange differentiabel. Vis, at $V(x,t)=F(x\pm t/\sqrt{LC})$ løser telegrafligningen. 
+
+   :::{.callout-tip title="Vink" collapse=true}
+   Vis, at $\dfrac{\partial^2 V}{\partial x^2}(x,t)=F''(x\pm t/\sqrt{LC})$ og $\dfrac{\partial^2 V}{\partial t^2}(x,t)= \frac{1}{LC}F''(x\pm t/\sqrt{LC})$.
+   :::
+
+1. Fra nu af antager vi at $R>0$. Antag, at $U(x,t)$ er en givet løsning til @eq-1 som har komplekse værdier. Med andre ord eksisterer der to reelle funktioner $U_1(x,t)$ og $U_2(x,t)$ således at $U(x,t)=U_1(x,t)+i U_2(x,t)$. Vis, at både $U_1$ og $U_2$ løser @eq-1.
+
+   :::{.callout-tip title="Vink" collapse=true}
+   Brug lineariteten af ligningen og at koefficienterne er reelle tal.
+   :::
+   
+1. Lad $k=a+i b$ være et komplekst tal, hvor $a$ og $b$ er reelle.  Lad $\omega>0$ være reelt. Vis, at realdelen af funktionen $U(x,t)=e^{i(kx-\omega t)}$ er givet ved
+$$\mathrm{Re}\, U(x,t)=e^{-bx}\cos(ax-\omega t).$${#eq-2}
+
+   :::{.callout-tip title="Vink" collapse=true}
+   Brug $e^{i(kx-\omega t)}=e^{i(ax-\omega t)}e^{-bx}$ og Eulers formel.
+   :::
+
+# Delopgave 2{#sec-opg2}
+Ud fra @eq-2 ser vi, at det kun er i tilfældet $b\geq 0$, at funktionen på den højre side af ligheden er begrænset for alle $x\geq 0$ og $t\geq 0$. I denne delopgave skal vi konstruere fysiske løsninger til @eq-1 ved at bruge den følgende strategi:
+
+A. Givet $\omega>0$, finder vi $k=a+ib$ med $b\geq 0$ således at $e^{i(kx-\omega t)}$ er en løsning
+
+B. Vi beholder kun realdelen af $k$
+
+
+Spørgsmålene herunder guider jer igennem brugen af denne strategi.
+
+1. Betragt $U(x,t)=e^{i(kx-\omega t)}$. Vis, at 
+$$\frac{\partial U}{\partial x}(x,t)=ik U(x,t),\quad \frac{\partial U}{\partial t}(x,t)=-i\omega  U(x,t),$$
+og 
+$$\frac{\partial^2 U}{\partial x^2}(x,t)=-k^2 U(x,t),\quad \frac{\partial^2 U}{\partial t^2}(x,t)=-\omega^2  U(x,t).$$
+
+1. Vis, at $U(x,t)$ løser @eq-1, hvis
+$$k^2=\omega^2 LC +i\omega RC.$${#eq-3}
+
+1. \label{item:equivalentySystem}
+  Vi sætter $\alpha=\omega^2 LC$ og $\beta=\omega RC$. Vis, at ligningen $(a+ib)^2=\alpha+i\beta$ er ækvivalent med systemet 
+$$a^2-b^2=\alpha,\quad 2ab=\beta.$$
+
+1. \label{item:sumSquaresIsSqrt}
+  Vis med udgangspunkt i formlen $\vert (a+ib)^2\vert=\vert a+ib\vert^2$ anvendt i forbindelse med den venstre side af @eq-3, at 
+$$a^2+b^2=\sqrt{\alpha^2+\beta^2}.$$
+
+1. Brug de to foregående spørgsmål til at vise, at 
+$$a^2=(\sqrt{\alpha^2+\beta^2}+\alpha)/2\quad  \text{og}\quad  b^2=(\sqrt{\alpha^2+\beta^2}-\alpha)/2.$$
+
+
+Fordi $2ab=\beta>0$, så må  $a$ og $b$ have samme fortegn. For at have en fysisk løsning som forbliver begrænset, når $x$ bliver større og større, kræves det, at $b> 0$, hvilket medfører $a>0$ og:
+$$\begin{align*}
+a&=\bigg(\omega \sqrt{\omega^2(LC)^2+(RC)^2}+
+\omega^2 LC\bigg)^{1/2}/\sqrt{2},\\[0.5em]
+  b&=\bigg(\omega \sqrt{\omega^2(LC)^2+(RC)^2}
+-\omega^2 LC\bigg)^{1/2}/\sqrt{2}.
+\end{align*}$$
+
+
+
+# Delopgave 3{#sec-opg3}
+Vi bruger nu Python til at undersøge $a$ og $b$, når $\omega$ vokser. Dette skal I benytte til at undersøge _impedansen_ i systemet.
+For at lave de forskellige plots, kan I bruge de tilhørende kodeblokke.
+
+1. Vis, at $b$ kan omskrives til
+$$\omega\; \sqrt{\frac{ LC}{2} }\; \bigg( \sqrt{1+R^2/(L\omega)^2}-1\bigg)^{1/2}.$$
+
+1. Brug identiteten $(A-1)(A+1)=A^2-1$ for at vise, at $b$ kan omskrives til
+$$R \; \sqrt{\frac{ C}{2L} }\;\frac{1}{\Big( \sqrt{1+R^2/(L\omega)^2}+1\Big)^{1/2}}.$$
+
+   Lad $R=C=L=1$ og plot $b$ som funktion af $\omega>1$. Hvad sker der med værdien af $b$, når $\omega$ bliver meget stor?
+   
+   ```{pyodide-python}
+   import numpy
+   from numpy import sqrt
+   import matplotlib.pyplot as plt
+   
+   ## Definer konstanterne
+   R = 1
+   C = 1
+   L = 1
+   
+   ## Definer b som funktion af omega
+   def b(omega):
+   	return R*sqrt(C/(2*L))/sqrt(sqrt(1 + R**2/(L*omega)**2) + 1)
+   	
+   ## Generer 100 værdier af omega mellem 1 og 10,
+   ## og evaluer b i disse værdier
+   omegas = numpy.linspace(1, 10, num=100)
+   bs = [ b(omega) for omega in omegas ]
+   
+   
+   ## Lav selve plottet
+   plt.close('all')
+   fig, ax = plt.subplots()
+   ax.plot(omegas, bs)
+   ax.set_xlabel("$\\omega$")
+   ax.set_ylabel("$b$")
+   plt.show()
+   ```
+   
+1. Vis, at 
+$$\frac{a}{\omega}=\sqrt{\frac{ LC}{2} }\; \left( \sqrt{1+R^2/(L\omega)^2}+1\right)^{1/2}.$$
+
+   Lad $R=C=L=1$ og plot $a/\omega$ som funktion af $\omega>1$. Hvad sker der med værdien af $a/\omega$, når $\omega$ bliver meget stor?
+   
+   ```{pyodide-python}
+   ## Definer konstanterne
+   R = 1
+   C = 1
+   L = 1
+   
+   def a(omega):
+   	return omega*sqrt(L*C/2)*sqrt(sqrt(1+R**2/(L*omega)**2) + 1)
+   	
+   omegas = numpy.linspace(1, 10, num=100)
+   ys = [ a(omega)/omega for omega in omegas ]
+   
+   plt.close('all')
+   fig, ax = plt.subplots()
+   ax.plot(omegas, ys)
+   ax.set_xlabel("$\\omega$")
+   ax.set_ylabel("$\\frac{a}{\\omega}$")
+   plt.show()
+   ```
+
+1. _Impedansen_ i dette system er defineret som $Z(\omega)=\dfrac{k}{C\omega}$. Lad $R=C=L=1$. Plot 
+$$\omega^2\left \vert Z(\omega)-1-\frac {1}{2\omega} i \right\vert$$
+som funktion af $\omega>1$. Du kan bruge kodeblokken herunder, hvis du skriver funktionsudtrykket ind, hvor der står `???`.
+
+   Hvad sker der med dens værdi når $\omega$ bliver stor?
+
+   ```{pyodide-python}
+   ## Definer konstanterne
+   R = 1
+   C = 1
+   L = 1
+   
+   def Z(omega):
+   	return (a(omega) + 1j*b(omega))/(C*omega)
+   
+   def f(omega):
+	## Bemærk, at numpy.abs giver modulus, hvis inputtet
+   	## er komplekst
+   	return ???
+   	
+   omegas = numpy.linspace(1, 10, num=100)
+   fs = [ f(omega) for omega in omegas ]
+   
+   plt.close('all')
+   fig, ax = plt.subplots()
+   ax.plot(omegas, fs)
+   ax.set_xlabel("$\\omega$")
+   plt.show()
+   ```
+
+<!-- Expression for f(omega): omega**2 *numpy.abs(Z(omega) - 1 - 1j/(2*omega)) -->
+<!-- Local Variables: -->
+<!-- ispell-local-dictionary: "da_DK" -->
+<!-- End: -->
