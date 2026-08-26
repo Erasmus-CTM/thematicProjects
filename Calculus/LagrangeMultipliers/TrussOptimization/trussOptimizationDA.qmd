@@ -1,0 +1,246 @@
+---
+title: "Kraftminimering i stangsystemer"
+lang: da
+format:
+  html:
+    embed-resources: true
+    code-fold: true
+    include-after-body:
+      ../../../aux/footerDA.html
+filters:
+ - pyodide
+crossref:
+  sec-prefix: Delopgave
+---
+
+## Introduktion{-}
+På @fig-stangsystemer ses et eksempel på et _stangsystem_ som en del af en bygningskonstruktion.
+Et stangsystem er en særligt simpel model, da det kan beskrives uden differentialligninger. Hver stang er forbundet i sine endepunkter, enten til andre stænger eller til en understøtning. Ud fra geometrien og de ydre kræfter på systemet ønsker vi at regne på de interne kræfter i stængerne samt de tilsvarende forskydninger af deres endepunkter.
+I denne workshop skal vi se, hvordan optimering helt naturligt optræder i forbindelse med denne type mekanisk system.
+
+Tilstanden af et mekanisk system kan beskrives ved hjælp af betingede eller ubetingede energiminimeringsprincipper. Kræfterne vil nemlig fordeles i stængerne på en måde som minimerer energien i systemet. Et vigtigt spørgsmål er derfor, hvor meget kraft hver enkelt stang vil opleve, så vi kan undgå, at materialet går i stykker &ndash; at _reversible elastiske_ deformationer bliver _ikke-reversible plastiske_ deformationer. Samtidigt ønsker vi typisk at minimere materialeforbruget for at gøre konstruktionen lettere eller billigere.
+For at holde det simpelt ser vi bort fra mange andre måder, der påvirker stangsystemer, såsom statisk og dynamisk ustabilitet i form af knækning, bukning eller resonanser.
+
+![Metrostationen ved Boston Logan Airport har tydeligt et stangsystem som en del af konstruktionen. Billedet er taget af WikiMedia-brugeren [Pi.1415926535](https://commons.wikimedia.org/wiki/File:Outbound_train_at_Airport_station,_December_2024.jpg), og udgivet under en [CC BY-SA-licens](https://creativecommons.org/licenses/by-sa/4.0/deed.en).](Outbound_train_at_Airport_station,_December_2024.jpg){width=80% #fig-stangsystemer}
+
+## Notation
+Vi får behov for en del notation for at beskrive stængerne og deres knudepunkter matematisk. Dette afsnit samler de nødvendige definitioner.
+
+### Stænger
+Vi betragter et system med $M$ stænger. For hvert indeks $i\in\{1,\ldots,M\}$ noteres længden af stang $i$ med $\ell_i>0$, mens dens Youngs modul og tværsnitsareal noteres med henholdsvist $E_i>0$ og $A_i\geq 0$. Her betyder $A_i=0$, at stangen er fjernet fra systemet.
+De interne kræfter i stang $i$ betegnes med $q_i$, hvor negative kræfter betegner tryk, og positive kræfter betegner træk. Vi har desuden, at spændingen $\sigma_i$ er defineret ud fra ligningen
+$$q_i=A_i\sigma_i.$${#eq-qi}
+
+### Knudepunkter
+Vi betegner antallet af knuder i systemet med $N$. Disse kan opdeles i frit bevægelige knuder og fastgjorte knuder. Vi betegner mængden af frit bevægelige knuder med $J_{\mathrm{fri}}\subsetneq\{1,\ldots,N\}$, mens mængden af de fastgjorte knuder noteres med $J_{\mathrm{fast}}=\{1,\ldots,N\}\setminus J_{\mathrm{fri}}$. I $d$ dimensioner medfører dette, at vi for ethvert punkt $j=1,\ldots,N$ har en position $\mathbf{x}_j=\langle x_{j,1},\ldots,x_{j,d}\rangle\in\mathbb{R}^d$, hvor systemet er i ro. Derudover har vi enten en forskydningsvektor $\mathbf{u}_j=\langle u_{j,1}, \ldots, u_{j,d}\rangle\in\mathbb{R}^d$ eller en vektor af eksterne kræfter $\mathbf{f}_j=\langle f_{j,1},\ldots, f_{j,d}\rangle\in\mathbb{R}^d$.
+
+### Hookes lov
+Betragt en stang $i\in\{1,\ldots,M\}$ med knudepunkter $j_i^+$ og $j_i^-$.^[Hvilket knudepunkt, der kaldes hvad, er underordnet. Det er dog vigtigt, at man for hver stang har valgt en `retning' og bruger den samme retning gennem alle udregninger.]
+Heraf kan vi beregne stangens længde $\ell_i=\lVert\mathbf{x}_{j_i^+}-\mathbf{x}_{j_i^-}\rVert$ samt retningsvektor $\mathbf{n}_i=(\mathbf{x}_{j_i^+}-\mathbf{x}_{j_i^-})/\ell_i$. Derudover kan tøjningen (på engelsk: _strain_) for stang $i$ bestemmes ved
+$$\varepsilon_i = \frac{(\mathbf{u}_{j_i^+}-\mathbf{u}_{j_i^-})\cdot\mathbf{n}_i}{\ell_i},$$
+mens spændingen ud fra @eq-qi er givet ved $\sigma_i = q_i/A_i$.
+På denne måde kan Hookes lov $\sigma_i = E_i\varepsilon_i$ for stang $i$ omskrives til
+$$\frac{\ell_i q_i}{E_iA_i} - (\mathbf{u}_{j_i^+}-\mathbf{u}_{j_i^-})\cdot\mathbf{n}_i.$${#eq-hooke}
+
+### Kraftligevægt
+For hvert knudepunkt $j\in J_{\mathrm{fri}}$ skal vi sikre os, at kraftpåvirkningerne fra de stænger, der er forbundet med $j$ udligner hinanden &ndash; ellers er systemet ikke statisk.
+For at modellere dette lader vi $I^+(j)$ betegne mængden af stænger, hvor $j=j_i^+$, mens $I^-(j)$ er mængden af stænger med $j=j_i^-$. Da er kraftligevægtsbetingelserne givet ved
+$$\sum_{i\in I^+(j)}q_i \mathbf{n}_i - \sum_{i\in I^-(j)}q_i\mathbf{n}_i = \mathbf{f}_j\quad\text{for alle } j\in J_{\mathrm{fri}}.$${#eq-equilibrium}
+
+## Delopgave 1{#sec-opg1}
+På @fig-truss ses en tegning af et stangsystem med $M=2$ og $N=3$, hvor der kun er én frit bevægelig knude. Altså, $J_{\mathrm{fri}}=\{2\}$. Betragt systemet i dimension $d=2$ og antag, at $\mathbf{x}_1=\langle 0,0\rangle$, $\mathbf{x}_2=\langle 1,0\rangle$ og $\mathbf{x}_3=\langle 3,0\rangle$, samt at den ydre kraft er $\mathbf{f}_2 = \langle 1,0\rangle$. Igennem opgaven antager vi $E_1=E_2=1$, $A_1=1$ og $A_2=2$.
+
+![Et stangsystem med to stænger I og II med knudepunkter 1, 2 og 3.](truss.svg){#fig-truss width=50%}
+
+Vi ønsker at bestemme $q_i$ for de to stænger på to forskellige måder.
+
+1. Beregn $\ell_i$ og $\mathbf{n}_i$ for $i=1,2$, og opskriv ligningerne @eq-hooke og @eq-equilibrium for stangsystemet.
+
+   Løs ligningssystemet for at bestemme $q_1$, $q_2$ og $\mathbf{u}_2$.
+   
+1. Det kan vises, at den potentielle energi i stang $i$ er givet ved $\frac{\ell_i q_i^2}{2E_i A_i}$. For at minimere energien i systemet, skal vi derfor løse
+$$\begin{align*}
+\operatorname*{minimer}_{(q_1,\ldots,q_M)\in\mathbb{R}^M} \quad& \sum_{i=1}^M \frac{\ell_i q_i^2}{2E_i A_i}\\
+\text{under bibetingelserne} \quad& \sum_{i\in I^+(j)}q_i \mathbf{n}_i - \sum_{i\in I^-(j)}q_i\mathbf{n}_i = \mathbf{f}_j\quad\text{for alle } j\in J_{\mathrm{fri}}
+\end{align*}$${#eq-minimization}
+
+   Opskriv @eq-minimization for stangsystemet i @fig-truss.
+   
+1. Anvend Lagrange-multiplikatorer til løse optimeringsproblemet og bestemme $q_1$, $q_2$ og Lagrange-multiplikatoren $\lambda$.
+
+   Kontrollér, at $q_1$ og $q_2$ er de samme som fra første del af opgaven. Kan man sige noget om sammenhængen mellem Lagrangemultiplikatoren og forskydningerne?
+
+
+## Delopgave 2{#sec-opg2}
+Mens vi i @sec-opg1 antog, at tværsnitsarealerne var kendte, og vi deraf bestemte den elastiske respons af systemet, vil vi i denne opgave _designe_ et stangsystem ved at finde de optimale værdier af $A_i\geq 0$.
+
+Betydningen af &lsquo;optimal&rsquo; afgøres af objektfunktionen givet ved
+$$F(A_1,\ldots,A_M) = c_1\ell_1 A_1 + \cdots + c_M\ell_M A_M,$$
+hvor $c_i\in\mathbb{R}$ er konstanter. Hvis vi f.eks. er interesserede i at minimere stangsystemets totalvægt, svarer det til at sætte $c_i=\rho_i$, hvor $\rho_i$ er massefylden for materialet af stang $i$. Alternativt kunne man sætte $c_i$ til at være prisen per kubikmeter for stang $i$'s materiale, hvorved vi minimener omkostningen af konstruktionen.
+
+Vi betragter igen systemet på @fig-truss, men lader nu tværsnitsarealerne være ukendte.
+
+(@) Antag, at $A_1>0$ og $A_2=0$. Kontroller, at denne antagelse svarer til $(q_1,q_2)=(1,0)$.
+
+    :::{.callout-tip title="Vink 1" collapse=true}
+    Brug @eq-qi for at bestemme $q_2$.
+    :::
+
+    :::{.callout-tip title="Vink 2" collapse=true}
+    Brug derefter @eq-equilibrium til at bestemme $q_1$.
+    :::
+   
+Tilsvarende kan man vise, at $A_1=0$ og $A_2>0$ medfører $(q_1,q_2)=(0,-1)$.
+
+(@) Antag nu, at $A_1>0$ og $A_2>0$. Fra @sec-opg1 ved I, at $q_2=q_1-1$, hvilket kan indsættes i @eq-minimization for at opnå et minimeringsproblem, der kun afhænger af én variabel, og ikke har nogen bibetingelser.
+
+    Bestem derfor $q_1$ som funktion af $A_1>0$ og $A_2>0$ ved at bruge @eq-minimization. Bestem derefter minimum for denne funktion, og beregn til sidst $q_2$ ud fra betingelsen $q_2=q_1-1$.
+	
+	:::{.callout-tip title="Vink" collapse=true}
+	I opnår en funktion $f(q_1)$, og denne kan minimeres ved at løse $f'(q_1)=0$.
+	:::
+	
+Vi indfører nu ekstra bibetingelser for at sikre, at spændingen i hver stang ligger indenfor et forudbestemt interval:
+$$ -\underline{\sigma}_i A_i \leq q_i(A_1,\ldots, A_m)
+\quad\text{og}\quad
+q_i(A_1,\ldots, A_M)\leq \overline{\sigma}_i A_i.$${#eq-boundStrain}
+Bemærk, at vi her understreger, at $q_i$ afhænger af de valgte tværsnitsarealer. I @eq-boundStrain angiver $\underline{\sigma}_i\geq 0$ den største tilladte spænding for materiale $i$ under tryk, mens $\overline{\sigma}_i\geq 0$ angiver den største tilladte spænding under træk.
+For nogle materialer (såsom stål eller træ) gælder $\overline{\sigma}_i>\underline{\sigma}_i$, mens det for andre materialer (såsom beton) er lige omvendt.
+
+(@) Antag, at $\underline{\sigma}_1 = \underline{\sigma}_2 = 1$ og $\overline{\sigma}_1 = \overline{\sigma}_2 = 2$ i vores 2-stangsystem på @fig-truss. Skitser det brugbare område for optimeringsproblemet.
+
+    :::{.callout-tip title="Vink" collapse=true}
+	Det brugbare område er alle punkter $(A_1,A_2)$ i et koordinatsystem som både opfylder $A_i\geq 0$ og betingelserne @eq-boundStrain.
+	
+	Bemærk, at formlerne for $q_1$ og $q_2$ er anderledes, hvis enten $A_1=0$ eller $A_2=0$.
+	:::
+	
+	Diskuter, om det giver mening at betragte tilfældet, hvor $A_1=A_2=0$ i forbindelse med optimeringsproblemet @eq-minimization.
+
+Vi samler nu vores observationer i optimeringsproblemet
+$$\begin{align*}
+\operatorname*{minimer}_{(A_1,\ldots,A_M)\in\mathbb{R}^M} \quad & F(A_1,\ldots,A_M)=c_1\ell_1 A_1+\cdots + c_M\ell_M A_M\\
+\text{under bibetingelserne} \quad& -\underline{\sigma}_i A_i \leq q_i(A_1,\ldots, A_m),& i=1,\ldots,M\\
+& q_i(A_1,\ldots, A_M)\leq \overline{\sigma}_i A_i,& i=1,\ldots,M\\
+& A_i\geq 0 & i=1,\ldots,M
+\end{align*}$${#eq-minimizeArea}
+hvor $q_i(A_1,\ldots,A_M)$ betegner de interne kræfter som funktioner af $A_1,\ldots,A_M$.
+
+(@) Antag yderligere, at $c_1=c_2=1$ for systemet på @fig-truss. Løs optimeringsproblemet @eq-minimizeArea grafisk ved hjælp af jeres skitse over det brugbare område fra tidligere. Altså: bestem det punkt på tegningen, hvor $c_1\ell_1 A_1 + c_2\ell_2 A_2$ er mindst mulig om samtidigt indenfor det brugbare område.
+
+    :::{.callout-tip title="Vink" collapse=true}
+	Skitser niveaukurver af objektfunktionen $F(A_1,A_2)$ oven på det brugbare område.
+	:::
+	
+	Hvordan ændrer den optimale løsning &ndash; og dermed værdien af objektfunktionen &ndash; sig, hvis vi erstatter de nedre grænser $A_i\geq 0$ med $A_i\geq \delta$, hvor $\delta>0$ er et lille positivt tal?
+
+## Delopgave 3{#sec-opg3}
+I denne opgave skal I bruge Python til at løse @eq-minimizeArea numerisk. For at undgå mulige singulariteter (som division med 0) gør vi som i sidste del af @sec-opg2, og erstatter den nedre grænse $A_i\geq 0$ med $A_i\geq\delta$, hvor $\delta>0$ er et lille positivt tal.
+
+1. Indtast først formlerne for $q_1$ og $q_2$ som funktion af $A=[A_1, A_2]$. Bemærk, at Python indekserer fra 0, så $A_1$ skrives <code>A[0]</code>, mens $A_2$ skrives <code>A[1]</code>.
+
+   ```{pyodide-python}
+   def q1(A):
+       return A[0]/??? ## Fortsæt selv
+	
+   def q2(A):
+       return ??? ## Fortsæt selv
+   ```
+   
+   :::{.callout-tip title="Vink" collapse=true}
+   Husk, at vi har antaget $A_i\geq\delta>0$.
+   :::
+   
+1. Gennemgå og kør derefter nedenstående kodeblok for at køre den numeriske optimeringsalgoritme. Finder den samme løsning, som I beregnede i @sec-opg2?
+
+   ```{pyodide-python}
+   from scipy.optimize import minimize
+   
+   ## Definer grænser på tværsnit
+   delta = 1e-6
+   ALower = [delta, delta]
+   AUpper = [None, None] # Ingen øvre begrænsning
+   
+   ## Definer grænser på træk/tryk
+   sigmaTension = 2.0
+   sigmaCompress = 1.0
+   
+   ## Definer objektfunktionen
+   def F(A):
+       return A[0] + A[1]
+   
+   ## Definer bibetingelserne som funktioner af A.
+   ## Optimeringsalgoritmen kræver, at hver bibetingelse har
+   ## formen g(A)>=0 for en passende funktion g -- hver af de
+   ## fire funktioner herunder er netop sådan et g.
+   def b1Tension(A):
+      return -q1(A) + sigmaTension * A[0]
+      
+   def b2Tension(A):
+       return -q2(A) + sigmaTension * A[1]
+   	
+   def b1Compress(A):
+       return q1(A) + sigmaCompress * A[0]
+   	
+   def b2Compress(A):
+       return q2(A) + sigmaCompress * A[1]
+   	
+   ## Saml bibetingelserne til ét objekt
+   cons = (
+       {"type": "ineq", "fun": b1Tension},
+       {"type": "ineq", "fun": b2Tension},
+       {"type": "ineq", "fun": b1Compress},
+       {"type": "ineq", "fun": b2Compress}
+   )
+   
+   ## Algoritmen skal bruge et startgæt på A
+   ## (vi kan vælge det mere eller mindre tilfældigt)
+   AStart = (10, 10)
+   
+   optimering = minimize(
+       F,
+       AStart,
+       method = "SLSQP",
+       bounds = ((ALower[0], AUpper[0]), (ALower[1], AUpper[1])),
+       constraints = cons,
+       options = {"ftol": 1e-8, "eps": 1e-8, "maxiter": 100, "disp": True}
+   )
+   
+   print("A1 = {:.4f}, A2 = {:.4f}".format(optimering.x[0], optimering.x[1]))
+   ```
+   
+1. For at undgå numeriske problemer, kan det nogle gange være en fordel at slække en smule på bibetingelserne. I dette tilfælde kunne man f.eks. erstatte spændingsbegrænsningerne med
+$$ -\underline{\sigma}_i A_i - \delta^{1/2} \leq q_i(A_1,\ldots, A_m)
+\quad\text{og}\quad
+q_i(A_1,\ldots, A_M)\leq \overline{\sigma}_i A_i + \delta^{1/2}.$$
+Altså tillader vi, at materialet kommer under lidt ekstra tryk eller lidt ekstra træk. Men når $\delta$ er meget lille, vil denne slækkelse ikke have nogen praktisk betydning. Til gengæld kan den hjælpe, hvis der er små afrundingsfejl i computeren.
+
+   Kør koden herunder, der implementerer denne ændring. Giver algoritmen en bedre tilnærmelse til det optimum, I fandt tidligere?
+
+   ```{pyodide-python}
+   def weakenBound(f, d):
+       return lambda A: f(A) + d**(1/2)
+	
+   ## Saml bibetingelserne til ét objekt
+   cons = (
+       {"type": "ineq", "fun": weakenBound(b1Tension, delta)},
+       {"type": "ineq", "fun": weakenBound(b2Tension, delta)},
+       {"type": "ineq", "fun": weakenBound(b1Compress, delta)},
+       {"type": "ineq", "fun": weakenBound(b2Compress, delta)}
+   )
+   
+   optimering = minimize(
+       F,
+       AStart,
+       method = "SLSQP",
+       bounds = ((ALower[0], AUpper[0]), (ALower[1], AUpper[1])),
+       constraints = cons,
+       options = {"ftol": 1e-8, "eps": 1e-8, "maxiter": 100, "disp": True}
+   )
+   
+   print("A1 = {:.4f}, A2 = {:.4f}".format(optimering.x[0], optimering.x[1]))
+   ```
+
+<!-- Local Variables: -->
+<!-- ispell-local-dictionary: "da_DK" -->
+<!-- End: -->
