@@ -1,0 +1,122 @@
+---
+title: "Spectral unmixing"
+lang: en-GB
+engine: markdown
+format:
+  html:
+    embed-resources: true
+    standalone: true
+    include-after-body:
+      ../../../aux/footerEN.html
+crossref:
+  sec-prefix: Exercise
+---
+
+# Introduction{-}
+In _absorption spectroscopy_, light with a specific frequency is sent through a material that we wish to analyse. Depending on the composition of the material, light will be absorbed more at some frequencies compared to others. For instance, @fig-plot shows the spectra of two different sugar compounds.
+The absorption in a mix depends on the concentration of the individual materials, the frequency of the light, and the distance the lights travels through the material.^[The Lambert-Beer law is a physical model stating that the absorption is proportional to the concentration, the path length through the material, and a molar attenuation coefficient.]
+
+Within _spectral unmixing_, the goal is to determine the individual concentrations of chemical components based on the spectrum of a mixture of materials with known spectra.
+Based on the measurements in @fig-plot, one could for instance imagine determining the concentration of the two compounds in an unknown sugar mixture.
+
+![An example of spectral measurements of two different sugar compounds. The plot is generated from two different datasets ([Beta-D-lactose](https://ramanbase.org/spectra/135293), [D-ribose](https://ramanbase.org/spectra/134366)) from Raman Base^[Raman Base: Open online database of Raman Spectra. Institute of Scientific Instruments of the Czech Academy of Sciences, Brno, Czech Republic. Accessible at [https://ramanbase.org/](https://ramanbase.org/)] published under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) with a non-commercial restriction.](plotEN.svg){#fig-plot width=90% fig-alt="Raman spectra for two different sugar compounds."}
+
+We imagine that we have performed $n$ experiments with (that is, sent light through) a mixture of $m$ materials in various solutions and at $p$ frequencies. The results of the experiment are collected in an $n\times p$-matrix $D$, where each row represents an absorption experiment using the chosen frequencies. Our goal is to determine the individual concentrations of the $m$ materials.
+
+The process can be described by two real matrices $C$ and $S$. $C$ is an $n\times m$-matrix containing the unknown concentrations in such a way that each column corresponds to a material, and each row corresponds to an experiment with a certain solution of materials.
+$S$, on the other hand, is a known $p\times m$-matrix with so-called _pure component spectra_, containing coefficients of proportionality at specific frequencies. That means that we have measured the potential components (think of lactose and ribose as in @fig-plot) separately and know the absorption at different frequencies.
+These frequencies are chosen such that there is only a single component that is strongly absorbent &ndash; in @fig-plot, lactose is for instance seen to have a strong peak around 350, while ribose has one around 550. The idea is to use this to determine the concentrations in the unknown solution.
+
+In total, the measurements are given by an $n\times p$-matrix
+$$D=CS^\top.$$
+From this, it is seen that $DS=CS^\top\! S$. If the matrix $S^\top\! S$ is invertible, then we can utilize this to determine $C$ from $D$ and $S$ since
+$$C = DS(S^\top\! S)^{-1}$${#eq-CSolve}
+in this case.
+Therefore, we analyse when $S^\top\! S$ is invertible. In practice, one would have measurement errors on $D$, which makes the estimation of $C$ more cumbersome than in @eq-CSolve. Here, however, we ignore such measurement errors to make the computations doable by hand.
+
+:::{.callout-note title="Note"}
+In mathematics, _spectrum_ is sometimes used to describe the set of eigenvalues of a matrix. This is not the same meaning of _spectrum_ as used in spectroscopy like in this workshop.
+:::
+
+# Exericse 1{#sec-opg1}
+In this exercise, we consider a toy example with specific matrices $D$ and $S$. To make the computations easier to perform by hand, the matrices do not come from an actual spectroscopy measurement. Let
+$$D=\left[
+    \begin{array}{rrr}
+      2 & 1 & -4\\
+      2 & 3 &  0\\
+      6 & 1 &  2\\
+      4 & 0 & -6
+    \end{array}
+  \right]
+  \quad\text{and}\quad
+  S=\left[
+    \begin{array}{rrr}
+      2 &  2 &  0\\
+      1 & -1 &  2\\
+      2 & -2 & -2
+    \end{array}\right].$$
+
+
+1. Show by direct calculation that the matrix $S^\top\! S$ is given by
+$$S^\top\! S=\left[
+      \begin{array}{rrr}
+         9 & -1 & -2\\
+        -1 &  9 &  2\\
+        -2 &  2 &  8
+      \end{array}
+    \right].$$
+  
+
+1. Show that $\mathbf{v}_1=[1,\, -1,\, 2]^\top$ and $\mathbf{v}_2=[1,\, -1,\,-1]^\top$ are eigenvectors of $S^\top\! S$. What are the corresponding eigenvalues?
+  
+1. It turns out that the characteristic polynomial for $S^\top\! S$ is given by
+$$-(\lambda-12)(\lambda-8)(\lambda-6).$$
+
+   Use this information to determine the remaining eigenvalue of $S^\top\! S$, and determine the (why can there by only one?) corresponding eigenvector.
+
+1. Utilize the results from 2 and 3 to write out a diagonalization for $S^\top\! S$.
+
+1. Use the diagonalization from above to find the inverse matrix $(S^\top\! S)^{-1}$. Afterwards, determine $C$ via @eq-CSolve.
+
+# Exercise 2{#sec-opg2}
+We now consider in greater generality when $S^\top\! S$ is invertible.
+
+1. Explain that a vector $\mathbf{v}\neq\mathbf{0}$ is in the null space of $S^\top\! S$ if and only if $\mathbf{v}$ is an eigenvector for $S^\top {S}$ with eigenvalue $0$.
+
+   Argue that when such an eigenvector $\mathbf{v}$ exists, it must be the case that $\dim\mathrm{Null}(S^\top\! S)\geq 1$.
+
+1. Use the observation above to argue that $S^\top\! S$ has full rank if and only if all of its eigenvalues are non-zero.
+
+   :::{.callout-tip title="Hint" collapse=true}
+   Use the rank-nullity theorem.
+   :::
+
+1. Recall that $S$ is a $p\times m$-matrix. Can $S^\top\! S$ be invertible if $m>p$?
+
+   :::{.callout-tip title="Hint" collapse=true}
+   If $S\mathbf{v}=\mathbf{0}$, we also have $S^\top\! S\mathbf{v}=\mathbf{0}$. Is it then possible for $S^\top\! S$ have full rank if $S$ is _not_ of full rank?
+   :::
+
+# Exercise 3{#sec-opg3}
+In this exercise, we analyse the inverse of $S^\top\! S$ using diagonalization. We will apply a theorem which ensures that any real, symmetric matrix is diagonalizable.
+
+1. Show that $S^\top\! S$ is symmetric and conclude from the comment above that there exists a diagonal matrix $D$ and an invertible matrix $P$ such that
+$$S^\top\! S = PDP^{-1}.$$
+   What are the diagonal entries in $D$, and what are the columns of $P$?
+
+1. Show that the determinant of $S^\top\! S$ is given by the eigenvalues of the matrix via the formula
+$$\det(S^\top\! S) = \prod_{i = 1}^m \lambda_i = \lambda_1\lambda_2\cdots \lambda_m.$$
+   Does this agree with item 2 of @sec-opg2?
+
+   :::{.callout-tip title="Hint" collapse=true}
+   Use the diagonalization of $S^\top\! S$ as well as the multiplicative property of the determinant.
+   :::
+
+1. Now, assume that $S^\top\! S$ is invertible. Show that the inverse is given by
+$$(S^\top\! S)^{-1} = PD^{-1}P^{-1}$$
+Additionally, express $D^{-1}$ in terms of $\lambda_1,\lambda_2,\dots,\lambda_m$.
+
+
+<!-- Local Variables: -->
+<!-- ispell-local-dictionary: "en_GB" -->
+<!-- End: -->

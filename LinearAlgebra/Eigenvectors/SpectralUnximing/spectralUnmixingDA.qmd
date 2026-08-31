@@ -1,0 +1,120 @@
+---
+title: "Spektral afblanding"
+lang: da
+engine: markdown
+format:
+  html:
+    embed-resources: true
+    standalone: true
+    include-after-body:
+      ../../../aux/footerDA.html
+crossref:
+  sec-prefix: Delopgave
+---
+
+# Introduktion{-}
+I _absorptionsspektroskopi_ sendes lys med en specifik frekvens gennem et materiale, man ønsker at undersøge. Alt efter materialets bestanddele, vil lys absorberes mere ved nogle frekvenser end andre. For eksempel viser @fig-plot spektret for to forskellige sukkerstoffer.
+Absorption i en blanding afhænger af de enkelte materialers koncentration, lysets frekvens samt hvor langt lyset skal bevæge sig gennem materialet.^[Lambert-Beers low er en fysisk model, der angiver, at absorptionen er proportional med materialets koncentration, længden af lysets bane gennem materialet og en molar dæmpningskoefficient.] 
+
+Med _spektral afblanding_ (på engelsk _spectral unmixing_) ønsker man at bestemme de individuelle koncentrationer af kemiske bestanddele ud fra spektret for en blandet opløsning af materialer, som hver især har kendte spektre. Med udgangspunkt i målingerne på @fig-plot kunne man f.eks. forestille sig, at man ville bestemme koncentrationerne af de to stoffer i en ukendt sukkeropløsning.
+
+![Et eksempel på spektrale målinger af to forskellige sukkerstoffer. Plottet er genereret fra to forskellige datasæt ([Beta-D-lactose](https://ramanbase.org/spectra/135293), [D-ribose](https://ramanbase.org/spectra/134366)) fra Raman Base^[Raman Base: Open online database of Raman Spectra. Institute of Scientific Instruments of the Czech Academy of Sciences, Brno, Czech Republic. Accessible at [https://ramanbase.org/](https://ramanbase.org/)] udgivet under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) med en ikke-kommerciel restriktion.](plotDA.svg){#fig-plot width=90% fig-alt="Ramanspektra for to forksellige sukkerstoffer."}
+
+Vi forestiller os, at vi har lavet $n$ eksperimenter med (altså sendt lys gennem) en blanding af $m$ materialer i forskellige blandingsforhold og $p$ frekvenser. Resultatet af eksperimentet opskrives i en $n\times p$-matrix $D$, hvor hver række repræsenterer et absorptionseksperiment ved de forskellige frekvenser. Vi ønsker så at finde de individuelle koncentrationer af de $m$ materialer.
+
+Processen kan beskrives ved to reelle matricer $C$ og $S$. $C$ er en $n\times m$-matrix med de ukendte koncentrationer, så hver søjle svarer til et materiale og hver række svarer til et eksperiment med et bestemt blandingsforhold.
+$S$ er derimod en kendt $p\times m$-matrix med såkaldte _ren komponent-spektra_, som består af proportionalitetskoefficienter ved specifikke frekvenser. Det vil sige, at vi har målt de potentielle komponenter (tænk på laktose og ribose som i @fig-plot) enkeltvist, og kender absorptionen i forskellige frekvenser. Disse frekvenser udvælges, så der kun er en komponent, der er kraftigt absorberende &ndash; i @fig-plot har laktose f.eks. en klar top omkring 350, mens ribose har en omkring 550. Idéen er at udnytte dette til at bestemme koncentrationerne i den ukendte opløsning.
+
+Samlet er målingerne givet ved en $n\times p$-matrix
+$$D=CS^\top.$$
+Heraf ses, at $DS=CS^\top\! S$. Hvis matricen $S^\top\! S$ er inverterbar, kan vi udnytte dette til at bestemme $C$ ud fra $D$ og $S$, da
+$$C = DS(S^\top\! S)^{-1}$${#eq-CSolve}
+i dette tilfælde.
+Vi undersøger derfor, hvornår $S^\top\! S$ er inverterbar. I praksis vil der være målefejl på $D$, hvilket gør det mere besværligt at approksimere $C$ end i @eq-CSolve. Vi ser dog bort fra disse målefejl her, så udregningerne lettere kan laves i hånden.
+
+:::{.callout-note title="Bemærk"}
+I matematik bruges _spektrum_ nogle gange til at betegne mængden af egenværdier for en matrix. Dette er ikke det samme som _spektrum_ indenfor spektroskopi som i denne workshop.
+:::
+
+# Delopgave 1{#sec-opg1}
+I denne opgave betragter vi et legetøjseksempel med specifikke matricer $D$ og $S$. For at gøre det lettere at lave udregningerne i hånden, stammer matricernes værdier ikke fra en spektroskopimåling. Lad således
+$$D=\left[
+    \begin{array}{rrr}
+      2 & 1 & -4\\
+      2 & 3 &  0\\
+      6 & 1 &  2\\
+      4 & 0 & -6
+    \end{array}
+  \right]
+  \quad\text{og}\quad
+  S=\left[
+    \begin{array}{rrr}
+      2 &  2 &  0\\
+      1 & -1 &  2\\
+      2 & -2 & -2
+    \end{array}\right].$$
+
+
+1. Vis ved direkte udregning, at matricen $S^\top\! S$ er givet ved
+$$S^\top\! S=\left[
+      \begin{array}{rrr}
+         9 & -1 & -2\\
+        -1 &  9 &  2\\
+        -2 &  2 &  8
+      \end{array}
+    \right].$$
+  
+
+1. Vis, at $\mathbf{v}_1=[1,\, -1,\, 2]^\top$ og $\mathbf{v}_2=[1,\, -1,\,-1]^\top$ er egenvektorer for $S^\top\! S$. Hvad er de tilhørende egenværdier?
+  
+1. Det oplyses, at det karakteristiske polynomium for $S^\top\! S$ er givet ved
+$$-(\lambda-12)(\lambda-8)(\lambda-6).$$
+
+   Brug dette til at bestemme den resterende egenværdi for $S^\top\! S$, og bestem den (hvorfor kan der kun være én?) tilhørende egenvektor.
+
+1. Brug svarene fra 2 og 3 til at opskrive en diagonalisering for $S^\top\! S$.
+
+1. Brug diagonaliseringen ovenfor til at opstille den inverse matrix $(S^\top\! S)^{-1}$. Udregn herefter $C$ via @eq-CSolve.
+
+# Delopgave 2{#sec-opg2}
+Vi ser nu mere generelt på, hvornår $S^\top\! S$ kan inverteres.
+
+1. Forklar, at en vektor $\mathbf{v}\neq\mathbf{0}$ ligger i nulrummet for $S^\top\! S$, hvis og kun hvis $\mathbf{v}$ er en egenvektor for $S^\top {S}$ med egenværdi $0$.
+
+   Argumenter for, at når en sådan egenvektor $\mathbf{v}$ eksisterer, gælder $\dim\mathrm{Null}(S^\top\! S)\geq 1$.
+
+1. Brug observationen ovenfor til at argumentere for, at $S^\top\! S$ har fuld rang, hvis og kun hvis alle dens egenværdier er forskellig fra 0.
+
+   :::{.callout-tip title="Vink" collapse=true}
+   Brug rangsætningen.
+   :::
+
+1. Husk nu, at $S$ er en $p\times m$-matrix. Kan $S^\top\! S$ være inverterbar, hvis $m>p$?
+
+   :::{.callout-tip title="Vink" collapse=true}
+   Hvis $S\mathbf{v}=\mathbf{0}$, har vi også $S^\top\! S\mathbf{v}=\mathbf{0}$. Kan $S^\top\! S$ så have fuld rang, hvis $S$ _ikke_ har det?
+   :::
+
+# Delopgave 3{#sec-opg3}
+I denne delopgave undersøger vi den inverse af $S^\top\! S$ ved hjælp af diagonalisering. Vi udnytter her et resultat, der siger, at en reel symmetrisk matrix altid er diagonaliserbar.
+
+1. Vis, at $S^\top\! S$ er symmetrisk, og konkluder fra ovenstående, at der eksisterer en diagonalmatrix $D$, og en inverterbar matrix $P$, så
+$$S^\top\! S = PDP^{-1}.$$
+   Hvad er diagonalelementerne i $D$, og hvad er søjlerne i $P$?
+
+1. Vis, at determinanten af $S^\top\! S$ er givet ved matricens egenværdier via formelen
+$$\det(S^\top\! S) = \prod_{i = 1}^m \lambda_i = \lambda_1\lambda_2\cdots \lambda_m.$$
+   Er dette i overensstemmelse med punkt 2 i @sec-opg2?
+
+   :::{.callout-tip title="Vink" collapse=true}
+   Brug diagonaliseringen af $S^\top\! S$ samt at determinanten er multiplikativ.
+   :::
+
+1. Antag nu, at $S^\top\! S$ er inverterbar. Vis, at den inverse da er givet ved
+$$(S^\top\! S)^{-1} = PD^{-1}P^{-1}.$$
+Opskriv desuden $D^{-1}$ udtrykt ved $\lambda_1,\lambda_2,\dots,\lambda_m$.
+
+
+<!-- Local Variables: -->
+<!-- ispell-local-dictionary: "da_DK" -->
+<!-- End: -->
