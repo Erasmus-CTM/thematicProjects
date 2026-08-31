@@ -1,0 +1,3 @@
+The two datasets are published under the CC BY-SA 4.0 license (https://creativecommons.org/licenses/by-sa/4.0/) with an additional non-commercial restriction. These public domain Raman spectral data can be found in Raman Base [1], https://ramanbase.org/, under the following identifiers: dT4VcY, NO6BXz.
+
+[1] Raman Base: Open online database of Raman Spectra. Institute of Scientific Instruments of the Czech Academy of Sciences, Brno, Czech Republic. Accessible at https://ramanbase.org/
