@@ -1,0 +1,209 @@
+---
+title: "Kirchhoffs love"
+lang: da
+engine: markdown
+format:
+  html:
+    embed-resources: false
+    code-fold: true
+    include-after-body:
+      ../../../aux/footerDA.html
+filters:
+   - pyodide
+crossref:
+  sec-prefix: Delopgave
+---
+
+## Introduktion{-}
+I et elektronisk kredsløb er det vigtigt at kunne bestemme strømmen i hver ledning eller bane. Sammenhængen mellem modstand, strømstyrke og spændingsfald i et kredsløb er beskrevet af _Ohms lov_ og _Kirchhoffs love_.
+
+Når vi behandler et kredsløb matematisk, tildeler vi en retning til hver ledning. I kredsløbet på @fig-simpleCircuit er det for eksempel markeret, at strømmen $I_3$ løber fra venstre mod højre. Hvis ligningssystemet senere giver, at $I_3$ er negativ, betyder dette blot, at strømmen i virkeligheden flyder i den anden retning.
+
+Kirchhoffs strømlov siger, at summen af alle strømme i et knudepunkt er nul, når der tages højde for strømmens retning. Alternativt, kan man formulere den sådan, at summen af strømmene ind i knuden er lig summen af strømmene ud af punktet.
+Den anden af Kirchhoffs love &ndash; spændingsloven &ndash; siger, at i enhver kreds i kredsløbet vil summen af spændingsfaldene være nul. Igen skal der tages højde for strømmens retning
+
+## Delopgave 1{#sec-opg1}
+I denne opgave betragter vi kredsløbet i @fig-simpleCircuit.
+
+![Et kredsløb med to spændingskilder og tre resistorer](circuit1.svg){#fig-simpleCircuit width=70%}
+
+
+1. Forklar, at Kirchhoffs strømlov brugt på kredsløbets knudepunkter giver ligningerne
+$$\begin{align*}
+I_1-I_2-I_3 &=0\\
+    I_3-I_4-I_5 &=0\\
+    I_4+I_5-I_6 &=0,
+	\end{align*}$${#eq-currentLaw}
+	samt ligningen $I_1-I_2-I_6=0$. Argumenter for, at denne ligning er en linearkombination af de tre første.
+  
+1. Brug nu Kirchhoffs spændingslov til at udlede ligningerne
+$$\begin{align*}
+5I_2&=V_1\\
+    -5I_2+10I_3+2I_4&=0\\
+    -2I_4 &=V_2\\
+    10I_3+2I_4&=V_1\\
+    -5I_2+10I_3&=V_2\\
+    10I_3 &=V_1+V_2,
+\end{align*}$${#eq-voltageLaw}
+  og argumenter for, at de tre nederste er linearkombinationer af de tre øverste.
+  
+1. Kombineres de tre første ligninger @eq-currentLaw og de tre første fra @eq-voltageLaw fås et ligningssystem med seks ligninger. Vis at dette har totalmatrix
+$$\left[
+      \begin{array}{*{6}{r}|c}
+        1 & -1 & -1 & 0  & 0  & 0  & 0   \\
+        0 & 0  & 1  & -1 & -1 & 0  & 0   \\
+        0 & 0  & 0  & 1  & 1  & -1 & 0   \\
+        0 & 5  & 0  & 0  & 0  & 0  & V_1 \\
+        0 & -5 & 10 & 2  & 0  & 0  & 0   \\
+        0 & 0  & 0  & -2 & 0  & 0  & V_2
+      \end{array}
+    \right].$$
+  
+1. Vis, at den reducerede trappeform af totalmatricen er
+$$\renewcommand{\arraystretch}{1.3}
+    \left[
+      \begin{array}{*{6}{r}|c}
+        1 & 0& 0& 0& 0&0&\frac{1}{10}(3V_1+V_2)\\
+        0 & 1& 0& 0& 0&0&\frac{1}{5}V_1\\
+        0 & 0& 1& 0& 0&0&\frac{1}{10}(V_1+V_2)\\
+        0 & 0& 0& 1& 0&0&-\frac{1}{2}V_2\\
+        0 & 0& 0& 0& 1&0&\frac{1}{10}V_1+\frac{3}{5}V_2\\
+        0 & 0& 0& 0& 0&1&\frac{1}{10}(V_1+V_2)
+      \end{array}
+    \right],$$
+  og afgør, om ligningssystemet er konsistent.
+  
+1. Find de seks strømme $I_1,I_2,\ldots,I_6$, når spændingskilderne er $V_1=20\mathrm{V}$ og $V_2=30\mathrm{V}$.
+
+
+## Delopgave 2{#sec-opg2}
+I denne delopgave modificerer vi kredsløbet @fig-simpleCircuit, så vi i stedet får det på @fig-shortCircuit.
+
+![Et kredsløb med to spændingskilder og to resistorer.](circuit2.svg){#fig-shortCircuit width=70%}
+
+1. Bruges Kirchhoffs love til at opstille et ligningssystem ligesom i @sec-opg1, fås et system, hvis totalmatrix rækkereducerer til
+$$\renewcommand{\arraystretch}{1.3}
+    \left[
+      \begin{array}{*{6}{r}|c}
+        1 & 0& 0& 0& 0&-1&\frac{1}{5}V_1\\
+        0 & 1& 0& 0& 0& 0&\frac{1}{5}V_1\\
+        0 & 0& 1& 0& 0&-1&0\\
+        0 & 0& 0& 1& 0& 0&-\frac{1}{2}V_2\\
+        0 & 0& 0& 0& 1&-1&\frac{1}{2}V_2\\
+        0 & 0& 0& 0& 0& 0&V_1+V_2
+      \end{array}
+    \right].$$
+  Hvad skal der gælde om spændingskilderne $V_1$ og $V_2$ for at systemet er konsistent?
+
+1. Opskriv den generelle, parametriserede løsning til ligningssystemet.
+
+1. Kan vi ligesom i sidste spørgsmål af @sec-opg1 bestemme strømmene i kredsløbet på @fig-shortCircuit, når blot $V_1$ og $V_2$ er kendte?
+
+## Delopgave 3{#sec-opg3}
+I denne opgave undersøger vi, hvordan mindre dele af et kredsløb påvirker den strøm, der løber gennem dem. Mere specifikt ser vi på det, der på engelsk kaldes _series circuits_ og _shunt circuits_. Vi repræsenterer spændingsfaldet $v$ og strømstyrken $i$ som en vektor
+$\left[
+  \begin{array}{c}
+    v\\
+    i
+  \end{array}
+\right]$,
+og sendes denne gennem et af de to kredsløb, kan strømmen på den anden side beskrives ved en lineær transformation. For et series circuit med modstand $R$, er matrixrepræsentationen for afbildningen
+$$A_R=\left[
+    \begin{array}{rr}
+      1 & -R\\
+      0 & 1
+    \end{array}
+\right],$$
+og for et shunt circuit med modstand $R$ er matrixrepræsentationen
+$$B_R=\left[
+    \begin{array}{rr}
+      1 & 0\\
+      -\frac{1}{R} & 1
+    \end{array}
+\right].$$
+
+
+1. Vis, at når en strøm først sendes gennem et shunt circuit med modstand $R_1$ og dernæst et series circuit med modstand $R_2$, har den tilsvarende lineære transformation matrixrepræsentation
+$$\renewcommand{\arraystretch}{1.3}
+    A_{R_2}B_{R_1}=
+    \left[
+      \begin{array}{rr}
+        1+\frac{R_2}{R_1} & -R_2\\
+        -\frac{1}{R_1} & 1
+      \end{array}
+    \right].$$
+  Bestem herefter den resulterende strømstyrke og det resulterende spændingsfald, hvis $\left[
+  \begin{array}{c}
+    v\\
+    i
+  \end{array}
+\right]$ sendes gennem dette kredsløb.
+
+1. Lad nu $R_1=3$ og $R_2=4$, og definer matricerne
+$$P=\left[
+      \begin{array}{rr}
+        2 & -6\\
+        1 & 1
+      \end{array}
+    \right]
+    \quad\text{og}\quad
+    D=\left[
+      \begin{array}{rr}
+        \frac{1}{3} & 0\\
+        0 & 3
+      \end{array}
+    \right].$$
+
+   Find den inverse til $P$ og tjek, at $A_4B_3=PDP^{-1}$.
+
+1. Brug resultatet ovenfor til at opskrive et udtryk for $(A_4B_3)^{10}$, som kun bruger to matrixmultiplikationer. I behøver ikke udregne resultatet.
+
+   :::{.callout-tip title="Vink" collapse=true}
+   $(A_4B_3)^{10}=PDP^{-1}PDP^{-1}\cdots PDP^{-1}$. Brug $P^{-1}P=I$, samt at $D^{10}$ opnås ved at opløfte hver af diagonalindgangene i tiende.
+   :::
+   
+1. Koden herunder kan bruges til at sammenligne tidsforbruget i nanosekunder for at udregne $(A_4B_3)^10$ direkte eller via diagonaliseringen.
+
+   Skriv matricen $M=A_4B_3$ ind i linje&nbsp;10 i koden herunder og tjek, hvilken der er hurtigst. Passer det med jeres forventning?
+   
+   I dette tilfælde kan vi nemt gøre beregningen i linje&nbsp;27 hurtigere. Kan I gennemskue hvordan?
+   
+   :::{.callout-tip title="Vink" collapse=true}
+   Hvor mange gange udregnes $P^{-1}$, som I jo allerede kender eksplicit?
+   :::
+
+```{pyodide-python}
+import time
+import numpy
+from numpy.linalg import inv
+
+eksponent = 10
+nIteration = 10000
+
+## Udregn direkte ved at opløfte
+## Skriv selv matricen M=A_4*B_3 ind
+M = numpy.array([[7/3, ???], [???, ???]])
+
+tStart = time.monotonic_ns()
+for i in range(nIteration):
+	resultatDirekte = M
+	for j in range(1, eksponent):
+		resultatDirekte = resultatDirekte @ M
+tSlut = time.monotonic_ns()
+
+print("Direkte:\t{:.2f} ns/beregning".format((tSlut-tStart)/nIteration))
+
+## Udregn ved hjælp af numpys inverse
+P = numpy.array([[2, -6], [1, 1]])
+D = numpy.diag([1/3, 3])
+
+tStart = time.monotonic_ns()
+for i in range(nIteration):
+	resultatInvers = P @ D**eksponent @ inv(P)
+tSlut = time.monotonic_ns()
+
+print("Omskrivning:\t{:.2f} ns/beregning\n".format((tSlut-tStart)/nIteration))
+
+## Tjek, at de to gav samme resultat: Differensen skal være (tæt på) nul-matricen
+resultatDirekte-resultatInvers
+```

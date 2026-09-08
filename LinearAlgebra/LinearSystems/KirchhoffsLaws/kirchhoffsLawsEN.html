@@ -1,0 +1,1804 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-GB" xml:lang="en-GB"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Kirchhoff’s Laws</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="kirchhoffsLawsEN_files/libs/clipboard/clipboard.min.js"></script>
+<script src="kirchhoffsLawsEN_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="kirchhoffsLawsEN_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="kirchhoffsLawsEN_files/libs/quarto-html/popper.min.js"></script>
+<script src="kirchhoffsLawsEN_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="kirchhoffsLawsEN_files/libs/quarto-html/anchor.min.js"></script>
+<link href="kirchhoffsLawsEN_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="kirchhoffsLawsEN_files/libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="kirchhoffsLawsEN_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="kirchhoffsLawsEN_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="kirchhoffsLawsEN_files/libs/bootstrap/bootstrap-01bb29787c2f906b335763ce7b646a82.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/monaco-editor@0.46.0/min/vs/editor/editor.main.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+  
+<style type="text/css">
+.monaco-editor pre {
+  background-color: unset !important;
+}
+
+.qpyodide-editor-toolbar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+.qpyodide-editor-toolbar-left-buttons, .qpyodide-editor-toolbar-right-buttons {
+  display: flex;
+}
+
+.qpyodide-non-interactive-loading-container.qpyodide-cell-needs-evaluation, .qpyodide-non-interactive-loading-container.qpyodide-cell-evaluated {
+  justify-content: center;
+  display: flex;
+  background-color: rgba(250, 250, 250, 0.65);
+  border: 1px solid rgba(233, 236, 239, 0.65);
+  border-radius: 0.5rem;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.qpyodide-r-project-logo {
+  color: #2767B0; /* R Project's blue color */
+}
+
+.qpyodide-icon-status-spinner {
+  color: #7894c4;
+}
+
+.qpyodide-icon-run-code {
+  color: #0d9c29
+}
+
+.qpyodide-output-code-stdout {
+  color: #111;
+}
+
+.qpyodide-output-code-stderr {
+  color: #db4133;
+}
+
+.qpyodide-editor {
+  border: 1px solid #EEEEEE;
+}
+
+.qpyodide-editor-toolbar {
+  background-color: #EEEEEE;
+  padding: 0.2rem 0.5rem;
+}
+
+.qpyodide-button {
+  background-color: #EEEEEE;
+  display: inline-block;
+  font-weight: 400;
+  line-height: 1;
+  text-decoration: none;
+  text-align: center;
+  color: #000;
+  border-color: #dee2e6;
+  border: 1px solid rgba(0,0,0,0);
+  padding: 0.375rem 0.75rem;
+  font-size: .9rem;
+  border-radius: 0.25rem;
+  transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+
+.qpyodide-button:hover {
+  color: #000;
+  background-color: #d9dce0;
+  border-color: #c8ccd0;
+}
+
+.qpyodide-button:disabled,.qpyodide-button.disabled,fieldset:disabled .qpyodide-button {
+  pointer-events: none;
+  opacity: .65
+}
+
+.qpyodide-button-reset {
+  color: #696969; /*#4682b4;*/
+}
+
+.qpyodide-button-copy {
+  color: #696969;
+}
+
+
+/* Custom styling for RevealJS Presentations*/
+
+/* Reset the style of the interactive area */
+.reveal div.qpyodide-interactive-area {
+  display: block;
+  box-shadow: none;
+  max-width: 100%;
+  max-height: 100%;
+  margin: 0;
+  padding: 0;
+} 
+
+/* Provide space to entries */
+.reveal div.qpyodide-output-code-area pre div {
+  margin: 1px 2px 1px 10px;
+}
+
+/* Collapse the inside code tags to avoid extra space between line outputs */
+.reveal pre div code.qpyodide-output-code-stdout, .reveal pre div code.qpyodide-output-code-stderr {
+  padding: 0;
+  display: contents;
+}
+
+.reveal pre div code.qpyodide-output-code-stdout {
+  color: #111;
+}
+
+.reveal pre div code.qpyodide-output-code-stderr {
+  color: #db4133;
+}
+
+
+/* Create a border around console and output (does not effect graphs) */
+.reveal div.qpyodide-console-area {
+  border: 1px solid #EEEEEE;
+  box-shadow: 2px 2px 10px #EEEEEE;
+}
+
+/* Cap output height and allow text to scroll */
+/* TODO: Is there a better way to fit contents/max it parallel to the monaco editor size? */
+.reveal div.qpyodide-output-code-area pre {
+  max-height: 400px;
+  overflow: scroll;
+}
+</style>
+<script type="module">
+// Document level settings ----
+
+// Determine if we need to install python packages
+globalThis.qpyodideInstallPythonPackagesList = [''];
+
+// Check to see if we have an empty array, if we do set to skip the installation.
+globalThis.qpyodideSetupPythonPackages = !(qpyodideInstallPythonPackagesList.indexOf("") !== -1);
+
+// Display a startup message?
+globalThis.qpyodideShowStartupMessage = true;
+
+// Describe the webR settings that should be used
+globalThis.qpyodideCustomizedPyodideOptions = {
+  "indexURL": "https://cdn.jsdelivr.net/pyodide/v0.27.2/full/",
+  "env": {
+    "HOME": "/home/pyodide",
+  }, 
+  stdout: (text) => {qpyodideAddToOutputArray(text, "out");},
+  stderr: (text) => {qpyodideAddToOutputArray(text, "error");}
+}
+
+// Store cell data
+globalThis.qpyodideCellDetails = [{"code":"import time\nimport numpy\nfrom numpy.linalg import inv\n\nexponent = 10\nnIteration = 10000\n\n## Compute directly by repeated multiplication\n## Fill in the matrix M=A_4*B_3 yourself\nM = numpy.array([[7/3, ???], [???, ???]])\n\ntStart = time.monotonic_ns()\nfor i in range(nIteration):\n    resultDirect = M\n    for j in range(1, exponent):\n        resultDirect = resultDirect @ M\ntSlut = time.monotonic_ns()\n\nprint(\"Direct:\\t\\t\\t{:.2f} ns/computation\".format((tSlut-tStart)/nIteration))\n\n## Compute by using diagonalization and numpy's inv\nP = numpy.array([[2, -6], [1, 1]])\nD = numpy.diag([1/3, 3])\n\ntStart = time.monotonic_ns()\nfor i in range(nIteration):\n    resultInverse = P @ D**exponent @ inv(P)\ntSlut = time.monotonic_ns()\n\nprint(\"Diagonalization:\\t{:.2f} ns/computation\\n\".format((tSlut-tStart)/nIteration))\n\n## Verify that the two methods gave the same result: The difference\n## must be (close to) the zero matrix.\nresultDirect-resultInverse","id":1,"options":{"autorun":"","classes":"","comment":"","context":"interactive","dpi":72,"fig-cap":"","fig-height":5,"fig-width":7,"label":"","message":"true","out-height":"","out-width":"700px","output":"true","read-only":"false","results":"markup","warning":"true"}}];
+
+
+</script>
+<script type="module">
+// Declare startupMessageqpyodide globally
+globalThis.qpyodideStartupMessage = document.createElement("p");
+
+// Function to set the button text
+globalThis.qpyodideSetInteractiveButtonState = function(buttonText, enableCodeButton = true) {
+  document.querySelectorAll(".qpyodide-button-run").forEach((btn) => {
+    btn.innerHTML = buttonText;
+    btn.disabled = !enableCodeButton;
+  });
+}
+
+// Function to update the status message in non-interactive cells
+globalThis.qpyodideUpdateStatusMessage = function(message) {
+  document.querySelectorAll(".qpyodide-status-text.qpyodide-cell-needs-evaluation").forEach((elem) => {
+    elem.innerText = message;
+  });
+}
+
+// Function to update the status message
+globalThis.qpyodideUpdateStatusHeader = function(message) {
+
+  if (!qpyodideShowStartupMessage) return;
+
+  qpyodideStartupMessage.innerHTML = message;
+}
+
+// Status header update with customized spinner message
+globalThis.qpyodideUpdateStatusHeaderSpinner = function(message) {
+
+  qpyodideUpdateStatusHeader(`
+    <i class="fa-solid fa-spinner fa-spin qpyodide-icon-status-spinner"></i>
+    <span>${message}</span>
+  `);
+}
+
+
+// Function that attaches the document status message
+function qpyodideDisplayStartupMessage(showStartupMessage) {
+  if (!showStartupMessage) {
+    return;
+  }
+
+  // Get references to header elements
+  const headerHTML = document.getElementById("title-block-header");
+  const headerRevealJS = document.getElementById("title-slide");
+
+  // Create the outermost div element for metadata
+  const quartoTitleMeta = document.createElement("div");
+  quartoTitleMeta.classList.add("quarto-title-meta");
+
+  // Create the first inner div element
+  const firstInnerDiv = document.createElement("div");
+  firstInnerDiv.setAttribute("id", "qpyodide-status-message-area");
+
+  // Create the second inner div element for "Pyodide Status" heading and contents
+  const secondInnerDiv = document.createElement("div");
+  secondInnerDiv.setAttribute("id", "qpyodide-status-message-title");
+  secondInnerDiv.classList.add("quarto-title-meta-heading");
+  secondInnerDiv.innerText = "Pyodide Status";
+
+  // Create another inner div for contents
+  const secondInnerDivContents = document.createElement("div");
+  secondInnerDivContents.setAttribute("id", "qpyodide-status-message-body");
+  secondInnerDivContents.classList.add("quarto-title-meta-contents");
+
+  // Describe the Pyodide state
+  qpyodideStartupMessage.innerText = "🟡 Loading...";
+  qpyodideStartupMessage.setAttribute("id", "qpyodide-status-message-text");
+  // Add `aria-live` to auto-announce the startup status to screen readers
+  qpyodideStartupMessage.setAttribute("aria-live", "assertive");
+
+  // Append the startup message to the contents
+  secondInnerDivContents.appendChild(qpyodideStartupMessage);
+
+  // Combine the inner divs and contents
+  firstInnerDiv.appendChild(secondInnerDiv);
+  firstInnerDiv.appendChild(secondInnerDivContents);
+  quartoTitleMeta.appendChild(firstInnerDiv);
+
+  // Determine where to insert the quartoTitleMeta element
+  if (headerHTML || headerRevealJS) {
+    // Append to the existing "title-block-header" element or "title-slide" div
+    (headerHTML || headerRevealJS).appendChild(quartoTitleMeta);
+  } else {
+    // If neither headerHTML nor headerRevealJS is found, insert after "Pyodide-monaco-editor-init" script
+    const monacoScript = document.getElementById("qpyodide-monaco-editor-init");
+    const header = document.createElement("header");
+    header.setAttribute("id", "title-block-header");
+    header.appendChild(quartoTitleMeta);
+    monacoScript.after(header);
+  }
+}
+
+qpyodideDisplayStartupMessage(qpyodideShowStartupMessage);
+</script>
+<script type="module">
+// Create a logging setup
+globalThis.qpyodideMessageArray = []
+
+// Add messages to array
+globalThis.qpyodideAddToOutputArray = function(message, type) {
+  qpyodideMessageArray.push({ message, type });
+}
+
+// Function to reset the output array
+globalThis.qpyodideResetOutputArray = function() {
+  qpyodideMessageArray = [];
+}
+
+globalThis.qpyodideRetrieveOutput = function() {
+  return qpyodideMessageArray.map(entry => entry.message).join('\n');
+}
+
+// Start a timer
+const initializePyodideTimerStart = performance.now();
+
+// Encase with a dynamic import statement
+globalThis.qpyodideInstance = await import(
+  qpyodideCustomizedPyodideOptions.indexURL + "pyodide.mjs").then(
+   async({ loadPyodide }) => {
+
+    console.log("Start loading Pyodide");
+    
+    // Populate Pyodide options with defaults or new values based on `pyodide`` meta
+    let mainPyodide = await loadPyodide(
+      qpyodideCustomizedPyodideOptions
+    );
+    
+    // Setup a namespace for global scoping
+    // await loadedPyodide.runPythonAsync("globalScope = {}"); 
+    
+    // Update status to reflect the next stage of the procedure
+    qpyodideUpdateStatusHeaderSpinner("Initializing Python Packages");
+
+    // Load the `micropip` package to allow installation of packages.
+    await mainPyodide.loadPackage("micropip");
+    await mainPyodide.runPythonAsync(`import micropip`);
+
+    // Load the `pyodide_http` package to shim uses of `requests` and `urllib3`.
+    // This allows for `pd.read_csv(url)` to work flawlessly.
+    // Details: https://github.com/coatless-quarto/pyodide/issues/9
+    await mainPyodide.loadPackage("pyodide_http");
+    await mainPyodide.runPythonAsync(`
+    import pyodide_http
+    pyodide_http.patch_all()  # Patch all libraries
+    `);
+
+    // Load the `matplotlib` package with necessary environment hook
+    await mainPyodide.loadPackage("matplotlib");
+
+    // Set the backend for matplotlib to be interactive.
+    await mainPyodide.runPythonAsync(`
+    import matplotlib
+    matplotlib.use("module://matplotlib_pyodide.html5_canvas_backend")
+    from matplotlib import pyplot as plt
+    `);
+
+    // Unlock interactive buttons
+    qpyodideSetInteractiveButtonState(
+      `<i class="fa-solid fa-play qpyodide-icon-run-code"></i> <span>Run Code</span>`, 
+      true
+    );
+
+    // Set document status to viable
+    qpyodideUpdateStatusHeader(
+      "🟢 Ready!"
+    );
+
+    // Assign Pyodide into the global environment
+    globalThis.mainPyodide = mainPyodide;
+
+    console.log("Completed loading Pyodide");
+    return mainPyodide;
+  }
+);
+
+// Stop timer
+const initializePyodideTimerEnd = performance.now();
+
+// Create a function to retrieve the promise object.
+globalThis._qpyodideGetInstance = function() {
+    return qpyodideInstance;
+}
+
+</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.46.0/min/vs/loader.js"></script>
+<script type="module" id="qpyodide-monaco-editor-init">
+
+  // Configure the Monaco Editor's loader
+  require.config({
+    paths: {
+      'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.46.0/min/vs'
+    }
+  });
+</script>
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Kirchhoff’s Laws</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="introduction">Introduction</h2>
+<p>In an electrical circuit, it is important to determine the current in each wire. The relation between resistance, voltage and current in a circuit is described by <em>Ohm’s law</em> and <em>Kirchhoff’s laws</em>.</p>
+<p>When modelling a circuit mathematically, we assign a direction to each wire. In the circuit on <a href="#fig-simpleCircuit" class="quarto-xref">Figure&nbsp;1</a>, it is for instance marked that the current <span class="math inline">\(I_3\)</span> runs from left to right. If the system of equations later give that <span class="math inline">\(I_3\)</span> is negative, this simply means that the current actually flows in the opposite direction.</p>
+<p>Kirchhoff’s current law states that the sum of all currents in a node is zero (taking the current direction into account). Alternatively, one may phrase it as the sum of currents entering a node must equal the sum of current leaving the node. The other of Kirchhoff’s laws – the voltage law – states that within every loop of the circuit, the sum of voltages must be zero. Again, one must remember the assumed current directions.</p>
+</section>
+<section id="sec-opg1" class="level2">
+<h2 class="anchored" data-anchor-id="sec-opg1">Exercise 1</h2>
+<p>In this exercise, we consider the circuit on <a href="#fig-simpleCircuit" class="quarto-xref">Figure&nbsp;1</a>.</p>
+<div id="fig-simpleCircuit" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-simpleCircuit-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="circuit1.svg" class="img-fluid figure-img" style="width:70.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-simpleCircuit-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: A circuit with two voltage sources and three resistors.
+</figcaption>
+</figure>
+</div>
+<ol type="1">
+<li><p>Explain why Kirchhoff’s current law applied to the circuit nodes yields the equations <span id="eq-currentLaw"><span class="math display">\[\begin{align*}
+I_1-I_2-I_3 &amp;=0\\
+I_3-I_4-I_5 &amp;=0\\
+I_4+I_5-I_6 &amp;=0,
+\end{align*} \tag{1}\]</span></span> as well as the equation <span class="math inline">\(I_1-I_2-I_6=0\)</span>. Argue that this final equation is a linear combination of the three first ones.</p></li>
+<li><p>Now, use Kirchhoff’s voltage law to obtain the equations <span id="eq-voltageLaw"><span class="math display">\[\begin{align*}
+5I_2&amp;=V_1\\
+-5I_2+10I_3+2I_4&amp;=0\\
+-2I_4 &amp;=V_2\\
+10I_3+2I_4&amp;=V_1\\
+-5I_2+10I_3&amp;=V_2\\
+10I_3 &amp;=V_1+V_2,
+\end{align*} \tag{2}\]</span></span> and argue that the three bottom-most equations are linear combinations of the three top-most equations.</p></li>
+<li><p>By combining the first three equations from <a href="#eq-currentLaw" class="quarto-xref">Equation&nbsp;1</a> and the first three equations from <a href="#eq-voltageLaw" class="quarto-xref">Equation&nbsp;2</a> we obtain a system of six linear equations. Show that this has augmented matrix <span class="math display">\[\left[
+   \begin{array}{*{6}{r}|c}
+     1 &amp; -1 &amp; -1 &amp; 0  &amp; 0  &amp; 0  &amp; 0   \\
+     0 &amp; 0  &amp; 1  &amp; -1 &amp; -1 &amp; 0  &amp; 0   \\
+     0 &amp; 0  &amp; 0  &amp; 1  &amp; 1  &amp; -1 &amp; 0   \\
+     0 &amp; 5  &amp; 0  &amp; 0  &amp; 0  &amp; 0  &amp; V_1 \\
+     0 &amp; -5 &amp; 10 &amp; 2  &amp; 0  &amp; 0  &amp; 0   \\
+     0 &amp; 0  &amp; 0  &amp; -2 &amp; 0  &amp; 0  &amp; V_2
+   \end{array}
+\right].\]</span></p></li>
+<li><p>Show that the reduced row-echelon form of the augmented matrix is <span class="math display">\[\renewcommand{\arraystretch}{1.3}
+\left[
+   \begin{array}{*{6}{r}|c}
+     1 &amp; 0&amp; 0&amp; 0&amp; 0&amp;0&amp;\frac{1}{10}(3V_1+V_2)\\
+     0 &amp; 1&amp; 0&amp; 0&amp; 0&amp;0&amp;\frac{1}{5}V_1\\
+     0 &amp; 0&amp; 1&amp; 0&amp; 0&amp;0&amp;\frac{1}{10}(V_1+V_2)\\
+     0 &amp; 0&amp; 0&amp; 1&amp; 0&amp;0&amp;-\frac{1}{2}V_2\\
+     0 &amp; 0&amp; 0&amp; 0&amp; 1&amp;0&amp;\frac{1}{10}V_1+\frac{3}{5}V_2\\
+     0 &amp; 0&amp; 0&amp; 0&amp; 0&amp;1&amp;\frac{1}{10}(V_1+V_2)
+   \end{array}
+\right],\]</span> and determine if the system is consistent.</p></li>
+<li><p>Compute the six currents <span class="math inline">\(I_1,I_2,\ldots,I_6\)</span> when the voltages are <span class="math inline">\(V_1=20\mathrm{V}\)</span> and <span class="math inline">\(V_2=30\mathrm{V}\)</span>.</p></li>
+</ol>
+</section>
+<section id="sec-opg2" class="level2">
+<h2 class="anchored" data-anchor-id="sec-opg2">Exercise 2</h2>
+<p>In this exercise, we modify the circuit in <a href="#fig-simpleCircuit" class="quarto-xref">Figure&nbsp;1</a>, such that we obtain the one in <a href="#fig-shortCircuit" class="quarto-xref">Figure&nbsp;2</a> instead.</p>
+<div id="fig-shortCircuit" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-shortCircuit-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="circuit2.svg" class="img-fluid figure-img" style="width:70.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-shortCircuit-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: A circuit with two voltage sources and two resistors.
+</figcaption>
+</figure>
+</div>
+<ol type="1">
+<li><p>By using Kirchhoff’s laws to create a system of equations as in <a href="#sec-opg1" class="quarto-xref">Exercise&nbsp;1</a> one obtains a system, whose augmented matrix has reduced row-echelon form given by <span class="math display">\[\renewcommand{\arraystretch}{1.3}
+\left[
+   \begin{array}{*{6}{r}|c}
+     1 &amp; 0&amp; 0&amp; 0&amp; 0&amp;-1&amp;\frac{1}{5}V_1\\
+     0 &amp; 1&amp; 0&amp; 0&amp; 0&amp; 0&amp;\frac{1}{5}V_1\\
+     0 &amp; 0&amp; 1&amp; 0&amp; 0&amp;-1&amp;0\\
+     0 &amp; 0&amp; 0&amp; 1&amp; 0&amp; 0&amp;-\frac{1}{2}V_2\\
+     0 &amp; 0&amp; 0&amp; 0&amp; 1&amp;-1&amp;\frac{1}{2}V_2\\
+     0 &amp; 0&amp; 0&amp; 0&amp; 0&amp; 0&amp;V_1+V_2
+   \end{array}
+\right].\]</span> What must be true about the voltage sources <span class="math inline">\(V_1\)</span> and <span class="math inline">\(V_2\)</span> for the system to be consistent?</p></li>
+<li><p>Write out the general, parametrized solution to the system.</p></li>
+<li><p>Can we – as in the last part of <a href="#sec-opg1" class="quarto-xref">Exercise&nbsp;1</a> – determine the currents in <a href="#fig-shortCircuit" class="quarto-xref">Figure&nbsp;2</a> whenever <span class="math inline">\(V_1\)</span> and <span class="math inline">\(V_2\)</span> are known?</p></li>
+</ol>
+</section>
+<section id="sec-opg3" class="level2">
+<h2 class="anchored" data-anchor-id="sec-opg3">Exercise 3</h2>
+<p>Finally, we explore how smaller parts of a circuit alter the current running through them. More precisely, we look at <em>series circuits</em> and <em>shunt circuits</em>. The voltage <span class="math inline">\(v\)</span> and current <span class="math inline">\(i\)</span> are represented by a vector <span class="math inline">\(\left[
+  \begin{array}{c}
+    v\\
+    i
+  \end{array}
+\right]\)</span>, and if this is sent through one of the two circuits, the current on the other side can be described by a linear transformation. For a series circuit with resistance <span class="math inline">\(R\)</span>, the matrix representation for the transformation is <span class="math display">\[A_R=\left[
+    \begin{array}{rr}
+      1 &amp; -R\\
+      0 &amp; 1
+    \end{array}
+\right],\]</span> and for a shunt circuit with resistance <span class="math inline">\(R\)</span>, the transformation is <span class="math display">\[B_R=\left[
+    \begin{array}{rr}
+      1 &amp; 0\\
+      -\frac{1}{R} &amp; 1
+    \end{array}
+\right].\]</span></p>
+<ol type="1">
+<li><p>Show that when an electric current is sent through a shunt circuit with resistance <span class="math inline">\(R_1\)</span> and afterwards through a series circuit with resistance <span class="math inline">\(R_2\)</span>, then the corresponding linear transformation has matrix representation <span class="math display">\[\renewcommand{\arraystretch}{1.3}
+A_{R_2}B_{R_1}=
+\left[
+   \begin{array}{rr}
+     1+\frac{R_2}{R_1} &amp; -R_2\\
+     -\frac{1}{R_1} &amp; 1
+   \end{array}
+\right].\]</span> Then determine the resulting current and voltage if <span class="math inline">\(\left[
+  \begin{array}{c}
+v\\
+i
+  \end{array}
+\right]\)</span> is sent through the circuit.</p></li>
+<li><p>Let <span class="math inline">\(R_1=3\)</span> and <span class="math inline">\(R_2=4\)</span>, and define the matrices <span class="math display">\[P=\left[
+   \begin{array}{rr}
+     2 &amp; -6\\
+     1 &amp; 1
+   \end{array}
+\right]
+\quad\text{and}\quad
+D=\left[
+   \begin{array}{rr}
+     \frac{1}{3} &amp; 0\\
+     0 &amp; 3
+   \end{array}
+\right].\]</span></p>
+<p>Find the inverse of <span class="math inline">\(P\)</span>, and check that <span class="math inline">\(A_4B_3=PDP^{-1}\)</span>.</p></li>
+<li><p>Use the result above to write out an expression for <span class="math inline">\((A_4B_3)^{10}\)</span>, which uses only two matrix multiplications. You need not compute the result.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Hint">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Hint
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><span class="math inline">\((A_4B_3)^{10}=PDP^{-1}PDP^{-1}\cdots PDP^{-1}\)</span>. Use <span class="math inline">\(P^{-1}P=I\)</span> as well as the fact that <span class="math inline">\(D^{10}\)</span> is obtained by raising each diagonal entry to the 10th power.</p>
+</div>
+</div>
+</div></li>
+<li><p>The code snippet below can be used to compare the time (in nanoseconds) required to compute <span class="math inline">\((A_4B_3)^{10}\)</span> either directly or via the diagonalization.</p>
+<p>Fill in the matrix <span class="math inline">\(M=A_4B_3\)</span> in line&nbsp;10 in the code, and use it to see which method is faster. Does it match your expectations?</p>
+<p>In this case, we can easily speed up the computation in line&nbsp;27. Can you figure out how?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Hint">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Hint
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>How many times does the code compute <span class="math inline">\(P^{-1}\)</span>, which you have already computed explicitly?</p>
+</div>
+</div>
+</div></li>
+</ol>
+<div id="qpyodide-insertion-location-1"></div>
+<noscript>Please enable JavaScript to experience the dynamic code cell content on this page.</noscript>
+</section>
+
+</main>
+<!-- /main column -->
+<div style="display:flex; justify-content:space-between; align-items:center">
+	<div style="width:20%" role="img" alt="Creative Commons BY-NC-SA logo">
+				<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en">
+			<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://web.resource.org/cc/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" width="50%" viewbox="0 0 120 42" id="svg2759" sodipodi:version="0.32" inkscape:version="0.45+devel" version="1.0" sodipodi:docname="by-nc-sa.svg" inkscape:output_extension="org.inkscape.output.svg.inkscape">
+				<defs id="defs2761"></defs>
+				<sodipodi:namedview id="base" pagecolor="#ffffff" bordercolor="#8b8b8b" borderopacity="1" gridtolerance="10000" guidetolerance="10" objecttolerance="10" inkscape:pageopacity="0.0" inkscape:pageshadow="2" inkscape:zoom="1.8760684" inkscape:cx="60" inkscape:cy="31" inkscape:document-units="px" inkscape:current-layer="layer1" width="120px" height="42px" inkscape:showpageshadow="false" inkscape:window-width="1198" inkscape:window-height="624" inkscape:window-x="170" inkscape:window-y="319"></sodipodi:namedview>
+				<metadata id="metadata2764">
+					<rdf:rdf>
+						<cc:work rdf:about="">
+							<dc:format>image/svg+xml</dc:format>
+							<dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"></dc:type>
+						</cc:work>
+					</rdf:rdf>
+				</metadata>
+				<g inkscape:label="Layer 1" inkscape:groupmode="layer" id="layer1">
+					<g id="g2630">
+						<path id="path3817_5_" nodetypes="ccccccc" d="M 3.4083297,0.45268464 L 116.76243,0.65404185 C 118.34626,0.65404185 119.76124,0.41920791 119.76124,3.814567 L 119.62246,41.143644 L 0.54733418,41.143644 L 0.54733418,3.675801 C 0.54733418,2.0014081 0.70939995,0.45268464 3.4083297,0.45268464 z" style="fill:#aab2ab"></path>
+						<path d="M 117.7533,-1.417352e-06 L 2.2476335,-1.417352e-06 C 1.0083193,-1.417352e-06 -2.0408688e-05,1.0082254 -2.0408688e-05,2.2469141 L -2.0408688e-05,41.492978 C -2.0408688e-05,41.772935 0.22707838,41.999998 0.5075432,41.999998 L 119.49241,41.999998 C 119.77289,41.999998 119.99998,41.772925 119.99998,41.492978 L 119.99998,2.2469141 C 119.99998,1.0082254 118.99164,-1.417352e-06 117.7533,-1.417352e-06 z M 2.2476335,1.0150221 L 117.75331,1.0150221 C 118.43264,1.0150221 118.98486,1.5676515 118.98486,2.246924 C 118.98486,2.246924 118.98486,18.04326 118.98486,29.467549 L 36.428267,29.467549 C 33.402284,34.938555 27.571583,38.65317 20.881033,38.65317 C 14.188536,38.65317 8.3597829,34.941953 5.3357378,29.467549 L 1.0151167,29.467549 C 1.0151167,18.04326 1.0151167,2.246924 1.0151167,2.246924 C 1.0151068,1.5676515 1.5682849,1.0150221 2.2476335,1.0150221 z" id="path120"></path>
+						<g id="g5908_5_" transform="matrix(0.8674921,0,0,0.8673951,-387.30972,67.870882)">
+							<path id="path5906_5_" cx="296.35416" ry="22.939548" cy="264.3577" type="arc" rx="22.939548" d="M 486.26599,-55.7066 C 486.27154,-47.02581 479.2381,-39.9851 470.55786,-39.97952 C 461.87768,-39.9739 454.83636,-47.00738 454.83081,-55.68762 C 454.83081,-55.69433 454.83081,-55.69989 454.83081,-55.7066 C 454.82519,-64.38739 461.85864,-71.4281 470.53888,-71.43371 C 479.22022,-71.43871 486.26148,-64.40588 486.26599,-55.72564 C 486.26599,-55.71948 486.26599,-55.71277 486.26599,-55.7066 z" style="fill:#ffffff"></path>
+							<g id="g5706_5_" transform="translate(-289.6157,99.0653)">
+								<path id="path5708_5_" d="M 772.94165,-167.5741 C 776.42651,-164.08869 778.16943,-159.82074 778.16943,-154.77191 C 778.16943,-149.72253 776.45666,-145.49988 773.03112,-142.10397 C 769.39526,-138.52795 765.09936,-136.74023 760.14111,-136.74023 C 755.24328,-136.74023 751.02124,-138.51287 747.47717,-142.05978 C 743.93078,-145.60504 742.15869,-149.84222 742.15869,-154.77191 C 742.15869,-159.7005 743.93078,-163.96789 747.47717,-167.5741 C 750.93176,-171.06061 755.15381,-172.80359 760.14111,-172.80359 C 765.18994,-172.80359 769.45569,-171.06061 772.94165,-167.5741 z M 749.82312,-165.22925 C 746.87634,-162.25287 745.40295,-158.76636 745.40295,-154.76746 C 745.40295,-150.76856 746.86181,-147.31165 749.77722,-144.39624 C 752.69482,-141.47974 756.16626,-140.02148 760.19482,-140.02148 C 764.22338,-140.02148 767.72497,-141.49429 770.7019,-144.44043 C 773.52783,-147.17688 774.94079,-150.6181 774.94079,-154.76746 C 774.94079,-158.88495 773.50439,-162.38038 770.63256,-165.25165 C 767.76195,-168.12226 764.28271,-169.55817 760.19482,-169.55817 C 756.10693,-169.55817 752.64783,-168.11499 749.82312,-165.22925 z M 757.57703,-156.52606 C 757.12732,-157.50775 756.45386,-157.9989 755.55432,-157.9989 C 753.9657,-157.9989 753.17139,-156.92883 753.17139,-154.78979 C 753.17139,-152.65026 753.9657,-151.58129 755.55432,-151.58129 C 756.60376,-151.58129 757.35327,-152.10204 757.80298,-153.14587 L 760.00574,-151.97284 C 758.95532,-150.10736 757.38013,-149.17383 755.28028,-149.17383 C 753.66028,-149.17383 752.36256,-149.67053 751.38819,-150.66339 C 750.41273,-151.6568 749.92493,-153.02673 749.92493,-154.77191 C 749.92493,-156.48694 750.42835,-157.84845 751.43299,-158.85693 C 752.43751,-159.86547 753.69056,-160.3695 755.1908,-160.3695 C 757.41138,-160.3695 759,-159.49462 759.96216,-157.74664 L 757.57703,-156.52606 z M 767.94092,-156.52606 C 767.49011,-157.50775 766.82886,-157.9989 765.9585,-157.9989 C 764.33753,-157.9989 763.52637,-156.92883 763.52637,-154.78979 C 763.52637,-152.65026 764.33753,-151.58129 765.9585,-151.58129 C 767.01014,-151.58129 767.74622,-152.10204 768.16578,-153.14587 L 770.41773,-151.97284 C 769.36951,-150.10736 767.79664,-149.17383 765.70008,-149.17383 C 764.0824,-149.17383 762.78809,-149.67053 761.81361,-150.66339 C 760.84144,-151.6568 760.35365,-153.02673 760.35365,-154.77191 C 760.35365,-156.48694 760.84816,-157.84845 761.83717,-158.85693 C 762.82496,-159.86547 764.08241,-160.3695 765.61061,-160.3695 C 767.8268,-160.3695 769.41432,-159.49462 770.37196,-157.74664 L 767.94092,-156.52606 z"></path>
+							</g>
+						</g>
+						<g transform="matrix(0.9937808,0,0,0.9936696,-437.12334,-74.436914)" id="g126">
+							<circle cx="491.94629" cy="90.231934" r="10.80615" id="circle128" sodipodi:cx="491.94629" sodipodi:cy="90.231934" sodipodi:rx="10.80615" sodipodi:ry="10.80615" style="fill:#ffffff"></circle>
+							<g id="g130">
+								<path d="M 495.07373,87.10498 C 495.07373,86.68848 494.73584,86.35107 494.31982,86.35107 L 489.54736,86.35107 C 489.13134,86.35107 488.79345,86.68847 488.79345,87.10498 L 488.79345,91.87793 L 490.1245,91.87793 L 490.1245,97.52979 L 493.74169,97.52979 L 493.74169,91.87793 L 495.07372,91.87793 L 495.07372,87.10498 L 495.07373,87.10498 z" id="path132"></path>
+								<circle cx="491.93359" cy="84.090332" r="1.63232" id="circle134" sodipodi:cx="491.93359" sodipodi:cy="84.090332" sodipodi:rx="1.63232" sodipodi:ry="1.63232"></circle>
+							</g>
+							<path clip-rule="evenodd" d="M 491.91846,78.3252 C 488.68701,78.3252 485.95069,79.45313 483.71143,81.70899 C 481.41358,84.04249 480.26514,86.80469 480.26514,89.99366 C 480.26514,93.18263 481.41358,95.9253 483.71143,98.22071 C 486.00928,100.51466 488.74561,101.6626 491.91846,101.6626 C 495.13135,101.6626 497.91651,100.50586 500.27295,98.19092 C 502.49268,95.99365 503.60205,93.26123 503.60205,89.99365 C 503.60205,86.72607 502.47314,83.96484 500.21435,81.70898 C 497.95556,79.45312 495.19092,78.3252 491.91846,78.3252 z M 491.94873,80.4248 C 494.59717,80.4248 496.84521,81.35888 498.69482,83.22607 C 500.56494,85.07324 501.49951,87.32959 501.49951,89.99365 C 501.49951,92.67724 500.58447,94.90429 498.75342,96.67431 C 496.82569,98.58007 494.55713,99.53271 491.94873,99.53271 C 489.33838,99.53271 487.08935,98.58984 485.20068,96.70312 C 483.31201,94.81689 482.36767,92.58056 482.36767,89.99365 C 482.36767,87.40674 483.32177,85.15136 485.22997,83.22607 C 487.06104,81.35889 489.30029,80.4248 491.94873,80.4248 z" id="path136" style="fill-rule:evenodd"></path>
+						</g>
+						<g transform="matrix(0.9937808,0,0,0.9936696,-437.12334,-74.436914)" enable-background="new    " id="g138">
+							<path d="M 488.56299,107.86719 C 488.88037,107.86719 489.17041,107.89551 489.43213,107.95117 C 489.69385,108.00683 489.91846,108.09863 490.10596,108.22656 C 490.29248,108.35351 490.43701,108.52344 490.54053,108.73437 C 490.64307,108.94628 490.69483,109.20703 490.69483,109.51855 C 490.69483,109.85449 490.61866,110.13378 490.46534,110.35742 C 490.313,110.58203 490.08643,110.76465 489.78761,110.9082 C 490.19972,111.02636 490.50734,111.2334 490.71046,111.52929 C 490.91358,111.82518 491.01515,112.18163 491.01515,112.59863 C 491.01515,112.93457 490.94972,113.22558 490.81886,113.47168 C 490.688,113.7168 490.51124,113.91797 490.28956,114.07324 C 490.06886,114.22949 489.81593,114.34472 489.53272,114.41894 C 489.24854,114.49414 488.95752,114.53124 488.65772,114.53124 L 485.42139,114.53124 L 485.42139,107.86718 L 488.56299,107.86718 L 488.56299,107.86719 z M 488.37549,110.5625 C 488.63721,110.5625 488.85205,110.5 489.02002,110.37598 C 489.18897,110.25196 489.27295,110.05078 489.27295,109.77149 C 489.27295,109.61622 489.24463,109.48829 489.18897,109.38965 C 489.13233,109.29004 489.05811,109.21289 488.96436,109.15625 C 488.87061,109.10059 488.76319,109.06152 488.64209,109.04004 C 488.52002,109.01856 488.39404,109.00781 488.26318,109.00781 L 486.89013,109.00781 L 486.89013,110.5625 L 488.37549,110.5625 z M 488.46143,113.39062 C 488.60498,113.39062 488.7417,113.37695 488.87256,113.34863 C 489.00342,113.32031 489.11865,113.27343 489.21924,113.20898 C 489.31885,113.14355 489.39795,113.05468 489.45752,112.94238 C 489.51611,112.83105 489.54639,112.6875 489.54639,112.51367 C 489.54639,112.17187 489.44971,111.92773 489.25635,111.78125 C 489.06299,111.63574 488.80713,111.5625 488.48975,111.5625 L 486.89014,111.5625 L 486.89014,113.39062 L 488.46143,113.39062 z" id="path140" style="fill:#ffffff"></path>
+							<path d="M 491.27393,107.86719 L 492.91651,107.86719 L 494.47706,110.49903 L 496.02882,107.86719 L 497.66261,107.86719 L 495.188,111.97364 L 495.188,114.53126 L 493.71925,114.53126 L 493.71925,111.93653 L 491.27393,107.86719 z" id="path142" style="fill:#ffffff"></path>
+						</g>
+						<g transform="matrix(0.9937808,0,0,0.9936696,-437.12334,-74.436914)" enable-background="new    " id="g144">
+							<path d="M 538.91553,112.88379 C 538.99658,113.03906 539.10303,113.16504 539.23682,113.26172 C 539.37061,113.3584 539.52686,113.42969 539.70752,113.47656 C 539.88721,113.52344 540.07275,113.54687 540.26611,113.54687 C 540.39599,113.54687 540.53564,113.53613 540.68506,113.51367 C 540.8335,113.49219 540.97315,113.45019 541.10401,113.38769 C 541.23389,113.32617 541.34229,113.24023 541.43018,113.13085 C 541.51612,113.02245 541.56006,112.88378 541.56006,112.71581 C 541.56006,112.53515 541.50244,112.38964 541.38721,112.27733 C 541.27295,112.16503 541.12159,112.07225 540.93604,111.99706 C 540.74952,111.92284 540.5376,111.85741 540.30225,111.80077 C 540.06592,111.74511 539.82666,111.68261 539.58448,111.61425 C 539.33546,111.55175 539.09327,111.47558 538.85694,111.38573 C 538.62159,111.29589 538.40967,111.1787 538.22315,111.03514 C 538.0376,110.89256 537.88624,110.71385 537.77198,110.49901 C 537.65675,110.28417 537.59913,110.0244 537.59913,109.71971 C 537.59913,109.37694 537.67237,109.08006 537.81788,108.82811 C 537.96436,108.57616 538.15577,108.3662 538.39112,108.19725 C 538.62745,108.02928 538.89503,107.90526 539.19385,107.8242 C 539.4917,107.74315 539.79053,107.70311 540.08838,107.70311 C 540.43701,107.70311 540.771,107.74217 541.09131,107.8203 C 541.41065,107.89745 541.6958,108.0244 541.94385,108.19823 C 542.19287,108.37303 542.39014,108.59569 542.53662,108.8662 C 542.68213,109.13768 542.75537,109.46581 542.75537,109.85155 L 541.33349,109.85155 C 541.32079,109.65233 541.27978,109.48729 541.20849,109.35741 C 541.1372,109.22655 541.04247,109.12401 540.92431,109.04882 C 540.80712,108.9746 540.67236,108.92089 540.52099,108.89062 C 540.36962,108.85937 540.20361,108.84374 540.02392,108.84374 C 539.90673,108.84374 539.78857,108.85644 539.67138,108.88085 C 539.55322,108.90624 539.44677,108.94921 539.35107,109.01171 C 539.25439,109.07421 539.17627,109.15136 539.11377,109.24511 C 539.05225,109.33886 539.021,109.45702 539.021,109.5996 C 539.021,109.73046 539.04541,109.8369 539.09522,109.91698 C 539.14502,109.99803 539.24268,110.07323 539.38917,110.14159 C 539.53566,110.20995 539.73683,110.27831 539.99464,110.34667 C 540.25245,110.41503 540.59034,110.50292 541.00636,110.60839 C 541.13038,110.6328 541.30324,110.6787 541.52296,110.74413 C 541.74366,110.80956 541.96339,110.91308 542.18019,111.05663 C 542.39796,111.20018 542.58546,111.39159 542.74464,111.63085 C 542.90284,111.87011 542.98194,112.17675 542.98194,112.55077 C 542.98194,112.85546 542.92237,113.13866 542.80421,113.40038 C 542.68605,113.6621 542.51026,113.88768 542.27687,114.07714 C 542.04347,114.26757 541.75441,114.41503 541.40871,114.5205 C 541.06398,114.62695 540.66457,114.67968 540.20949,114.67968 C 539.8423,114.67968 539.48683,114.63378 539.14113,114.54394 C 538.79543,114.45312 538.49074,114.31152 538.22707,114.11816 C 537.96242,113.9248 537.75246,113.67773 537.59621,113.3789 C 537.44094,113.08007 537.36574,112.72558 537.37258,112.31445 L 538.79446,112.31445 C 538.79443,112.53809 538.83447,112.72852 538.91553,112.88379 z" id="path146" style="fill:#ffffff"></path>
+							<path d="M 547.17236,107.86719 L 549.66455,114.53125 L 548.14307,114.53125 L 547.63916,113.04687 L 545.14697,113.04687 L 544.62353,114.53125 L 543.14892,114.53125 L 545.66943,107.86719 L 547.17236,107.86719 z M 547.25635,111.95312 L 546.41651,109.50976 L 546.39698,109.50976 L 545.52979,111.95312 L 547.25635,111.95312 z" id="path148" style="fill:#ffffff"></path>
+						</g>
+						<g transform="matrix(0.9937808,0,0,0.9936696,-437.12334,-74.436914)" enable-background="new    " id="g150">
+							<path d="M 512.83057,107.86719 L 515.61475,112.33789 L 515.63037,112.33789 L 515.63037,107.86719 L 517.00537,107.86719 L 517.00537,114.53125 L 515.53955,114.53125 L 512.76611,110.06934 L 512.74756,110.06934 L 512.74756,114.53125 L 511.37256,114.53125 L 511.37256,107.86719 L 512.83057,107.86719 z" id="path152" style="fill:#ffffff"></path>
+							<path d="M 522.56885,109.64258 C 522.48194,109.50196 522.37256,109.37891 522.2417,109.27344 C 522.11084,109.16797 521.96338,109.08496 521.79834,109.02637 C 521.6333,108.9668 521.46045,108.9375 521.28076,108.9375 C 520.95068,108.9375 520.67041,109.00098 520.43994,109.12891 C 520.20947,109.25586 520.02295,109.42676 519.88037,109.64161 C 519.73682,109.85645 519.63232,110.10059 519.56689,110.37403 C 519.50146,110.64747 519.46923,110.93067 519.46923,111.22266 C 519.46923,111.50293 519.50146,111.77539 519.56689,112.03907 C 519.63232,112.30372 519.73681,112.542 519.88037,112.75294 C 520.02295,112.96485 520.20947,113.1338 520.43994,113.26173 C 520.67041,113.38966 520.95068,113.45314 521.28076,113.45314 C 521.72803,113.45314 522.07861,113.31642 522.33056,113.04201 C 522.58251,112.76857 522.73681,112.40724 522.79247,111.959 L 524.21142,111.959 C 524.17431,112.37599 524.07763,112.75295 523.92236,113.08888 C 523.76709,113.42579 523.56103,113.71193 523.30615,113.94923 C 523.05127,114.18653 522.75244,114.3672 522.40967,114.4922 C 522.06787,114.6172 521.69092,114.6797 521.28076,114.6797 C 520.77002,114.6797 520.31103,114.59083 519.90283,114.4131 C 519.4956,114.23634 519.15088,113.99122 518.8706,113.68068 C 518.59033,113.36916 518.37451,113.00295 518.22509,112.58302 C 518.07568,112.16212 518.00048,111.70997 518.00048,111.22364 C 518.00048,110.72559 518.07568,110.26368 518.22509,109.83692 C 518.3745,109.41016 518.59032,109.03809 518.8706,108.72071 C 519.15088,108.40333 519.4956,108.1543 519.90283,107.97364 C 520.31103,107.79298 520.77002,107.70313 521.28076,107.70313 C 521.64795,107.70313 521.99463,107.75586 522.3208,107.86231 C 522.64795,107.96778 522.94092,108.12208 523.19873,108.3252 C 523.45752,108.52735 523.67041,108.77832 523.83838,109.07715 C 524.00635,109.37598 524.11182,109.71875 524.15576,110.10449 L 522.73681,110.10449 C 522.71143,109.93652 522.65576,109.78223 522.56885,109.64258 z" id="path154" style="fill:#ffffff"></path>
+						</g>
+						<g id="g6332_1_" transform="matrix(0.621108,0,0,0.6210385,-285.77182,240.48957)">
+							<path id="path6334_1_" cx="475.97119" ry="29.209877" cy="252.08646" type="arc" rx="29.209877" d="M 644.57642,-363.11569 C 644.58423,-353.70389 636.95911,-346.0679 627.54663,-346.06088 C 618.13403,-346.05539 610.49963,-353.67813 610.4917,-363.09225 C 610.4917,-363.09927 610.4917,-363.10867 610.4917,-363.11569 C 610.48547,-372.52749 618.1106,-380.16348 627.52161,-380.1705 C 636.93421,-380.17752 644.56861,-372.55246 644.57642,-363.14145 C 644.57642,-363.13211 644.57642,-363.12509 644.57642,-363.11569 z" style="fill:#ffffff"></path>
+							<g id="g6336_1_" transform="translate(-23.9521,-89.72962)">
+								<path id="path6338_1_" d="M 651.36426,-292.05655 C 646.19238,-292.05655 641.81421,-290.25107 638.23291,-286.64322 C 634.5564,-282.90878 632.71729,-278.48923 632.71729,-273.38608 C 632.71729,-268.28293 634.5564,-263.89615 638.23291,-260.22348 C 641.90796,-256.55154 646.28613,-254.71561 651.36426,-254.71561 C 656.50501,-254.71561 660.95972,-256.56797 664.72998,-260.26957 C 668.28162,-263.78678 670.05823,-268.15873 670.05823,-273.38609 C 670.05823,-278.61351 668.25196,-283.03306 664.63623,-286.64323 C 661.02222,-290.25107 656.59875,-292.05655 651.36426,-292.05655 z M 651.41113,-288.69559 C 655.64868,-288.69559 659.2456,-287.20261 662.20654,-284.21427 C 665.19726,-281.25883 666.6925,-277.65098 666.6925,-273.38608 C 666.6925,-269.09232 665.22851,-265.52976 662.2987,-262.69614 C 659.21594,-259.64768 655.58459,-258.12345 651.41113,-258.12345 C 647.23608,-258.12345 643.63769,-259.63285 640.61572,-262.65085 C 637.59387,-265.66959 636.08288,-269.24698 636.08288,-273.38608 C 636.08288,-277.52518 637.6079,-281.13455 640.66259,-284.21427 C 643.59082,-287.20261 647.17358,-288.69559 651.41113,-288.69559 z"></path>
+								<path id="path6340_1_" d="M 643.08923,-276.02048 C 643.833,-280.71897 647.13928,-283.22989 651.28466,-283.22989 C 657.24401,-283.22989 660.87682,-278.90488 660.87682,-273.13767 C 660.87682,-267.5095 657.01122,-263.13913 651.19078,-263.13913 C 647.18614,-263.13913 643.6002,-265.60245 642.94859,-270.43997 L 647.65171,-270.43997 C 647.79233,-267.92898 649.4221,-267.04465 651.75022,-267.04465 C 654.40342,-267.04465 656.12681,-269.50949 656.12681,-273.27671 C 656.12681,-277.23142 654.6378,-279.32285 651.84239,-279.32285 C 649.79393,-279.32285 648.02513,-278.57834 647.65172,-276.02048 L 649.01891,-276.02988 L 645.31737,-272.32669 L 641.61571,-276.02988 L 643.08923,-276.02048 z"></path>
+							</g>
+						</g>
+						<g transform="translate(4.972327e-4,9.6235539e-3)" id="g2366">
+							<path id="path6372_1_" cx="475.97119" ry="29.209877" cy="252.08646" type="arc" rx="29.209877" d="M 87.801399,14.981221 C 87.806231,20.481808 83.349796,24.943138 77.848148,24.947525 C 72.347434,24.950898 67.885163,20.495415 67.8813,14.995762 C 67.8813,14.989951 67.8813,14.985575 67.8813,14.981221 C 67.877402,9.4801445 72.333872,5.0188155 77.834551,5.0144396 C 83.335231,5.0110323 87.797501,9.4665495 87.801399,14.966168 C 87.801399,14.971034 87.801399,14.976356 87.801399,14.981221 z" style="fill:#ffffff"></path>
+							<path id="path45" d="M 86.070369,6.7455646 C 83.825249,4.5032726 81.077589,3.3828326 77.826689,3.3828326 C 74.614009,3.3828326 71.895369,4.5032726 69.670069,6.7455646 C 67.386019,9.0650066 66.245049,11.809127 66.245049,14.979335 C 66.245049,18.148837 67.386019,20.874555 69.670069,23.154358 C 71.953409,25.435578 74.672049,26.575837 77.826689,26.575837 C 81.019549,26.575837 83.787019,25.425671 86.128399,23.126048 C 88.334599,20.941796 89.438049,18.22599 89.438049,14.979335 C 89.438049,11.731974 88.315489,8.9871466 86.070369,6.7455646 z M 84.618679,21.618445 C 82.702679,23.512501 80.448359,24.458823 77.855709,24.458823 C 75.262349,24.458823 73.027129,23.521703 71.150059,21.646755 C 69.272989,19.771807 68.334459,17.549334 68.334459,14.979332 C 68.334459,13.89216 68.506099,12.864441 68.845489,11.89547 L 71.918369,13.255497 L 71.696829,13.255497 L 71.696829,14.633571 L 72.784359,14.633571 C 72.784359,14.828215 72.764899,15.022152 72.764899,15.216085 L 72.764899,15.546625 L 71.696829,15.546625 L 71.696829,16.924699 L 72.958829,16.924699 C 73.133649,17.953831 73.521879,18.788322 74.045999,19.448692 C 75.133169,20.885513 76.880359,21.661964 78.782919,21.661964 C 80.025799,21.661964 81.151199,21.293203 81.811569,20.923735 L 81.345129,18.76921 C 80.937439,18.982962 80.025799,19.273868 79.132559,19.273868 C 78.161469,19.273868 77.249479,18.982966 76.628039,18.283664 C 76.336779,17.953831 76.123379,17.507213 75.987839,16.924699 L 80.208409,16.924699 L 86.205549,19.579283 C 85.790079,20.315397 85.262779,20.995586 84.618679,21.618445 z M 77.076429,15.546632 L 77.050949,15.527168 L 77.094829,15.546632 L 77.076429,15.546632 z M 80.686879,14.633578 L 80.860299,14.633578 L 80.860299,13.255504 L 77.573299,13.255504 L 76.238049,12.664496 C 76.353059,12.406151 76.488959,12.175055 76.647499,11.994215 C 77.249479,11.255278 78.103439,10.945264 79.035599,10.945264 C 79.889909,10.945264 80.685469,11.197238 81.190129,11.410994 L 81.733709,9.1977216 C 81.034409,8.8877066 80.005979,8.6159136 78.821839,8.6159136 C 76.997149,8.6159136 75.443899,9.3534366 74.337259,10.595615 C 74.091659,10.879439 73.878609,11.197948 73.685379,11.534859 L 69.871779,9.8471216 C 70.241249,9.2929176 70.675839,8.7606566 71.179079,8.2531686 C 72.998819,6.3973326 75.223419,5.4694136 77.855699,5.4694136 C 80.487279,5.4694136 82.722499,6.3973326 84.561349,8.2531686 C 86.418599,10.089188 87.347229,12.33077 87.347229,14.979339 C 87.347229,15.852048 87.248129,16.675215 87.052779,17.450956 L 80.686879,14.633578 z"></path>
+						</g>
+					</g>
+				</g>
+			</svg>
+		</a>
+	</div>
+	<p style="font-size:0.8em; margin:0em;">Computational Thinking Makes Sense of Mathematics</p>
+	<div style="width:20%" role="img" alt="Co-funded by the European Union">
+		<svg xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" width="100%" viewbox="0 0 989 221">
+			<defs>
+				<g>
+					<g id="glyph-0-0">
+						<path d="M 30.609375 -9.6875 C 28.859375 -8.0625 26.71875 -7.28125 24.1875 -7.28125 C 20.796875 -7.28125 18.0625 -8.515625 15.921875 -11.046875 C 13.78125 -13.515625 12.734375 -17.6875 12.734375 -23.59375 C 12.734375 -29.125 13.84375 -33.15625 15.984375 -35.625 C 18.140625 -38.09375 20.9375 -39.328125 24.375 -39.328125 C 26.84375 -39.328125 28.984375 -38.609375 30.75 -37.25 C 32.5 -35.8125 33.671875 -33.9375 34.1875 -31.53125 L 43.484375 -33.734375 C 42.4375 -37.4375 40.8125 -40.296875 38.734375 -42.3125 C 35.171875 -45.6875 30.546875 -47.390625 24.828125 -47.390625 C 18.328125 -47.390625 13.0625 -45.234375 9.03125 -40.953125 C 5.0625 -36.65625 3.0625 -30.609375 3.0625 -22.875 C 3.0625 -15.53125 5.0625 -9.8125 9.03125 -5.59375 C 13 -1.359375 18.0625 0.78125 24.25 0.78125 C 29.25 0.78125 33.40625 -0.453125 36.65625 -2.921875 C 39.90625 -5.453125 42.25 -9.234375 43.609375 -14.359375 L 34.515625 -17.15625 C 33.734375 -13.78125 32.4375 -11.25 30.609375 -9.6875 Z M 30.609375 -9.6875 "></path>
+					</g>
+					<g id="glyph-0-1">
+						<path d="M 4.8125 -7.40625 C 6.234375 -4.6875 8.390625 -2.671875 11.1875 -1.234375 C 13.96875 0.125 16.90625 0.84375 20.015625 0.84375 C 25.03125 0.84375 29.125 -0.84375 32.4375 -4.21875 C 35.75 -7.546875 37.375 -11.765625 37.375 -16.90625 C 37.375 -21.96875 35.75 -26.125 32.5 -29.4375 C 29.25 -32.765625 25.03125 -34.453125 19.953125 -34.453125 C 16.640625 -34.453125 13.65625 -33.734375 10.984375 -32.234375 C 8.3125 -30.8125 6.234375 -28.671875 4.8125 -25.875 C 3.3125 -23.140625 2.59375 -20.28125 2.59375 -17.296875 C 2.59375 -13.390625 3.3125 -10.140625 4.8125 -7.40625 Z M 14.171875 -24.5 C 15.734375 -26.265625 17.6875 -27.171875 20.015625 -27.171875 C 22.296875 -27.171875 24.25 -26.265625 25.875 -24.5 C 27.4375 -22.6875 28.203125 -20.15625 28.203125 -16.828125 C 28.203125 -13.453125 27.4375 -10.921875 25.875 -9.09375 C 24.25 -7.34375 22.296875 -6.4375 20.015625 -6.4375 C 17.6875 -6.4375 15.734375 -7.34375 14.171875 -9.09375 C 12.546875 -10.921875 11.765625 -13.453125 11.765625 -16.828125 C 11.765625 -20.15625 12.546875 -22.6875 14.171875 -24.5 Z M 14.171875 -24.5 "></path>
+					</g>
+					<g id="glyph-0-2">
+						<path d="M 21.1875 -12.421875 L 21.1875 -21.3125 L 3.640625 -21.3125 L 3.640625 -12.421875 Z M 21.1875 -12.421875 "></path>
+					</g>
+					<g id="glyph-0-3">
+						<path d="M 0.78125 -26.71875 L 5.71875 -26.71875 L 5.71875 0 L 14.625 0 L 14.625 -26.71875 L 21.3125 -26.71875 L 21.3125 -33.734375 L 14.625 -33.734375 L 14.625 -36.140625 C 14.625 -37.890625 14.890625 -39.0625 15.46875 -39.65625 C 16.0625 -40.234375 17.03125 -40.5625 18.328125 -40.5625 C 19.6875 -40.5625 21.0625 -40.359375 22.5625 -40.046875 L 23.65625 -46.28125 C 21.1875 -47 18.71875 -47.390625 16.1875 -47.390625 C 13.65625 -47.390625 11.640625 -46.9375 10.015625 -46.078125 C 8.390625 -45.171875 7.21875 -44.0625 6.625 -42.640625 C 6.046875 -41.28125 5.71875 -39.125 5.71875 -36.265625 L 5.71875 -33.734375 L 0.78125 -33.734375 Z M 0.78125 -26.71875 "></path>
+					</g>
+					<g id="glyph-0-4">
+						<path d="M 35.234375 0 L 35.234375 -33.734375 L 26.328125 -33.734375 L 26.328125 -19.5 C 26.328125 -14.625 26.125 -11.5625 25.671875 -10.328125 C 25.21875 -9.09375 24.375 -8.0625 23.140625 -7.21875 C 21.96875 -6.375 20.609375 -5.984375 19.046875 -5.984375 C 17.75 -5.984375 16.640625 -6.3125 15.734375 -6.890625 C 14.890625 -7.546875 14.296875 -8.390625 13.96875 -9.484375 C 13.65625 -10.53125 13.453125 -13.453125 13.453125 -18.203125 L 13.453125 -33.734375 L 4.546875 -33.734375 L 4.546875 -12.34375 C 4.546875 -9.171875 4.9375 -6.625 5.78125 -4.875 C 6.5625 -3.0625 7.859375 -1.625 9.6875 -0.65625 C 11.5 0.328125 13.515625 0.84375 15.796875 0.84375 C 18 0.84375 20.15625 0.328125 22.09375 -0.78125 C 24.109375 -1.8125 25.734375 -3.25 26.96875 -5.0625 L 26.96875 0 Z M 35.234375 0 "></path>
+					</g>
+					<g id="glyph-0-5">
+						<path d="M 35.359375 -20.9375 C 35.359375 -23.53125 35.171875 -25.546875 34.84375 -26.90625 C 34.515625 -28.34375 33.9375 -29.578125 33.078125 -30.6875 C 32.234375 -31.78125 31 -32.6875 29.375 -33.40625 C 27.75 -34.125 25.9375 -34.453125 23.984375 -34.453125 C 19.5 -34.453125 15.734375 -32.5625 12.8125 -28.796875 L 12.8125 -33.734375 L 4.546875 -33.734375 L 4.546875 0 L 13.453125 0 L 13.453125 -15.28125 C 13.453125 -19.046875 13.71875 -21.578125 14.171875 -23.015625 C 14.625 -24.375 15.46875 -25.484375 16.703125 -26.328125 C 17.9375 -27.171875 19.3125 -27.625 20.859375 -27.625 C 22.09375 -27.625 23.140625 -27.296875 23.984375 -26.71875 C 24.890625 -26.125 25.484375 -25.28125 25.875 -24.25 C 26.265625 -23.203125 26.453125 -20.796875 26.453125 -17.15625 L 26.453125 0 L 35.359375 0 Z M 35.359375 -20.9375 "></path>
+					</g>
+					<g id="glyph-0-6">
+						<path d="M 35.625 -46.546875 L 26.71875 -46.546875 L 26.71875 -29.765625 C 23.984375 -32.890625 20.671875 -34.453125 16.90625 -34.453125 C 12.8125 -34.453125 9.421875 -32.953125 6.6875 -29.96875 C 4.03125 -26.96875 2.671875 -22.6875 2.671875 -16.90625 C 2.671875 -11.3125 4.03125 -6.953125 6.828125 -3.828125 C 9.625 -0.71875 12.9375 0.84375 16.765625 0.84375 C 18.71875 0.84375 20.609375 0.390625 22.484375 -0.578125 C 24.375 -1.5625 26 -3.0625 27.359375 -4.9375 L 27.359375 0 L 35.625 0 Z M 13.96875 -25.09375 C 15.40625 -26.78125 17.15625 -27.625 19.3125 -27.625 C 21.453125 -27.625 23.203125 -26.78125 24.640625 -25.09375 C 26 -23.328125 26.71875 -20.546875 26.71875 -16.640625 C 26.71875 -13.1875 26 -10.53125 24.5625 -8.78125 C 23.140625 -7.015625 21.390625 -6.171875 19.3125 -6.171875 C 16.765625 -6.171875 14.75 -7.34375 13.328125 -9.6875 C 12.34375 -11.3125 11.828125 -13.90625 11.828125 -17.546875 C 11.828125 -20.859375 12.546875 -23.40625 13.96875 -25.09375 Z M 13.96875 -25.09375 "></path>
+					</g>
+					<g id="glyph-0-7">
+						<path d="M 22.03125 -7.015625 C 21.0625 -6.234375 19.890625 -5.84375 18.53125 -5.84375 C 16.4375 -5.84375 14.75 -6.5625 13.390625 -8.0625 C 12.03125 -9.5625 11.3125 -11.5625 11.25 -14.234375 L 33.546875 -14.234375 C 33.671875 -21.0625 32.3125 -26.125 29.375 -29.4375 C 26.515625 -32.765625 22.5625 -34.453125 17.546875 -34.453125 C 13.0625 -34.453125 9.359375 -32.890625 6.4375 -29.703125 C 3.515625 -26.515625 2.078125 -22.171875 2.078125 -16.578125 C 2.078125 -11.890625 3.1875 -8 5.390625 -4.9375 C 8.25 -1.109375 12.546875 0.84375 18.390625 0.84375 C 22.09375 0.84375 25.21875 0 27.6875 -1.6875 C 30.15625 -3.4375 31.921875 -5.921875 33.078125 -9.171875 L 24.1875 -10.65625 C 23.71875 -8.96875 23.015625 -7.734375 22.03125 -7.015625 Z M 11.375 -19.6875 C 11.375 -22.171875 12.03125 -24.046875 13.265625 -25.484375 C 14.5625 -26.90625 16.125 -27.625 18.0625 -27.625 C 19.890625 -27.625 21.453125 -26.96875 22.6875 -25.609375 C 23.984375 -24.25 24.640625 -22.296875 24.703125 -19.6875 Z M 11.375 -19.6875 "></path>
+					</g>
+					<g id="glyph-0-8">
+					</g>
+					<g id="glyph-0-9">
+						<path d="M 12.546875 0 L 12.546875 -4.9375 C 13.90625 -3.0625 15.53125 -1.625 17.359375 -0.65625 C 19.234375 0.328125 21.1875 0.84375 23.078125 0.84375 C 26.96875 0.84375 30.359375 -0.71875 33.078125 -3.828125 C 35.8125 -6.953125 37.1875 -11.375 37.1875 -17.15625 C 37.1875 -22.75 35.8125 -26.96875 33.15625 -29.96875 C 30.484375 -32.953125 27.046875 -34.453125 22.9375 -34.453125 C 19.171875 -34.453125 15.921875 -32.890625 13.1875 -29.765625 L 13.1875 -46.546875 L 4.296875 -46.546875 L 4.296875 0 Z M 15.203125 -25.15625 C 16.640625 -26.78125 18.390625 -27.625 20.546875 -27.625 C 22.75 -27.625 24.5 -26.78125 25.9375 -25.09375 C 27.296875 -23.328125 28.015625 -20.546875 28.015625 -16.703125 C 28.015625 -13.0625 27.296875 -10.40625 25.9375 -8.703125 C 24.5625 -7.015625 22.875 -6.171875 20.859375 -6.171875 C 18.328125 -6.171875 16.25 -7.34375 14.6875 -9.75 C 13.578125 -11.4375 13.0625 -14.046875 13.0625 -17.546875 C 13.0625 -20.9375 13.78125 -23.46875 15.203125 -25.15625 Z M 15.203125 -25.15625 "></path>
+					</g>
+					<g id="glyph-0-10">
+						<path d="M 13.265625 0.0625 C 12.671875 1.953125 11.953125 3.515625 10.921875 4.75 C 9.9375 5.984375 8.390625 6.5625 6.3125 6.5625 C 5.203125 6.5625 3.96875 6.4375 2.53125 6.171875 L 3.3125 13.125 C 4.9375 13.453125 6.625 13.65625 8.390625 13.65625 C 10.078125 13.65625 11.5625 13.453125 12.9375 13.125 C 14.296875 12.734375 15.40625 12.21875 16.375 11.640625 C 17.296875 10.984375 18.0625 10.140625 18.78125 9.09375 C 19.5 8.0625 20.28125 6.5625 21.0625 4.609375 L 23.203125 -1.296875 L 35.09375 -33.734375 L 25.875 -33.734375 L 18 -9.8125 L 9.875 -33.734375 L 0.390625 -33.734375 Z M 13.265625 0.0625 "></path>
+					</g>
+					<g id="glyph-0-11">
+						<path d="M 13.96875 -33.734375 L 13.96875 -45.6875 L 5.0625 -40.4375 L 5.0625 -33.734375 L 0.96875 -33.734375 L 0.96875 -26.65625 L 5.0625 -26.65625 L 5.0625 -11.890625 C 5.0625 -8.703125 5.140625 -6.625 5.328125 -5.59375 C 5.59375 -4.09375 5.984375 -2.921875 6.625 -2.078125 C 7.21875 -1.234375 8.125 -0.515625 9.421875 0 C 10.71875 0.578125 12.15625 0.84375 13.78125 0.84375 C 16.375 0.84375 18.71875 0.390625 20.796875 -0.515625 L 20.078125 -7.40625 C 18.453125 -6.828125 17.296875 -6.5625 16.4375 -6.5625 C 15.859375 -6.5625 15.34375 -6.6875 14.953125 -7.015625 C 14.5625 -7.28125 14.234375 -7.671875 14.171875 -8.125 C 14.046875 -8.578125 13.96875 -10.203125 13.96875 -13 L 13.96875 -26.65625 L 20.078125 -26.65625 L 20.078125 -33.734375 Z M 13.96875 -33.734375 "></path>
+					</g>
+					<g id="glyph-0-12">
+						<path d="M 4.546875 -46.546875 L 4.546875 0 L 13.453125 0 L 13.453125 -16.90625 C 13.453125 -19.6875 13.71875 -21.84375 14.296875 -23.265625 C 14.8125 -24.765625 15.671875 -25.8125 16.828125 -26.515625 C 18 -27.234375 19.375 -27.625 20.859375 -27.625 C 22.171875 -27.625 23.265625 -27.359375 24.109375 -26.78125 C 25.03125 -26.1875 25.609375 -25.484375 25.9375 -24.5 C 26.265625 -23.59375 26.453125 -21.3125 26.453125 -17.8125 L 26.453125 0 L 35.359375 0 L 35.359375 -19.765625 C 35.359375 -22.8125 35.234375 -25.03125 34.90625 -26.453125 C 34.578125 -27.890625 34 -29.1875 33.15625 -30.421875 C 32.3125 -31.59375 31.0625 -32.5625 29.4375 -33.28125 C 27.75 -34.0625 25.875 -34.453125 23.859375 -34.453125 C 19.828125 -34.453125 16.375 -32.765625 13.453125 -29.3125 L 13.453125 -46.546875 Z M 4.546875 -46.546875 "></path>
+					</g>
+					<g id="glyph-0-13">
+						<path d="M 40.109375 0 L 40.109375 -7.859375 L 14.171875 -7.859375 L 14.171875 -20.46875 L 37.4375 -20.46875 L 37.4375 -28.34375 L 14.171875 -28.34375 L 14.171875 -38.671875 L 39.1875 -38.671875 L 39.1875 -46.546875 L 4.75 -46.546875 L 4.75 0 Z M 40.109375 0 "></path>
+					</g>
+					<g id="glyph-0-14">
+						<path d="M 13.1875 -10.40625 C 13.1875 -16.125 13.453125 -19.890625 13.90625 -21.703125 C 14.4375 -23.46875 15.140625 -24.765625 15.984375 -25.421875 C 16.828125 -26.125 17.9375 -26.453125 19.171875 -26.453125 C 20.46875 -26.453125 21.84375 -26 23.40625 -25.03125 L 26.125 -32.765625 C 24.25 -33.859375 22.296875 -34.453125 20.21875 -34.453125 C 18.78125 -34.453125 17.484375 -34.125 16.375 -33.40625 C 15.28125 -32.6875 13.96875 -31.203125 12.546875 -28.921875 L 12.546875 -33.734375 L 4.296875 -33.734375 L 4.296875 0 L 13.1875 0 Z M 13.1875 -10.40625 "></path>
+					</g>
+					<g id="glyph-0-15">
+						<path d="M 4.421875 12.8125 L 13.328125 12.8125 L 13.328125 -4.09375 C 15.015625 -2.28125 16.578125 -0.96875 18.140625 -0.265625 C 19.625 0.453125 21.3125 0.84375 23.203125 0.84375 C 27.109375 0.84375 30.421875 -0.71875 33.15625 -3.828125 C 35.9375 -6.953125 37.3125 -11.375 37.3125 -16.96875 C 37.3125 -22.484375 35.9375 -26.78125 33.21875 -29.828125 C 30.484375 -32.890625 27.171875 -34.453125 23.265625 -34.453125 C 21 -34.453125 18.984375 -33.9375 17.09375 -32.890625 C 15.28125 -31.84375 13.84375 -30.484375 12.734375 -28.796875 L 12.734375 -33.734375 L 4.421875 -33.734375 Z M 15.34375 -24.890625 C 16.765625 -26.578125 18.59375 -27.4375 20.734375 -27.4375 C 22.875 -27.4375 24.640625 -26.578125 26 -24.828125 C 27.4375 -23.140625 28.140625 -20.46875 28.140625 -16.96875 C 28.140625 -13.125 27.4375 -10.40625 26.0625 -8.703125 C 24.703125 -7.078125 23.015625 -6.234375 20.9375 -6.234375 C 18.78125 -6.234375 16.96875 -7.15625 15.46875 -8.96875 C 13.96875 -10.796875 13.1875 -13.578125 13.1875 -17.421875 C 13.1875 -20.734375 13.90625 -23.203125 15.34375 -24.890625 Z M 15.34375 -24.890625 "></path>
+					</g>
+					<g id="glyph-0-16">
+						<path d="M 13.453125 -26.65625 C 14.359375 -27.296875 15.59375 -27.625 17.21875 -27.625 C 19.5625 -27.625 21.125 -27.234375 21.96875 -26.515625 C 22.8125 -25.8125 23.265625 -24.5625 23.265625 -22.8125 L 23.265625 -21.90625 C 21.640625 -21.25 18.78125 -20.46875 14.625 -19.6875 C 11.5 -19.109375 9.171875 -18.453125 7.546875 -17.609375 C 5.921875 -16.828125 4.609375 -15.734375 3.703125 -14.234375 C 2.796875 -12.734375 2.34375 -11.046875 2.34375 -9.09375 C 2.34375 -6.234375 3.3125 -3.828125 5.328125 -1.953125 C 7.34375 -0.0625 10.078125 0.84375 13.515625 0.84375 C 15.46875 0.84375 17.296875 0.453125 19.046875 -0.265625 C 20.796875 -1.046875 22.421875 -2.140625 23.921875 -3.640625 C 23.984375 -3.4375 24.109375 -3.125 24.25 -2.59375 C 24.5625 -1.4375 24.828125 -0.578125 25.09375 0 L 33.9375 0 C 33.15625 -1.625 32.625 -3.125 32.375 -4.546875 C 32.046875 -5.921875 31.921875 -8.125 31.921875 -11.046875 L 32.046875 -21.453125 C 32.046875 -25.34375 31.65625 -28.015625 30.875 -29.4375 C 30.03125 -30.875 28.671875 -32.109375 26.71875 -33.015625 C 24.765625 -34 21.84375 -34.453125 17.875 -34.453125 C 13.453125 -34.453125 10.140625 -33.671875 7.9375 -32.046875 C 5.71875 -30.484375 4.15625 -28.078125 3.25 -24.765625 L 11.3125 -23.328125 C 11.828125 -24.890625 12.609375 -26.0625 13.453125 -26.65625 Z M 23.265625 -14.359375 C 23.265625 -12.21875 23.140625 -10.796875 22.9375 -10.015625 C 22.5625 -8.84375 21.90625 -7.859375 20.796875 -7.015625 C 19.3125 -5.984375 17.8125 -5.453125 16.1875 -5.453125 C 14.75 -5.453125 13.578125 -5.921875 12.609375 -6.828125 C 11.703125 -7.734375 11.25 -8.84375 11.25 -10.078125 C 11.25 -11.3125 11.828125 -12.34375 13 -13.1875 C 13.78125 -13.71875 15.34375 -14.234375 17.875 -14.75 C 20.34375 -15.28125 22.09375 -15.734375 23.265625 -16.125 Z M 23.265625 -14.359375 "></path>
+					</g>
+					<g id="glyph-0-17">
+						<path d="M 4.75 -21.703125 C 4.75 -16.4375 5.0625 -12.546875 5.65625 -9.875 C 6.109375 -8.0625 6.953125 -6.375 8.3125 -4.6875 C 9.625 -3.0625 11.4375 -1.75 13.71875 -0.71875 C 15.984375 0.328125 19.375 0.84375 23.796875 0.84375 C 27.4375 0.84375 30.421875 0.390625 32.6875 -0.578125 C 34.96875 -1.5 36.796875 -2.796875 38.15625 -4.359375 C 39.515625 -5.984375 40.5 -7.9375 40.953125 -10.203125 C 41.46875 -12.546875 41.734375 -16.4375 41.734375 -22.09375 L 41.734375 -46.546875 L 32.3125 -46.546875 L 32.3125 -20.796875 C 32.3125 -17.09375 32.171875 -14.4375 31.921875 -12.875 C 31.65625 -11.3125 30.8125 -9.9375 29.4375 -8.84375 C 28.140625 -7.734375 26.125 -7.21875 23.53125 -7.21875 C 20.9375 -7.21875 18.84375 -7.796875 17.359375 -8.96875 C 15.859375 -10.078125 14.890625 -11.640625 14.5 -13.515625 C 14.296875 -14.6875 14.171875 -17.296875 14.171875 -21.3125 L 14.171875 -46.546875 L 4.75 -46.546875 Z M 4.75 -21.703125 "></path>
+					</g>
+					<g id="glyph-0-18">
+						<path d="M 13.578125 -38.28125 L 13.578125 -46.546875 L 4.6875 -46.546875 L 4.6875 -38.28125 Z M 13.578125 0 L 13.578125 -33.734375 L 4.6875 -33.734375 L 4.6875 0 Z M 13.578125 0 "></path>
+					</g>
+				</g>
+			</defs>
+			<path fill-rule="nonzero" fill="rgb(100%, 100%, 100%)" fill-opacity="1" d="M 10.03125 210.894531 L 304.972656 210.894531 L 304.972656 10.609375 L 10.03125 10.609375 L 10.03125 210.894531 "></path>
+			<path fill-rule="nonzero" fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1" d="M 15.703125 205.171875 L 299.304688 205.171875 L 299.304688 16.101562 L 15.703125 16.101562 L 15.703125 205.171875 "></path>
+			<path fill-rule="nonzero" fill="rgb(98.345947%, 79.048157%, 2.746582%)" fill-opacity="1" d="M 151.460938 57.296875 L 157.441406 52.929688 L 163.429688 57.296875 L 161.148438 50.234375 L 167.230469 45.867188 L 159.734375 45.867188 L 157.441406 38.71875 L 155.148438 45.875 L 147.660156 45.867188 L 153.734375 50.234375 L 151.460938 57.296875 "></path>
+			<path fill-rule="nonzero" fill="rgb(98.345947%, 79.048157%, 2.746582%)" fill-opacity="1" d="M 120.488281 65.617188 L 126.472656 61.25 L 132.453125 65.617188 L 130.179688 58.554688 L 136.257812 54.1875 L 128.761719 54.1875 L 126.472656 47.03125 L 124.179688 54.195312 L 116.6875 54.1875 L 122.761719 58.554688 L 120.488281 65.617188 "></path>
+			<path fill-rule="nonzero" fill="rgb(98.345947%, 79.048157%, 2.746582%)" fill-opacity="1" d="M 103.8125 69.742188 L 101.519531 76.90625 L 94.035156 76.898438 L 100.105469 81.265625 L 97.832031 88.328125 L 103.8125 83.960938 L 109.796875 88.328125 L 107.519531 81.265625 L 113.59375 76.898438 L 106.105469 76.898438 L 103.8125 69.742188 "></path>
+			<path fill-rule="nonzero" fill="rgb(98.345947%, 79.048157%, 2.746582%)" fill-opacity="1" d="M 95.503906 114.890625 L 101.484375 119.257812 L 99.210938 112.195312 L 105.28125 107.828125 L 97.796875 107.828125 L 95.503906 100.671875 L 93.210938 107.84375 L 85.71875 107.828125 L 91.796875 112.195312 L 89.519531 119.257812 L 95.503906 114.890625 "></path>
+			<path fill-rule="nonzero" fill="rgb(98.345947%, 79.048157%, 2.746582%)" fill-opacity="1" d="M 106.105469 138.851562 L 103.8125 131.695312 L 101.519531 138.859375 L 94.035156 138.851562 L 100.105469 143.21875 L 97.832031 150.28125 L 103.8125 145.90625 L 109.796875 150.28125 L 107.519531 143.21875 L 113.59375 138.851562 L 106.105469 138.851562 "></path>
+			<path fill-rule="nonzero" fill="rgb(98.345947%, 79.048157%, 2.746582%)" fill-opacity="1" d="M 128.808594 161.554688 L 126.515625 154.40625 L 124.226562 161.5625 L 116.734375 161.554688 L 122.808594 165.921875 L 120.535156 172.984375 L 126.519531 168.617188 L 132.5 172.984375 L 130.226562 165.921875 L 136.300781 161.554688 L 128.808594 161.554688 "></path>
+			<path fill-rule="nonzero" fill="rgb(98.345947%, 79.048157%, 2.746582%)" fill-opacity="1" d="M 159.738281 169.78125 L 157.445312 162.625 L 155.15625 169.789062 L 147.664062 169.78125 L 153.738281 174.148438 L 151.46875 181.210938 L 157.449219 176.84375 L 163.429688 181.210938 L 161.152344 174.148438 L 167.230469 169.78125 L 159.738281 169.78125 "></path>
+			<path fill-rule="nonzero" fill="rgb(98.345947%, 79.048157%, 2.746582%)" fill-opacity="1" d="M 190.671875 161.554688 L 188.382812 154.40625 L 186.085938 161.5625 L 178.601562 161.554688 L 184.671875 165.921875 L 182.398438 172.984375 L 188.382812 168.617188 L 194.363281 172.984375 L 192.085938 165.921875 L 198.160156 161.554688 L 190.671875 161.554688 "></path>
+			<path fill-rule="nonzero" fill="rgb(98.345947%, 79.048157%, 2.746582%)" fill-opacity="1" d="M 213.382812 138.851562 L 211.085938 131.695312 L 208.785156 138.859375 L 201.304688 138.851562 L 207.382812 143.21875 L 205.101562 150.28125 L 211.085938 145.90625 L 217.066406 150.28125 L 214.785156 143.21875 L 220.863281 138.851562 L 213.382812 138.851562 "></path>
+			<path fill-rule="nonzero" fill="rgb(98.345947%, 79.048157%, 2.746582%)" fill-opacity="1" d="M 229.09375 107.742188 L 221.601562 107.742188 L 219.304688 100.585938 L 217.015625 107.75 L 209.523438 107.742188 L 215.601562 112.109375 L 213.324219 119.171875 L 219.304688 114.796875 L 225.285156 119.171875 L 223.015625 112.109375 L 229.09375 107.742188 "></path>
+			<path fill-rule="nonzero" fill="rgb(98.345947%, 79.048157%, 2.746582%)" fill-opacity="1" d="M 205.097656 88.234375 L 211.082031 83.867188 L 217.066406 88.234375 L 214.785156 81.171875 L 220.863281 76.8125 L 213.378906 76.8125 L 211.082031 69.65625 L 208.785156 76.820312 L 201.300781 76.8125 L 207.378906 81.171875 L 205.097656 88.234375 "></path>
+			<path fill-rule="nonzero" fill="rgb(98.345947%, 79.048157%, 2.746582%)" fill-opacity="1" d="M 188.46875 47.039062 L 186.179688 54.203125 L 178.6875 54.1875 L 184.757812 58.5625 L 182.484375 65.625 L 188.476562 61.25 L 194.449219 65.625 L 192.179688 58.5625 L 198.257812 54.1875 L 190.757812 54.1875 L 188.46875 47.039062 "></path>
+			<g fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1">
+				<use href="#glyph-0-0" x="335.537" y="87.273"></use>
+			</g>
+			<g fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1">
+				<use href="#glyph-0-1" x="382.478401" y="87.273"></use>
+			</g>
+			<g fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1">
+				<use href="#glyph-0-2" x="422.182513" y="87.273"></use>
+				<use href="#glyph-0-3" x="443.827513" y="87.273"></use>
+				<use href="#glyph-0-4" x="465.472513" y="87.273"></use>
+			</g>
+			<g fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1">
+				<use href="#glyph-0-5" x="505.176624" y="87.273"></use>
+			</g>
+			<g fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1">
+				<use href="#glyph-0-6" x="544.881712" y="87.273"></use>
+			</g>
+			<g fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1">
+				<use href="#glyph-0-7" x="584.5868" y="87.273"></use>
+			</g>
+			<g fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1">
+				<use href="#glyph-0-6" x="620.736224" y="87.273"></use>
+			</g>
+			<g fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1">
+				<use href="#glyph-0-8" x="660.440335" y="87.273"></use>
+			</g>
+			<g fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1">
+				<use href="#glyph-0-9" x="678.499935" y="87.273"></use>
+			</g>
+			<g fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1">
+				<use href="#glyph-0-10" x="718.204046" y="87.273"></use>
+			</g>
+			<g fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1">
+				<use href="#glyph-0-11" x="335.537" y="165.273"></use>
+			</g>
+			<g fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1">
+				<use href="#glyph-0-12" x="357.182513" y="165.273"></use>
+			</g>
+			<g fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1">
+				<use href="#glyph-0-7" x="396.886624" y="165.273"></use>
+			</g>
+			<g fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1">
+				<use href="#glyph-0-8" x="433.037024" y="165.273"></use>
+			</g>
+			<g fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1">
+				<use href="#glyph-0-13" x="451.095599" y="165.273"></use>
+			</g>
+			<g fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1">
+				<use href="#glyph-0-4" x="494.451136" y="165.273"></use>
+			</g>
+			<g fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1">
+				<use href="#glyph-0-14" x="534.155247" y="165.273"></use>
+			</g>
+			<g fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1">
+				<use href="#glyph-0-1" x="559.451136" y="165.273"></use>
+			</g>
+			<g fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1">
+				<use href="#glyph-0-15" x="599.155247" y="165.273"></use>
+			</g>
+			<g fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1">
+				<use href="#glyph-0-7" x="638.859358" y="165.273"></use>
+			</g>
+			<g fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1">
+				<use href="#glyph-0-16" x="675.009759" y="165.273"></use>
+			</g>
+			<g fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1">
+				<use href="#glyph-0-5" x="711.160159" y="165.273"></use>
+			</g>
+			<g fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1">
+				<use href="#glyph-0-8" x="750.864271" y="165.273"></use>
+			</g>
+			<g fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1">
+				<use href="#glyph-0-17" x="768.92387" y="165.273"></use>
+			</g>
+			<g fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1">
+				<use href="#glyph-0-5" x="815.864271" y="165.273"></use>
+			</g>
+			<g fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1">
+				<use href="#glyph-0-18" x="855.568431" y="165.273"></use>
+			</g>
+			<g fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1">
+				<use href="#glyph-0-1" x="873.627981" y="165.273"></use>
+			</g>
+			<g fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1">
+				<use href="#glyph-0-5" x="913.332044" y="165.273"></use>
+			</g>
+	</svg></div>
+</div>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<script type="module">
+/**
+ * Factory function to create different types of cells based on options.
+ * @param {Object} cellData - JSON object containing code, id, and options.
+ * @returns {BaseCell} Instance of the appropriate cell class.
+ */
+globalThis.qpyodideCreateCell = function(cellData) {
+    switch (cellData.options.context) {
+        case 'interactive':
+            return new InteractiveCell(cellData);
+        case 'output':
+            return new OutputCell(cellData);
+        case 'setup':
+            return new SetupCell(cellData);
+        default:
+            return new InteractiveCell(cellData);
+            // throw new Error('Invalid cell type specified in options.');
+    }
+}  
+
+/**
+ * CellContainer class for managing a collection of cells.
+ * @class
+ */
+class CellContainer {
+    /**
+     * Constructor for CellContainer.
+     * Initializes an empty array to store cells.
+     * @constructor
+     */
+    constructor() {
+        this.cells = [];
+    }
+
+    /**
+     * Add a cell to the container.
+     * @param {BaseCell} cell - Instance of a cell (BaseCell or its subclasses).
+     */
+    addCell(cell) {
+        this.cells.push(cell);
+    }
+
+    /**
+     * Execute all cells in the container.
+     */
+    async executeAllCells() {
+        for (const cell of this.cells) {
+            await cell.executeCode();
+        }
+    }
+
+    /**
+     * Execute all cells in the container.
+     */
+    async autoRunExecuteAllCells() {
+        for (const cell of this.cells) {
+            await cell.autoRunExecuteCode();
+        }
+    }
+}
+  
+
+/**
+ * BaseCell class for handling code execution using Pyodide.
+ * @class
+ */
+class BaseCell {
+    /**
+     * Constructor for BaseCell.
+     * @constructor
+     * @param {Object} cellData - JSON object containing code, id, and options.
+     */
+    constructor(cellData) {
+        this.code = cellData.code;
+        this.id = cellData.id;
+        this.options = cellData.options;
+        this.insertionLocation = document.getElementById(`qpyodide-insertion-location-${this.id}`);
+        this.executionLock = false;
+    }
+
+    cellOptions() {
+        // Subclass this? 
+        console.log(this.options);
+        return this.options;
+    }
+
+    /**
+     * Execute the Python code using Pyodide.
+     * @returns {*} Result of the code execution.
+     */
+    async executeCode() {
+        // Execute code using Pyodide
+        const result = getPyodide().runPython(this.code);
+        return result;
+    }
+};
+
+/**
+ * InteractiveCell class for creating editable code editor with Monaco Editor.
+ * @class
+ * @extends BaseCell
+ */
+class InteractiveCell extends BaseCell {
+
+    /**
+     * Constructor for InteractiveCell.
+     * @constructor
+     * @param {Object} cellData - JSON object containing code, id, and options.
+     */
+    constructor(cellData) {
+        super(cellData);
+        this.editor = null;
+        this.setupElement();
+        this.setupMonacoEditor();
+    }
+
+    /**
+     * Set up the interactive cell elements
+     */
+    setupElement() {
+
+        // Create main div element
+        var mainDiv = document.createElement('div');
+        mainDiv.id = `qpyodide-interactive-area-${this.id}`;
+        mainDiv.className = `qpyodide-interactive-area`;
+        if (this.options.classes) {
+            mainDiv.className += " " + this.options.classes
+        }
+
+        // Add a unique cell identifier that users can customize
+        if (this.options.label) {
+            mainDiv.setAttribute('data-id', this.options.label);
+        }
+
+        // Create toolbar div
+        var toolbarDiv = document.createElement('div');
+        toolbarDiv.className = 'qpyodide-editor-toolbar';
+        toolbarDiv.id = `qpyodide-editor-toolbar-${this.id}`;
+
+        // Create a div to hold the left buttons
+        var leftButtonsDiv = document.createElement('div');
+        leftButtonsDiv.className = 'qpyodide-editor-toolbar-left-buttons';
+
+        // Create a div to hold the right buttons
+        var rightButtonsDiv = document.createElement('div');
+        rightButtonsDiv.className = 'qpyodide-editor-toolbar-right-buttons';
+
+        // Create Run Code button
+        var runCodeButton = document.createElement('button');
+        runCodeButton.className = 'btn btn-default qpyodide-button qpyodide-button-run';
+        runCodeButton.disabled = true;
+        runCodeButton.type = 'button';
+        runCodeButton.id = `qpyodide-button-run-${this.id}`;
+        runCodeButton.textContent = '🟡 Loading Pyodide...';
+        runCodeButton.title = `Run code (Shift + Enter)`;
+
+        // Append buttons to the leftButtonsDiv
+        leftButtonsDiv.appendChild(runCodeButton);
+
+        // Create Reset button
+        var resetButton = document.createElement('button');
+        resetButton.className = 'btn btn-light btn-xs qpyodide-button qpyodide-button-reset';
+        resetButton.type = 'button';
+        resetButton.id = `qpyodide-button-reset-${this.id}`;
+        resetButton.title = 'Start over';
+        resetButton.innerHTML = '<i class="fa-solid fa-arrows-rotate"></i>';
+
+        // Create Copy button
+        var copyButton = document.createElement('button');
+        copyButton.className = 'btn btn-light btn-xs qpyodide-button qpyodide-button-copy';
+        copyButton.type = 'button';
+        copyButton.id = `qpyodide-button-copy-${this.id}`;
+        copyButton.title = 'Copy code';
+        copyButton.innerHTML = '<i class="fa-regular fa-copy"></i>';
+
+        // Append buttons to the rightButtonsDiv
+        rightButtonsDiv.appendChild(resetButton);
+        rightButtonsDiv.appendChild(copyButton);
+
+        // Create console area div
+        var consoleAreaDiv = document.createElement('div');
+        consoleAreaDiv.id = `qpyodide-console-area-${this.id}`;
+        consoleAreaDiv.className = 'qpyodide-console-area';
+
+        // Create editor div
+        var editorDiv = document.createElement('div');
+        editorDiv.id = `qpyodide-editor-${this.id}`;
+        editorDiv.className = 'qpyodide-editor';
+
+        // Create output code area div
+        var outputCodeAreaDiv = document.createElement('div');
+        outputCodeAreaDiv.id = `qpyodide-output-code-area-${this.id}`;
+        outputCodeAreaDiv.className = 'qpyodide-output-code-area';
+        outputCodeAreaDiv.setAttribute('aria-live', 'assertive');
+
+        // Create pre element inside output code area
+        var preElement = document.createElement('pre');
+        preElement.style.visibility = 'hidden';
+        outputCodeAreaDiv.appendChild(preElement);
+
+        // Create output graph area div
+        var outputGraphAreaDiv = document.createElement('div');
+        outputGraphAreaDiv.id = `qpyodide-output-graph-area-${this.id}`;
+        outputGraphAreaDiv.className = 'qpyodide-output-graph-area';
+
+        // Append buttons to the toolbar
+        toolbarDiv.appendChild(leftButtonsDiv);
+        toolbarDiv.appendChild(rightButtonsDiv);
+
+        // Append all elements to the main div
+        mainDiv.appendChild(toolbarDiv);
+        consoleAreaDiv.appendChild(editorDiv);
+        consoleAreaDiv.appendChild(outputCodeAreaDiv);
+        mainDiv.appendChild(consoleAreaDiv);
+        mainDiv.appendChild(outputGraphAreaDiv);
+
+        // Insert the dynamically generated object at the document location.
+        this.insertionLocation.appendChild(mainDiv);
+    }
+
+    /**
+     * Set up Monaco Editor for code editing.
+     */
+    setupMonacoEditor() {
+
+        // Retrieve the previously created document elements
+        this.runButton = document.getElementById(`qpyodide-button-run-${this.id}`);
+        this.resetButton = document.getElementById(`qpyodide-button-reset-${this.id}`);
+        this.copyButton = document.getElementById(`qpyodide-button-copy-${this.id}`);
+        this.editorDiv = document.getElementById(`qpyodide-editor-${this.id}`);
+        this.outputCodeDiv = document.getElementById(`qpyodide-output-code-area-${this.id}`);
+        this.outputGraphDiv = document.getElementById(`qpyodide-output-graph-area-${this.id}`);
+        
+        // Store reference to the object
+        var thiz = this;
+
+        // Load the Monaco Editor and create an instance
+        require(['vs/editor/editor.main'], function () {
+            thiz.editor = monaco.editor.create(
+                thiz.editorDiv, {
+                    value: thiz.code,
+                    language: 'python',
+                    theme: 'vs-light',
+                    automaticLayout: true,           // Works wonderfully with RevealJS
+                    scrollBeyondLastLine: false,
+                    minimap: {
+                        enabled: false
+                    },
+                    fontSize: '17.5pt',              // Bootstrap is 1 rem
+                    renderLineHighlight: "none",     // Disable current line highlighting
+                    hideCursorInOverviewRuler: true,  // Remove cursor indictor in right hand side scroll bar
+                    readOnly: thiz.options['read-only'] ?? false
+                }
+            );
+        
+            // Store the official counter ID to be used in keyboard shortcuts
+            thiz.editor.__qpyodideCounter = thiz.id;
+        
+            // Store the official div container ID
+            thiz.editor.__qpyodideEditorId = `qpyodide-editor-${thiz.id}`;
+        
+            // Store the initial code value and options
+            thiz.editor.__qpyodideinitialCode = thiz.code;
+            thiz.editor.__qpyodideOptions = thiz.options;
+        
+            // Set at the model level the preferred end of line (EOL) character to LF.
+            // This prevent `\r\n` from being given to the Pyodide engine if the user is on Windows.
+            // See details in: https://github.com/coatless/quarto-Pyodide/issues/94
+            // Associated error text: 
+            // Error: <text>:1:7 unexpected input
+        
+            // Retrieve the underlying model
+            const model = thiz.editor.getModel();
+            // Set EOL for the model
+            model.setEOL(monaco.editor.EndOfLineSequence.LF);
+        
+            // Dynamically modify the height of the editor window if new lines are added.
+            let ignoreEvent = false;
+            const updateHeight = () => {
+            const contentHeight = thiz.editor.getContentHeight();
+            // We're avoiding a width change
+            //editorDiv.style.width = `${width}px`;
+            thiz.editorDiv.style.height = `${contentHeight}px`;
+                try {
+                    ignoreEvent = true;
+            
+                    // The key to resizing is this call
+                    thiz.editor.layout();
+                } finally {
+                    ignoreEvent = false;
+                }
+            };
+        
+            // Helper function to check if selected text is empty
+            function isEmptyCodeText(selectedCodeText) {
+                return (selectedCodeText === null || selectedCodeText === undefined || selectedCodeText === "");
+            }
+        
+            // Registry of keyboard shortcuts that should be re-added to each editor window
+            // when focus changes.
+            const addPyodideKeyboardShortCutCommands = () => {
+            // Add a keydown event listener for Shift+Enter to run all code in cell
+            thiz.editor.addCommand(monaco.KeyMod.Shift | monaco.KeyCode.Enter, () => {
+                // Retrieve all text inside the editor
+                thiz.runCode(thiz.editor.getValue());
+            });
+        
+            // Add a keydown event listener for CMD/Ctrl+Enter to run selected code
+            thiz.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
+                    // Get the selected text from the editor
+                    const selectedText = thiz.editor.getModel().getValueInRange(thiz.editor.getSelection());
+                    // Check if no code is selected
+                    if (isEmptyCodeText(selectedText)) {
+                        // Obtain the current cursor position
+                        let currentPosition = thiz.editor.getPosition();
+                        // Retrieve the current line content
+                        let currentLine = thiz.editor.getModel().getLineContent(currentPosition.lineNumber);
+                
+                        // Propose a new position to move the cursor to
+                        let newPosition = new monaco.Position(currentPosition.lineNumber + 1, 1);
+                
+                        // Check if the new position is beyond the last line of the editor
+                        if (newPosition.lineNumber > thiz.editor.getModel().getLineCount()) {
+                            // Add a new line at the end of the editor
+                            thiz.editor.executeEdits("addNewLine", [{
+                            range: new monaco.Range(newPosition.lineNumber, 1, newPosition.lineNumber, 1),
+                            text: "\n", 
+                            forceMoveMarkers: true,
+                            }]);
+                        }
+                        
+                        // Run the entire line of code.
+                        thiz.runCode(currentLine);
+                
+                        // Move cursor to new position
+                        thiz.editor.setPosition(newPosition);
+                    } else {
+                        // Code to run when Ctrl+Enter is pressed with selected code
+                        thiz.runCode(selectedText);
+                    }
+                });
+            }
+        
+            // Register an on focus event handler for when a code cell is selected to update
+            // what keyboard shortcut commands should work.
+            // This is a workaround to fix a regression that happened with multiple
+            // editor windows since Monaco 0.32.0 
+            // https://github.com/microsoft/monaco-editor/issues/2947
+            thiz.editor.onDidFocusEditorText(addPyodideKeyboardShortCutCommands);
+        
+            // Register an on change event for when new code is added to the editor window
+            thiz.editor.onDidContentSizeChange(updateHeight);
+        
+            // Manually re-update height to account for the content we inserted into the call
+            updateHeight();
+                
+        });
+
+        
+        // Add a click event listener to the run button
+        thiz.runButton.onclick = function () {
+            thiz.runCode(
+                thiz.editor.getValue()
+            );
+        };
+        
+        // Add a click event listener to the reset button
+        thiz.copyButton.onclick = function () {
+            // Retrieve current code data
+            const data = thiz.editor.getValue();
+            
+            // Write code data onto the clipboard.
+            navigator.clipboard.writeText(data || "");
+        };
+        
+        // Add a click event listener to the copy button
+        thiz.resetButton.onclick = function () {
+            thiz.editor.setValue(thiz.editor.__qpyodideinitialCode);
+        };
+    }
+
+    disableInteractiveCells() {
+        // Enable locking of execution for the cell
+        this.executionLock = true;
+
+        // Disallowing execution of other code cells
+        document.querySelectorAll(".qpyodide-button-run").forEach((btn) => {
+            btn.disabled = true;
+        });
+    }
+
+    enableInteractiveCells() {
+        // Remove locking of execution for the cell
+        this.executionLock = false;
+
+        // All execution of other code cells
+        document.querySelectorAll(".qpyodide-button-run").forEach((btn) => {
+            btn.disabled = false;
+        });
+    }
+
+    /**
+     * Execute the Python code inside the editor.
+     */
+    async runCode(code) {
+        
+        // Check if we have an execution lock
+        if (this.executeLock) return; 
+        
+        this.disableInteractiveCells();
+
+        // Force wait procedure
+        await mainPyodide;
+
+        // Clear the output stock
+        qpyodideResetOutputArray();
+
+        // Generate a new canvas element, avoid attaching until the end
+        let graphFigure = document.createElement("figure");
+        document.pyodideMplTarget = graphFigure;
+
+        console.log("Running code!");
+        // Obtain results from the base class
+        try {
+            // Always check to see if the user adds new packages
+            await mainPyodide.loadPackagesFromImports(code);
+
+            // Process result
+            const output = await mainPyodide.runPythonAsync(code);
+
+            // Add output
+            qpyodideAddToOutputArray(output, "stdout");
+        } catch (err) {
+            // Add error message
+            qpyodideAddToOutputArray(err, "stderr");
+            // TODO: There has to be a way to remove the Pyodide portion of the errors... 
+        }
+
+        const result = qpyodideRetrieveOutput();
+
+        // Nullify the output area of content
+        this.outputCodeDiv.innerHTML = "";
+        this.outputGraphDiv.innerHTML = "";        
+
+        // Design an output object for messages
+        const pre = document.createElement("pre");
+        if (/\S/.test(result)) {
+            // Display results as HTML elements to retain output styling
+            const div = document.createElement("div");
+            div.innerHTML = result;
+            pre.appendChild(div);
+        } else {
+            // If nothing is present, hide the element.
+            pre.style.visibility = "hidden";
+        }
+
+        // Add output under interactive div
+        this.outputCodeDiv.appendChild(pre);
+
+        // Place the graphics onto the page
+        if (graphFigure) {
+
+            if (this.options['fig-cap']) {
+                // Create figcaption element
+                const figcaptionElement = document.createElement('figcaption');
+                figcaptionElement.innerText = this.options['fig-cap'];
+                // Append figcaption to figure
+                graphFigure.appendChild(figcaptionElement);    
+            }
+
+            this.outputGraphDiv.appendChild(graphFigure);
+        }
+
+        // Re-enable execution
+        this.enableInteractiveCells();
+    }
+};
+
+/**
+ * OutputCell class for customizing and displaying output.
+ * @class
+ * @extends BaseCell
+ */
+class OutputCell extends BaseCell {
+    /**
+     * Constructor for OutputCell.
+     * @constructor
+     * @param {Object} cellData - JSON object containing code, id, and options.
+     */
+    constructor(cellData) {
+      super(cellData);
+    }
+  
+    /**
+     * Display customized output on the page.
+     * @param {*} output - Result to be displayed.
+     */
+    displayOutput(output) {
+        const results = this.executeCode();
+        return results;
+    }
+  }
+
+/**
+ * SetupCell class for suppressed output.
+ * @class
+ * @extends BaseCell
+ */
+class SetupCell extends BaseCell {
+    /**
+     * Constructor for SetupCell.
+     * @constructor
+     * @param {Object} cellData - JSON object containing code, id, and options.
+     */
+    constructor(cellData) {
+        super(cellData);
+    }
+
+    /**
+     * Execute the Python code without displaying the results.
+     */
+    runSetupCode() {
+        // Execute code without displaying output
+        this.executeCode();
+    }
+};
+</script>
+<script type="module">
+// Handle cell initialization initialization
+qpyodideCellDetails.map(
+    (entry) => {
+      // Handle the creation of the element
+      qpyodideCreateCell(entry);
+    }
+  );
+</script>
+
+
+
+
+</body></html>

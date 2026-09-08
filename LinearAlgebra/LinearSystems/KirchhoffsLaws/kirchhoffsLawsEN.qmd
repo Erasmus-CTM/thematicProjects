@@ -1,0 +1,210 @@
+---
+title: "Kirchhoff's Laws"
+lang: en-GB
+engine: markdown
+format:
+  html:
+    embed-resources: false
+    code-fold: true
+    include-after-body:
+      ../../../aux/footerEN.html
+filters:
+   - pyodide
+crossref:
+  sec-prefix: Exercise
+---
+
+## Introduction{-}
+In an electrical circuit, it is important to determine the current in each wire. The relation between resistance, voltage and current in a circuit is described by _Ohm's law_ and _Kirchhoff's laws_.
+
+When modelling a circuit mathematically, we assign a direction to each wire. In the circuit on @fig-simpleCircuit, it is for instance marked that the current $I_3$ runs from left to right. If the system of equations later give that $I_3$ is negative, this simply means that the current actually flows in the opposite direction.
+
+Kirchhoff's current law states that the sum of all currents in a node is zero (taking the current direction into account). Alternatively, one may phrase it as the sum of currents entering a node must equal the sum of current leaving the node.
+The other of Kirchhoff's laws &ndash; the voltage law &ndash; states that within every loop of the circuit, the sum of voltages must be zero. Again, one must remember the assumed current directions.
+
+## Exercise 1{#sec-opg1}
+In this exercise, we consider the circuit on @fig-simpleCircuit.
+
+![A circuit with two voltage sources and three resistors.](circuit1.svg){#fig-simpleCircuit width=70%}
+
+
+1. Explain why Kirchhoff's current law applied to the circuit nodes yields the equations
+$$\begin{align*}
+I_1-I_2-I_3 &=0\\
+    I_3-I_4-I_5 &=0\\
+    I_4+I_5-I_6 &=0,
+	\end{align*}$${#eq-currentLaw}
+	as well as the equation $I_1-I_2-I_6=0$. Argue that this final equation is a linear combination of the three first ones.
+  
+1. Now, use Kirchhoff's voltage law to obtain the equations
+$$\begin{align*}
+5I_2&=V_1\\
+    -5I_2+10I_3+2I_4&=0\\
+    -2I_4 &=V_2\\
+    10I_3+2I_4&=V_1\\
+    -5I_2+10I_3&=V_2\\
+    10I_3 &=V_1+V_2,
+\end{align*}$${#eq-voltageLaw}
+and argue that the three bottom-most equations are linear combinations of the three top-most equations.
+  
+1. By combining the first three equations from @eq-currentLaw and the first three equations from @eq-voltageLaw we obtain a system of six linear equations. Show that this has augmented matrix
+$$\left[
+      \begin{array}{*{6}{r}|c}
+        1 & -1 & -1 & 0  & 0  & 0  & 0   \\
+        0 & 0  & 1  & -1 & -1 & 0  & 0   \\
+        0 & 0  & 0  & 1  & 1  & -1 & 0   \\
+        0 & 5  & 0  & 0  & 0  & 0  & V_1 \\
+        0 & -5 & 10 & 2  & 0  & 0  & 0   \\
+        0 & 0  & 0  & -2 & 0  & 0  & V_2
+      \end{array}
+    \right].$$
+  
+1. Show that the reduced row-echelon form of the augmented matrix is
+$$\renewcommand{\arraystretch}{1.3}
+    \left[
+      \begin{array}{*{6}{r}|c}
+        1 & 0& 0& 0& 0&0&\frac{1}{10}(3V_1+V_2)\\
+        0 & 1& 0& 0& 0&0&\frac{1}{5}V_1\\
+        0 & 0& 1& 0& 0&0&\frac{1}{10}(V_1+V_2)\\
+        0 & 0& 0& 1& 0&0&-\frac{1}{2}V_2\\
+        0 & 0& 0& 0& 1&0&\frac{1}{10}V_1+\frac{3}{5}V_2\\
+        0 & 0& 0& 0& 0&1&\frac{1}{10}(V_1+V_2)
+      \end{array}
+    \right],$$
+	and determine if the system is consistent.
+  
+1. Compute the six currents $I_1,I_2,\ldots,I_6$ when the voltages are $V_1=20\mathrm{V}$ and $V_2=30\mathrm{V}$.
+
+
+## Exercise 2{#sec-opg2}
+In this exercise, we modify the circuit in @fig-simpleCircuit, such that we obtain the one in @fig-shortCircuit instead.
+
+![A circuit with two voltage sources and two resistors.](circuit2.svg){#fig-shortCircuit width=70%}
+
+1. By using Kirchhoff's laws to create a system of equations as in @sec-opg1 one obtains a system, whose augmented matrix has reduced row-echelon form given by
+$$\renewcommand{\arraystretch}{1.3}
+    \left[
+      \begin{array}{*{6}{r}|c}
+        1 & 0& 0& 0& 0&-1&\frac{1}{5}V_1\\
+        0 & 1& 0& 0& 0& 0&\frac{1}{5}V_1\\
+        0 & 0& 1& 0& 0&-1&0\\
+        0 & 0& 0& 1& 0& 0&-\frac{1}{2}V_2\\
+        0 & 0& 0& 0& 1&-1&\frac{1}{2}V_2\\
+        0 & 0& 0& 0& 0& 0&V_1+V_2
+      \end{array}
+    \right].$$
+	What must be true about the voltage sources $V_1$ and $V_2$ for the system to be consistent?
+
+1. Write out the general, parametrized solution to the system.
+
+1. Can we &ndash; as in the last part of @sec-opg1 &ndash; determine the currents in @fig-shortCircuit whenever $V_1$ and $V_2$ are known?
+
+## Exercise 3{#sec-opg3}
+Finally, we explore how smaller parts of a circuit alter the current running through them. More precisely, we look at _series circuits_ and _shunt circuits_. The voltage $v$ and current $i$ are represented by a vector
+$\left[
+  \begin{array}{c}
+    v\\
+    i
+  \end{array}
+\right]$,
+and if this is sent through one of the two circuits, the current on the other side can be described by a linear transformation. For a series circuit with resistance $R$, the matrix representation for the transformation is
+$$A_R=\left[
+    \begin{array}{rr}
+      1 & -R\\
+      0 & 1
+    \end{array}
+\right],$$
+and for a shunt circuit with resistance $R$, the transformation is
+$$B_R=\left[
+    \begin{array}{rr}
+      1 & 0\\
+      -\frac{1}{R} & 1
+    \end{array}
+\right].$$
+
+
+1. Show that when an electric current is sent through a shunt circuit with resistance $R_1$ and afterwards through a series circuit with resistance $R_2$, then the corresponding linear transformation has matrix representation
+$$\renewcommand{\arraystretch}{1.3}
+    A_{R_2}B_{R_1}=
+    \left[
+      \begin{array}{rr}
+        1+\frac{R_2}{R_1} & -R_2\\
+        -\frac{1}{R_1} & 1
+      \end{array}
+    \right].$$
+	Then determine the resulting current and voltage if $\left[
+  \begin{array}{c}
+    v\\
+    i
+  \end{array}
+\right]$ is sent through the circuit.
+
+1. Let $R_1=3$ and $R_2=4$, and define the matrices
+$$P=\left[
+      \begin{array}{rr}
+        2 & -6\\
+        1 & 1
+      \end{array}
+    \right]
+    \quad\text{and}\quad
+    D=\left[
+      \begin{array}{rr}
+        \frac{1}{3} & 0\\
+        0 & 3
+      \end{array}
+    \right].$$
+
+   Find the inverse of $P$, and check that $A_4B_3=PDP^{-1}$.
+
+1. Use the result above to write out an expression for $(A_4B_3)^{10}$, which uses only two matrix multiplications. You need not compute the result.
+
+   :::{.callout-tip title="Hint" collapse=true}
+   $(A_4B_3)^{10}=PDP^{-1}PDP^{-1}\cdots PDP^{-1}$. Use $P^{-1}P=I$ as well as the fact that $D^{10}$ is obtained by raising each diagonal entry to the 10th power.
+   :::
+   
+1. The code snippet below can be used to compare the time (in nanoseconds) required to compute $(A_4B_3)^{10}$ either directly or via the diagonalization.
+
+   Fill in the matrix $M=A_4B_3$ in line&nbsp;10 in the code, and use it to see which method is faster. Does it match your expectations?
+   
+   In this case, we can easily speed up the computation in line&nbsp;27. Can you figure out how?
+   
+   :::{.callout-tip title="Hint" collapse=true}
+   How many times does the code compute $P^{-1}$, which you have already computed explicitly?
+   :::
+
+```{pyodide-python}
+import time
+import numpy
+from numpy.linalg import inv
+
+exponent = 10
+nIteration = 10000
+
+## Compute directly by repeated multiplication
+## Fill in the matrix M=A_4*B_3 yourself
+M = numpy.array([[7/3, ???], [???, ???]])
+
+tStart = time.monotonic_ns()
+for i in range(nIteration):
+	resultDirect = M
+	for j in range(1, exponent):
+		resultDirect = resultDirect @ M
+tSlut = time.monotonic_ns()
+
+print("Direct:\t\t\t{:.2f} ns/computation".format((tSlut-tStart)/nIteration))
+
+## Compute by using diagonalization and numpy's inv
+P = numpy.array([[2, -6], [1, 1]])
+D = numpy.diag([1/3, 3])
+
+tStart = time.monotonic_ns()
+for i in range(nIteration):
+	resultInverse = P @ D**exponent @ inv(P)
+tSlut = time.monotonic_ns()
+
+print("Diagonalization:\t{:.2f} ns/computation\n".format((tSlut-tStart)/nIteration))
+
+## Verify that the two methods gave the same result: The difference
+## must be (close to) the zero matrix.
+resultDirect-resultInverse
+```

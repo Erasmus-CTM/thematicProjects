@@ -1,0 +1,1692 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="da" xml:lang="da"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Kirchhoffs love</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="kirchhoffsLawsDA_files/libs/clipboard/clipboard.min.js"></script>
+<script src="kirchhoffsLawsDA_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="kirchhoffsLawsDA_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="kirchhoffsLawsDA_files/libs/quarto-html/popper.min.js"></script>
+<script src="kirchhoffsLawsDA_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="kirchhoffsLawsDA_files/libs/quarto-html/anchor.min.js"></script>
+<link href="kirchhoffsLawsDA_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="kirchhoffsLawsDA_files/libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="kirchhoffsLawsDA_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="kirchhoffsLawsDA_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="kirchhoffsLawsDA_files/libs/bootstrap/bootstrap-01bb29787c2f906b335763ce7b646a82.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/monaco-editor@0.46.0/min/vs/editor/editor.main.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+  
+<style type="text/css">
+.monaco-editor pre {
+  background-color: unset !important;
+}
+
+.qpyodide-editor-toolbar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+.qpyodide-editor-toolbar-left-buttons, .qpyodide-editor-toolbar-right-buttons {
+  display: flex;
+}
+
+.qpyodide-non-interactive-loading-container.qpyodide-cell-needs-evaluation, .qpyodide-non-interactive-loading-container.qpyodide-cell-evaluated {
+  justify-content: center;
+  display: flex;
+  background-color: rgba(250, 250, 250, 0.65);
+  border: 1px solid rgba(233, 236, 239, 0.65);
+  border-radius: 0.5rem;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.qpyodide-r-project-logo {
+  color: #2767B0; /* R Project's blue color */
+}
+
+.qpyodide-icon-status-spinner {
+  color: #7894c4;
+}
+
+.qpyodide-icon-run-code {
+  color: #0d9c29
+}
+
+.qpyodide-output-code-stdout {
+  color: #111;
+}
+
+.qpyodide-output-code-stderr {
+  color: #db4133;
+}
+
+.qpyodide-editor {
+  border: 1px solid #EEEEEE;
+}
+
+.qpyodide-editor-toolbar {
+  background-color: #EEEEEE;
+  padding: 0.2rem 0.5rem;
+}
+
+.qpyodide-button {
+  background-color: #EEEEEE;
+  display: inline-block;
+  font-weight: 400;
+  line-height: 1;
+  text-decoration: none;
+  text-align: center;
+  color: #000;
+  border-color: #dee2e6;
+  border: 1px solid rgba(0,0,0,0);
+  padding: 0.375rem 0.75rem;
+  font-size: .9rem;
+  border-radius: 0.25rem;
+  transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+
+.qpyodide-button:hover {
+  color: #000;
+  background-color: #d9dce0;
+  border-color: #c8ccd0;
+}
+
+.qpyodide-button:disabled,.qpyodide-button.disabled,fieldset:disabled .qpyodide-button {
+  pointer-events: none;
+  opacity: .65
+}
+
+.qpyodide-button-reset {
+  color: #696969; /*#4682b4;*/
+}
+
+.qpyodide-button-copy {
+  color: #696969;
+}
+
+
+/* Custom styling for RevealJS Presentations*/
+
+/* Reset the style of the interactive area */
+.reveal div.qpyodide-interactive-area {
+  display: block;
+  box-shadow: none;
+  max-width: 100%;
+  max-height: 100%;
+  margin: 0;
+  padding: 0;
+} 
+
+/* Provide space to entries */
+.reveal div.qpyodide-output-code-area pre div {
+  margin: 1px 2px 1px 10px;
+}
+
+/* Collapse the inside code tags to avoid extra space between line outputs */
+.reveal pre div code.qpyodide-output-code-stdout, .reveal pre div code.qpyodide-output-code-stderr {
+  padding: 0;
+  display: contents;
+}
+
+.reveal pre div code.qpyodide-output-code-stdout {
+  color: #111;
+}
+
+.reveal pre div code.qpyodide-output-code-stderr {
+  color: #db4133;
+}
+
+
+/* Create a border around console and output (does not effect graphs) */
+.reveal div.qpyodide-console-area {
+  border: 1px solid #EEEEEE;
+  box-shadow: 2px 2px 10px #EEEEEE;
+}
+
+/* Cap output height and allow text to scroll */
+/* TODO: Is there a better way to fit contents/max it parallel to the monaco editor size? */
+.reveal div.qpyodide-output-code-area pre {
+  max-height: 400px;
+  overflow: scroll;
+}
+</style>
+<script type="module">
+// Document level settings ----
+
+// Determine if we need to install python packages
+globalThis.qpyodideInstallPythonPackagesList = [''];
+
+// Check to see if we have an empty array, if we do set to skip the installation.
+globalThis.qpyodideSetupPythonPackages = !(qpyodideInstallPythonPackagesList.indexOf("") !== -1);
+
+// Display a startup message?
+globalThis.qpyodideShowStartupMessage = true;
+
+// Describe the webR settings that should be used
+globalThis.qpyodideCustomizedPyodideOptions = {
+  "indexURL": "https://cdn.jsdelivr.net/pyodide/v0.27.2/full/",
+  "env": {
+    "HOME": "/home/pyodide",
+  }, 
+  stdout: (text) => {qpyodideAddToOutputArray(text, "out");},
+  stderr: (text) => {qpyodideAddToOutputArray(text, "error");}
+}
+
+// Store cell data
+globalThis.qpyodideCellDetails = [{"code":"import time\nimport numpy\nfrom numpy.linalg import inv\n\neksponent = 10\nnIteration = 10000\n\n## Udregn direkte ved at opløfte\n## Skriv selv matricen M=A_4*B_3 ind\nM = numpy.array([[7/3, ???], [???, ???]])\n\ntStart = time.monotonic_ns()\nfor i in range(nIteration):\n    resultatDirekte = M\n    for j in range(1, eksponent):\n        resultatDirekte = resultatDirekte @ M\ntSlut = time.monotonic_ns()\n\nprint(\"Direkte:\\t{:.2f} ns/beregning\".format((tSlut-tStart)/nIteration))\n\n## Udregn ved hjælp af numpys inverse\nP = numpy.array([[2, -6], [1, 1]])\nD = numpy.diag([1/3, 3])\n\ntStart = time.monotonic_ns()\nfor i in range(nIteration):\n    resultatInvers = P @ D**eksponent @ inv(P)\ntSlut = time.monotonic_ns()\n\nprint(\"Omskrivning:\\t{:.2f} ns/beregning\\n\".format((tSlut-tStart)/nIteration))\n\n## Tjek, at de to gav samme resultat: Differensen skal være (tæt på) nul-matricen\nresultatDirekte-resultatInvers","id":1,"options":{"autorun":"","classes":"","comment":"","context":"interactive","dpi":72,"fig-cap":"","fig-height":5,"fig-width":7,"label":"","message":"true","out-height":"","out-width":"700px","output":"true","read-only":"false","results":"markup","warning":"true"}}];
+
+
+</script>
+<script type="module">
+// Declare startupMessageqpyodide globally
+globalThis.qpyodideStartupMessage = document.createElement("p");
+
+// Function to set the button text
+globalThis.qpyodideSetInteractiveButtonState = function(buttonText, enableCodeButton = true) {
+  document.querySelectorAll(".qpyodide-button-run").forEach((btn) => {
+    btn.innerHTML = buttonText;
+    btn.disabled = !enableCodeButton;
+  });
+}
+
+// Function to update the status message in non-interactive cells
+globalThis.qpyodideUpdateStatusMessage = function(message) {
+  document.querySelectorAll(".qpyodide-status-text.qpyodide-cell-needs-evaluation").forEach((elem) => {
+    elem.innerText = message;
+  });
+}
+
+// Function to update the status message
+globalThis.qpyodideUpdateStatusHeader = function(message) {
+
+  if (!qpyodideShowStartupMessage) return;
+
+  qpyodideStartupMessage.innerHTML = message;
+}
+
+// Status header update with customized spinner message
+globalThis.qpyodideUpdateStatusHeaderSpinner = function(message) {
+
+  qpyodideUpdateStatusHeader(`
+    <i class="fa-solid fa-spinner fa-spin qpyodide-icon-status-spinner"></i>
+    <span>${message}</span>
+  `);
+}
+
+
+// Function that attaches the document status message
+function qpyodideDisplayStartupMessage(showStartupMessage) {
+  if (!showStartupMessage) {
+    return;
+  }
+
+  // Get references to header elements
+  const headerHTML = document.getElementById("title-block-header");
+  const headerRevealJS = document.getElementById("title-slide");
+
+  // Create the outermost div element for metadata
+  const quartoTitleMeta = document.createElement("div");
+  quartoTitleMeta.classList.add("quarto-title-meta");
+
+  // Create the first inner div element
+  const firstInnerDiv = document.createElement("div");
+  firstInnerDiv.setAttribute("id", "qpyodide-status-message-area");
+
+  // Create the second inner div element for "Pyodide Status" heading and contents
+  const secondInnerDiv = document.createElement("div");
+  secondInnerDiv.setAttribute("id", "qpyodide-status-message-title");
+  secondInnerDiv.classList.add("quarto-title-meta-heading");
+  secondInnerDiv.innerText = "Pyodide Status";
+
+  // Create another inner div for contents
+  const secondInnerDivContents = document.createElement("div");
+  secondInnerDivContents.setAttribute("id", "qpyodide-status-message-body");
+  secondInnerDivContents.classList.add("quarto-title-meta-contents");
+
+  // Describe the Pyodide state
+  qpyodideStartupMessage.innerText = "🟡 Loading...";
+  qpyodideStartupMessage.setAttribute("id", "qpyodide-status-message-text");
+  // Add `aria-live` to auto-announce the startup status to screen readers
+  qpyodideStartupMessage.setAttribute("aria-live", "assertive");
+
+  // Append the startup message to the contents
+  secondInnerDivContents.appendChild(qpyodideStartupMessage);
+
+  // Combine the inner divs and contents
+  firstInnerDiv.appendChild(secondInnerDiv);
+  firstInnerDiv.appendChild(secondInnerDivContents);
+  quartoTitleMeta.appendChild(firstInnerDiv);
+
+  // Determine where to insert the quartoTitleMeta element
+  if (headerHTML || headerRevealJS) {
+    // Append to the existing "title-block-header" element or "title-slide" div
+    (headerHTML || headerRevealJS).appendChild(quartoTitleMeta);
+  } else {
+    // If neither headerHTML nor headerRevealJS is found, insert after "Pyodide-monaco-editor-init" script
+    const monacoScript = document.getElementById("qpyodide-monaco-editor-init");
+    const header = document.createElement("header");
+    header.setAttribute("id", "title-block-header");
+    header.appendChild(quartoTitleMeta);
+    monacoScript.after(header);
+  }
+}
+
+qpyodideDisplayStartupMessage(qpyodideShowStartupMessage);
+</script>
+<script type="module">
+// Create a logging setup
+globalThis.qpyodideMessageArray = []
+
+// Add messages to array
+globalThis.qpyodideAddToOutputArray = function(message, type) {
+  qpyodideMessageArray.push({ message, type });
+}
+
+// Function to reset the output array
+globalThis.qpyodideResetOutputArray = function() {
+  qpyodideMessageArray = [];
+}
+
+globalThis.qpyodideRetrieveOutput = function() {
+  return qpyodideMessageArray.map(entry => entry.message).join('\n');
+}
+
+// Start a timer
+const initializePyodideTimerStart = performance.now();
+
+// Encase with a dynamic import statement
+globalThis.qpyodideInstance = await import(
+  qpyodideCustomizedPyodideOptions.indexURL + "pyodide.mjs").then(
+   async({ loadPyodide }) => {
+
+    console.log("Start loading Pyodide");
+    
+    // Populate Pyodide options with defaults or new values based on `pyodide`` meta
+    let mainPyodide = await loadPyodide(
+      qpyodideCustomizedPyodideOptions
+    );
+    
+    // Setup a namespace for global scoping
+    // await loadedPyodide.runPythonAsync("globalScope = {}"); 
+    
+    // Update status to reflect the next stage of the procedure
+    qpyodideUpdateStatusHeaderSpinner("Initializing Python Packages");
+
+    // Load the `micropip` package to allow installation of packages.
+    await mainPyodide.loadPackage("micropip");
+    await mainPyodide.runPythonAsync(`import micropip`);
+
+    // Load the `pyodide_http` package to shim uses of `requests` and `urllib3`.
+    // This allows for `pd.read_csv(url)` to work flawlessly.
+    // Details: https://github.com/coatless-quarto/pyodide/issues/9
+    await mainPyodide.loadPackage("pyodide_http");
+    await mainPyodide.runPythonAsync(`
+    import pyodide_http
+    pyodide_http.patch_all()  # Patch all libraries
+    `);
+
+    // Load the `matplotlib` package with necessary environment hook
+    await mainPyodide.loadPackage("matplotlib");
+
+    // Set the backend for matplotlib to be interactive.
+    await mainPyodide.runPythonAsync(`
+    import matplotlib
+    matplotlib.use("module://matplotlib_pyodide.html5_canvas_backend")
+    from matplotlib import pyplot as plt
+    `);
+
+    // Unlock interactive buttons
+    qpyodideSetInteractiveButtonState(
+      `<i class="fa-solid fa-play qpyodide-icon-run-code"></i> <span>Run Code</span>`, 
+      true
+    );
+
+    // Set document status to viable
+    qpyodideUpdateStatusHeader(
+      "🟢 Ready!"
+    );
+
+    // Assign Pyodide into the global environment
+    globalThis.mainPyodide = mainPyodide;
+
+    console.log("Completed loading Pyodide");
+    return mainPyodide;
+  }
+);
+
+// Stop timer
+const initializePyodideTimerEnd = performance.now();
+
+// Create a function to retrieve the promise object.
+globalThis._qpyodideGetInstance = function() {
+    return qpyodideInstance;
+}
+
+</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.46.0/min/vs/loader.js"></script>
+<script type="module" id="qpyodide-monaco-editor-init">
+
+  // Configure the Monaco Editor's loader
+  require.config({
+    paths: {
+      'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.46.0/min/vs'
+    }
+  });
+</script>
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Kirchhoffs love</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduktion" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="introduktion">Introduktion</h2>
+<p>I et elektronisk kredsløb er det vigtigt at kunne bestemme strømmen i hver ledning eller bane. Sammenhængen mellem modstand, strømstyrke og spændingsfald i et kredsløb er beskrevet af <em>Ohms lov</em> og <em>Kirchhoffs love</em>.</p>
+<p>Når vi behandler et kredsløb matematisk, tildeler vi en retning til hver ledning. I kredsløbet på <a href="#fig-simpleCircuit" class="quarto-xref">Figur&nbsp;1</a> er det for eksempel markeret, at strømmen <span class="math inline">\(I_3\)</span> løber fra venstre mod højre. Hvis ligningssystemet senere giver, at <span class="math inline">\(I_3\)</span> er negativ, betyder dette blot, at strømmen i virkeligheden flyder i den anden retning.</p>
+<p>Kirchhoffs strømlov siger, at summen af alle strømme i et knudepunkt er nul, når der tages højde for strømmens retning. Alternativt, kan man formulere den sådan, at summen af strømmene ind i knuden er lig summen af strømmene ud af punktet. Den anden af Kirchhoffs love – spændingsloven – siger, at i enhver kreds i kredsløbet vil summen af spændingsfaldene være nul. Igen skal der tages højde for strømmens retning</p>
+</section>
+<section id="sec-opg1" class="level2">
+<h2 class="anchored" data-anchor-id="sec-opg1">Delopgave 1</h2>
+<p>I denne opgave betragter vi kredsløbet i <a href="#fig-simpleCircuit" class="quarto-xref">Figur&nbsp;1</a>.</p>
+<div id="fig-simpleCircuit" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-simpleCircuit-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="circuit1.svg" class="img-fluid figure-img" style="width:70.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-simpleCircuit-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figur&nbsp;1: Et kredsløb med to spændingskilder og tre resistorer
+</figcaption>
+</figure>
+</div>
+<ol type="1">
+<li><p>Forklar, at Kirchhoffs strømlov brugt på kredsløbets knudepunkter giver ligningerne <span id="eq-currentLaw"><span class="math display">\[\begin{align*}
+I_1-I_2-I_3 &amp;=0\\
+I_3-I_4-I_5 &amp;=0\\
+I_4+I_5-I_6 &amp;=0,
+\end{align*} \tag{1}\]</span></span> samt ligningen <span class="math inline">\(I_1-I_2-I_6=0\)</span>. Argumenter for, at denne ligning er en linearkombination af de tre første.</p></li>
+<li><p>Brug nu Kirchhoffs spændingslov til at udlede ligningerne <span id="eq-voltageLaw"><span class="math display">\[\begin{align*}
+5I_2&amp;=V_1\\
+-5I_2+10I_3+2I_4&amp;=0\\
+-2I_4 &amp;=V_2\\
+10I_3+2I_4&amp;=V_1\\
+-5I_2+10I_3&amp;=V_2\\
+10I_3 &amp;=V_1+V_2,
+\end{align*} \tag{2}\]</span></span> og argumenter for, at de tre nederste er linearkombinationer af de tre øverste.</p></li>
+<li><p>Kombineres de tre første ligninger <a href="#eq-currentLaw" class="quarto-xref">Ligning&nbsp;1</a> og de tre første fra <a href="#eq-voltageLaw" class="quarto-xref">Ligning&nbsp;2</a> fås et ligningssystem med seks ligninger. Vis at dette har totalmatrix <span class="math display">\[\left[
+   \begin{array}{*{6}{r}|c}
+     1 &amp; -1 &amp; -1 &amp; 0  &amp; 0  &amp; 0  &amp; 0   \\
+     0 &amp; 0  &amp; 1  &amp; -1 &amp; -1 &amp; 0  &amp; 0   \\
+     0 &amp; 0  &amp; 0  &amp; 1  &amp; 1  &amp; -1 &amp; 0   \\
+     0 &amp; 5  &amp; 0  &amp; 0  &amp; 0  &amp; 0  &amp; V_1 \\
+     0 &amp; -5 &amp; 10 &amp; 2  &amp; 0  &amp; 0  &amp; 0   \\
+     0 &amp; 0  &amp; 0  &amp; -2 &amp; 0  &amp; 0  &amp; V_2
+   \end{array}
+\right].\]</span></p></li>
+<li><p>Vis, at den reducerede trappeform af totalmatricen er <span class="math display">\[\renewcommand{\arraystretch}{1.3}
+\left[
+   \begin{array}{*{6}{r}|c}
+     1 &amp; 0&amp; 0&amp; 0&amp; 0&amp;0&amp;\frac{1}{10}(3V_1+V_2)\\
+     0 &amp; 1&amp; 0&amp; 0&amp; 0&amp;0&amp;\frac{1}{5}V_1\\
+     0 &amp; 0&amp; 1&amp; 0&amp; 0&amp;0&amp;\frac{1}{10}(V_1+V_2)\\
+     0 &amp; 0&amp; 0&amp; 1&amp; 0&amp;0&amp;-\frac{1}{2}V_2\\
+     0 &amp; 0&amp; 0&amp; 0&amp; 1&amp;0&amp;\frac{1}{10}V_1+\frac{3}{5}V_2\\
+     0 &amp; 0&amp; 0&amp; 0&amp; 0&amp;1&amp;\frac{1}{10}(V_1+V_2)
+   \end{array}
+\right],\]</span> og afgør, om ligningssystemet er konsistent.</p></li>
+<li><p>Find de seks strømme <span class="math inline">\(I_1,I_2,\ldots,I_6\)</span>, når spændingskilderne er <span class="math inline">\(V_1=20\mathrm{V}\)</span> og <span class="math inline">\(V_2=30\mathrm{V}\)</span>.</p></li>
+</ol>
+</section>
+<section id="sec-opg2" class="level2">
+<h2 class="anchored" data-anchor-id="sec-opg2">Delopgave 2</h2>
+<p>I denne delopgave modificerer vi kredsløbet <a href="#fig-simpleCircuit" class="quarto-xref">Figur&nbsp;1</a>, så vi i stedet får det på <a href="#fig-shortCircuit" class="quarto-xref">Figur&nbsp;2</a>.</p>
+<div id="fig-shortCircuit" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-shortCircuit-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="circuit2.svg" class="img-fluid figure-img" style="width:70.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-shortCircuit-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figur&nbsp;2: Et kredsløb med to spændingskilder og to resistorer.
+</figcaption>
+</figure>
+</div>
+<ol type="1">
+<li><p>Bruges Kirchhoffs love til at opstille et ligningssystem ligesom i <a href="#sec-opg1" class="quarto-xref">Delopgave&nbsp;1</a>, fås et system, hvis totalmatrix rækkereducerer til <span class="math display">\[\renewcommand{\arraystretch}{1.3}
+\left[
+   \begin{array}{*{6}{r}|c}
+     1 &amp; 0&amp; 0&amp; 0&amp; 0&amp;-1&amp;\frac{1}{5}V_1\\
+     0 &amp; 1&amp; 0&amp; 0&amp; 0&amp; 0&amp;\frac{1}{5}V_1\\
+     0 &amp; 0&amp; 1&amp; 0&amp; 0&amp;-1&amp;0\\
+     0 &amp; 0&amp; 0&amp; 1&amp; 0&amp; 0&amp;-\frac{1}{2}V_2\\
+     0 &amp; 0&amp; 0&amp; 0&amp; 1&amp;-1&amp;\frac{1}{2}V_2\\
+     0 &amp; 0&amp; 0&amp; 0&amp; 0&amp; 0&amp;V_1+V_2
+   \end{array}
+\right].\]</span> Hvad skal der gælde om spændingskilderne <span class="math inline">\(V_1\)</span> og <span class="math inline">\(V_2\)</span> for at systemet er konsistent?</p></li>
+<li><p>Opskriv den generelle, parametriserede løsning til ligningssystemet.</p></li>
+<li><p>Kan vi ligesom i sidste spørgsmål af <a href="#sec-opg1" class="quarto-xref">Delopgave&nbsp;1</a> bestemme strømmene i kredsløbet på <a href="#fig-shortCircuit" class="quarto-xref">Figur&nbsp;2</a>, når blot <span class="math inline">\(V_1\)</span> og <span class="math inline">\(V_2\)</span> er kendte?</p></li>
+</ol>
+</section>
+<section id="sec-opg3" class="level2">
+<h2 class="anchored" data-anchor-id="sec-opg3">Delopgave 3</h2>
+<p>I denne opgave undersøger vi, hvordan mindre dele af et kredsløb påvirker den strøm, der løber gennem dem. Mere specifikt ser vi på det, der på engelsk kaldes <em>series circuits</em> og <em>shunt circuits</em>. Vi repræsenterer spændingsfaldet <span class="math inline">\(v\)</span> og strømstyrken <span class="math inline">\(i\)</span> som en vektor <span class="math inline">\(\left[
+  \begin{array}{c}
+    v\\
+    i
+  \end{array}
+\right]\)</span>, og sendes denne gennem et af de to kredsløb, kan strømmen på den anden side beskrives ved en lineær transformation. For et series circuit med modstand <span class="math inline">\(R\)</span>, er matrixrepræsentationen for afbildningen <span class="math display">\[A_R=\left[
+    \begin{array}{rr}
+      1 &amp; -R\\
+      0 &amp; 1
+    \end{array}
+\right],\]</span> og for et shunt circuit med modstand <span class="math inline">\(R\)</span> er matrixrepræsentationen <span class="math display">\[B_R=\left[
+    \begin{array}{rr}
+      1 &amp; 0\\
+      -\frac{1}{R} &amp; 1
+    \end{array}
+\right].\]</span></p>
+<ol type="1">
+<li><p>Vis, at når en strøm først sendes gennem et shunt circuit med modstand <span class="math inline">\(R_1\)</span> og dernæst et series circuit med modstand <span class="math inline">\(R_2\)</span>, har den tilsvarende lineære transformation matrixrepræsentation <span class="math display">\[\renewcommand{\arraystretch}{1.3}
+A_{R_2}B_{R_1}=
+\left[
+   \begin{array}{rr}
+     1+\frac{R_2}{R_1} &amp; -R_2\\
+     -\frac{1}{R_1} &amp; 1
+   \end{array}
+\right].\]</span> Bestem herefter den resulterende strømstyrke og det resulterende spændingsfald, hvis <span class="math inline">\(\left[
+  \begin{array}{c}
+v\\
+i
+  \end{array}
+\right]\)</span> sendes gennem dette kredsløb.</p></li>
+<li><p>Lad nu <span class="math inline">\(R_1=3\)</span> og <span class="math inline">\(R_2=4\)</span>, og definer matricerne <span class="math display">\[P=\left[
+   \begin{array}{rr}
+     2 &amp; -6\\
+     1 &amp; 1
+   \end{array}
+\right]
+\quad\text{og}\quad
+D=\left[
+   \begin{array}{rr}
+     \frac{1}{3} &amp; 0\\
+     0 &amp; 3
+   \end{array}
+\right].\]</span></p>
+<p>Find den inverse til <span class="math inline">\(P\)</span> og tjek, at <span class="math inline">\(A_4B_3=PDP^{-1}\)</span>.</p></li>
+<li><p>Brug resultatet ovenfor til at opskrive et udtryk for <span class="math inline">\((A_4B_3)^{10}\)</span>, som kun bruger to matrixmultiplikationer. I behøver ikke udregne resultatet.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Vink">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Vink
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><span class="math inline">\((A_4B_3)^{10}=PDP^{-1}PDP^{-1}\cdots PDP^{-1}\)</span>. Brug <span class="math inline">\(P^{-1}P=I\)</span>, samt at <span class="math inline">\(D^{10}\)</span> opnås ved at opløfte hver af diagonalindgangene i tiende.</p>
+</div>
+</div>
+</div></li>
+<li><p>Koden herunder kan bruges til at sammenligne tidsforbruget i nanosekunder for at udregne <span class="math inline">\((A_4B_3)^10\)</span> direkte eller via diagonaliseringen.</p>
+<p>Skriv matricen <span class="math inline">\(M=A_4B_3\)</span> ind i linje&nbsp;10 i koden herunder og tjek, hvilken der er hurtigst. Passer det med jeres forventning?</p>
+<p>I dette tilfælde kan vi nemt gøre beregningen i linje&nbsp;27 hurtigere. Kan I gennemskue hvordan?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Vink">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Vink
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Hvor mange gange udregnes <span class="math inline">\(P^{-1}\)</span>, som I jo allerede kender eksplicit?</p>
+</div>
+</div>
+</div></li>
+</ol>
+<div id="qpyodide-insertion-location-1"></div>
+<noscript>Please enable JavaScript to experience the dynamic code cell content on this page.</noscript>
+</section>
+
+</main>
+<!-- /main column -->
+<div style="display:flex; justify-content:space-between; align-items:center">
+	<div style="width:20%" role="img" alt="Creative Commons BY-NC-SA logo">
+		<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en">
+			<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://web.resource.org/cc/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" width="50%" viewbox="0 0 120 42" id="svg2759" sodipodi:version="0.32" inkscape:version="0.45+devel" version="1.0" sodipodi:docname="by-nc-sa.svg" inkscape:output_extension="org.inkscape.output.svg.inkscape">
+				<defs id="defs2761"></defs>
+				<sodipodi:namedview id="base" pagecolor="#ffffff" bordercolor="#8b8b8b" borderopacity="1" gridtolerance="10000" guidetolerance="10" objecttolerance="10" inkscape:pageopacity="0.0" inkscape:pageshadow="2" inkscape:zoom="1.8760684" inkscape:cx="60" inkscape:cy="31" inkscape:document-units="px" inkscape:current-layer="layer1" width="120px" height="42px" inkscape:showpageshadow="false" inkscape:window-width="1198" inkscape:window-height="624" inkscape:window-x="170" inkscape:window-y="319"></sodipodi:namedview>
+				<metadata id="metadata2764">
+					<rdf:rdf>
+						<cc:work rdf:about="">
+							<dc:format>image/svg+xml</dc:format>
+							<dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"></dc:type>
+						</cc:work>
+					</rdf:rdf>
+				</metadata>
+				<g inkscape:label="Layer 1" inkscape:groupmode="layer" id="layer1">
+					<g id="g2630">
+						<path id="path3817_5_" nodetypes="ccccccc" d="M 3.4083297,0.45268464 L 116.76243,0.65404185 C 118.34626,0.65404185 119.76124,0.41920791 119.76124,3.814567 L 119.62246,41.143644 L 0.54733418,41.143644 L 0.54733418,3.675801 C 0.54733418,2.0014081 0.70939995,0.45268464 3.4083297,0.45268464 z" style="fill:#aab2ab"></path>
+						<path d="M 117.7533,-1.417352e-06 L 2.2476335,-1.417352e-06 C 1.0083193,-1.417352e-06 -2.0408688e-05,1.0082254 -2.0408688e-05,2.2469141 L -2.0408688e-05,41.492978 C -2.0408688e-05,41.772935 0.22707838,41.999998 0.5075432,41.999998 L 119.49241,41.999998 C 119.77289,41.999998 119.99998,41.772925 119.99998,41.492978 L 119.99998,2.2469141 C 119.99998,1.0082254 118.99164,-1.417352e-06 117.7533,-1.417352e-06 z M 2.2476335,1.0150221 L 117.75331,1.0150221 C 118.43264,1.0150221 118.98486,1.5676515 118.98486,2.246924 C 118.98486,2.246924 118.98486,18.04326 118.98486,29.467549 L 36.428267,29.467549 C 33.402284,34.938555 27.571583,38.65317 20.881033,38.65317 C 14.188536,38.65317 8.3597829,34.941953 5.3357378,29.467549 L 1.0151167,29.467549 C 1.0151167,18.04326 1.0151167,2.246924 1.0151167,2.246924 C 1.0151068,1.5676515 1.5682849,1.0150221 2.2476335,1.0150221 z" id="path120"></path>
+						<g id="g5908_5_" transform="matrix(0.8674921,0,0,0.8673951,-387.30972,67.870882)">
+							<path id="path5906_5_" cx="296.35416" ry="22.939548" cy="264.3577" type="arc" rx="22.939548" d="M 486.26599,-55.7066 C 486.27154,-47.02581 479.2381,-39.9851 470.55786,-39.97952 C 461.87768,-39.9739 454.83636,-47.00738 454.83081,-55.68762 C 454.83081,-55.69433 454.83081,-55.69989 454.83081,-55.7066 C 454.82519,-64.38739 461.85864,-71.4281 470.53888,-71.43371 C 479.22022,-71.43871 486.26148,-64.40588 486.26599,-55.72564 C 486.26599,-55.71948 486.26599,-55.71277 486.26599,-55.7066 z" style="fill:#ffffff"></path>
+							<g id="g5706_5_" transform="translate(-289.6157,99.0653)">
+								<path id="path5708_5_" d="M 772.94165,-167.5741 C 776.42651,-164.08869 778.16943,-159.82074 778.16943,-154.77191 C 778.16943,-149.72253 776.45666,-145.49988 773.03112,-142.10397 C 769.39526,-138.52795 765.09936,-136.74023 760.14111,-136.74023 C 755.24328,-136.74023 751.02124,-138.51287 747.47717,-142.05978 C 743.93078,-145.60504 742.15869,-149.84222 742.15869,-154.77191 C 742.15869,-159.7005 743.93078,-163.96789 747.47717,-167.5741 C 750.93176,-171.06061 755.15381,-172.80359 760.14111,-172.80359 C 765.18994,-172.80359 769.45569,-171.06061 772.94165,-167.5741 z M 749.82312,-165.22925 C 746.87634,-162.25287 745.40295,-158.76636 745.40295,-154.76746 C 745.40295,-150.76856 746.86181,-147.31165 749.77722,-144.39624 C 752.69482,-141.47974 756.16626,-140.02148 760.19482,-140.02148 C 764.22338,-140.02148 767.72497,-141.49429 770.7019,-144.44043 C 773.52783,-147.17688 774.94079,-150.6181 774.94079,-154.76746 C 774.94079,-158.88495 773.50439,-162.38038 770.63256,-165.25165 C 767.76195,-168.12226 764.28271,-169.55817 760.19482,-169.55817 C 756.10693,-169.55817 752.64783,-168.11499 749.82312,-165.22925 z M 757.57703,-156.52606 C 757.12732,-157.50775 756.45386,-157.9989 755.55432,-157.9989 C 753.9657,-157.9989 753.17139,-156.92883 753.17139,-154.78979 C 753.17139,-152.65026 753.9657,-151.58129 755.55432,-151.58129 C 756.60376,-151.58129 757.35327,-152.10204 757.80298,-153.14587 L 760.00574,-151.97284 C 758.95532,-150.10736 757.38013,-149.17383 755.28028,-149.17383 C 753.66028,-149.17383 752.36256,-149.67053 751.38819,-150.66339 C 750.41273,-151.6568 749.92493,-153.02673 749.92493,-154.77191 C 749.92493,-156.48694 750.42835,-157.84845 751.43299,-158.85693 C 752.43751,-159.86547 753.69056,-160.3695 755.1908,-160.3695 C 757.41138,-160.3695 759,-159.49462 759.96216,-157.74664 L 757.57703,-156.52606 z M 767.94092,-156.52606 C 767.49011,-157.50775 766.82886,-157.9989 765.9585,-157.9989 C 764.33753,-157.9989 763.52637,-156.92883 763.52637,-154.78979 C 763.52637,-152.65026 764.33753,-151.58129 765.9585,-151.58129 C 767.01014,-151.58129 767.74622,-152.10204 768.16578,-153.14587 L 770.41773,-151.97284 C 769.36951,-150.10736 767.79664,-149.17383 765.70008,-149.17383 C 764.0824,-149.17383 762.78809,-149.67053 761.81361,-150.66339 C 760.84144,-151.6568 760.35365,-153.02673 760.35365,-154.77191 C 760.35365,-156.48694 760.84816,-157.84845 761.83717,-158.85693 C 762.82496,-159.86547 764.08241,-160.3695 765.61061,-160.3695 C 767.8268,-160.3695 769.41432,-159.49462 770.37196,-157.74664 L 767.94092,-156.52606 z"></path>
+							</g>
+						</g>
+						<g transform="matrix(0.9937808,0,0,0.9936696,-437.12334,-74.436914)" id="g126">
+							<circle cx="491.94629" cy="90.231934" r="10.80615" id="circle128" sodipodi:cx="491.94629" sodipodi:cy="90.231934" sodipodi:rx="10.80615" sodipodi:ry="10.80615" style="fill:#ffffff"></circle>
+							<g id="g130">
+								<path d="M 495.07373,87.10498 C 495.07373,86.68848 494.73584,86.35107 494.31982,86.35107 L 489.54736,86.35107 C 489.13134,86.35107 488.79345,86.68847 488.79345,87.10498 L 488.79345,91.87793 L 490.1245,91.87793 L 490.1245,97.52979 L 493.74169,97.52979 L 493.74169,91.87793 L 495.07372,91.87793 L 495.07372,87.10498 L 495.07373,87.10498 z" id="path132"></path>
+								<circle cx="491.93359" cy="84.090332" r="1.63232" id="circle134" sodipodi:cx="491.93359" sodipodi:cy="84.090332" sodipodi:rx="1.63232" sodipodi:ry="1.63232"></circle>
+							</g>
+							<path clip-rule="evenodd" d="M 491.91846,78.3252 C 488.68701,78.3252 485.95069,79.45313 483.71143,81.70899 C 481.41358,84.04249 480.26514,86.80469 480.26514,89.99366 C 480.26514,93.18263 481.41358,95.9253 483.71143,98.22071 C 486.00928,100.51466 488.74561,101.6626 491.91846,101.6626 C 495.13135,101.6626 497.91651,100.50586 500.27295,98.19092 C 502.49268,95.99365 503.60205,93.26123 503.60205,89.99365 C 503.60205,86.72607 502.47314,83.96484 500.21435,81.70898 C 497.95556,79.45312 495.19092,78.3252 491.91846,78.3252 z M 491.94873,80.4248 C 494.59717,80.4248 496.84521,81.35888 498.69482,83.22607 C 500.56494,85.07324 501.49951,87.32959 501.49951,89.99365 C 501.49951,92.67724 500.58447,94.90429 498.75342,96.67431 C 496.82569,98.58007 494.55713,99.53271 491.94873,99.53271 C 489.33838,99.53271 487.08935,98.58984 485.20068,96.70312 C 483.31201,94.81689 482.36767,92.58056 482.36767,89.99365 C 482.36767,87.40674 483.32177,85.15136 485.22997,83.22607 C 487.06104,81.35889 489.30029,80.4248 491.94873,80.4248 z" id="path136" style="fill-rule:evenodd"></path>
+						</g>
+						<g transform="matrix(0.9937808,0,0,0.9936696,-437.12334,-74.436914)" enable-background="new    " id="g138">
+							<path d="M 488.56299,107.86719 C 488.88037,107.86719 489.17041,107.89551 489.43213,107.95117 C 489.69385,108.00683 489.91846,108.09863 490.10596,108.22656 C 490.29248,108.35351 490.43701,108.52344 490.54053,108.73437 C 490.64307,108.94628 490.69483,109.20703 490.69483,109.51855 C 490.69483,109.85449 490.61866,110.13378 490.46534,110.35742 C 490.313,110.58203 490.08643,110.76465 489.78761,110.9082 C 490.19972,111.02636 490.50734,111.2334 490.71046,111.52929 C 490.91358,111.82518 491.01515,112.18163 491.01515,112.59863 C 491.01515,112.93457 490.94972,113.22558 490.81886,113.47168 C 490.688,113.7168 490.51124,113.91797 490.28956,114.07324 C 490.06886,114.22949 489.81593,114.34472 489.53272,114.41894 C 489.24854,114.49414 488.95752,114.53124 488.65772,114.53124 L 485.42139,114.53124 L 485.42139,107.86718 L 488.56299,107.86718 L 488.56299,107.86719 z M 488.37549,110.5625 C 488.63721,110.5625 488.85205,110.5 489.02002,110.37598 C 489.18897,110.25196 489.27295,110.05078 489.27295,109.77149 C 489.27295,109.61622 489.24463,109.48829 489.18897,109.38965 C 489.13233,109.29004 489.05811,109.21289 488.96436,109.15625 C 488.87061,109.10059 488.76319,109.06152 488.64209,109.04004 C 488.52002,109.01856 488.39404,109.00781 488.26318,109.00781 L 486.89013,109.00781 L 486.89013,110.5625 L 488.37549,110.5625 z M 488.46143,113.39062 C 488.60498,113.39062 488.7417,113.37695 488.87256,113.34863 C 489.00342,113.32031 489.11865,113.27343 489.21924,113.20898 C 489.31885,113.14355 489.39795,113.05468 489.45752,112.94238 C 489.51611,112.83105 489.54639,112.6875 489.54639,112.51367 C 489.54639,112.17187 489.44971,111.92773 489.25635,111.78125 C 489.06299,111.63574 488.80713,111.5625 488.48975,111.5625 L 486.89014,111.5625 L 486.89014,113.39062 L 488.46143,113.39062 z" id="path140" style="fill:#ffffff"></path>
+							<path d="M 491.27393,107.86719 L 492.91651,107.86719 L 494.47706,110.49903 L 496.02882,107.86719 L 497.66261,107.86719 L 495.188,111.97364 L 495.188,114.53126 L 493.71925,114.53126 L 493.71925,111.93653 L 491.27393,107.86719 z" id="path142" style="fill:#ffffff"></path>
+						</g>
+						<g transform="matrix(0.9937808,0,0,0.9936696,-437.12334,-74.436914)" enable-background="new    " id="g144">
+							<path d="M 538.91553,112.88379 C 538.99658,113.03906 539.10303,113.16504 539.23682,113.26172 C 539.37061,113.3584 539.52686,113.42969 539.70752,113.47656 C 539.88721,113.52344 540.07275,113.54687 540.26611,113.54687 C 540.39599,113.54687 540.53564,113.53613 540.68506,113.51367 C 540.8335,113.49219 540.97315,113.45019 541.10401,113.38769 C 541.23389,113.32617 541.34229,113.24023 541.43018,113.13085 C 541.51612,113.02245 541.56006,112.88378 541.56006,112.71581 C 541.56006,112.53515 541.50244,112.38964 541.38721,112.27733 C 541.27295,112.16503 541.12159,112.07225 540.93604,111.99706 C 540.74952,111.92284 540.5376,111.85741 540.30225,111.80077 C 540.06592,111.74511 539.82666,111.68261 539.58448,111.61425 C 539.33546,111.55175 539.09327,111.47558 538.85694,111.38573 C 538.62159,111.29589 538.40967,111.1787 538.22315,111.03514 C 538.0376,110.89256 537.88624,110.71385 537.77198,110.49901 C 537.65675,110.28417 537.59913,110.0244 537.59913,109.71971 C 537.59913,109.37694 537.67237,109.08006 537.81788,108.82811 C 537.96436,108.57616 538.15577,108.3662 538.39112,108.19725 C 538.62745,108.02928 538.89503,107.90526 539.19385,107.8242 C 539.4917,107.74315 539.79053,107.70311 540.08838,107.70311 C 540.43701,107.70311 540.771,107.74217 541.09131,107.8203 C 541.41065,107.89745 541.6958,108.0244 541.94385,108.19823 C 542.19287,108.37303 542.39014,108.59569 542.53662,108.8662 C 542.68213,109.13768 542.75537,109.46581 542.75537,109.85155 L 541.33349,109.85155 C 541.32079,109.65233 541.27978,109.48729 541.20849,109.35741 C 541.1372,109.22655 541.04247,109.12401 540.92431,109.04882 C 540.80712,108.9746 540.67236,108.92089 540.52099,108.89062 C 540.36962,108.85937 540.20361,108.84374 540.02392,108.84374 C 539.90673,108.84374 539.78857,108.85644 539.67138,108.88085 C 539.55322,108.90624 539.44677,108.94921 539.35107,109.01171 C 539.25439,109.07421 539.17627,109.15136 539.11377,109.24511 C 539.05225,109.33886 539.021,109.45702 539.021,109.5996 C 539.021,109.73046 539.04541,109.8369 539.09522,109.91698 C 539.14502,109.99803 539.24268,110.07323 539.38917,110.14159 C 539.53566,110.20995 539.73683,110.27831 539.99464,110.34667 C 540.25245,110.41503 540.59034,110.50292 541.00636,110.60839 C 541.13038,110.6328 541.30324,110.6787 541.52296,110.74413 C 541.74366,110.80956 541.96339,110.91308 542.18019,111.05663 C 542.39796,111.20018 542.58546,111.39159 542.74464,111.63085 C 542.90284,111.87011 542.98194,112.17675 542.98194,112.55077 C 542.98194,112.85546 542.92237,113.13866 542.80421,113.40038 C 542.68605,113.6621 542.51026,113.88768 542.27687,114.07714 C 542.04347,114.26757 541.75441,114.41503 541.40871,114.5205 C 541.06398,114.62695 540.66457,114.67968 540.20949,114.67968 C 539.8423,114.67968 539.48683,114.63378 539.14113,114.54394 C 538.79543,114.45312 538.49074,114.31152 538.22707,114.11816 C 537.96242,113.9248 537.75246,113.67773 537.59621,113.3789 C 537.44094,113.08007 537.36574,112.72558 537.37258,112.31445 L 538.79446,112.31445 C 538.79443,112.53809 538.83447,112.72852 538.91553,112.88379 z" id="path146" style="fill:#ffffff"></path>
+							<path d="M 547.17236,107.86719 L 549.66455,114.53125 L 548.14307,114.53125 L 547.63916,113.04687 L 545.14697,113.04687 L 544.62353,114.53125 L 543.14892,114.53125 L 545.66943,107.86719 L 547.17236,107.86719 z M 547.25635,111.95312 L 546.41651,109.50976 L 546.39698,109.50976 L 545.52979,111.95312 L 547.25635,111.95312 z" id="path148" style="fill:#ffffff"></path>
+						</g>
+						<g transform="matrix(0.9937808,0,0,0.9936696,-437.12334,-74.436914)" enable-background="new    " id="g150">
+							<path d="M 512.83057,107.86719 L 515.61475,112.33789 L 515.63037,112.33789 L 515.63037,107.86719 L 517.00537,107.86719 L 517.00537,114.53125 L 515.53955,114.53125 L 512.76611,110.06934 L 512.74756,110.06934 L 512.74756,114.53125 L 511.37256,114.53125 L 511.37256,107.86719 L 512.83057,107.86719 z" id="path152" style="fill:#ffffff"></path>
+							<path d="M 522.56885,109.64258 C 522.48194,109.50196 522.37256,109.37891 522.2417,109.27344 C 522.11084,109.16797 521.96338,109.08496 521.79834,109.02637 C 521.6333,108.9668 521.46045,108.9375 521.28076,108.9375 C 520.95068,108.9375 520.67041,109.00098 520.43994,109.12891 C 520.20947,109.25586 520.02295,109.42676 519.88037,109.64161 C 519.73682,109.85645 519.63232,110.10059 519.56689,110.37403 C 519.50146,110.64747 519.46923,110.93067 519.46923,111.22266 C 519.46923,111.50293 519.50146,111.77539 519.56689,112.03907 C 519.63232,112.30372 519.73681,112.542 519.88037,112.75294 C 520.02295,112.96485 520.20947,113.1338 520.43994,113.26173 C 520.67041,113.38966 520.95068,113.45314 521.28076,113.45314 C 521.72803,113.45314 522.07861,113.31642 522.33056,113.04201 C 522.58251,112.76857 522.73681,112.40724 522.79247,111.959 L 524.21142,111.959 C 524.17431,112.37599 524.07763,112.75295 523.92236,113.08888 C 523.76709,113.42579 523.56103,113.71193 523.30615,113.94923 C 523.05127,114.18653 522.75244,114.3672 522.40967,114.4922 C 522.06787,114.6172 521.69092,114.6797 521.28076,114.6797 C 520.77002,114.6797 520.31103,114.59083 519.90283,114.4131 C 519.4956,114.23634 519.15088,113.99122 518.8706,113.68068 C 518.59033,113.36916 518.37451,113.00295 518.22509,112.58302 C 518.07568,112.16212 518.00048,111.70997 518.00048,111.22364 C 518.00048,110.72559 518.07568,110.26368 518.22509,109.83692 C 518.3745,109.41016 518.59032,109.03809 518.8706,108.72071 C 519.15088,108.40333 519.4956,108.1543 519.90283,107.97364 C 520.31103,107.79298 520.77002,107.70313 521.28076,107.70313 C 521.64795,107.70313 521.99463,107.75586 522.3208,107.86231 C 522.64795,107.96778 522.94092,108.12208 523.19873,108.3252 C 523.45752,108.52735 523.67041,108.77832 523.83838,109.07715 C 524.00635,109.37598 524.11182,109.71875 524.15576,110.10449 L 522.73681,110.10449 C 522.71143,109.93652 522.65576,109.78223 522.56885,109.64258 z" id="path154" style="fill:#ffffff"></path>
+						</g>
+						<g id="g6332_1_" transform="matrix(0.621108,0,0,0.6210385,-285.77182,240.48957)">
+							<path id="path6334_1_" cx="475.97119" ry="29.209877" cy="252.08646" type="arc" rx="29.209877" d="M 644.57642,-363.11569 C 644.58423,-353.70389 636.95911,-346.0679 627.54663,-346.06088 C 618.13403,-346.05539 610.49963,-353.67813 610.4917,-363.09225 C 610.4917,-363.09927 610.4917,-363.10867 610.4917,-363.11569 C 610.48547,-372.52749 618.1106,-380.16348 627.52161,-380.1705 C 636.93421,-380.17752 644.56861,-372.55246 644.57642,-363.14145 C 644.57642,-363.13211 644.57642,-363.12509 644.57642,-363.11569 z" style="fill:#ffffff"></path>
+							<g id="g6336_1_" transform="translate(-23.9521,-89.72962)">
+								<path id="path6338_1_" d="M 651.36426,-292.05655 C 646.19238,-292.05655 641.81421,-290.25107 638.23291,-286.64322 C 634.5564,-282.90878 632.71729,-278.48923 632.71729,-273.38608 C 632.71729,-268.28293 634.5564,-263.89615 638.23291,-260.22348 C 641.90796,-256.55154 646.28613,-254.71561 651.36426,-254.71561 C 656.50501,-254.71561 660.95972,-256.56797 664.72998,-260.26957 C 668.28162,-263.78678 670.05823,-268.15873 670.05823,-273.38609 C 670.05823,-278.61351 668.25196,-283.03306 664.63623,-286.64323 C 661.02222,-290.25107 656.59875,-292.05655 651.36426,-292.05655 z M 651.41113,-288.69559 C 655.64868,-288.69559 659.2456,-287.20261 662.20654,-284.21427 C 665.19726,-281.25883 666.6925,-277.65098 666.6925,-273.38608 C 666.6925,-269.09232 665.22851,-265.52976 662.2987,-262.69614 C 659.21594,-259.64768 655.58459,-258.12345 651.41113,-258.12345 C 647.23608,-258.12345 643.63769,-259.63285 640.61572,-262.65085 C 637.59387,-265.66959 636.08288,-269.24698 636.08288,-273.38608 C 636.08288,-277.52518 637.6079,-281.13455 640.66259,-284.21427 C 643.59082,-287.20261 647.17358,-288.69559 651.41113,-288.69559 z"></path>
+								<path id="path6340_1_" d="M 643.08923,-276.02048 C 643.833,-280.71897 647.13928,-283.22989 651.28466,-283.22989 C 657.24401,-283.22989 660.87682,-278.90488 660.87682,-273.13767 C 660.87682,-267.5095 657.01122,-263.13913 651.19078,-263.13913 C 647.18614,-263.13913 643.6002,-265.60245 642.94859,-270.43997 L 647.65171,-270.43997 C 647.79233,-267.92898 649.4221,-267.04465 651.75022,-267.04465 C 654.40342,-267.04465 656.12681,-269.50949 656.12681,-273.27671 C 656.12681,-277.23142 654.6378,-279.32285 651.84239,-279.32285 C 649.79393,-279.32285 648.02513,-278.57834 647.65172,-276.02048 L 649.01891,-276.02988 L 645.31737,-272.32669 L 641.61571,-276.02988 L 643.08923,-276.02048 z"></path>
+							</g>
+						</g>
+						<g transform="translate(4.972327e-4,9.6235539e-3)" id="g2366">
+							<path id="path6372_1_" cx="475.97119" ry="29.209877" cy="252.08646" type="arc" rx="29.209877" d="M 87.801399,14.981221 C 87.806231,20.481808 83.349796,24.943138 77.848148,24.947525 C 72.347434,24.950898 67.885163,20.495415 67.8813,14.995762 C 67.8813,14.989951 67.8813,14.985575 67.8813,14.981221 C 67.877402,9.4801445 72.333872,5.0188155 77.834551,5.0144396 C 83.335231,5.0110323 87.797501,9.4665495 87.801399,14.966168 C 87.801399,14.971034 87.801399,14.976356 87.801399,14.981221 z" style="fill:#ffffff"></path>
+							<path id="path45" d="M 86.070369,6.7455646 C 83.825249,4.5032726 81.077589,3.3828326 77.826689,3.3828326 C 74.614009,3.3828326 71.895369,4.5032726 69.670069,6.7455646 C 67.386019,9.0650066 66.245049,11.809127 66.245049,14.979335 C 66.245049,18.148837 67.386019,20.874555 69.670069,23.154358 C 71.953409,25.435578 74.672049,26.575837 77.826689,26.575837 C 81.019549,26.575837 83.787019,25.425671 86.128399,23.126048 C 88.334599,20.941796 89.438049,18.22599 89.438049,14.979335 C 89.438049,11.731974 88.315489,8.9871466 86.070369,6.7455646 z M 84.618679,21.618445 C 82.702679,23.512501 80.448359,24.458823 77.855709,24.458823 C 75.262349,24.458823 73.027129,23.521703 71.150059,21.646755 C 69.272989,19.771807 68.334459,17.549334 68.334459,14.979332 C 68.334459,13.89216 68.506099,12.864441 68.845489,11.89547 L 71.918369,13.255497 L 71.696829,13.255497 L 71.696829,14.633571 L 72.784359,14.633571 C 72.784359,14.828215 72.764899,15.022152 72.764899,15.216085 L 72.764899,15.546625 L 71.696829,15.546625 L 71.696829,16.924699 L 72.958829,16.924699 C 73.133649,17.953831 73.521879,18.788322 74.045999,19.448692 C 75.133169,20.885513 76.880359,21.661964 78.782919,21.661964 C 80.025799,21.661964 81.151199,21.293203 81.811569,20.923735 L 81.345129,18.76921 C 80.937439,18.982962 80.025799,19.273868 79.132559,19.273868 C 78.161469,19.273868 77.249479,18.982966 76.628039,18.283664 C 76.336779,17.953831 76.123379,17.507213 75.987839,16.924699 L 80.208409,16.924699 L 86.205549,19.579283 C 85.790079,20.315397 85.262779,20.995586 84.618679,21.618445 z M 77.076429,15.546632 L 77.050949,15.527168 L 77.094829,15.546632 L 77.076429,15.546632 z M 80.686879,14.633578 L 80.860299,14.633578 L 80.860299,13.255504 L 77.573299,13.255504 L 76.238049,12.664496 C 76.353059,12.406151 76.488959,12.175055 76.647499,11.994215 C 77.249479,11.255278 78.103439,10.945264 79.035599,10.945264 C 79.889909,10.945264 80.685469,11.197238 81.190129,11.410994 L 81.733709,9.1977216 C 81.034409,8.8877066 80.005979,8.6159136 78.821839,8.6159136 C 76.997149,8.6159136 75.443899,9.3534366 74.337259,10.595615 C 74.091659,10.879439 73.878609,11.197948 73.685379,11.534859 L 69.871779,9.8471216 C 70.241249,9.2929176 70.675839,8.7606566 71.179079,8.2531686 C 72.998819,6.3973326 75.223419,5.4694136 77.855699,5.4694136 C 80.487279,5.4694136 82.722499,6.3973326 84.561349,8.2531686 C 86.418599,10.089188 87.347229,12.33077 87.347229,14.979339 C 87.347229,15.852048 87.248129,16.675215 87.052779,17.450956 L 80.686879,14.633578 z"></path>
+						</g>
+					</g>
+				</g>
+			</svg>
+		</a>
+	</div>
+	<p style="font-size:0.8em; margin:0em;">Computational Thinking Makes Sense of Mathematics</p>
+	<div style="width:20%" role="img" alt="Medfinansieret af Den Europæiske Union">
+		<svg xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" width="100%" viewbox="0 0 1088 221">
+			<path fill-rule="nonzero" fill="rgb(100%, 100%, 100%)" fill-opacity="1" d="M 10.03125 210.894531 L 304.972656 210.894531 L 304.972656 10.609375 L 10.03125 10.609375 L 10.03125 210.894531 "></path>
+			<path fill-rule="nonzero" fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1" d="M 15.703125 205.171875 L 299.304688 205.171875 L 299.304688 16.101562 L 15.703125 16.101562 L 15.703125 205.171875 "></path>
+			<path fill-rule="nonzero" fill="rgb(98.345947%, 79.048157%, 2.746582%)" fill-opacity="1" d="M 151.460938 57.296875 L 157.441406 52.929688 L 163.429688 57.296875 L 161.148438 50.234375 L 167.230469 45.867188 L 159.734375 45.867188 L 157.441406 38.71875 L 155.148438 45.875 L 147.660156 45.867188 L 153.734375 50.234375 L 151.460938 57.296875 "></path>
+			<path fill-rule="nonzero" fill="rgb(98.345947%, 79.048157%, 2.746582%)" fill-opacity="1" d="M 120.488281 65.617188 L 126.472656 61.25 L 132.453125 65.617188 L 130.179688 58.554688 L 136.257812 54.1875 L 128.761719 54.1875 L 126.472656 47.03125 L 124.179688 54.195312 L 116.6875 54.1875 L 122.761719 58.554688 L 120.488281 65.617188 "></path>
+			<path fill-rule="nonzero" fill="rgb(98.345947%, 79.048157%, 2.746582%)" fill-opacity="1" d="M 103.8125 69.742188 L 101.519531 76.90625 L 94.035156 76.898438 L 100.105469 81.265625 L 97.832031 88.328125 L 103.8125 83.960938 L 109.796875 88.328125 L 107.519531 81.265625 L 113.59375 76.898438 L 106.105469 76.898438 L 103.8125 69.742188 "></path>
+			<path fill-rule="nonzero" fill="rgb(98.345947%, 79.048157%, 2.746582%)" fill-opacity="1" d="M 95.503906 114.890625 L 101.484375 119.257812 L 99.210938 112.195312 L 105.28125 107.828125 L 97.796875 107.828125 L 95.503906 100.671875 L 93.210938 107.84375 L 85.71875 107.828125 L 91.796875 112.195312 L 89.519531 119.257812 L 95.503906 114.890625 "></path>
+			<path fill-rule="nonzero" fill="rgb(98.345947%, 79.048157%, 2.746582%)" fill-opacity="1" d="M 106.105469 138.851562 L 103.8125 131.695312 L 101.519531 138.859375 L 94.035156 138.851562 L 100.105469 143.21875 L 97.832031 150.28125 L 103.8125 145.90625 L 109.796875 150.28125 L 107.519531 143.21875 L 113.59375 138.851562 L 106.105469 138.851562 "></path>
+			<path fill-rule="nonzero" fill="rgb(98.345947%, 79.048157%, 2.746582%)" fill-opacity="1" d="M 128.808594 161.554688 L 126.515625 154.40625 L 124.226562 161.5625 L 116.734375 161.554688 L 122.808594 165.921875 L 120.535156 172.984375 L 126.519531 168.617188 L 132.5 172.984375 L 130.226562 165.921875 L 136.300781 161.554688 L 128.808594 161.554688 "></path>
+			<path fill-rule="nonzero" fill="rgb(98.345947%, 79.048157%, 2.746582%)" fill-opacity="1" d="M 159.738281 169.78125 L 157.445312 162.625 L 155.15625 169.789062 L 147.664062 169.78125 L 153.738281 174.148438 L 151.46875 181.210938 L 157.449219 176.84375 L 163.429688 181.210938 L 161.152344 174.148438 L 167.230469 169.78125 L 159.738281 169.78125 "></path>
+			<path fill-rule="nonzero" fill="rgb(98.345947%, 79.048157%, 2.746582%)" fill-opacity="1" d="M 190.671875 161.554688 L 188.382812 154.40625 L 186.085938 161.5625 L 178.601562 161.554688 L 184.671875 165.921875 L 182.398438 172.984375 L 188.382812 168.617188 L 194.363281 172.984375 L 192.085938 165.921875 L 198.160156 161.554688 L 190.671875 161.554688 "></path>
+			<path fill-rule="nonzero" fill="rgb(98.345947%, 79.048157%, 2.746582%)" fill-opacity="1" d="M 213.382812 138.851562 L 211.085938 131.695312 L 208.785156 138.859375 L 201.304688 138.851562 L 207.382812 143.21875 L 205.101562 150.28125 L 211.085938 145.90625 L 217.066406 150.28125 L 214.785156 143.21875 L 220.863281 138.851562 L 213.382812 138.851562 "></path>
+			<path fill-rule="nonzero" fill="rgb(98.345947%, 79.048157%, 2.746582%)" fill-opacity="1" d="M 229.09375 107.742188 L 221.601562 107.742188 L 219.304688 100.585938 L 217.015625 107.75 L 209.523438 107.742188 L 215.601562 112.109375 L 213.324219 119.171875 L 219.304688 114.796875 L 225.285156 119.171875 L 223.015625 112.109375 L 229.09375 107.742188 "></path>
+			<path fill-rule="nonzero" fill="rgb(98.345947%, 79.048157%, 2.746582%)" fill-opacity="1" d="M 205.097656 88.234375 L 211.082031 83.867188 L 217.066406 88.234375 L 214.785156 81.171875 L 220.863281 76.8125 L 213.378906 76.8125 L 211.082031 69.65625 L 208.785156 76.820312 L 201.300781 76.8125 L 207.378906 81.171875 L 205.097656 88.234375 "></path>
+			<path fill-rule="nonzero" fill="rgb(98.345947%, 79.048157%, 2.746582%)" fill-opacity="1" d="M 188.46875 47.039062 L 186.179688 54.203125 L 178.6875 54.1875 L 184.757812 58.5625 L 182.484375 65.625 L 188.476562 61.25 L 194.449219 65.625 L 192.179688 58.5625 L 198.257812 54.1875 L 190.757812 54.1875 L 188.46875 47.039062 "></path>
+			<path fill-rule="nonzero" fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1" d="M 340.292969 87.035156 L 340.292969 40.507812 L 354.355469 40.507812 L 362.796875 72.246094 L 371.144531 40.507812 L 385.234375 40.507812 L 385.234375 87.035156 L 376.507812 87.035156 L 376.507812 50.410156 L 367.273438 87.035156 L 358.226562 87.035156 L 349.023438 50.410156 L 349.023438 87.035156 L 340.292969 87.035156 "></path>
+			<path fill-rule="nonzero" fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1" d="M 414.53125 67.292969 C 414.46875 64.710938 413.800781 62.75 412.53125 61.40625 C 411.261719 60.0625 409.71875 59.390625 407.898438 59.390625 C 405.949219 59.390625 404.34375 60.101562 403.074219 61.515625 C 401.804688 62.933594 401.179688 64.859375 401.199219 67.292969 Z M 414.023438 76.308594 L 422.910156 77.796875 C 421.765625 81.058594 419.964844 83.539062 417.496094 85.242188 C 415.03125 86.945312 411.949219 87.796875 408.246094 87.796875 C 402.386719 87.796875 398.046875 85.882812 395.234375 82.050781 C 393.011719 78.984375 391.902344 75.113281 391.902344 70.433594 C 391.902344 64.847656 393.363281 60.476562 396.28125 57.3125 C 399.199219 54.148438 402.894531 52.566406 407.359375 52.566406 C 412.371094 52.566406 416.328125 54.222656 419.226562 57.535156 C 422.125 60.84375 423.511719 65.917969 423.386719 72.753906 L 401.039062 72.753906 C 401.105469 75.398438 401.824219 77.453125 403.199219 78.925781 C 404.574219 80.394531 406.289062 81.132812 408.34375 81.132812 C 409.738281 81.132812 410.910156 80.75 411.863281 79.988281 C 412.816406 79.226562 413.535156 78 414.023438 76.308594 "></path>
+			<path fill-rule="nonzero" fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1" d="M 437.761719 69.453125 C 437.761719 73.050781 438.257812 75.652344 439.253906 77.257812 C 440.691406 79.585938 442.703125 80.75 445.285156 80.75 C 447.335938 80.75 449.082031 79.878906 450.519531 78.132812 C 451.960938 76.386719 452.679688 73.777344 452.679688 70.308594 C 452.679688 66.4375 451.980469 63.648438 450.585938 61.945312 C 449.1875 60.242188 447.398438 59.390625 445.222656 59.390625 C 443.105469 59.390625 441.332031 60.230469 439.90625 61.914062 C 438.476562 63.597656 437.761719 66.109375 437.761719 69.453125 Z M 461.566406 87.035156 L 453.28125 87.035156 L 453.28125 82.082031 C 451.90625 84.007812 450.28125 85.441406 448.410156 86.382812 C 446.539062 87.324219 444.648438 87.796875 442.746094 87.796875 C 438.871094 87.796875 435.558594 86.234375 432.796875 83.113281 C 430.035156 79.996094 428.652344 75.640625 428.652344 70.054688 C 428.652344 64.339844 429.996094 60 432.683594 57.027344 C 435.371094 54.054688 438.765625 52.566406 442.871094 52.566406 C 446.636719 52.566406 449.898438 54.132812 452.648438 57.265625 L 452.648438 40.507812 L 461.566406 40.507812 L 461.566406 87.035156 "></path>
+			<path fill-rule="nonzero" fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1" d="M 491.71875 87.035156 L 491.71875 53.328125 L 500.636719 53.328125 L 500.636719 87.035156 Z M 491.71875 48.757812 L 491.71875 40.507812 L 500.636719 40.507812 L 500.636719 48.757812 Z M 466.675781 53.328125 L 471.628906 53.328125 L 471.628906 50.789062 C 471.628906 47.953125 471.929688 45.839844 472.53125 44.441406 C 473.136719 43.046875 474.246094 41.910156 475.863281 41.03125 C 477.484375 40.152344 479.53125 39.710938 482.007812 39.710938 C 484.546875 39.710938 487.03125 40.09375 489.464844 40.855469 L 488.257812 47.074219 C 486.839844 46.738281 485.476562 46.566406 484.164062 46.566406 C 482.871094 46.566406 481.949219 46.871094 481.386719 47.472656 C 480.824219 48.074219 480.546875 49.234375 480.546875 50.949219 L 480.546875 53.328125 L 487.210938 53.328125 L 487.210938 60.34375 L 480.546875 60.34375 L 480.546875 87.035156 L 471.628906 87.035156 L 471.628906 60.34375 L 466.675781 60.34375 L 466.675781 53.328125 "></path>
+			<path fill-rule="nonzero" fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1" d="M 540.722656 87.035156 L 531.804688 87.035156 L 531.804688 69.832031 C 531.804688 66.195312 531.613281 63.839844 531.234375 62.769531 C 530.851562 61.703125 530.234375 60.871094 529.375 60.277344 C 528.519531 59.6875 527.488281 59.390625 526.28125 59.390625 C 524.738281 59.390625 523.351562 59.8125 522.125 60.660156 C 520.898438 61.507812 520.054688 62.628906 519.601562 64.023438 C 519.144531 65.421875 518.917969 68.003906 518.917969 71.769531 L 518.917969 87.035156 L 510 87.035156 L 510 53.328125 L 518.28125 53.328125 L 518.28125 58.28125 C 521.222656 54.472656 524.925781 52.566406 529.390625 52.566406 C 531.359375 52.566406 533.15625 52.921875 534.785156 53.628906 C 536.414062 54.339844 537.648438 55.242188 538.484375 56.34375 C 539.320312 57.445312 539.902344 58.691406 540.230469 60.089844 C 540.558594 61.484375 540.722656 63.484375 540.722656 66.085938 L 540.722656 87.035156 "></path>
+			<path fill-rule="nonzero" fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1" d="M 568.363281 70.847656 C 567.222656 71.230469 565.414062 71.683594 562.9375 72.210938 C 560.464844 72.742188 558.84375 73.261719 558.082031 73.769531 C 556.917969 74.59375 556.335938 75.640625 556.335938 76.910156 C 556.335938 78.160156 556.800781 79.238281 557.734375 80.148438 C 558.664062 81.058594 559.847656 81.511719 561.289062 81.511719 C 562.894531 81.511719 564.429688 80.984375 565.890625 79.925781 C 566.96875 79.121094 567.679688 78.136719 568.015625 76.972656 C 568.25 76.210938 568.363281 74.761719 568.363281 72.625 Z M 556.433594 63.613281 L 548.339844 62.152344 C 549.246094 58.894531 550.816406 56.480469 553.035156 54.914062 C 555.257812 53.351562 558.558594 52.566406 562.9375 52.566406 C 566.914062 52.566406 569.878906 53.035156 571.824219 53.980469 C 573.773438 54.921875 575.140625 56.117188 575.9375 57.566406 C 576.730469 59.015625 577.125 61.675781 577.125 65.546875 L 577.03125 75.957031 C 577.03125 78.921875 577.171875 81.105469 577.460938 82.511719 C 577.742188 83.921875 578.277344 85.425781 579.0625 87.035156 L 570.238281 87.035156 C 570.003906 86.441406 569.71875 85.5625 569.382812 84.398438 C 569.234375 83.871094 569.128906 83.523438 569.066406 83.351562 C 567.539062 84.835938 565.910156 85.945312 564.175781 86.683594 C 562.441406 87.425781 560.589844 87.796875 558.621094 87.796875 C 555.152344 87.796875 552.417969 86.855469 550.417969 84.972656 C 548.417969 83.089844 547.417969 80.707031 547.417969 77.828125 C 547.417969 75.925781 547.871094 74.226562 548.78125 72.738281 C 549.691406 71.246094 550.96875 70.101562 552.609375 69.308594 C 554.246094 68.515625 556.613281 67.824219 559.699219 67.230469 C 563.867188 66.449219 566.757812 65.71875 568.363281 65.039062 L 568.363281 64.152344 C 568.363281 62.4375 567.941406 61.214844 567.097656 60.484375 C 566.25 59.753906 564.652344 59.390625 562.304688 59.390625 C 560.71875 59.390625 559.480469 59.703125 558.589844 60.328125 C 557.699219 60.953125 556.984375 62.046875 556.433594 63.613281 "></path>
+			<path fill-rule="nonzero" fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1" d="M 616.574219 87.035156 L 607.65625 87.035156 L 607.65625 69.832031 C 607.65625 66.195312 607.46875 63.839844 607.085938 62.769531 C 606.703125 61.703125 606.085938 60.871094 605.230469 60.277344 C 604.371094 59.6875 603.339844 59.390625 602.136719 59.390625 C 600.589844 59.390625 599.203125 59.8125 597.976562 60.660156 C 596.75 61.507812 595.90625 62.628906 595.453125 64.023438 C 595 65.421875 594.773438 68.003906 594.773438 71.769531 L 594.773438 87.035156 L 585.851562 87.035156 L 585.851562 53.328125 L 594.136719 53.328125 L 594.136719 58.28125 C 597.078125 54.472656 600.78125 52.566406 605.246094 52.566406 C 607.214844 52.566406 609.011719 52.921875 610.640625 53.628906 C 612.269531 54.339844 613.503906 55.242188 614.339844 56.34375 C 615.175781 57.445312 615.757812 58.691406 616.085938 60.089844 C 616.410156 61.484375 616.574219 63.484375 616.574219 66.085938 L 616.574219 87.035156 "></path>
+			<path fill-rule="nonzero" fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1" d="M 622.480469 77.417969 L 631.429688 76.054688 C 631.8125 77.789062 632.582031 79.105469 633.746094 80.003906 C 634.910156 80.902344 636.539062 81.351562 638.632812 81.351562 C 640.941406 81.351562 642.675781 80.929688 643.839844 80.082031 C 644.621094 79.492188 645.015625 78.699219 645.015625 77.703125 C 645.015625 77.027344 644.800781 76.464844 644.378906 76.019531 C 643.933594 75.597656 642.941406 75.207031 641.394531 74.847656 C 634.199219 73.261719 629.640625 71.8125 627.714844 70.5 C 625.050781 68.679688 623.71875 66.152344 623.71875 62.914062 C 623.71875 59.992188 624.871094 57.539062 627.175781 55.550781 C 629.484375 53.5625 633.058594 52.566406 637.902344 52.566406 C 642.515625 52.566406 645.945312 53.316406 648.1875 54.820312 C 650.429688 56.324219 651.976562 58.546875 652.820312 61.484375 L 644.410156 63.039062 C 644.050781 61.730469 643.367188 60.722656 642.363281 60.023438 C 641.359375 59.328125 639.925781 58.976562 638.0625 58.976562 C 635.714844 58.976562 634.03125 59.304688 633.015625 59.960938 C 632.339844 60.425781 632 61.03125 632 61.769531 C 632 62.40625 632.296875 62.945312 632.890625 63.390625 C 633.695312 63.980469 636.472656 64.816406 641.222656 65.898438 C 645.972656 66.976562 649.285156 68.296875 651.171875 69.863281 C 653.03125 71.449219 653.964844 73.660156 653.964844 76.496094 C 653.964844 79.585938 652.671875 82.242188 650.09375 84.464844 C 647.511719 86.683594 643.691406 87.796875 638.632812 87.796875 C 634.042969 87.796875 630.40625 86.867188 627.734375 85.003906 C 625.054688 83.140625 623.304688 80.613281 622.480469 77.417969 "></path>
+			<path fill-rule="nonzero" fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1" d="M 661.773438 87.035156 L 661.773438 53.328125 L 670.691406 53.328125 L 670.691406 87.035156 Z M 661.773438 48.757812 L 661.773438 40.507812 L 670.691406 40.507812 L 670.691406 48.757812 L 661.773438 48.757812 "></path>
+			<path fill-rule="nonzero" fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1" d="M 699.859375 67.292969 C 699.792969 64.710938 699.128906 62.75 697.859375 61.40625 C 696.589844 60.0625 695.042969 59.390625 693.222656 59.390625 C 691.277344 59.390625 689.667969 60.101562 688.398438 61.515625 C 687.128906 62.933594 686.507812 64.859375 686.527344 67.292969 Z M 699.351562 76.308594 L 708.238281 77.796875 C 707.09375 81.058594 705.289062 83.539062 702.824219 85.242188 C 700.359375 86.945312 697.277344 87.796875 693.574219 87.796875 C 687.710938 87.796875 683.375 85.882812 680.5625 82.050781 C 678.339844 78.984375 677.226562 75.113281 677.226562 70.433594 C 677.226562 64.847656 678.6875 60.476562 681.609375 57.3125 C 684.527344 54.148438 688.21875 52.566406 692.683594 52.566406 C 697.699219 52.566406 701.65625 54.222656 704.554688 57.535156 C 707.453125 60.84375 708.839844 65.917969 708.710938 72.753906 L 686.367188 72.753906 C 686.433594 75.398438 687.152344 77.453125 688.527344 78.925781 C 689.902344 80.394531 691.617188 81.132812 693.667969 81.132812 C 695.066406 81.132812 696.238281 80.75 697.191406 79.988281 C 698.144531 79.226562 698.863281 78 699.351562 76.308594 "></path>
+			<path fill-rule="nonzero" fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1" d="M 724.519531 87.035156 L 715.601562 87.035156 L 715.601562 53.328125 L 723.882812 53.328125 L 723.882812 58.121094 C 725.300781 55.855469 726.574219 54.367188 727.707031 53.644531 C 728.839844 52.925781 730.125 52.566406 731.566406 52.566406 C 733.597656 52.566406 735.554688 53.128906 737.4375 54.25 L 734.675781 62.023438 C 733.171875 61.050781 731.777344 60.566406 730.484375 60.566406 C 729.238281 60.566406 728.179688 60.910156 727.3125 61.597656 C 726.445312 62.285156 725.761719 63.527344 725.265625 65.324219 C 724.765625 67.125 724.519531 70.890625 724.519531 76.625 L 724.519531 87.035156 "></path>
+			<path fill-rule="nonzero" fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1" d="M 761.304688 67.292969 C 761.238281 64.710938 760.574219 62.75 759.304688 61.40625 C 758.035156 60.0625 756.488281 59.390625 754.667969 59.390625 C 752.722656 59.390625 751.113281 60.101562 749.84375 61.515625 C 748.574219 62.933594 747.949219 64.859375 747.972656 67.292969 Z M 760.796875 76.308594 L 769.683594 77.796875 C 768.539062 81.058594 766.734375 83.539062 764.269531 85.242188 C 761.804688 86.945312 758.722656 87.796875 755.019531 87.796875 C 749.15625 87.796875 744.820312 85.882812 742.007812 82.050781 C 739.785156 78.984375 738.671875 75.113281 738.671875 70.433594 C 738.671875 64.847656 740.132812 60.476562 743.054688 57.3125 C 745.972656 54.148438 749.664062 52.566406 754.128906 52.566406 C 759.144531 52.566406 763.101562 54.222656 766 57.535156 C 768.898438 60.84375 770.285156 65.917969 770.15625 72.753906 L 747.8125 72.753906 C 747.878906 75.398438 748.597656 77.453125 749.972656 78.925781 C 751.347656 80.394531 753.0625 81.132812 755.113281 81.132812 C 756.511719 81.132812 757.683594 80.75 758.636719 79.988281 C 759.589844 79.226562 760.308594 78 760.796875 76.308594 "></path>
+			<path fill-rule="nonzero" fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1" d="M 792.882812 53.328125 L 792.882812 60.4375 L 786.789062 60.4375 L 786.789062 74.023438 C 786.789062 76.773438 786.847656 78.375 786.964844 78.828125 C 787.078125 79.285156 787.34375 79.660156 787.757812 79.957031 C 788.171875 80.253906 788.671875 80.402344 789.265625 80.402344 C 790.089844 80.402344 791.285156 80.117188 792.851562 79.546875 L 793.613281 86.464844 C 791.539062 87.351562 789.191406 87.796875 786.566406 87.796875 C 784.960938 87.796875 783.507812 87.527344 782.21875 86.988281 C 780.929688 86.449219 779.980469 85.75 779.378906 84.890625 C 778.777344 84.035156 778.359375 82.878906 778.125 81.417969 C 777.933594 80.378906 777.839844 78.285156 777.839844 75.132812 L 777.839844 60.4375 L 773.746094 60.4375 L 773.746094 53.328125 L 777.839844 53.328125 L 777.839844 46.632812 L 786.789062 41.425781 L 786.789062 53.328125 L 792.882812 53.328125 "></path>
+			<path fill-rule="nonzero" fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1" d="M 835.730469 70.847656 C 834.585938 71.230469 832.777344 71.683594 830.300781 72.210938 C 827.824219 72.742188 826.207031 73.261719 825.445312 73.769531 C 824.28125 74.59375 823.699219 75.640625 823.699219 76.910156 C 823.699219 78.160156 824.164062 79.238281 825.097656 80.148438 C 826.027344 81.058594 827.210938 81.511719 828.652344 81.511719 C 830.257812 81.511719 831.792969 80.984375 833.253906 79.925781 C 834.332031 79.121094 835.039062 78.136719 835.378906 76.972656 C 835.613281 76.210938 835.730469 74.761719 835.730469 72.625 Z M 823.796875 63.613281 L 815.703125 62.152344 C 816.613281 58.894531 818.179688 56.480469 820.398438 54.914062 C 822.621094 53.351562 825.921875 52.566406 830.300781 52.566406 C 834.277344 52.566406 837.242188 53.035156 839.1875 53.980469 C 841.136719 54.921875 842.503906 56.117188 843.300781 57.566406 C 844.09375 59.015625 844.488281 61.675781 844.488281 65.546875 L 844.394531 75.957031 C 844.394531 78.921875 844.535156 81.105469 844.820312 82.511719 C 845.109375 83.921875 845.640625 85.425781 846.425781 87.035156 L 837.601562 87.035156 C 837.367188 86.441406 837.082031 85.5625 836.742188 84.398438 C 836.597656 83.871094 836.488281 83.523438 836.429688 83.351562 C 834.902344 84.835938 833.273438 85.945312 831.539062 86.683594 C 829.804688 87.425781 827.953125 87.796875 825.984375 87.796875 C 822.515625 87.796875 819.78125 86.855469 817.78125 84.972656 C 815.78125 83.089844 814.78125 80.707031 814.78125 77.828125 C 814.78125 75.925781 815.238281 74.226562 816.148438 72.738281 C 817.054688 71.246094 818.332031 70.101562 819.972656 69.308594 C 821.609375 68.515625 823.976562 67.824219 827.066406 67.230469 C 831.234375 66.449219 834.121094 65.71875 835.730469 65.039062 L 835.730469 64.152344 C 835.730469 62.4375 835.304688 61.214844 834.460938 60.484375 C 833.613281 59.753906 832.015625 59.390625 829.667969 59.390625 C 828.078125 59.390625 826.84375 59.703125 825.953125 60.328125 C 825.066406 60.953125 824.347656 62.046875 823.796875 63.613281 "></path>
+			<path fill-rule="nonzero" fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1" d="M 849.375 53.328125 L 854.328125 53.328125 L 854.328125 50.789062 C 854.328125 47.953125 854.628906 45.839844 855.230469 44.441406 C 855.835938 43.046875 856.945312 41.910156 858.566406 41.03125 C 860.183594 40.152344 862.230469 39.710938 864.707031 39.710938 C 867.246094 39.710938 869.730469 40.09375 872.164062 40.855469 L 870.957031 47.074219 C 869.539062 46.738281 868.175781 46.566406 866.863281 46.566406 C 865.574219 46.566406 864.648438 46.871094 864.085938 47.472656 C 863.527344 48.074219 863.246094 49.234375 863.246094 50.949219 L 863.246094 53.328125 L 869.910156 53.328125 L 869.910156 60.34375 L 863.246094 60.34375 L 863.246094 87.035156 L 854.328125 87.035156 L 854.328125 60.34375 L 849.375 60.34375 L 849.375 53.328125 "></path>
+			<path fill-rule="nonzero" fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1" d="M 349.785156 126.378906 L 349.785156 157.195312 L 356.796875 157.195312 C 359.421875 157.195312 361.316406 157.046875 362.480469 156.75 C 364.003906 156.371094 365.265625 155.726562 366.273438 154.8125 C 367.277344 153.90625 368.097656 152.40625 368.730469 150.324219 C 369.367188 148.238281 369.683594 145.398438 369.683594 141.800781 C 369.683594 138.207031 369.367188 135.441406 368.730469 133.519531 C 368.097656 131.59375 367.207031 130.089844 366.066406 129.011719 C 364.921875 127.933594 363.472656 127.203125 361.71875 126.820312 C 360.40625 126.523438 357.835938 126.378906 354.003906 126.378906 Z M 340.390625 118.507812 L 357.558594 118.507812 C 361.433594 118.507812 364.382812 118.804688 366.414062 119.394531 C 369.144531 120.199219 371.484375 121.628906 373.429688 123.679688 C 375.375 125.730469 376.855469 128.242188 377.871094 131.21875 C 378.886719 134.191406 379.394531 137.855469 379.394531 142.214844 C 379.394531 146.042969 378.921875 149.34375 377.96875 152.117188 C 376.804688 155.503906 375.144531 158.242188 372.984375 160.335938 C 371.355469 161.921875 369.15625 163.160156 366.382812 164.050781 C 364.308594 164.707031 361.539062 165.035156 358.066406 165.035156 L 340.390625 165.035156 L 340.390625 118.507812 "></path>
+			<path fill-rule="nonzero" fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1" d="M 407.324219 145.292969 C 407.261719 142.710938 406.597656 140.75 405.328125 139.40625 C 404.058594 138.0625 402.511719 137.390625 400.691406 137.390625 C 398.746094 137.390625 397.136719 138.101562 395.867188 139.515625 C 394.597656 140.933594 393.976562 142.859375 393.996094 145.292969 Z M 406.820312 154.308594 L 415.703125 155.796875 C 414.5625 159.058594 412.757812 161.539062 410.292969 163.242188 C 407.828125 164.945312 404.742188 165.796875 401.042969 165.796875 C 395.179688 165.796875 390.84375 163.882812 388.03125 160.050781 C 385.808594 156.984375 384.695312 153.109375 384.695312 148.433594 C 384.695312 142.847656 386.15625 138.476562 389.078125 135.3125 C 391.996094 132.148438 395.6875 130.566406 400.152344 130.566406 C 405.167969 130.566406 409.125 132.222656 412.023438 135.53125 C 414.921875 138.84375 416.308594 143.917969 416.179688 150.753906 L 393.835938 150.753906 C 393.902344 153.398438 394.621094 155.457031 395.996094 156.925781 C 397.371094 158.394531 399.085938 159.132812 401.136719 159.132812 C 402.535156 159.132812 403.707031 158.75 404.660156 157.988281 C 405.613281 157.226562 406.332031 156 406.820312 154.308594 "></path>
+			<path fill-rule="nonzero" fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1" d="M 454.109375 165.035156 L 445.191406 165.035156 L 445.191406 147.832031 C 445.191406 144.191406 445 141.839844 444.617188 140.769531 C 444.238281 139.703125 443.617188 138.871094 442.761719 138.277344 C 441.90625 137.6875 440.871094 137.390625 439.667969 137.390625 C 438.121094 137.390625 436.738281 137.8125 435.511719 138.660156 C 434.28125 139.507812 433.441406 140.628906 432.988281 142.023438 C 432.53125 143.421875 432.304688 146.003906 432.304688 149.769531 L 432.304688 165.035156 L 423.386719 165.035156 L 423.386719 131.328125 L 431.667969 131.328125 L 431.667969 136.277344 C 434.609375 132.472656 438.3125 130.566406 442.777344 130.566406 C 444.746094 130.566406 446.542969 130.921875 448.171875 131.628906 C 449.800781 132.339844 451.035156 133.242188 451.871094 134.34375 C 452.707031 135.441406 453.289062 136.691406 453.617188 138.089844 C 453.945312 139.484375 454.109375 141.484375 454.109375 144.085938 L 454.109375 165.035156 "></path>
+			<path fill-rule="nonzero" fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1" d="M 481.277344 165.035156 L 481.277344 118.507812 L 515.777344 118.507812 L 515.777344 126.378906 L 490.671875 126.378906 L 490.671875 136.691406 L 514.03125 136.691406 L 514.03125 144.53125 L 490.671875 144.53125 L 490.671875 157.195312 L 516.664062 157.195312 L 516.664062 165.035156 L 481.277344 165.035156 "></path>
+			<path fill-rule="nonzero" fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1" d="M 546.753906 165.035156 L 546.753906 159.988281 C 545.523438 161.785156 543.910156 163.203125 541.910156 164.242188 C 539.910156 165.277344 537.800781 165.796875 535.578125 165.796875 C 533.316406 165.796875 531.285156 165.296875 529.488281 164.304688 C 527.6875 163.308594 526.386719 161.914062 525.582031 160.113281 C 524.777344 158.316406 524.375 155.832031 524.375 152.65625 L 524.375 131.328125 L 533.296875 131.328125 L 533.296875 146.816406 C 533.296875 151.558594 533.460938 154.460938 533.785156 155.527344 C 534.113281 156.597656 534.710938 157.441406 535.578125 158.066406 C 536.445312 158.691406 537.546875 159.003906 538.882812 159.003906 C 540.402344 159.003906 541.769531 158.585938 542.976562 157.75 C 544.179688 156.914062 545.007812 155.878906 545.449219 154.640625 C 545.894531 153.402344 546.117188 150.371094 546.117188 145.546875 L 546.117188 131.328125 L 555.035156 131.328125 L 555.035156 165.035156 L 546.753906 165.035156 "></path>
+			<path fill-rule="nonzero" fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1" d="M 572.808594 165.035156 L 563.890625 165.035156 L 563.890625 131.328125 L 572.175781 131.328125 L 572.175781 136.121094 C 573.59375 133.855469 574.867188 132.363281 576 131.644531 C 577.132812 130.925781 578.414062 130.566406 579.855469 130.566406 C 581.886719 130.566406 583.84375 131.128906 585.726562 132.25 L 582.964844 140.023438 C 581.464844 139.050781 580.066406 138.5625 578.777344 138.5625 C 577.527344 138.5625 576.46875 138.90625 575.601562 139.597656 C 574.734375 140.285156 574.054688 141.527344 573.554688 143.324219 C 573.058594 145.125 572.808594 148.890625 572.808594 154.625 L 572.808594 165.035156 "></path>
+			<path fill-rule="nonzero" fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1" d="M 596.644531 148.179688 C 596.644531 151.523438 597.4375 154.085938 599.023438 155.863281 C 600.613281 157.640625 602.570312 158.527344 604.898438 158.527344 C 607.222656 158.527344 609.175781 157.640625 610.753906 155.863281 C 612.328125 154.085938 613.117188 151.503906 613.117188 148.117188 C 613.117188 144.816406 612.328125 142.277344 610.753906 140.5 C 609.175781 138.722656 607.222656 137.835938 604.898438 137.835938 C 602.570312 137.835938 600.613281 138.722656 599.023438 140.5 C 597.4375 142.277344 596.644531 144.839844 596.644531 148.179688 Z M 587.503906 147.707031 C 587.503906 144.742188 588.234375 141.875 589.695312 139.105469 C 591.152344 136.332031 593.222656 134.214844 595.898438 132.757812 C 598.574219 131.296875 601.5625 130.566406 604.863281 130.566406 C 609.964844 130.566406 614.144531 132.222656 617.402344 135.53125 C 620.660156 138.84375 622.289062 143.027344 622.289062 148.085938 C 622.289062 153.183594 620.644531 157.410156 617.355469 160.765625 C 614.0625 164.117188 609.921875 165.796875 604.929688 165.796875 C 601.839844 165.796875 598.894531 165.097656 596.089844 163.703125 C 593.285156 162.304688 591.152344 160.257812 589.695312 157.558594 C 588.234375 154.863281 587.503906 151.578125 587.503906 147.707031 "></path>
+			<path fill-rule="nonzero" fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1" d="M 637.839844 147.609375 C 637.839844 151.398438 638.59375 154.195312 640.09375 156.003906 C 641.597656 157.8125 643.425781 158.71875 645.585938 158.71875 C 647.660156 158.71875 649.382812 157.886719 650.757812 156.226562 C 652.132812 154.566406 652.820312 151.84375 652.820312 148.054688 C 652.820312 144.519531 652.113281 141.898438 650.695312 140.183594 C 649.277344 138.46875 647.523438 137.613281 645.425781 137.613281 C 643.246094 137.613281 641.4375 138.453125 640 140.136719 C 638.5625 141.816406 637.839844 144.308594 637.839844 147.609375 Z M 629.019531 131.328125 L 637.332031 131.328125 L 637.332031 136.277344 C 638.414062 134.585938 639.871094 133.210938 641.714844 132.152344 C 643.554688 131.097656 645.597656 130.566406 647.839844 130.566406 C 651.753906 130.566406 655.074219 132.101562 657.804688 135.167969 C 660.535156 138.234375 661.898438 142.511719 661.898438 147.992188 C 661.898438 153.617188 660.523438 157.992188 657.773438 161.113281 C 655.023438 164.234375 651.691406 165.796875 647.777344 165.796875 C 645.914062 165.796875 644.226562 165.425781 642.714844 164.683594 C 641.199219 163.945312 639.609375 162.675781 637.9375 160.875 L 637.9375 177.855469 L 629.019531 177.855469 L 629.019531 131.328125 "></path>
+			<path fill-rule="nonzero" fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1" d="M 710.238281 145.230469 C 710.109375 143.367188 709.855469 142.023438 709.476562 141.199219 C 708.945312 140.015625 708.148438 139.082031 707.078125 138.40625 C 706.007812 137.726562 704.757812 137.390625 703.316406 137.390625 C 702.070312 137.390625 700.972656 137.683594 700.03125 138.261719 C 699.089844 138.84375 698.34375 139.71875 697.796875 140.882812 C 697.054688 142.425781 696.714844 143.875 696.777344 145.230469 Z M 687.796875 148.910156 C 682.910156 150.203125 680.253906 150.921875 679.828125 151.070312 C 678.414062 151.535156 677.425781 152.097656 676.863281 152.75 C 676.300781 153.40625 676.023438 154.179688 676.023438 155.066406 C 676.023438 156.296875 676.484375 157.34375 677.402344 158.210938 C 678.324219 159.078125 679.523438 159.511719 681.003906 159.511719 C 682.570312 159.511719 684.039062 159.015625 685.414062 158.019531 C 686.433594 157.277344 687.082031 156.351562 687.367188 155.242188 C 687.652344 154.132812 687.796875 152.019531 687.796875 148.910156 Z M 709.886719 154.273438 L 718.613281 155.832031 C 717.40625 159.152344 715.578125 161.644531 713.125 163.304688 C 710.667969 164.964844 707.539062 165.796875 703.730469 165.796875 C 701.359375 165.796875 699.171875 165.410156 697.160156 164.636719 C 695.148438 163.863281 693.328125 162.707031 691.699219 161.160156 C 690.199219 162.453125 688.257812 163.546875 685.878906 164.445312 C 683.496094 165.347656 681.046875 165.796875 678.527344 165.796875 C 674.933594 165.796875 672.128906 164.859375 670.117188 162.988281 C 668.109375 161.113281 667.105469 158.75 667.105469 155.894531 C 667.105469 154.179688 667.457031 152.65625 668.167969 151.324219 C 668.875 149.988281 669.734375 148.949219 670.738281 148.195312 C 671.742188 147.445312 673.144531 146.796875 674.945312 146.246094 C 675.789062 145.972656 678.308594 145.398438 682.496094 144.53125 C 684.59375 144.085938 686.378906 143.621094 687.859375 143.136719 L 687.859375 142.246094 C 687.859375 140.617188 687.414062 139.398438 686.527344 138.597656 C 685.640625 137.792969 684.230469 137.390625 682.308594 137.390625 C 680.613281 137.390625 679.269531 137.734375 678.277344 138.421875 C 677.28125 139.109375 676.570312 140.171875 676.148438 141.609375 L 668.054688 140.054688 C 669.113281 136.796875 670.777344 134.402344 673.054688 132.867188 C 675.328125 131.335938 678.792969 130.566406 683.449219 130.566406 C 685.648438 130.566406 687.613281 130.828125 689.335938 131.34375 C 691.0625 131.863281 692.535156 132.640625 693.765625 133.675781 C 695.054688 132.640625 696.46875 131.863281 698 131.34375 C 699.535156 130.828125 701.179688 130.566406 702.9375 130.566406 C 706.320312 130.566406 709.183594 131.28125 711.523438 132.710938 C 713.859375 134.136719 715.699219 136.242188 717.042969 139.023438 C 718.386719 141.808594 719.046875 145.738281 719.027344 150.816406 L 696.621094 150.816406 C 696.980469 153.691406 697.78125 155.777344 699.03125 157.066406 C 700.28125 158.359375 701.816406 159.003906 703.636719 159.003906 C 705.136719 159.003906 706.414062 158.617188 707.476562 157.847656 C 708.53125 157.074219 709.335938 155.882812 709.886719 154.273438 "></path>
+			<path fill-rule="nonzero" fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1" d="M 726.773438 165.035156 L 726.773438 131.328125 L 735.691406 131.328125 L 735.691406 165.035156 Z M 726.773438 126.757812 L 726.773438 118.507812 L 735.691406 118.507812 L 735.691406 126.757812 L 726.773438 126.757812 "></path>
+			<path fill-rule="nonzero" fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1" d="M 741.6875 155.417969 L 750.640625 154.054688 C 751.019531 155.789062 751.792969 157.105469 752.957031 158.003906 C 754.117188 158.902344 755.75 159.351562 757.84375 159.351562 C 760.148438 159.351562 761.886719 158.929688 763.046875 158.082031 C 763.832031 157.492188 764.222656 156.699219 764.222656 155.703125 C 764.222656 155.027344 764.011719 154.464844 763.589844 154.019531 C 763.144531 153.597656 762.148438 153.207031 760.605469 152.847656 C 753.410156 151.261719 748.851562 149.808594 746.925781 148.5 C 744.257812 146.679688 742.925781 144.148438 742.925781 140.914062 C 742.925781 137.992188 744.078125 135.539062 746.386719 133.550781 C 748.691406 131.5625 752.269531 130.566406 757.113281 130.566406 C 761.726562 130.566406 765.152344 131.316406 767.398438 132.820312 C 769.640625 134.320312 771.183594 136.542969 772.03125 139.484375 L 763.621094 141.039062 C 763.261719 139.726562 762.578125 138.722656 761.570312 138.023438 C 760.566406 137.328125 759.132812 136.976562 757.273438 136.976562 C 754.921875 136.976562 753.242188 137.304688 752.226562 137.960938 C 751.546875 138.425781 751.210938 139.03125 751.210938 139.769531 C 751.210938 140.40625 751.507812 140.945312 752.097656 141.390625 C 752.902344 141.980469 755.679688 142.816406 760.429688 143.894531 C 765.179688 144.976562 768.496094 146.296875 770.378906 147.863281 C 772.242188 149.449219 773.171875 151.660156 773.171875 154.496094 C 773.171875 157.585938 771.882812 160.242188 769.300781 162.464844 C 766.71875 164.683594 762.902344 165.796875 757.84375 165.796875 C 753.253906 165.796875 749.617188 164.863281 746.941406 163.003906 C 744.265625 161.140625 742.515625 158.613281 741.6875 155.417969 "></path>
+			<path fill-rule="nonzero" fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1" d="M 780.664062 165.035156 L 780.664062 118.507812 L 789.582031 118.507812 L 789.582031 143.199219 L 800.023438 131.328125 L 811.003906 131.328125 L 799.484375 143.644531 L 811.832031 165.035156 L 802.214844 165.035156 L 793.738281 149.894531 L 789.582031 154.242188 L 789.582031 165.035156 L 780.664062 165.035156 "></path>
+			<path fill-rule="nonzero" fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1" d="M 837.15625 145.292969 C 837.09375 142.710938 836.429688 140.75 835.15625 139.40625 C 833.890625 138.0625 832.34375 137.390625 830.523438 137.390625 C 828.578125 137.390625 826.96875 138.101562 825.699219 139.515625 C 824.429688 140.933594 823.804688 142.859375 823.828125 145.292969 Z M 836.648438 154.308594 L 845.535156 155.796875 C 844.394531 159.058594 842.589844 161.539062 840.125 163.242188 C 837.660156 164.945312 834.574219 165.796875 830.871094 165.796875 C 825.011719 165.796875 820.675781 163.882812 817.859375 160.050781 C 815.640625 156.984375 814.527344 153.109375 814.527344 148.433594 C 814.527344 142.847656 815.988281 138.476562 818.90625 135.3125 C 821.828125 132.148438 825.519531 130.566406 829.984375 130.566406 C 835 130.566406 838.953125 132.222656 841.855469 135.53125 C 844.753906 138.84375 846.140625 143.917969 846.011719 150.753906 L 823.667969 150.753906 C 823.734375 153.398438 824.449219 155.457031 825.824219 156.925781 C 827.203125 158.394531 828.914062 159.132812 830.96875 159.132812 C 832.363281 159.132812 833.539062 158.75 834.492188 157.988281 C 835.445312 157.226562 836.160156 156 836.648438 154.308594 "></path>
+			<path fill-rule="nonzero" fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1" d="M 871.339844 118.507812 L 880.734375 118.507812 L 880.734375 143.707031 C 880.734375 147.707031 880.851562 150.296875 881.082031 151.480469 C 881.484375 153.386719 882.441406 154.914062 883.953125 156.066406 C 885.46875 157.222656 887.535156 157.796875 890.160156 157.796875 C 892.824219 157.796875 894.835938 157.253906 896.191406 156.164062 C 897.542969 155.074219 898.359375 153.734375 898.636719 152.148438 C 898.910156 150.5625 899.046875 147.925781 899.046875 144.246094 L 899.046875 118.507812 L 908.441406 118.507812 L 908.441406 142.945312 C 908.441406 148.53125 908.1875 152.476562 907.679688 154.78125 C 907.171875 157.089844 906.234375 159.035156 904.871094 160.621094 C 903.507812 162.210938 901.683594 163.472656 899.398438 164.414062 C 897.113281 165.355469 894.128906 165.828125 890.445312 165.828125 C 886.003906 165.828125 882.632812 165.3125 880.335938 164.289062 C 878.039062 163.261719 876.226562 161.929688 874.894531 160.289062 C 873.5625 158.648438 872.683594 156.929688 872.261719 155.132812 C 871.644531 152.464844 871.339844 148.53125 871.339844 143.324219 L 871.339844 118.507812 "></path>
+			<path fill-rule="nonzero" fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1" d="M 948.9375 165.035156 L 940.019531 165.035156 L 940.019531 147.832031 C 940.019531 144.191406 939.828125 141.839844 939.449219 140.769531 C 939.070312 139.703125 938.449219 138.871094 937.59375 138.277344 C 936.734375 137.6875 935.703125 137.390625 934.496094 137.390625 C 932.953125 137.390625 931.566406 137.8125 930.339844 138.660156 C 929.113281 139.507812 928.273438 140.628906 927.816406 142.023438 C 927.363281 143.421875 927.136719 146.003906 927.136719 149.769531 L 927.136719 165.035156 L 918.214844 165.035156 L 918.214844 131.328125 L 926.5 131.328125 L 926.5 136.277344 C 929.441406 132.472656 933.144531 130.566406 937.609375 130.566406 C 939.574219 130.566406 941.375 130.921875 943.003906 131.628906 C 944.632812 132.339844 945.863281 133.242188 946.699219 134.34375 C 947.535156 135.441406 948.117188 136.691406 948.445312 138.089844 C 948.773438 139.484375 948.9375 141.484375 948.9375 144.085938 L 948.9375 165.035156 "></path>
+			<path fill-rule="nonzero" fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1" d="M 957.984375 165.035156 L 957.984375 131.328125 L 966.902344 131.328125 L 966.902344 165.035156 Z M 957.984375 126.757812 L 957.984375 118.507812 L 966.902344 118.507812 L 966.902344 126.757812 L 957.984375 126.757812 "></path>
+			<path fill-rule="nonzero" fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1" d="M 983.121094 148.179688 C 983.121094 151.523438 983.914062 154.085938 985.5 155.863281 C 987.089844 157.640625 989.046875 158.527344 991.371094 158.527344 C 993.699219 158.527344 995.652344 157.640625 997.230469 155.863281 C 998.804688 154.085938 999.59375 151.503906 999.59375 148.117188 C 999.59375 144.816406 998.804688 142.277344 997.230469 140.5 C 995.652344 138.722656 993.699219 137.835938 991.371094 137.835938 C 989.046875 137.835938 987.089844 138.722656 985.5 140.5 C 983.914062 142.277344 983.121094 144.839844 983.121094 148.179688 Z M 973.980469 147.707031 C 973.980469 144.742188 974.710938 141.875 976.171875 139.105469 C 977.628906 136.332031 979.699219 134.214844 982.375 132.757812 C 985.050781 131.296875 988.039062 130.566406 991.339844 130.566406 C 996.441406 130.566406 1000.621094 132.222656 1003.878906 135.53125 C 1007.140625 138.84375 1008.769531 143.027344 1008.769531 148.085938 C 1008.769531 153.183594 1007.121094 157.410156 1003.828125 160.765625 C 1000.539062 164.117188 996.398438 165.796875 991.40625 165.796875 C 988.316406 165.796875 985.367188 165.097656 982.566406 163.703125 C 979.761719 162.304688 977.628906 160.257812 976.171875 157.558594 C 974.710938 154.863281 973.980469 151.578125 973.980469 147.707031 "></path>
+			<path fill-rule="nonzero" fill="rgb(16.308594%, 23.577881%, 57.818604%)" fill-opacity="1" d="M 1046.410156 165.035156 L 1037.488281 165.035156 L 1037.488281 147.832031 C 1037.488281 144.191406 1037.300781 141.839844 1036.921875 140.769531 C 1036.539062 139.703125 1035.921875 138.871094 1035.058594 138.277344 C 1034.199219 137.6875 1033.171875 137.390625 1031.96875 137.390625 C 1030.421875 137.390625 1029.039062 137.8125 1027.808594 138.660156 C 1026.578125 139.507812 1025.738281 140.628906 1025.289062 142.023438 C 1024.828125 143.421875 1024.601562 146.003906 1024.601562 149.769531 L 1024.601562 165.035156 L 1015.679688 165.035156 L 1015.679688 131.328125 L 1023.96875 131.328125 L 1023.96875 136.277344 C 1026.910156 132.472656 1030.609375 130.566406 1035.078125 130.566406 C 1037.050781 130.566406 1038.839844 130.921875 1040.46875 131.628906 C 1042.101562 132.339844 1043.328125 133.242188 1044.171875 134.34375 C 1045.011719 135.441406 1045.589844 136.691406 1045.921875 138.089844 C 1046.238281 139.484375 1046.410156 141.484375 1046.410156 144.085938 L 1046.410156 165.035156 "></path>
+		</svg>
+	</div>
+</div>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Kopieret!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Kopieret!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<script type="module">
+/**
+ * Factory function to create different types of cells based on options.
+ * @param {Object} cellData - JSON object containing code, id, and options.
+ * @returns {BaseCell} Instance of the appropriate cell class.
+ */
+globalThis.qpyodideCreateCell = function(cellData) {
+    switch (cellData.options.context) {
+        case 'interactive':
+            return new InteractiveCell(cellData);
+        case 'output':
+            return new OutputCell(cellData);
+        case 'setup':
+            return new SetupCell(cellData);
+        default:
+            return new InteractiveCell(cellData);
+            // throw new Error('Invalid cell type specified in options.');
+    }
+}  
+
+/**
+ * CellContainer class for managing a collection of cells.
+ * @class
+ */
+class CellContainer {
+    /**
+     * Constructor for CellContainer.
+     * Initializes an empty array to store cells.
+     * @constructor
+     */
+    constructor() {
+        this.cells = [];
+    }
+
+    /**
+     * Add a cell to the container.
+     * @param {BaseCell} cell - Instance of a cell (BaseCell or its subclasses).
+     */
+    addCell(cell) {
+        this.cells.push(cell);
+    }
+
+    /**
+     * Execute all cells in the container.
+     */
+    async executeAllCells() {
+        for (const cell of this.cells) {
+            await cell.executeCode();
+        }
+    }
+
+    /**
+     * Execute all cells in the container.
+     */
+    async autoRunExecuteAllCells() {
+        for (const cell of this.cells) {
+            await cell.autoRunExecuteCode();
+        }
+    }
+}
+  
+
+/**
+ * BaseCell class for handling code execution using Pyodide.
+ * @class
+ */
+class BaseCell {
+    /**
+     * Constructor for BaseCell.
+     * @constructor
+     * @param {Object} cellData - JSON object containing code, id, and options.
+     */
+    constructor(cellData) {
+        this.code = cellData.code;
+        this.id = cellData.id;
+        this.options = cellData.options;
+        this.insertionLocation = document.getElementById(`qpyodide-insertion-location-${this.id}`);
+        this.executionLock = false;
+    }
+
+    cellOptions() {
+        // Subclass this? 
+        console.log(this.options);
+        return this.options;
+    }
+
+    /**
+     * Execute the Python code using Pyodide.
+     * @returns {*} Result of the code execution.
+     */
+    async executeCode() {
+        // Execute code using Pyodide
+        const result = getPyodide().runPython(this.code);
+        return result;
+    }
+};
+
+/**
+ * InteractiveCell class for creating editable code editor with Monaco Editor.
+ * @class
+ * @extends BaseCell
+ */
+class InteractiveCell extends BaseCell {
+
+    /**
+     * Constructor for InteractiveCell.
+     * @constructor
+     * @param {Object} cellData - JSON object containing code, id, and options.
+     */
+    constructor(cellData) {
+        super(cellData);
+        this.editor = null;
+        this.setupElement();
+        this.setupMonacoEditor();
+    }
+
+    /**
+     * Set up the interactive cell elements
+     */
+    setupElement() {
+
+        // Create main div element
+        var mainDiv = document.createElement('div');
+        mainDiv.id = `qpyodide-interactive-area-${this.id}`;
+        mainDiv.className = `qpyodide-interactive-area`;
+        if (this.options.classes) {
+            mainDiv.className += " " + this.options.classes
+        }
+
+        // Add a unique cell identifier that users can customize
+        if (this.options.label) {
+            mainDiv.setAttribute('data-id', this.options.label);
+        }
+
+        // Create toolbar div
+        var toolbarDiv = document.createElement('div');
+        toolbarDiv.className = 'qpyodide-editor-toolbar';
+        toolbarDiv.id = `qpyodide-editor-toolbar-${this.id}`;
+
+        // Create a div to hold the left buttons
+        var leftButtonsDiv = document.createElement('div');
+        leftButtonsDiv.className = 'qpyodide-editor-toolbar-left-buttons';
+
+        // Create a div to hold the right buttons
+        var rightButtonsDiv = document.createElement('div');
+        rightButtonsDiv.className = 'qpyodide-editor-toolbar-right-buttons';
+
+        // Create Run Code button
+        var runCodeButton = document.createElement('button');
+        runCodeButton.className = 'btn btn-default qpyodide-button qpyodide-button-run';
+        runCodeButton.disabled = true;
+        runCodeButton.type = 'button';
+        runCodeButton.id = `qpyodide-button-run-${this.id}`;
+        runCodeButton.textContent = '🟡 Loading Pyodide...';
+        runCodeButton.title = `Run code (Shift + Enter)`;
+
+        // Append buttons to the leftButtonsDiv
+        leftButtonsDiv.appendChild(runCodeButton);
+
+        // Create Reset button
+        var resetButton = document.createElement('button');
+        resetButton.className = 'btn btn-light btn-xs qpyodide-button qpyodide-button-reset';
+        resetButton.type = 'button';
+        resetButton.id = `qpyodide-button-reset-${this.id}`;
+        resetButton.title = 'Start over';
+        resetButton.innerHTML = '<i class="fa-solid fa-arrows-rotate"></i>';
+
+        // Create Copy button
+        var copyButton = document.createElement('button');
+        copyButton.className = 'btn btn-light btn-xs qpyodide-button qpyodide-button-copy';
+        copyButton.type = 'button';
+        copyButton.id = `qpyodide-button-copy-${this.id}`;
+        copyButton.title = 'Copy code';
+        copyButton.innerHTML = '<i class="fa-regular fa-copy"></i>';
+
+        // Append buttons to the rightButtonsDiv
+        rightButtonsDiv.appendChild(resetButton);
+        rightButtonsDiv.appendChild(copyButton);
+
+        // Create console area div
+        var consoleAreaDiv = document.createElement('div');
+        consoleAreaDiv.id = `qpyodide-console-area-${this.id}`;
+        consoleAreaDiv.className = 'qpyodide-console-area';
+
+        // Create editor div
+        var editorDiv = document.createElement('div');
+        editorDiv.id = `qpyodide-editor-${this.id}`;
+        editorDiv.className = 'qpyodide-editor';
+
+        // Create output code area div
+        var outputCodeAreaDiv = document.createElement('div');
+        outputCodeAreaDiv.id = `qpyodide-output-code-area-${this.id}`;
+        outputCodeAreaDiv.className = 'qpyodide-output-code-area';
+        outputCodeAreaDiv.setAttribute('aria-live', 'assertive');
+
+        // Create pre element inside output code area
+        var preElement = document.createElement('pre');
+        preElement.style.visibility = 'hidden';
+        outputCodeAreaDiv.appendChild(preElement);
+
+        // Create output graph area div
+        var outputGraphAreaDiv = document.createElement('div');
+        outputGraphAreaDiv.id = `qpyodide-output-graph-area-${this.id}`;
+        outputGraphAreaDiv.className = 'qpyodide-output-graph-area';
+
+        // Append buttons to the toolbar
+        toolbarDiv.appendChild(leftButtonsDiv);
+        toolbarDiv.appendChild(rightButtonsDiv);
+
+        // Append all elements to the main div
+        mainDiv.appendChild(toolbarDiv);
+        consoleAreaDiv.appendChild(editorDiv);
+        consoleAreaDiv.appendChild(outputCodeAreaDiv);
+        mainDiv.appendChild(consoleAreaDiv);
+        mainDiv.appendChild(outputGraphAreaDiv);
+
+        // Insert the dynamically generated object at the document location.
+        this.insertionLocation.appendChild(mainDiv);
+    }
+
+    /**
+     * Set up Monaco Editor for code editing.
+     */
+    setupMonacoEditor() {
+
+        // Retrieve the previously created document elements
+        this.runButton = document.getElementById(`qpyodide-button-run-${this.id}`);
+        this.resetButton = document.getElementById(`qpyodide-button-reset-${this.id}`);
+        this.copyButton = document.getElementById(`qpyodide-button-copy-${this.id}`);
+        this.editorDiv = document.getElementById(`qpyodide-editor-${this.id}`);
+        this.outputCodeDiv = document.getElementById(`qpyodide-output-code-area-${this.id}`);
+        this.outputGraphDiv = document.getElementById(`qpyodide-output-graph-area-${this.id}`);
+        
+        // Store reference to the object
+        var thiz = this;
+
+        // Load the Monaco Editor and create an instance
+        require(['vs/editor/editor.main'], function () {
+            thiz.editor = monaco.editor.create(
+                thiz.editorDiv, {
+                    value: thiz.code,
+                    language: 'python',
+                    theme: 'vs-light',
+                    automaticLayout: true,           // Works wonderfully with RevealJS
+                    scrollBeyondLastLine: false,
+                    minimap: {
+                        enabled: false
+                    },
+                    fontSize: '17.5pt',              // Bootstrap is 1 rem
+                    renderLineHighlight: "none",     // Disable current line highlighting
+                    hideCursorInOverviewRuler: true,  // Remove cursor indictor in right hand side scroll bar
+                    readOnly: thiz.options['read-only'] ?? false
+                }
+            );
+        
+            // Store the official counter ID to be used in keyboard shortcuts
+            thiz.editor.__qpyodideCounter = thiz.id;
+        
+            // Store the official div container ID
+            thiz.editor.__qpyodideEditorId = `qpyodide-editor-${thiz.id}`;
+        
+            // Store the initial code value and options
+            thiz.editor.__qpyodideinitialCode = thiz.code;
+            thiz.editor.__qpyodideOptions = thiz.options;
+        
+            // Set at the model level the preferred end of line (EOL) character to LF.
+            // This prevent `\r\n` from being given to the Pyodide engine if the user is on Windows.
+            // See details in: https://github.com/coatless/quarto-Pyodide/issues/94
+            // Associated error text: 
+            // Error: <text>:1:7 unexpected input
+        
+            // Retrieve the underlying model
+            const model = thiz.editor.getModel();
+            // Set EOL for the model
+            model.setEOL(monaco.editor.EndOfLineSequence.LF);
+        
+            // Dynamically modify the height of the editor window if new lines are added.
+            let ignoreEvent = false;
+            const updateHeight = () => {
+            const contentHeight = thiz.editor.getContentHeight();
+            // We're avoiding a width change
+            //editorDiv.style.width = `${width}px`;
+            thiz.editorDiv.style.height = `${contentHeight}px`;
+                try {
+                    ignoreEvent = true;
+            
+                    // The key to resizing is this call
+                    thiz.editor.layout();
+                } finally {
+                    ignoreEvent = false;
+                }
+            };
+        
+            // Helper function to check if selected text is empty
+            function isEmptyCodeText(selectedCodeText) {
+                return (selectedCodeText === null || selectedCodeText === undefined || selectedCodeText === "");
+            }
+        
+            // Registry of keyboard shortcuts that should be re-added to each editor window
+            // when focus changes.
+            const addPyodideKeyboardShortCutCommands = () => {
+            // Add a keydown event listener for Shift+Enter to run all code in cell
+            thiz.editor.addCommand(monaco.KeyMod.Shift | monaco.KeyCode.Enter, () => {
+                // Retrieve all text inside the editor
+                thiz.runCode(thiz.editor.getValue());
+            });
+        
+            // Add a keydown event listener for CMD/Ctrl+Enter to run selected code
+            thiz.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
+                    // Get the selected text from the editor
+                    const selectedText = thiz.editor.getModel().getValueInRange(thiz.editor.getSelection());
+                    // Check if no code is selected
+                    if (isEmptyCodeText(selectedText)) {
+                        // Obtain the current cursor position
+                        let currentPosition = thiz.editor.getPosition();
+                        // Retrieve the current line content
+                        let currentLine = thiz.editor.getModel().getLineContent(currentPosition.lineNumber);
+                
+                        // Propose a new position to move the cursor to
+                        let newPosition = new monaco.Position(currentPosition.lineNumber + 1, 1);
+                
+                        // Check if the new position is beyond the last line of the editor
+                        if (newPosition.lineNumber > thiz.editor.getModel().getLineCount()) {
+                            // Add a new line at the end of the editor
+                            thiz.editor.executeEdits("addNewLine", [{
+                            range: new monaco.Range(newPosition.lineNumber, 1, newPosition.lineNumber, 1),
+                            text: "\n", 
+                            forceMoveMarkers: true,
+                            }]);
+                        }
+                        
+                        // Run the entire line of code.
+                        thiz.runCode(currentLine);
+                
+                        // Move cursor to new position
+                        thiz.editor.setPosition(newPosition);
+                    } else {
+                        // Code to run when Ctrl+Enter is pressed with selected code
+                        thiz.runCode(selectedText);
+                    }
+                });
+            }
+        
+            // Register an on focus event handler for when a code cell is selected to update
+            // what keyboard shortcut commands should work.
+            // This is a workaround to fix a regression that happened with multiple
+            // editor windows since Monaco 0.32.0 
+            // https://github.com/microsoft/monaco-editor/issues/2947
+            thiz.editor.onDidFocusEditorText(addPyodideKeyboardShortCutCommands);
+        
+            // Register an on change event for when new code is added to the editor window
+            thiz.editor.onDidContentSizeChange(updateHeight);
+        
+            // Manually re-update height to account for the content we inserted into the call
+            updateHeight();
+                
+        });
+
+        
+        // Add a click event listener to the run button
+        thiz.runButton.onclick = function () {
+            thiz.runCode(
+                thiz.editor.getValue()
+            );
+        };
+        
+        // Add a click event listener to the reset button
+        thiz.copyButton.onclick = function () {
+            // Retrieve current code data
+            const data = thiz.editor.getValue();
+            
+            // Write code data onto the clipboard.
+            navigator.clipboard.writeText(data || "");
+        };
+        
+        // Add a click event listener to the copy button
+        thiz.resetButton.onclick = function () {
+            thiz.editor.setValue(thiz.editor.__qpyodideinitialCode);
+        };
+    }
+
+    disableInteractiveCells() {
+        // Enable locking of execution for the cell
+        this.executionLock = true;
+
+        // Disallowing execution of other code cells
+        document.querySelectorAll(".qpyodide-button-run").forEach((btn) => {
+            btn.disabled = true;
+        });
+    }
+
+    enableInteractiveCells() {
+        // Remove locking of execution for the cell
+        this.executionLock = false;
+
+        // All execution of other code cells
+        document.querySelectorAll(".qpyodide-button-run").forEach((btn) => {
+            btn.disabled = false;
+        });
+    }
+
+    /**
+     * Execute the Python code inside the editor.
+     */
+    async runCode(code) {
+        
+        // Check if we have an execution lock
+        if (this.executeLock) return; 
+        
+        this.disableInteractiveCells();
+
+        // Force wait procedure
+        await mainPyodide;
+
+        // Clear the output stock
+        qpyodideResetOutputArray();
+
+        // Generate a new canvas element, avoid attaching until the end
+        let graphFigure = document.createElement("figure");
+        document.pyodideMplTarget = graphFigure;
+
+        console.log("Running code!");
+        // Obtain results from the base class
+        try {
+            // Always check to see if the user adds new packages
+            await mainPyodide.loadPackagesFromImports(code);
+
+            // Process result
+            const output = await mainPyodide.runPythonAsync(code);
+
+            // Add output
+            qpyodideAddToOutputArray(output, "stdout");
+        } catch (err) {
+            // Add error message
+            qpyodideAddToOutputArray(err, "stderr");
+            // TODO: There has to be a way to remove the Pyodide portion of the errors... 
+        }
+
+        const result = qpyodideRetrieveOutput();
+
+        // Nullify the output area of content
+        this.outputCodeDiv.innerHTML = "";
+        this.outputGraphDiv.innerHTML = "";        
+
+        // Design an output object for messages
+        const pre = document.createElement("pre");
+        if (/\S/.test(result)) {
+            // Display results as HTML elements to retain output styling
+            const div = document.createElement("div");
+            div.innerHTML = result;
+            pre.appendChild(div);
+        } else {
+            // If nothing is present, hide the element.
+            pre.style.visibility = "hidden";
+        }
+
+        // Add output under interactive div
+        this.outputCodeDiv.appendChild(pre);
+
+        // Place the graphics onto the page
+        if (graphFigure) {
+
+            if (this.options['fig-cap']) {
+                // Create figcaption element
+                const figcaptionElement = document.createElement('figcaption');
+                figcaptionElement.innerText = this.options['fig-cap'];
+                // Append figcaption to figure
+                graphFigure.appendChild(figcaptionElement);    
+            }
+
+            this.outputGraphDiv.appendChild(graphFigure);
+        }
+
+        // Re-enable execution
+        this.enableInteractiveCells();
+    }
+};
+
+/**
+ * OutputCell class for customizing and displaying output.
+ * @class
+ * @extends BaseCell
+ */
+class OutputCell extends BaseCell {
+    /**
+     * Constructor for OutputCell.
+     * @constructor
+     * @param {Object} cellData - JSON object containing code, id, and options.
+     */
+    constructor(cellData) {
+      super(cellData);
+    }
+  
+    /**
+     * Display customized output on the page.
+     * @param {*} output - Result to be displayed.
+     */
+    displayOutput(output) {
+        const results = this.executeCode();
+        return results;
+    }
+  }
+
+/**
+ * SetupCell class for suppressed output.
+ * @class
+ * @extends BaseCell
+ */
+class SetupCell extends BaseCell {
+    /**
+     * Constructor for SetupCell.
+     * @constructor
+     * @param {Object} cellData - JSON object containing code, id, and options.
+     */
+    constructor(cellData) {
+        super(cellData);
+    }
+
+    /**
+     * Execute the Python code without displaying the results.
+     */
+    runSetupCode() {
+        // Execute code without displaying output
+        this.executeCode();
+    }
+};
+</script>
+<script type="module">
+// Handle cell initialization initialization
+qpyodideCellDetails.map(
+    (entry) => {
+      // Handle the creation of the element
+      qpyodideCreateCell(entry);
+    }
+  );
+</script>
+
+
+
+
+</body></html>
