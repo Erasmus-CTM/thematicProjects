@@ -1,6 +1,7 @@
 ---
 title: "Potentialstrømning"
 lang: da
+engine: markdown
 format:
   html:
     embed-resources: true
@@ -17,7 +18,7 @@ crossref:
 I denne workshop skal vi arbejde med væskers bevægelser i planen. Man kan tænke på det som en model for vand, der strømmer. Vi forestiller os, at vi måler på væskens retning og fart  og på den måde får information om væskens hastighedsvektor. Vi beskriver væskens hastighedsvektor i punktet $(x,y)\in \mathbb{R}^2$ ved
 $$\mathbf{v}(x,y) = v_1(x,y)\mathbf{i}+ v_2(x,y)\mathbf{j}.$${#eq-vectorfield}
 
-Man kalder også @eq-vectorfield for et *vektorfelt*, da man til hvert punkt $(x,y)\in \mathbb{R}^2$ kan tegne en vektor, der viser væsken bevæger sig. I delopgave 1 ser vi på et praktisk eksempel, og i delopgave 2 ser vi på noget af den generelle matematik, som eksemplet er baseret på.
+Man kalder også @eq-vectorfield for et *vektorfelt*, da man til hvert punkt $(x,y)\in \mathbb{R}^2$ kan tegne en vektor, der viser, hvordan væsken bevæger sig. I delopgave 1 ser vi på et praktisk eksempel, og i delopgave 2 ser vi på noget af den generelle matematik, som eksemplet er baseret på.
 
 ## Delopgave 1{#sec-opg1}
 I denne delopgave ser vi på en væske, der strømmer omkring en cylinder med radius $R$ og centrum i $(0,0)$, som vist på @fig-PotentialFlowCylinder.
