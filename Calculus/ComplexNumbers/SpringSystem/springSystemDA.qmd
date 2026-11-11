@@ -1,6 +1,7 @@
 ---
 title: "Dæmpning i fjedersystemer"
 lang: da
+engine: markdown
 format:
   html:
     embed-resources: true
@@ -81,6 +82,8 @@ hvor $c_1$ og $c_2$ er reelle konstanter.
 
 (@) Opskriv $y_F$ i tilfældet, hvor $\eta=2$, $\lambda=4$ ligesom i Delopgave 1.
 
+    Brug derefter koden herunder til at plotte den fundne funktion for forskellige valg af $c_1$ og $c_2$. Kan man sige noget generelt om den måde, graferne udvikler sig?
+
 ```{pyodide-python}
 import numpy
 import matplotlib.pyplot as plt
@@ -103,8 +106,6 @@ ax.plot(samplePoints, values)
 ax.grid(True, linestyle="dotted")
 plt.show()
 ```
-   Brug derefter eksempelvis MATLAB eller Maple til at plotte den fundne funktion for forskellige valg af $c_1$ og $c_2$.
-  Kan man sige noget generelt om den måde, graferne udvikler sig?
 
 (@) Udnyt løsningerne $r_+$ og $r_-$ fra @eq-kompLosning til at opskrive $y_F$ i det generelle, underdæmpede tilfælde. Vis så, at $y_F$ altid konvergerer mod $0$, når $t$ vokser.
 
