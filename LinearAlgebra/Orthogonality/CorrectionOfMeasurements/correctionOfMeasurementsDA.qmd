@@ -1,6 +1,7 @@
 ---
 title: "Korrektion af målefejl"
 lang: da
+engine: markdown
 format:
   html:
     embed-resources: true
@@ -135,7 +136,7 @@ ved følgende trin:
 	  Brug, at projektionen $p_L$ er lineær.
 	  :::
 	  
-   a. Vis, at $\hat{\mathbf{n}}=X\mathbf{c}$ for et passende valg af $\mathbf{c}$. Konkluder deraf, at $X(X^\top X)^{-1}X^\top\mathbf{n} = \hat{\mathbf{n}}$.
+   a. Vis, at $\hat{\mathbf{n}}=X\mathbf{c}$ for et passende valg af $\mathbf{c}$. Konkluder deraf, at $X(X^\top X)^{-1}X^\top\hat{\mathbf{n}} = \hat{\mathbf{n}}$.
    
    a. Forklar, hvorfor $X^\top\mathbf{r}=\mathbf{0}$ må holde. Konkluder derfor, at $X(X^\top X)^{-1} X^\top\mathbf{r}=\mathbf{0}$.
    
@@ -168,10 +169,10 @@ $$\mathbf{m} = [65.1, 54.1, 44.9, 50.2, 89.7, 104.7]^\top.$$
    print("Projektion:\t{}\nResidual:\t{}".format(pLn, r))
    ```
 
-1. Efter at have dobbelttjekket målebogen, opdager vi, at de to første målinger er blevet byttet om. Kør koden herunder for at finde den opdaterede residualvektor.
+1. Efter at have dobbelttjekket målebogen opdager vi, at de to første cifre i $m_2$ blev ombyttet, da vi indtastede værdierne. Kør koden herunder for at finde den opdaterede residualvektor.
    ```{pyodide-python}
    mNy = m
-   mNy[0], mNy[1] = mNy[1], mNy[0]
+   mNy[1] = 45.1
    
    nNy = mNy - [0, 200, 200, 0, 0, 0]
    
