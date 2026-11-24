@@ -12,4 +12,3 @@ Interactive Python cells (pandas, Matplotlib, SciPy), exercises checked automati
 
 - Rendered site: `docs/` (serve it locally, see the [overview](../README.md)).
 - Build: `python build_multilingual_site.py --no-serve`
-- Source: `gitlab.ruhr-uni-bochum.de/ctm/tutorials`, folder `Statistik`
