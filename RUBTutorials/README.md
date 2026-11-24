@@ -21,7 +21,6 @@ Each folder holds the complete source and the rendered site in `docs/`. Open `do
 
 ## Sources
 
-The tutorials are maintained in their own repositories; this folder is a snapshot:
+The tutorials are also delivered to the following websites:
 
-- Kurvendiskussion, Matrizen, Statistik: `gitlab.ruhr-uni-bochum.de/ctm/tutorials`
 - Quarto Tutorial: [github.com/Erasmus-CTM/Quarto-Tutorial](https://github.com/Erasmus-CTM/Quarto-Tutorial)
