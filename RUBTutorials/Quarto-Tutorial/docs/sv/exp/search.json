@@ -1,0 +1,459 @@
+[
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/index_exp.html",
+    "href": "Qmd Files/Tipps and Tricks/index_exp.html",
+    "title": "Quarto: tips & tricks",
+    "section": "",
+    "text": "Gå vidare med Quarto\nDen här delen är till för dig som redan kan bygga Quarto-dokument och vill gå vidare. Alla tre nivåerna i den här handledningen är byggda med de tekniker som beskrivs här.",
+    "crumbs": [
+      "Exempelsida",
+      "Vad som tas upp & vad du redan bör kunna"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/index_exp.html#vad-som-tas-upp-och-var-du-hittar-det",
+    "href": "Qmd Files/Tipps and Tricks/index_exp.html#vad-som-tas-upp-och-var-du-hittar-det",
+    "title": "Quarto: tips & tricks",
+    "section": "Vad som tas upp och var du hittar det",
+    "text": "Vad som tas upp och var du hittar det\n\n\n\nJag vill …\nGå till\n\n\n\n\nStyra utdataformat, freeze och profiler\nYML-filen\n\n\nStälla in sidofältets avsnitt och hopfällning\nYML-filen → Sidofält\n\n\nAnpassa webbplatsens utseende med teman och CSS\nYML-filen → Stilar\n\n\nStyra hur kod körs (echo, eval, fold, …)\nQMD-filen\n\n\nVisa innehåll bara i vissa profiler eller format\nQMD-filen → Villkorat innehåll\n\n\nKorsreferera figurer, tabeller och avsnitt\nQMD-filen → Korsreferenser\n\n\nAnvända quizdown, Pyodide, JSXGraph, py-exercise eller math-exercise\nTillägg\n\n\nErbjuda samma projekt på flera språk\nFlerspråkiga projekt\n\n\nSlå upp något snabbt\nCheatsheet",
+    "crumbs": [
+      "Exempelsida",
+      "Vad som tas upp & vad du redan bör kunna"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/index_exp.html#vad-du-redan-bör-kunna",
+    "href": "Qmd Files/Tipps and Tricks/index_exp.html#vad-du-redan-bör-kunna",
+    "title": "Quarto: tips & tricks",
+    "section": "Vad du redan bör kunna",
+    "text": "Vad du redan bör kunna\nDen här delen förutsätter att du är bekväm med följande från de andra nivåerna:\n\nSkapa en webbplats, ett övningsblad eller en bok med Quarto: Kom igång\nKöra Python i webbläsaren med Pyodide: Interaktiv kod\nHur interaktivt Quarto-innehåll ser ut: Exempelsidan",
+    "crumbs": [
+      "Exempelsida",
+      "Vad som tas upp & vad du redan bör kunna"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_qmd.html",
+    "href": "Qmd Files/Tipps and Tricks/exp_qmd.html",
+    "title": "QMD-filen",
+    "section": "",
+    "text": "En .qmd-fil är en vanlig textfil som kombinerar Markdown för text och kodblock för beräkningar. Det här kapitlet går igenom inställningarna som ger dig exakt kontroll över hur kod körs och hur innehåll visas.",
+    "crumbs": [
+      "Exempelsida",
+      "QMD-filen"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_qmd.html#inställningar-för-kodblock",
+    "href": "Qmd Files/Tipps and Tricks/exp_qmd.html#inställningar-för-kodblock",
+    "title": "QMD-filen",
+    "section": "Inställningar för kodblock",
+    "text": "Inställningar för kodblock\nSom standard visar Quarto både koden och dess utdata. Med inställningarna för kodblock kan du ändra det: dölja koden i en färdig rapport, lägga till bildtexter eller hoppa över långsamma beräkningar, utan att röra själva koden.\nVarje inställning skrivs som en kommentar med #| högst upp i kodblocket. Blocket nedan kör print(\"Hello!\") men döljer källkoden och undertrycker varningar:\n```{.python}\n#| echo: false\n#| eval: true\n#| output: true\n#| warning: false\nprint(\"Hello!\")\n```\n\n\n\n\n\n\nNoteraVarför {.python} i stället för {python}?\n\n\n\nKlammerparenteser utan punkt, {python}, säger åt Quarto att köra blocket som Python-kod. Det är vad du vill i ditt eget dokument, men i en handledning som den här vill vi bara visa syntaxen.\nMed en punkt, {.python}, blir blocket bara visat: Quarto färgmarkerar det som Python men kör aldrig koden. Alternativt ger det samma effekt att omge hela exemplet med ett block med fyra backtick, ````markdown.\nI dina egna .qmd-filer använder du {python} (utan punkt), så att blocket verkligen körs.\n\n\n\nÖversikt över inställningarna\n\n\n\n\n\n\n\n\nInställning\nVärden\nVad den styr\n\n\n\n\necho\ntrue / false / fenced\nVisa källkoden\n\n\neval\ntrue / false\nKör koden\n\n\noutput\ntrue / false / asis\nVisa utdatan\n\n\nwarning\ntrue / false\nVisa varningar\n\n\nerror\ntrue / false\nVisa fel (i stället för att avbryta)\n\n\ninclude\ntrue / false\nfalse: koden körs, men varken kod eller utdata visas\n\n\ncode-fold\ntrue / false\nFäll ihop koden bakom en knapp\n\n\ncode-summary\ntext\nText på knappen som fäller ut koden\n\n\nfig-cap\ntext\nBildtext för figurer\n\n\nfig-align\nleft / center / right\nFigurens justering\n\n\nlabel\ntext\nKodblockets id. För korsreferenser måste det börja med fig- eller tbl-\n\n\n\n\n\nVanliga kombinationer\nDe här tre mönstren täcker de flesta vardagliga fall:\n\n\nDölj koden, visa utdatan\n#| echo: false\nKoden körs i bakgrunden och läsaren ser bara resultatet. Perfekt för färdiga rapporter.\n\nVisa koden, kör den inte\n#| eval: false\nAnvändbart för illustrerande exempel eller kod som inte skulle fungera i den aktuella miljön.\n\nKodblock som kan fällas ut\n#| code-fold: true\n#| code-summary: \"Show the code\"\nHåller sidan ren men låter nyfikna läsare fälla ut källkoden.",
+    "crumbs": [
+      "Exempelsida",
+      "QMD-filen"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_qmd.html#globala-standardvärden-för-kodblock",
+    "href": "Qmd Files/Tipps and Tricks/exp_qmd.html#globala-standardvärden-för-kodblock",
+    "title": "QMD-filen",
+    "section": "Globala standardvärden för kodblock",
+    "text": "Globala standardvärden för kodblock\nAtt upprepa samma inställningar i varje kodblock är tråkigt och leder lätt till fel. Ange standardvärden en gång i _quarto.yml. De gäller för alla kodblock i projektet, och du ändrar bara där det behövs:\n\n\n_quarto.yml\n\nexecute:\n  echo: false\n  warning: false",
+    "crumbs": [
+      "Exempelsida",
+      "QMD-filen"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_qmd.html#conditional-content",
+    "href": "Qmd Files/Tipps and Tricks/exp_qmd.html#conditional-content",
+    "title": "QMD-filen",
+    "section": "Villkorat innehåll",
+    "text": "Villkorat innehåll\nIbland behöver du olika text för olika målgrupper eller utdataformat: en förenklad förklaring för nybörjare och fler detaljer för avancerade läsare, eller en interaktiv del i HTML som inte finns i PDF.\n\nInnehåll som beror på profilen\nProfiler definieras i _quarto.yml. Quarto utvärderar dem vid renderingen, och .qmd-källan är densamma för alla målgrupper.\n\n\nMarkdown\n::: {.content-visible when-profile=\"english\"}\nThis paragraph only appears in the English build.\n:::\n\n::: {.content-hidden when-profile=\"beg\"}\nHidden in the beg profile, visible everywhere else.\n:::\n\nVad som händer\nquarto render --profile english tar med blocken märkta when-profile=\"english\". Block märkta med ett annat språk, t.ex. when-profile=\"deutsch\", tas bort.\nSå är sidorna i den här handledningen byggda: varje fil innehåller ett block per språk.\n\n\n\n\nInnehåll som beror på formatet\n\n\nMarkdown\n::: {.content-visible when-format=\"html\"}\nThis only appears in HTML output.\n:::\n\n::: {.content-visible when-format=\"pdf\"}\nThis only appears in PDF output.\n:::\n\nVad som händer\nQuarto kontrollerar utdataformatet vid renderingen. Bara det block som passar tas med, resten tas bort utan meddelande.\nAnvänd det för att bädda in interaktiva HTML-element och samtidigt erbjuda ett statiskt alternativ för PDF.",
+    "crumbs": [
+      "Exempelsida",
+      "QMD-filen"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_qmd.html#cross-referencing",
+    "href": "Qmd Files/Tipps and Tricks/exp_qmd.html#cross-referencing",
+    "title": "QMD-filen",
+    "section": "Korsreferenser",
+    "text": "Korsreferenser\nMed korsreferenser skriver du @fig-sine i texten, och Quarto gör automatiskt om det till “Figur 1”, med en länk i HTML och rätt nummer även om figurerna byter ordning.\n\nFigurer\n\n\nMarkdown\n```{.python}\n#| label: fig-sine\n#| fig-cap: \"A plot of sin(x)\"\nimport matplotlib.pyplot as plt\nimport numpy as np\nx = np.linspace(0, 2*np.pi, 200)\nplt.plot(x, np.sin(x))\nplt.show()\n```\n\nAs shown in @fig-sine, the sine function...\n\nVad som händer\nInställningen label registrerar figuren, fig-cap anger bildtexten. @fig-sine i texten blir en klickbar länk “Figur 1” i HTML och rätt nummer i PDF. Quarto sköter räkningen.\nId för figurer måste börja med fig-.\n\n\n\n\n\n\n\n\nNotera\n\n\n\nKom ihåg: Använd {python} i stället för {.python} i ditt eget dokument. Varianten med punkt används här bara för att koden inte ska köras i handledningen.\n\n\n\n\nTabeller\n\n\nMarkdown\n```{.python}\n#| label: tbl-data\n#| tbl-cap: \"Summary statistics\"\nimport pandas as pd\ndf = pd.DataFrame({\"x\": [1,2,3], \"y\": [4,5,6]})\ndf\n```\n\nThe values in @tbl-data show...\n\nVad som händer\nFungerar som för figurer: @tbl-data blir “Tabell 1” överallt där du skriver det. Id för tabeller måste börja med tbl-.\n\n\n\n\nAvsnitt\n\n\nMarkdown\n## Introduction {#sec-intro}\n\nAs described in @sec-intro...\n\nVad som händer\nMed {#sec-intro} efter en rubrik går den att hänvisa till. @sec-intro blir “Avsnitt 1” med en länk, om avsnitten numreras (number-sections: true). Id för avsnitt måste börja med sec-.\n\n\n\n\n\n\n\n\nTipsRegler för id\n\n\n\n\nId för figurer måste börja med fig-\nId för tabeller måste börja med tbl-\nId för avsnitt måste börja med sec-",
+    "crumbs": [
+      "Exempelsida",
+      "QMD-filen"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_qmd.html#egna-div--och-span-element",
+    "href": "Qmd Files/Tipps and Tricks/exp_qmd.html#egna-div--och-span-element",
+    "title": "QMD-filen",
+    "section": "Egna div- och span-element",
+    "text": "Egna div- och span-element\nMed CSS-klasser på ett block kan du formge innehåll direkt från .qmd-filen. Quarto skickar klassen vidare till HTML-utdatan.\n\n\nMarkdown\n::: {.my-class}\nThis block gets the `my-class` CSS class.\n:::\nFör formgivning inne i en textrad använder du ett span:\nThis word is [highlighted]{.my-highlight} in the text.\n\nResultat\n\nThis block gets the my-class CSS class.\n\nThis word is highlighted in the text.\n\n\n\nInbyggda hjälpklasser från Bootstrap\nDe här fungerar direkt utan egen CSS:\n\n\n\nKlass\nEffekt\n\n\n\n\n.text-center\nCentrera texten\n\n\n.text-muted\nGrå text\n\n\n.fw-bold\nFet text\n\n\n.border\nLägg till en ram\n\n\n.bg-light\nLjus bakgrund\n\n\n.p-3\nLägg till luft innanför ramen\n\n\n.mt-4\nLägg till marginal ovanför\n\n\n\n\n\nMarkdown\n::: {.border .p-3 .bg-light}\nThis box has a border, padding, and a light background, with no custom CSS.\n:::\n\nResultat\n\nThis box has a border, padding, and a light background, with no custom CSS.",
+    "crumbs": [
+      "Exempelsida",
+      "QMD-filen"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_qmd.html#inforutor",
+    "href": "Qmd Files/Tipps and Tricks/exp_qmd.html#inforutor",
+    "title": "QMD-filen",
+    "section": "Inforutor",
+    "text": "Inforutor\nInforutor drar uppmärksamheten till viktig information utan att bryta textens flöde. Quarto visar dem som formgivna rutor med en ikon. Använd dem för tips, varningar eller viktiga upplysningar.\n\n\nMarkdown\n::: {.callout-note}\n## Optional title\nInformational note.\n:::\n\n::: {.callout-tip}\nPractical advice.\n:::\n\n::: {.callout-warning}\nSomething to watch out for.\n:::\n\n::: {.callout-important}\nCritical information.\n:::\n\n::: {.callout-caution}\nProceed carefully.\n:::\n\nResultat\n\n\n\n\n\n\nNoteraOptional title\n\n\n\nInformational note.\n\n\n\n\n\n\n\n\nTips\n\n\n\nPractical advice.\n\n\n\n\n\n\n\n\nVarning\n\n\n\nSomething to watch out for.\n\n\n\n\n\n\n\n\nViktigt\n\n\n\nCritical information.\n\n\n\n\n\n\n\n\nCaution\n\n\n\nProceed carefully.\n\n\n\n\nLägg till collapse=\"true\" för att göra en inforuta hopfällbar. Läsaren fäller ut den vid behov:\n\n\nMarkdown\n::: {.callout-note collapse=\"true\"}\n## Click to expand\nHidden detail.\n:::\n\nResultat\n\n\n\n\n\n\nNoteraClick to expand\n\n\n\n\n\nHidden detail.",
+    "crumbs": [
+      "Exempelsida",
+      "QMD-filen"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_extensions.html",
+    "href": "Qmd Files/Tipps and Tricks/exp_extensions.html",
+    "title": "Tillägg",
+    "section": "",
+    "text": "Tillägg lär Quarto sådant som Quarto inte kan på egen hand: frågesporter, Python i webbläsaren, uppgifter med automatisk kontroll. Den här handledningen använder två källor:\nFör att prova själv leder sidan Uppgift med automatisk kontroll dig steg för steg genom en egen uppgift.",
+    "crumbs": [
+      "Exempelsida",
+      "Tillägg"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_extensions.html#installera-ctm-assessment",
+    "href": "Qmd Files/Tipps and Tricks/exp_extensions.html#installera-ctm-assessment",
+    "title": "Tillägg",
+    "section": "Installera CTM Assessment",
+    "text": "Installera CTM Assessment\nEn gång per projekt, i projektmappen:\n\nWindowsmacOS / Linux\n\n\nquarto add https://erasmus-ctm.github.io/ctm-assessment/ctm-assessment.zip\n\n\nquarto add https://erasmus-ctm.github.io/ctm-assessment/ctm-assessment.tar.gz\n\n\n\nAktivera det sedan för hela projektet eller per sida:\n\n\n_quarto.yml eller sidans huvud\n\nfilters:\n  - ctm-assessment\n\n\n_extensions/ hör hemma i Git-repot. För att uppdatera kör du samma kommando igen.\nTa bort gamla enskilda installationer under _extensions/Erasmus-CTM/, paketet ersätter dem.\nKräver Quarto 1.8.27 eller senare. Från Quarto 1.10 behöver sidor med uppgifter engine: markdown i huvudet, se Python i webbläsaren.\n\n\nquizdown\nquizdown ingår inte i paketet och installeras och slås på separat:\nquarto add parmsam/quizdown\n\n\nsida.qmd\n\nfilters:\n  - parmsam/quizdown\n  - ctm-assessment\n\n\n\nGränssnittets språk\nKnappar och meddelanden i uppgifterna följer ctm-assessment: lang: eller Quartos eget lang:. Ett flerspråkigt projekt behöver alltså ingen extra inställning, se Flerspråkiga projekt.\n\n\n_quarto.yml\n\nctm-assessment:\n  lang: sv\n\n\n\n\n\n\n\n\nDel\nSpråk\n\n\n\n\ngemensamma knappar, math-exercise, py-exercise\nengelska, tyska, norska (bokmål)\n\n\nlagring och inställningar\ndessutom nynorska\n\n\nAI-feedback\ndessutom spanska\n\n\nPython-celler\nengelska, tyska, bokmål, svenska, danska\n\n\n\nAndra språk visar engelska.\n\n\n\n\n\n\nNoteraSTACK-uppgifter\n\n\n\nPaketet innehåller också STACK-frågor ({.stack-question}). De kräver SymPy 1.13.3 för den Python som Quarto använder vid bygget. Den här handledningen går inte närmare in på dem.",
+    "crumbs": [
+      "Exempelsida",
+      "Tillägg"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_extensions.html#vanliga-fallgropar",
+    "href": "Qmd Files/Tipps and Tricks/exp_extensions.html#vanliga-fallgropar",
+    "title": "Tillägg",
+    "section": "Vanliga fallgropar",
+    "text": "Vanliga fallgropar\n\n\n\nVad som händer\nOrsak och åtgärd\n\n\n\n\nBygget avbryts med ett Jupyter-fel på en sida med uppgifter\nQuarto 1.10 eller senare: skriv engine: markdown i huvudet på sidan\n\n\n{python}-figurer saknas på en sida med engine: markdown\nMotorn stänger av {python}. Antingen utelämnar du engine: markdown (Jupyter körs då, och Python måste vara installerat) eller så lägger du in figurerna som bildfiler\n\n\nUppgifterna saknas på en annan dator\n_extensions/ har inte lagts till i Git\n\n\nquarto add avbryts i Windows\nanvänd .zip-adressen, se ovan\n\n\ninput() fungerar inte i Moodle\nMoodle blockerar service workers. Det är en begränsning i plattformen, se Python i webbläsaren\n\n\nBygget avbryts på grund av en nyckel\nEn CTM-sektion innehåller api-key, token eller liknande. Ta bort den, se AI-feedback och sparande",
+    "crumbs": [
+      "Exempelsida",
+      "Tillägg"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_extensions.html#exempel-från-riktiga-kurser",
+    "href": "Qmd Files/Tipps and Tricks/exp_extensions.html#exempel-från-riktiga-kurser",
+    "title": "Tillägg",
+    "section": "Exempel från riktiga kurser",
+    "text": "Exempel från riktiga kurser\nFler projekt som är byggda med de här tilläggen finns i repositoriet thematicProjects. Där ser du hur kompletta kurser med uppgifter, frågesporter och grafer är uppbyggda.",
+    "crumbs": [
+      "Exempelsida",
+      "Tillägg"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_ext_python.html",
+    "href": "Qmd Files/Tipps and Tricks/exp_ext_python.html",
+    "title": "Python i webbläsaren",
+    "section": "",
+    "text": "Your answers are saved only in this browser.Do not save on this device\nExport my answers\nDelete answers on this page\nDelete all your answers in this course\nInstallation: ingår i CTM Assessment, se Översikt och installation Källa: (Erasmus CTM, u.å.), github.com/Erasmus-CTM/pyodide-interaktiv. Python bakom det är Pyodide (Droettboom m.fl. 2021).\npyodide-interaktiv kör Python i en Web Worker, alltså bredvid sidan i stället för i den. Därför går sidan att använda under en lång beräkning, och varje cell har knappen Stoppa. Tillägget är en omarbetning av coatless-quarto/pyodide.\n\nExempelDelat tillståndinput()Grafer & animationAI-feedbackInställningarSidor med {python} och {pyodide-python}MarkörcellerBegränsningar\n\n\n\nAktivera JavaScript för att kunna använda de interaktiva kodcellerna på den här sidan.\nVarje cell har Kör koden (också Shift + Enter), Återställ, Kopiera, Feedback och + Kodblock. Den sista lägger till en tom, redigerbar cell, praktiskt under ett skrivskyddat exempel.\n\n\n\n\n{python}\n{pyodide-python}\n\n\n\n\nKörs\nvid renderingen\nnär sidan läses (i webbläsaren)\n\n\nLäsaren kan ändra\nNej\nJa\n\n\nKräver installerad Python\nJa (författaren)\nNej\n\n\nUtdatan ligger i HTML-filen\nJa\nNej, den beräknas direkt\n\n\n\n\n\n\n\n\n\nVarningTillgängliga paket\n\n\n\nPyodide körs i WebAssembly. Många paket finns (numpy, pandas, matplotlib, sympy), men inte alla paket med C-tillägg.\n\n\n\n\nAlla celler på en sida delar en Python-session. En senare cell kan använda allt som en tidigare har definierat, när den tidigare har körts:\n\nAktivera JavaScript för att kunna använda de interaktiva kodcellerna på den här sidan.\n\nAktivera JavaScript för att kunna använda de interaktiva kodcellerna på den här sidan.\nKör man den nedre cellen först blir det ett NameError. Säg därför till läsarna att köra cellerna uppifrån och ned.\nCeller som ska köras innan läsaren gör något använder context: setup. Celler där resultatet visas men koden är dold använder context: output.\n\n\n\n\n\n\nNoterapy-exercise ser inte de här variablerna\n\n\n\nEn uppgift från py-exercise körs i sin egen, tomma namnrymd. Det som har definierats i en {pyodide-python}-cell finns inte där. Allt som uppgiften behöver måste stå i själva uppgiften.\n\n\n\n\nEn cell kan stanna och vänta på inmatning utan att sidan fryser:\n\nAktivera JavaScript för att kunna använda de interaktiva kodcellerna på den här sidan.\n\n\n\n\n\n\nVarninginput() kräver cross-origin isolation\n\n\n\nVäntande inmatning bygger på SharedArrayBuffer, som webbläsare bara ger till sidor som är cross-origin-isolerade. En service worker som följer med tillägget sätter de nödvändiga huvudena automatiskt på din egen domän. Lärplattformar som Moodle blockerar oftast service workers. Där finns input() inte, och sidan säger det. Allt annat fungerar.\n\n\n\n\nKoden beter sig som på din egen dator: plt.show() startar visningen. Utan anropet visas ingenting. En statisk graf visas först som bild och ersätts sedan av en interaktiv vy med verktygsfält (zooma, flytta, återställa, spara). Om det misslyckas står bilden kvar.\nEn animation kräver inget extra anrop:\n\nAktivera JavaScript för att kunna använda de interaktiva kodcellerna på den här sidan.\nEn version att prova finns på sidan Visualiseringar i exempelsidan.\n\n\n\n\n\n\nTipsHastigheten styrs av interval, inte av frames\n\n\n\ninterval är tiden mellan två bilder i millisekunder, 33 ms är ungefär 30 bilder per sekund. Matplotlibs standardvärde 200 ms ser tydligt hackigt ut. frames anger bara hur många bilder som ritas, så ett större värde gör animationen längre, inte mjukare. Varje bild beräknas i förväg och bäddas in, så långa animationer kostar beräkningstid.\n\n\nFör specialfall styr zeige_animation(ani, format=\"gif\") och zeige_animation(ani, fps=30) format och bildfrekvens direkt.\n\n\nVarje interaktiv cell får en knapp Feedback (stäng av med pyodide: feedback: false). Knappen skickar den aktuella koden och dess utdata till en språkmodell. Som standard, Kopiera prompt, behövs varken konto eller leverantör: knappen skapar en färdig text som du klistrar in i ChatGPT, Claude och liknande tjänster. Kugghjulet ⚙ öppnar samma inställningsdialog för alla uppgifter på sidan.\nFör att modellen ska förstå uppgiften skriver du den i cellen med #| task::\n```{pyodide-python}\n#| task: Beräkna summan av talen från 1 till 10 med en slinga.\nsumma = 0\n```\nLeverantör, ledtrådsnivåer, riktlinjer och integritet fungerar likadant för alla uppgiftstyper. Det beskrivs på sidan AI-feedback och sparande.\n\n\nPer cell:\n\n\n\n\n\n\n\n\nInställning\nStandard\nBeskrivning\n\n\n\n\ncontext\ninteractive\ninteractive, output eller setup\n\n\nread-only\nfalse\nredigeraren är låst (ingen Feedback-knapp)\n\n\nautorun\n—\ntrue: körs av sig själv när Pyodide har startat\n\n\ncode-fold\n—\ntrue: cellen börjar hopfälld, false: utfälld. Utan värde gäller dokumentets code-fold:\n\n\npdf-fallback\n—\ntrue: i PDF, Word osv. visas cellen som vanlig, färgmarkerad Python-kod\n\n\n&lt;format&gt;-autoexec\n—\ntrue: för just det formatet (t.ex. pdf-autoexec) körs cellen verkligen vid renderingen och utdatan visas\n\n\nlabel\n—\nunikt id för cellen\n\n\nclasses\n—\nextra CSS-klasser\n\n\nfig-cap\n—\nbildtext för grafer\n\n\nfig-width / fig-height\n7 / 5\ngrafens storlek i tum\n\n\n\nPer dokument:\n\n\npage.qmd\n\npyodide:\n  packages: [numpy, pandas]   # installed at startup via micropip\n  show-startup-message: true\n  pdf-fallback: false         # PDF/Word: show cells as Python code\n  pdf-autoexec: false         # PDF: run cells at render time\n  feedback: true              # feedback-knappar på cellerna (standard: true)\n\nPaket som bara förekommer i en import hämtas vid behov. packages: är alltså till för dem som ska vara klara före första körningen. requests och urllib3 har ersättningar, så pd.read_csv(url) fungerar.\nGränssnittets språk kommer från ctm-assessment: lang: eller från Quartos eget lang:. Det som följer med är en, de, sv, no/nb och da. Ett flerspråkigt projekt behöver alltså ingen extra inställning, se Flerspråkiga projekt.\ncode-fold: är Quartos vanliga inställning. Med code-tools: true fäller sidans knapp “Visa all kod” också ihop och ut Pyodide-cellerna. &lt;format&gt;-autoexec kräver en Python-installation på den dator som renderar.\n\n\n\n\n\n\n\n\nVarningQuarto 1.10 och senare: engine: markdown\n\n\n\nSedan Quarto 1.10 skickar Quarto sidor med {pyodide-python}, {py-exercise} eller {math-exercise} till Jupyter, fast Jupyter inte har något att göra där. Skriv engine: markdown i sidhuvudet på den sidan. I _quarto.yml har inställningen ingen effekt.\nDå körs dock {python}-celler inte längre. En sida som innehåller båda får därför inte engine: markdown: den körs via Jupyter, och Python måste vara installerat på datorn som bygger.\n\n\n\n\nEn figur från en {pyodide-python}-cell kan inte korsrefereras med @fig-.... Om du behöver en numrerad figur som går att länka till, skriv en vanlig {python}-cell och gör den interaktiv i HTML med en kommentar # pyodide: ...:\n```{python}\n#| label: fig-parabola\n#| fig-cap: \"The parabola $y=x^2$.\"\n# pyodide: autorun, read-only=false\nx = np.linspace(-2, 2, 200)\nplt.plot(x, x**2)\nplt.show()\n```\nMarkören tar samma inställningar som tabellen i fliken “Inställningar” och tas bort ur den visade koden. PDF och Word behåller Quartos riktiga figur. I HTML tar den interaktiva cellen dess plats, medan bildtexten och målet för korsreferensen finns kvar. Cellen kräver en riktig Python vid renderingen, som varje {python}-cell.\n\n\n\nStoppa: På cross-origin-isolerade sidor avbryter Stoppa mjukt och variablerna finns kvar. Annars startar Stoppa om Python, variablerna går förlorade och cellerna med setup, output och autorun körs igen av sig själva.\nBara en cell kan räkna åt gången.\nNär du går till en annan sida i projektet laddas Python om.\nembed-resources: true ger en enda fungerande fil, men inte en som fungerar offline: Pyodide hämtas fortfarande från nätet. Filen måste levereras via http(s), det räcker inte att dubbelklicka på den lokala filen.\n\n\n\n\n\n\n\n\n\n\n\n\nReferenser\n\nDroettboom, Michael m.fl. 2021. Pyodide: Python for the Browser. Released. https://pyodide.org.\n\n\nErasmus CTM. u.å. pyodide-interaktiv: Pyodide in a Web Worker for Quarto. https://github.com/Erasmus-CTM/pyodide-interaktiv.",
+    "crumbs": [
+      "Exempelsida",
+      "Tillägg",
+      "Python i webbläsaren"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_ext_mathexercise.html",
+    "href": "Qmd Files/Tipps and Tricks/exp_ext_mathexercise.html",
+    "title": "math-exercise – matematikuppgifter",
+    "section": "",
+    "text": "Your answers are saved only in this browser.Do not save on this device\nExport my answers\nDelete answers on this page\nDelete all your answers in this course\nInstallation: ingår i CTM Assessment, se Översikt och installation Källa: (Erasmus CTM, u.å.), github.com/Erasmus-CTM/math-exercise\nDär py-exercise kontrollerar kod kontrollerar math-exercise ett svar. Studenterna skriver ett matematiskt uttryck i ett fält och SymPy jämför det med lösningen. I standardläget räknas därför varje ekvivalent form som rätt.\nPyodide och SymPy laddas från nätet vid första klicket på Kontrollera. Ett enda filter i sidhuvudet räcker:\n\n\nsida.qmd\n\nengine: markdown      # från Quarto 1.10, annars går sidan till Jupyter\nfilters:\n  - ctm-assessment\n\n\nExempelSyntaxInställningarKontrollägenSkrivform & delpoängFrågepoolerSlumpvärden och liknande uppgifterFeedback\n\n\n\nArean av en cirkel\n\n\nEn cirkel har radien \\(r = 3\\). Ange arean exakt (skriv pi för π):\n\n\\(A =\\) \n\n\n  ✓ Check\n  ⓘ Input help\n  \n    💬 Feedback\n    ⚙\n  \n\n\n\n\n\npi*9, 9*pi och 3**2*pi godtas alla, de är samma uttryck.\n\n\n```{math-exercise}\n#| label: my-exercise\n#| caption: Exercise title\n#| vars: x\nQuestion text with an input field: _[correct_answer]\n```\nSvaret inom [...] är ett SymPy-uttryck, t.ex. pi * 9 eller x**2 + 2*x + 1.\n\n\n\n\n\n\n\nMarkör\nFält\n\n\n\n\n_[svar]\nsmalt (cirka 10 tecken)\n\n\n__[svar]\nmedelbrett (cirka 20 tecken)\n\n\n___[svar]\nbrett, två rader\n\n\nvec[a,b,c]\nvektor inom parentes, ett fält per komponent\n\n\nmat[a,b;c,d]\nmatris inom parentes, ett fält per element\n\n\nmat{name=A, rows=2, cols=auto}\nmatris vars storlek studenterna väljer själva (bara med mode: custom)\n\n\n\nVektorns komponenter skiljs åt med komma. I matriser skiljer komma kolumner och semikolon rader. Vektorer är kolumnvektorer, #| vecdir: row gör dem till radvektorer. Varje komponent kontrolleras och markeras för sig.\n```{math-exercise}\n#| vars: x\nEnter a vector: vec[x+1,2*x]\nEnter a matrix: mat[1,0;0,x]\n```\nFlera fält i en uppgift kontrolleras tillsammans med Check.\n\n\n\n\n\n\nViktigt\n\n\n\nVarje symbol som används i svaret måste stå i vars. Annars vet SymPy inte vad x ska vara.\n\n\n\n\n\n\n\n\n\n\n\n\nInställning\nStandard\nBeskrivning\n\n\n\n\nlabel\nmath-exercise-N\nunikt id för uppgiften\n\n\ncaption\n—\ntitel ovanför uppgiften\n\n\nvars\n—\nSymPy-symboler, t.ex. x, y, r\n\n\nmode\nequivalent\nkontrolläge, se fliken “Kontrollägen”\n\n\nreject\n—\nuttryck som ska avvisas trots att det är rätt (bara equivalent/exact)\n\n\nform\n—\nkrävd skrivform: factored, expanded, single_fraction, lowest_terms (bara equivalent/exact)\n\n\ntolerance\n—\nbara numeric: tillåten avvikelse, absolut (0.5) eller relativ (5%)\n\n\ndecplaces\n—\nbara numeric: avrunda båda sidor till N decimaler före jämförelsen\n\n\nsigfigs\n—\nbara numeric: avrunda båda sidor till N gällande siffror före jämförelsen\n\n\npartial-credit\nfalse\nge delpoäng\n\n\nform-credit\n0.5\npoäng för ett ekvivalent svar i fel skrivform\n\n\npool\nfalse\nbehandla blocket som en samling varianter\n\n\nvecdir\ncol\nriktning för alla vec[...]: col eller row\n\n\nfield-labels\n—\nfältens namn, t.ex. S, E, M\n\n\nchecker\n—\ndin egen kontrollkod för mode: custom\n\n\npackages\n—\nPyodide-paket för din egen kontrollkod, t.ex. networkx\n\n\nresponse\n—\nhämta svaret från en JSXGraph-tavla: jsxgraph:&lt;assessment_id&gt;\n\n\nembed-response\nfalse\nflytta in tavlan i uppgiftens ruta\n\n\ngivens\n–\nfasta data för din egen kontrollkod (mode: custom), en rad namn = uttryck per rad. Kontrollkoden läser dem från response['variables']\n\n\ntests\n–\nkontroller som körs vid bygget och testar din egen kontrollkod: def test(check, symbols)\n\n\ninitial-values\n–\nstartsvar, en sträng per fält, t.ex. [\"40\"]. Bara för uppgifter där studenterna ska förbättra ett befintligt utkast\n\n\ncontext\n–\nsammanhang för AI-feedbacken, se fliken ”Feedback”\n\n\ncontext-text\n–\negen sammanhangstext för AI-feedbacken\n\n\n\n\n\npage.qmd\n\nmath-exercise:\n  feedback: auto   # auto (standard) och true visar Feedback-knappen, false döljer den\n  stop-after: 30   # sekunder tills en lång kontroll erbjuder ”Stopp” (standard: 20)\n\nGränssnittet finns på engelska, tyska och norska (bokmål). Språket kommer från ctm-assessment: lang: eller från Quartos eget lang:, se Flerspråkiga projekt.\n\n\nequivalent (standard): godtar varje matematiskt ekvivalent form. För [pi * 9] godkänns pi*9, 9*pi och 3**2 * pi.\nequivalent med reject: godtar ekvivalenta former utom den angivna. Det är det som gör förenklingsuppgifter möjliga, där ingen ska kunna skriva av frågan.\n```{math-exercise}\n#| vars: x\n#| reject: (x+1)**2\nExpand: $(x+1)^2 =$ __[x**2 + 2*x + 1]\n```\n(x+1)^2 avvisas, x^2 + 2x + 1 godtas.\nexact: det strängaste läget, godtar bara lösningens enda skrivform. Oförkortade bråk avvisas: för _[3/4] är 3/4 rätt och 6/8 fel.\nnumeric: jämför talvärden i stället för uttryck, för avrundnings- och närmevärdesuppgifter.\n```{math-exercise}\n#| mode: numeric\n#| tolerance: 0.01\nApproximate π: _[3.14159]\n```\nAllt som skiljer sig från \\(3.14159\\) med högst \\(0.01\\) godtas: 3.14 och 3.15 är rätt, 3.2 är fel.\nstring och string_ci: jämför den inskrivna texten bokstavligt, string_ci utan hänsyn till stora och små bokstäver. För termer och enheter.\nset: svaret är en kommaseparerad lista, ordningen spelar ingen roll.\n```{math-exercise}\n#| mode: set\nSolve $x^2 = 4$. All solutions: __[2, -2]\n```\n-2, 2 och 2,-2 är rätt. En saknad eller dubblerad lösning gör svaret fel.\ncustom: du skriver kontrollkoden själv, som en funktion check(response, symbols). Den returnerar True/False, en poäng från 0 till 1 eller en dictionary med score och feedback.\n```{math-exercise}\n#| vars: x\n#| mode: custom\n#| checker: |\n#|   def check(response, symbols):\n#|       f = response[\"expressions\"][0]\n#|       x = symbols[\"x\"]\n#|       return simplify(diff(f, x) - 2*x) == 0\n\nGive an antiderivative of $2x$: $F(x) =$ __[]\n```\nHär är varje funktion rätt vars derivata är \\(2x\\), alltså \\(x^2 + c\\) med en godtycklig konstant \\(c\\).\n\n\n\n\n\n\nVarning\n\n\n\nKontrollkoden finns i den renderade sidan och är synlig för studenterna.\n\n\n\n\nMed form kräver du en viss skrivform utöver att svaret är rätt:\n\n\n\nVärde\nKrävd form\n\n\n\n\nfactored\nfullständigt faktoriserat, t.ex. (x+1)*(x+2)\n\n\nexpanded\nfullständigt utvecklat, t.ex. x**2 + 3*x + 2\n\n\nsingle_fraction\nett enda bråk i stället för en summa av bråk\n\n\nlowest_terms\nett fullständigt förkortat bråk\n\n\n\n```{math-exercise}\n#| vars: x\n#| form: factored\nFactor $x^2 + 3x + 2$: __[(x+1)*(x+2)]\n```\n(x+1)*(x+2) godtas. x**2 + 3*x + 2 är matematiskt rätt men inte faktoriserat och rapporteras som rätt, men inte i faktoriserad form.\nDelpoäng slås på med partial-credit: true:\n\nFör flera fält tas medelvärdet, tomma fält räknas som noll.\nFör set är poängen \\(\\frac{2M}{E + S}\\), där \\(M\\) är antalet träffade element, \\(E\\) antalet förväntade och \\(S\\) antalet inlämnade. Både saknade och överflödiga element sänker poängen.\nEtt ekvivalent svar i fel skrivform får form-credit.\n\nUtan inställningen är ett svar helt enkelt rätt eller fel.\n\n\nMed pool: true och --- som skiljelinje innehåller ett block flera varianter. Vid varje sidbesök väljs en slumpmässigt och behålls under sessionen. Knappen ↻ laddar en annan.\n```{math-exercise}\n#| label: circle-pool\n#| caption: Area of a circle\n#| pool: true\nRadius r = 3 cm. $A =$ _[pi*9] cm²\n\n---\n\nRadius r = 5 cm. $A =$ _[pi*25] cm²\n\n---\n\nRadius r = 7 cm. $A =$ _[pi*49] cm²\n```\nAlla varianter delar samma inställningar (vars, mode, reject).\n\n\nI stället för en pool av handskrivna uppgifter kan math-exercise skapa varianter redan vid bygget (#| variables:). Frågetester kontrollerar varje variant. Skrivsättet finns i guiden om varianter.\nDessutom kan studenterna låta AI skapa liknande uppgifter: ai-feedback: similar: true för sidan eller #| similar: true per uppgift. Det kräver direktanslutning till API:et (inte ”Kopiera prompt”), finns bara i math-exercise och är avstängt i ett bygge utan AI.\n\n\nVarje uppgift har en hopfällbar inmatningshjälp med de skrivsätt som behövs: x^2 eller x**2, sqrt(x), root(x, n), pi, E, Abs(x), oo, integrate(f, x), diff(f, x).\nKnappen Feedback ingår i den gemensamma AI-feedbacken i CTM Assessment: samma inställningsdialog, samma ledtrådsnivåer och riktlinjer som för Pythonuppgifter. Hur den ställs in och vad som skickas beskrivs på sidan AI-feedback och sparande. Den förväntade lösningen skickas aldrig.\nFör att AI:n ska förstå uppgiften får den sammanhang:\n\nAutomatiskt: texten som skrivits sedan den senaste rubriken före uppgiften.\nUttryckligen: block med ett id och klassen .ai-context, som uppgiften pekar på med #| context: id. Samma block fungerar i alla tre uppgiftstyperna.\nInget alls: med #| context: none.\n\n::: {#fp16 .ai-context}\nIEEE-754 halv precision: 1 teckenbit, 5 exponentbitar (bias 15),\n10 mantissbitar.\n:::\n\n```{math-exercise}\n#| label: fp-decode\n#| context: fp16\nVilket tal är 0x3C00 i halv precision? _[1]\n```\nEn uppgift med mode: custom och utan checker har ingen automatisk kontroll, bara AI-feedbacken kan bedöma den. Vad som händer med den i ett bygge utan AI avgör ai-feedback: without-ai, se AI-feedback och sparande.\n\n\n\n\n\n\n\n\n\n\n\nReferenser\n\nErasmus CTM. u.å. math-exercise: Symbolic Maths Exercises for Quarto. https://github.com/Erasmus-CTM/math-exercise.",
+    "crumbs": [
+      "Exempelsida",
+      "Tillägg",
+      "math-exercise"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_ext_feedback.html",
+    "href": "Qmd Files/Tipps and Tricks/exp_ext_feedback.html",
+    "title": "AI-feedback och sparande",
+    "section": "",
+    "text": "Your answers are saved only in this browser.Do not save on this device\nExport my answers\nDelete answers on this page\nDelete all your answers in this course\nFeedback, sparade svar och integritet fungerar likadant för Python-celler (pyodide-python), py-exercise och math-exercise. De kommer från samma bibliotek (ctm-libs) i CTM Assessment. Du ställer därför in dem en gång för sidan eller projektet, inte per uppgiftstyp.\nProva på den här uppgiften. Knappen Feedback och kugghjulet ⚙ hör till den gemensamma dialogen:\n\n  \n    Please enable JavaScript to load the interactive exercise.\n  \n\n\n\nSå fungerar feedbackenInställningarRiktlinjerSammanhangVad som skickasBygga utan AISpara svar\n\n\nVarje uppgift där den är påslagen har en knapp Feedback. Den arbetar i ett av två lägen, som väljs i kugghjulet ⚙:\n\n\n\n\n\n\n\nLäge\nVad som händer\n\n\n\n\nKopiera prompt (standard)\nKnappen skapar en färdig text med uppgiften och det aktuella svaret. Du klistrar in den i ChatGPT, Claude eller en annan tjänst som du redan använder. Det behövs inget konto och ingen förfrågan går till någon leverantör.\n\n\nDirekt API\nSvaret visas under uppgiften. För det anger de studerande adress, modell och sin personliga nyckel till ett OpenAI-kompatibelt gränssnitt i dialogen. Uppgifterna stannar i deras webbläsare.\n\n\n\nLedtrådarna blir mer konkreta för varje lyckat klick, och den sista nivån upprepas. En ny körning eller kontroll börjar om på första nivån. Hur många nivåer det finns och vad var och en säger avgörs av riktlinjen (nästa flik).\nVad en uppgift behöver för det:\n\n\n\n\n\n\n\n\nUppgiftstyp\nSlå på\nBeskrivning av uppgiften\n\n\n\n\npyodide-python\npå (pyodide: feedback: false stänger av)\n#| task: i cellen\n\n\npy-exercise\npy-exercise: feedback: true\n#| task: är obligatoriskt\n\n\nmath-exercise\npå (math-exercise: feedback: false stänger av)\nsjälva uppgiftstexten\n\n\n\n\n\nStandardvärdena skriver du i _quarto.yml eller i huvudet på en sida:\n\n\n_quarto.yml\n\nai-feedback:\n  mode: copy            # Kopiera prompt (standard)\n  storage: local        # local: bevaras | session: bara den här fliken\n  base-url: https://din-leverantor.example/v1   # bara för ”Direkt API”\n  model: modellnamn\n\nDe studerande ändrar allt i kugghjulet ⚙ själva. Inställningarna gäller sedan för alla sidor i samma kurs.\n\n\n\n\n\n\nViktigtSkriv aldrig en nyckel i projektet\n\n\n\nEn nyckel i _quarto.yml eller i en sidas huvud skulle publiceras med sidan. Därför avbryts bygget så fort en CTM-sektion innehåller en nyckel som api-key, token eller password, och värdet visas inte. De studerande skriver in sin egen nyckel i dialogen.\n\n\nInställningar sätts ihop nyckel för nyckel: sidan, profilen, _quarto.yml och _metadata.yml-filer kompletterar varandra. En sida som bara sätter mode: behåller projektets övriga nycklar.\n\n\nEn riktlinje är en namngiven uppsättning instruktioner för hurdan hjälp som ges: först en motfråga, sedan en förklaring, kanske lösningsvägen sist. Du skriver den i en YAML-fil:\n\n\nfeedback.yml\n\nai-feedback:\n  policies:\n    kurs-feedback:\n      base-prompt: Använd de begrepp som förekommer i kursen.\n      max-words: 180\n      steps:\n        - step-prompt: Ställ en vägledande fråga.\n        - step-prompt: Förklara den relevanta idén utan färdig kod.\n    kort:\n      extends: kurs-feedback\n      max-words: 80\n\nI sidhuvudet läser du in filen och slår på en riktlinje för hela sidan. Enskilda uppgifter väljer en annan med #| feedback-policy::\n\n\nsida.qmd\n\nai-feedback:\n  policy-files: feedback.yml\n  policy: kort\n\npolicy-files anmäler bara riktlinjerna. Först policy eller #| feedback-policy: slår på en. En riktlinje med extends ärver allt den inte själv bestämmer. steps ersätter hela den ärvda listan.\nDen utförliga beskrivningen finns i guiden om riktlinjer.\n\n\nFör att modellen ska förstå uppgiften i sitt sammanhang får den kontext:\n\nAutomatiskt: den förklarande texten före uppgiften.\nUttryckligen: ett block med id och klassen .ai-context. Uppgifter pekar på det med #| context: id. Samma block fungerar i alla tre uppgiftstyperna. feedback-context är ett likvärdigt namn.\nInget alls: #| context: none.\n\n::: {#moms .ai-context}\nMomsen anges som decimaltal: 25 % är 0,25.\n:::\n\n```{py-exercise}\n#| label: pris\n#| task: Returnera priset inklusive moms.\n#| context: moms\ndef brutto(pris, sats):\n    pass\n```\n\n\nEn förfrågan till en leverantör innehåller uppgiften, det aktuella svaret, det valda sammanhanget och riktlinjen. Resultat och utdata från den senaste körningen följer bara med så länge svaret inte har ändrats sedan dess.\nAldrig skickas testerna, de förväntade svaren, kontrollkoden och råa felmeddelanden. För Python-celler skickas programmets utdata och en allmän körstatus, men inga feltexter, ingen HTML och inga bilder.\n\n\n\n\n\n\nVarning\n\n\n\nAllt detta är läromedel i webbläsaren, inte säkra examinationssystem. Den som öppnar sidan kan ändra den.\n\n\n\n\nFör en webbplats helt utan AI-feedback, till exempel för prov eller kurser utan integritetsgodkännande, stänger du av den i en profil:\n\n\n_quarto-no-ai.yml\n\nai-feedback:\n  enabled: false\n\nBygg med quarto render --profile no-ai eller med miljövariabeln CTM_FEEDBACK=off. Ingen sida kan slå på den igen. Då finns ingen Feedback-knapp och inga fält som bara feedbacken behöver.\nUppgifter som bara AI-feedbacken kan bedöma (till exempel math-exercise med mode: custom utan checker) stoppar bygget tills du anger vad som ska hända med dem:\n\n\n_quarto-no-ai.yml\n\nai-feedback:\n  enabled: false\n  without-ai: text      # text | self-check | drop\n\ntext visar uppgiften utan svarsfält, drop utelämnar den.\n\n\nSom standard stannar svaren i webbläsaren på den här enheten, i ett gemensamt lager för alla uppgiftstyper. Nästa gång man besöker sidan finns koden och inmatningarna kvar. Ingenting går till någon server.\nEtt fält i sidkanten visar ”Sparat i den här webbläsaren” med integritetsinformationen. Varje uppgift har dessutom en knapp Kopiera svar och storleksknappar för editorn.\nI inställningsdialogen hittar de studerande fyra reglage: Spara inte på den här enheten, Exportera mina svar, Radera svar på den här sidan och Radera alla dina svar i den här kursen.\nDu styr sparandet i projektet:\n\n\n_quarto.yml\n\nctm-assessment:\n  save: answers          # answers (standard) eller none\n  export: true           # ”Exportera mina svar” (standard: true)\n  storage-key: min-kurs  # kursens namn i webbläsarens lagring\n\nFör en komponent eller en enskild uppgift gäller den mer specifika inställningen: math-exercise: {save: none} stänger av det för alla matteuppgifter, #| save: false för en enskild uppgift. local-storage: från tidigare versioner är numera bara ett annat namn för det här.\n\n\n\n\n\n\nTipsstorage-key för flera kurser på en domän\n\n\n\nUtan storage-key är lagret uppkallat efter webbplatsens sökväg. Två kurser på samma adress som fick samma namn skulle dela sina svar. Ge dem egna namn.",
+    "crumbs": [
+      "Exempelsida",
+      "Tillägg",
+      "AI-feedback och sparande"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_cheatsheet.html",
+    "href": "Qmd Files/Tipps and Tricks/exp_cheatsheet.html",
+    "title": "Cheatsheet",
+    "section": "",
+    "text": "En snabbreferens för allt som tas upp i den här delen.",
+    "crumbs": [
+      "Exempelsida",
+      "Cheatsheet"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_cheatsheet.html#yaml-inställningar-i-_quarto.yml",
+    "href": "Qmd Files/Tipps and Tricks/exp_cheatsheet.html#yaml-inställningar-i-_quarto.yml",
+    "title": "Cheatsheet",
+    "section": "YAML: inställningar i _quarto.yml",
+    "text": "YAML: inställningar i _quarto.yml\n\nProjekt\nproject:\n  type: website       # website | book | manuscript | default\n  output-dir: docs    # where rendered files go\n\n\nExecute (globala standardvärden för kod)\nexecute:\n  echo: true          # show source code\n  eval: true          # run the code\n  warning: false      # hide warnings\n  error: false        # stop on errors\n  freeze: auto        # auto | true | false\n\n\nFormat\nformat:\n  html:\n    toc: true\n    toc-depth: 3\n    theme:              # one name (theme: cosmo) or a list\n      - cosmo\n      - custom.scss\n    code-fold: true\n    code-tools: true\n    number-sections: false\n  pdf:\n    toc: true\n    documentclass: article\n    geometry: margin=2.5cm\n  docx:\n    toc: true\n\n\nWebbplats\nwebsite:\n  title: \"My Site\"\n  navbar:\n    left:\n      - text: \"Home\"\n        href: index.qmd\n      - text: \"External\"\n        href: https://example.com\n    right:\n      - icon: github\n        href: https://github.com/your/repo\n  sidebar:\n    - id: my-sidebar\n      style: docked        # docked | floating\n      contents:\n        - href: page.qmd\n          text: Page Title\n        - section: \"Group\"\n          contents:\n            - href: sub.qmd\n              text: Sub-page\n\n\nProfiler\nprofile:\n  default: [web, deutsch]\n  group:\n    - [web, print]          # exactly one of each group is active\n    - [deutsch, english]\nquarto render --profile print,english",
+    "crumbs": [
+      "Exempelsida",
+      "Cheatsheet"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_cheatsheet.html#qmd-inställningar-för-kodblock",
+    "href": "Qmd Files/Tipps and Tricks/exp_cheatsheet.html#qmd-inställningar-för-kodblock",
+    "title": "Cheatsheet",
+    "section": "QMD: inställningar för kodblock",
+    "text": "QMD: inställningar för kodblock\n#| echo: false          # hide source code\n#| eval: false          # don't run (show code only)\n#| output: false        # hide output\n#| warning: false       # hide warnings\n#| include: false       # hide everything (the code still runs)\n#| code-fold: true      # true | false: collapsible code block\n#| code-summary: \"Show the code\"\n#| fig-cap: \"My figure\"\n#| fig-align: center    # left | center | right\n#| label: fig-myplot    # for cross-referencing\n\nId för korsreferenser\n\n\n\nTyp\nPrefix\nReferens\n\n\n\n\nFigur\nfig-\n@fig-myplot\n\n\nTabell\ntbl-\n@tbl-mydata\n\n\nAvsnitt\nsec- (på rubriken)\n@sec-intro",
+    "crumbs": [
+      "Exempelsida",
+      "Cheatsheet"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_cheatsheet.html#qmd-villkorat-innehåll",
+    "href": "Qmd Files/Tipps and Tricks/exp_cheatsheet.html#qmd-villkorat-innehåll",
+    "title": "Cheatsheet",
+    "section": "QMD: villkorat innehåll",
+    "text": "QMD: villkorat innehåll\n::: {.content-visible when-profile=\"english\"}\nOnly visible in English.\n:::\n\n::: {.content-hidden when-format=\"pdf\"}\nNot in PDF.\n:::",
+    "crumbs": [
+      "Exempelsida",
+      "Cheatsheet"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_cheatsheet.html#qmd-markdown-element",
+    "href": "Qmd Files/Tipps and Tricks/exp_cheatsheet.html#qmd-markdown-element",
+    "title": "Cheatsheet",
+    "section": "QMD: Markdown-element",
+    "text": "QMD: Markdown-element\n\nInforutor\n::: {.callout-note}\n::: {.callout-tip}\n::: {.callout-warning}\n::: {.callout-important}\n::: {.callout-caution}\n\n::: {.callout-tip collapse=\"true\"}\n## Title\nHidden by default.\n:::\n\n\nShortcodes\n{{&lt; include other-file.qmd &gt;}}   ← embed another file\n{{&lt; pagebreak &gt;}}                ← force page break (PDF)\n{{&lt; kbd Ctrl+C &gt;}}               ← keyboard shortcut styling\n\n\nRutnät\n::: {.grid}\n::: {.g-col-6}\nLeft column (half width)\n:::\n::: {.g-col-6}\nRight column (half width)\n:::\n:::\nKolumnbredder anges i tolftedelar: g-col-4 = en tredjedel, g-col-6 = hälften, g-col-12 = hela bredden.",
+    "crumbs": [
+      "Exempelsida",
+      "Cheatsheet"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_cheatsheet.html#tillägg-syntax-i-korthet",
+    "href": "Qmd Files/Tipps and Tricks/exp_cheatsheet.html#tillägg-syntax-i-korthet",
+    "title": "Cheatsheet",
+    "section": "Tillägg: syntax i korthet",
+    "text": "Tillägg: syntax i korthet\nquarto add https://erasmus-ctm.github.io/ctm-assessment/ctm-assessment.zip     # Windows\nquarto add https://erasmus-ctm.github.io/ctm-assessment/ctm-assessment.tar.gz  # macOS / Linux\nquarto add parmsam/quizdown               # frågesporter, separat\nengine: markdown         # bara på sidor med uppgifter (Quarto 1.10+)\nfilters:\n  - parmsam/quizdown\n  - ctm-assessment       # Python-celler, py-/math-exercise, JSXGraph\n\nquizdown\n```{quizdown}\n---\nlocale: en\n---\n# Question text?\n1. [x] Correct answer\n1. [ ] Wrong answer\n```\n\n\npyodide-interaktiv\n```{pyodide-python}\n#| autorun: false\n#| read-only: false\n#| code-fold: false\n#| context: interactive   # interactive | output | setup\nprint(\"runs in browser\")\n```\nAlla celler på en sida delar variabler. plt.show() startar visningen av grafer och animationer.\n\n\npy-exercise\n```{py-exercise}\n#| caption: Title\n#| forbidden-keywords: for, while\ndef my_func(x):\n    pass        # student fills this in\n\n## TESTS ##\nassert my_func(2) == 4, \"Feedback on failure\"\n```\n\n\nmath-exercise\n```{math-exercise}\n#| label: circle\n#| vars: r\n#| mode: equivalent\nArea of a circle with r = 3: _[pi*9]\n```\n\n\n\nFält\nBetydelse\n\n\n\n\n_[a] / __[a] / ___[a]\nsmalt / medelbrett / brett\n\n\nvec[a,b,c]\nvektor\n\n\nmat[a,b;c,d]\nmatris (komma: kolumn, semikolon: rad)\n\n\n\n\n\n\n\n\n\n\nmode\nKontrollerar\n\n\n\n\nequivalent\nmatematiskt ekvivalent (standard), med reject och form\n\n\nexact\nexakt den här skrivformen\n\n\nnumeric\nnumeriskt värde, med tolerance, decplaces eller sigfigs\n\n\nstring / string_ci\ntext bokstavligt / utan hänsyn till stora och små bokstäver\n\n\nset\nlista utan ordning\n\n\ncustom\ndin egen kontrollkod i checker\n\n\n\nFler inställningar: pool: true, partial-credit: true, field-labels, context.\n\n\nJSXGraph\n```jsxgraph\nvar board = JXG.JSXGraph.initBoard(BOARDID, {\n    boundingbox: [-5, 5, 5, -5], axis: true\n});\nboard.create('functiongraph', [Math.sin]);\n```\nSom svar på en uppgift: ett block med {.jsxgraph assessment_id=\"board\"} och JXG.QuartoAssessment.register(...), och i uppgiften #| mode: custom och #| response: jsxgraph:board.",
+    "crumbs": [
+      "Exempelsida",
+      "Cheatsheet"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_cheatsheet.html#css-hjälpklasser-från-bootstrap",
+    "href": "Qmd Files/Tipps and Tricks/exp_cheatsheet.html#css-hjälpklasser-från-bootstrap",
+    "title": "Cheatsheet",
+    "section": "CSS: hjälpklasser från Bootstrap",
+    "text": "CSS: hjälpklasser från Bootstrap\n\n\n\nKlass\nEffekt\n\n\n\n\n.text-center\nCentrera text\n\n\n.text-muted\nGrå text\n\n\n.text-white\nVit text\n\n\n.fw-bold\nFet\n\n\n.border\nRam\n\n\n.rounded\nRundade hörn\n\n\n.shadow\nSkugga\n\n\n.bg-light\nLjus bakgrund\n\n\n.bg-primary\nBakgrund i primärfärgen\n\n\n.p-{0-5}\nLuft innanför på alla sidor\n\n\n.m-{0-5}\nMarginal på alla sidor\n\n\n.mt-{0-5} / .mb-{0-5}\nMarginal ovanför / nedanför\n\n\n.d-flex\nFlexbox-behållare\n\n\n.gap-{0-5}\nAvstånd mellan flex-element\n\n\n.justify-content-center\nCentrera flex-element",
+    "crumbs": [
+      "Exempelsida",
+      "Cheatsheet"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_cheatsheet.html#css-scss-variabler-2",
+    "href": "Qmd Files/Tipps and Tricks/exp_cheatsheet.html#css-scss-variabler-2",
+    "title": "Cheatsheet",
+    "section": "CSS: SCSS-variabler",
+    "text": "CSS: SCSS-variabler\n/*-- scss:defaults --*/\n$primary:            #0d6efd;\n$body-bg:            #ffffff;\n$body-color:         #212529;\n$font-family-base:   \"Inter\", sans-serif;\n$font-size-base:     1rem;\n$headings-font-weight: 600;\n$border-radius:      0.375rem;\n$border-color:       #dee2e6;\n\n/*-- scss:rules --*/\n/* your custom CSS here */",
+    "crumbs": [
+      "Exempelsida",
+      "Cheatsheet"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_ext_jsxgraph.html",
+    "href": "Qmd Files/Tipps and Tricks/exp_ext_jsxgraph.html",
+    "title": "JSXGraph – interaktiva grafer",
+    "section": "",
+    "text": "Your answers are saved only in this browser.Do not save on this device\nExport my answers\nDelete answers on this page\nDelete all your answers in this course\nInstallation: ingår i CTM Assessment, se Översikt och installation Källa: (Miller 2023), github.com/jsxgraph/jsxgraph-quarto\nJSXGraph-versionen i CTM Assessment bygger på tillägget jsxgraph-quarto och lägger till en bedömningsbrygga: en graf kan leverera svaret på en math-exercise-uppgift. JSXGraph-biblioteket laddas från nätet när sidan läses, och paketet bestämmer vilken version som används.\n\n\nsida.qmd\n\nengine: markdown      # behövs bara om sidan också innehåller math-exercise (Quarto 1.10+)\nfilters:\n  - ctm-assessment\n\n\n\n\n\n\n\nVarningInstallera inte JSXGraph en gång till\n\n\n\nJSXGraph följer med ctm-assessment och ligger i _extensions/jsxgraph/. Ett extra quarto add jsxgraph/jsxgraph-quarto hamnar nästlat i _extensions/jsxgraph/jsxgraph/ och ignoreras. Bygget skriver ut en varning om det. Står ett enskilt filter som jsxgraph i sidhuvudet ersätter ctm-assessment det: en sida anger antingen ctm-assessment eller enskilda komponenter, inte båda.\n\n\n\nExempelSyntaxVanliga elementGraf som svar\n\n\n\nDra punkten \\(x\\) längs axeln.\n\n\n```jsxgraph\nvar board = JXG.JSXGraph.initBoard(BOARDID, {\n    boundingbox: [-5, 5, 5, -5],   // [xmin, ymax, xmax, ymin]\n    axis: true,\n    keepaspectratio: false,\n    showNavigation: false\n});\n```\n\n\n\n\n\n\nViktigt\n\n\n\nAnvänd alltid den bokstavliga strängen BOARDID. Tillägget ersätter den med ett unikt id. Ett fast id förstör sidor med flera grafer.\n\n\nInställningar skrivs som attribut på blocket, t.ex. bredd och höjd:\n```{.jsxgraph width=\"600\" height=\"300\"}\n...\n```\n\n\n// Function graph\nboard.create('functiongraph', [Math.sin], { strokeColor: '#0d6efd' });\n\n// Draggable point\nvar p = board.create('point', [2, 1], { name: 'P', size: 4 });\n\n// Glider: point constrained to a line or curve\nvar g = board.create('glider', [1, 0, board.defaultAxes.x], { name: 'x' });\n\n// Slider\nvar s = board.create('slider', [[0,-3],[4,-3],[0,1,2*Math.PI]], { name: 'a' });\n\n// Use slider value\nboard.create('functiongraph', [function(x) { return Math.sin(s.Value()*x); }]);\n\n// Text label\nboard.create('text', [1, 2, function() { return 'x = ' + g.X().toFixed(2); }]);\n\n// Segment\nboard.create('segment', [p1, p2], { strokeColor: '#198754', dash: 2 });\n\n\nMed assessment_id och JXG.QuartoAssessment.register(...) rapporterar en graf sitt tillstånd till en uppgift. Uppgiften hämtar det med response: jsxgraph:&lt;assessment_id&gt; och kontrollerar det med sin egen kontrollkod:\n\n\nPunkt ovanför linjen\n\n\nDra punkten \\(P\\) till området ovanför linjen \\(y = x\\).\n\n\n  ✓ Check\n  ⓘ Input help\n  \n    💬 Feedback\n    ⚙\n  \n\n\n\n\n\nKällkoden till det:\n```{.jsxgraph assessment_id=\"exp-board\"}\nvar board = JXG.JSXGraph.initBoard(BOARDID, {\n    boundingbox: [-5, 5, 5, -5], axis: true, showNavigation: false\n});\nboard.create('line', [[0, 0], [1, 1]], { strokeColor: '#0d6efd', fixed: true });\nvar point = board.create('point', [2, -1], { name: 'P', size: 5 });\n\nJXG.QuartoAssessment.register({\n  board: board,\n  response: function () {\n    return { point: [point.X(), point.Y()] };\n  }\n});\n```\n\n```{math-exercise}\n#| mode: custom\n#| response: jsxgraph:exp-board\n#| embed-response: true\n#| checker: |\n#|   def check(response, symbols):\n#|       x, y = response[\"point\"]\n#|       return {\"score\": 1 if y &gt; x else 0}\n\nDrag the point $P$ into the region above the line $y = x$.\n```\nresponse får returnera vilka data som helst som kan skrivas som JSON. embed-response: true flyttar in grafen i uppgiftens ruta. För uppgifter där studenterna bygger en graf av noder och kanter finns den färdiga redigeraren JXG.QuartoGraphEditor.\n\n\n\n\n\n\n\n\n\n\n\nReferenser\n\nMiller, Carsten. 2023. JSXGraph Quarto Extension. Released. https://github.com/jsxgraph/jsxgraph-quarto.",
+    "crumbs": [
+      "Exempelsida",
+      "Tillägg",
+      "JSXGraph"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_ext_pyexercise.html",
+    "href": "Qmd Files/Tipps and Tricks/exp_ext_pyexercise.html",
+    "title": "py-exercise – programmeringsuppgifter",
+    "section": "",
+    "text": "Saving is off for this page.Export my answers\nInstallation: ingår i CTM Assessment, se Översikt och installation Källa: (Erasmus CTM, u.å.), github.com/Erasmus-CTM/py-exercise\npy-exercise kontrollerar kod: studenterna kompletterar en funktion och dolda tester avgör om den stämmer. Du behöver inget mer tillägg för Python. Pyodide och editorn laddas från nätet första gången en uppgift körs. Ett enda filter i sidhuvudet räcker:\n\n\nuppgifter.qmd\n\nengine: markdown      # från Quarto 1.10, annars går sidan till Jupyter\nfilters:\n  - ctm-assessment\n\n\nExempelSyntaxInställningarBegränsa lösningarFeedbackInlämning\n\n\n\n  \n    Please enable JavaScript to load the interactive exercise.\n  \n\n\n\n\n```{py-exercise}\ndef my_function(x):\n    \"\"\"Docstring shown to the reader.\"\"\"\n    # Student fills this in\n    pass\n\n## TESTS ##\nassert my_function(2) == 4, \"Feedback shown on failure\"\nassert my_function(0) == 0\n```\nRegler:\n\nSkriv funktionsstommen med en docstring högst upp.\n## TESTS ## är skiljelinjen. Allt under den är dolt för läsaren.\nTexten efter kommat i en assert är återkopplingen som visas när testet misslyckas.\n\n\n\n\n\n\n\nTips\n\n\n\nSkriv meddelandena i assert som om du talade med studenten: \"my_function(2) should return 4. Did you multiply correctly?\"\n\n\n\n\nPer uppgift:\n\n\n\n\n\n\n\n\nInställning\nStandard\nBeskrivning\n\n\n\n\nlabel\npy-exercise-N\nunikt id för uppgiften\n\n\ncaption\n–\nuppgiftens namn i den nedladdade JSON-filen. Det visas inte på sidan\n\n\nforbidden-imports\n—\nkommaseparerade importer som lösningen inte får använda\n\n\nforbidden-keywords\n–\nkommaseparerade namn eller nyckelord som lösningen inte får använda: anrop som sum eller sort (sort förbjuder både sort(x) och x.sort()) och satser som for, while, lambda eller try\n\n\nshow-test-hints\ntrue\nvisa meddelandet i assert när ett test misslyckas\n\n\n\nPer dokument, samma nycklar för alla uppgifter på sidan:\n\n\nexercises.qmd\n\npy-exercise:\n  forbidden-imports: [os, sys, subprocess]\n  forbidden-keywords: [for, while, sorted]\n  show-test-hints: true\n  feedback: true             # AI-feedback i editorerna (standard: false)\n  stop-after: 30             # sekunder tills en lång körning erbjuder ”Stopp” (standard: 20)\n\nGränssnittet finns på engelska, tyska och norska (bokmål). Språket kommer från ctm-assessment: lang: eller från Quartos eget lang:, se Flerspråkiga projekt.\n\n\nFörbjudna konstruktioner kontrolleras innan koden körs. En överträdelse rapporteras i stället för ett testresultat:\n```{py-exercise}\n#| caption: Fibonacci, recursively\n#| forbidden-keywords: for, while\ndef fib(n):\n    pass\n\n## TESTS ##\nassert fib(6) == 8,   \"fib(6) should be 8\"\nassert fib(10) == 55, \"fib(10) should be 55\"\n```\nTypiska användningar: förbjuda for/while för att tvinga fram rekursion eller comprehensions, förbjuda sorted så att studenterna skriver algoritmen själva, förbjuda os/sys/subprocess i en öppen lärmiljö.\n\n\nMed feedback: true får varje editor en knapp Feedback och kugghjulet ⚙. Varje uppgift behöver då en #| task: som anger uppdraget i en mening:\n```{py-exercise}\n#| label: pris\n#| task: Komplettera pris_med_moms så att momsen läggs till priset. Momssatsen är ett decimaltal.\ndef pris_med_moms(pris, sats):\n    return pris  # TODO\n\n## TESTS ##\nassert pris_med_moms(100, 0.25) == 125, \"100 plus 25 % moms ska bli 125\"\n```\nFeedbacken ser den aktuella koden. Resultat och utdata från den senaste körningen följer bara med så länge koden inte har ändrats sedan dess. Testerna, deras meddelanden och felutskrifter skickas aldrig. Ledtrådsnivåer, riktlinjer (#| feedback-policy:), sammanhang och integritet beskrivs på sidan AI-feedback och sparande.\n\n\nMed submission: true får sidan ett sidhuvud som frågar efter ett student-id och ett quiz-id. När testerna är godkända kan studenten ladda ner resultatet som en JSON-fil, XOR-kodad med submission-key och förpackad i Base64, så att resultaten inte går att läsa utan nyckeln.\n\n\nexercises.qmd\n\npy-exercise:\n  submission: true\n  submission-key: \"sose25-quiz1\"\n\n\n\n\n\n\n\nVarning\n\n\n\nNyckeln finns i den renderade sidan. Det avskräcker från enkelt fusk men är ingen riktig kryptering. Se det som ett bekvämt sätt att samla in resultat, inte som ett skydd som duger för examination.\n\n\nOberoende av detta sparar Ladda ner som JSON koden och testresultaten för alla uppgifter som en fil, för eget bruk. Knappen finns alltid och behöver ingen server.\n\n\n\n\n\n\n\n\n\n\n\nReferenser\n\nErasmus CTM. u.å. py-exercise: Editable Python Exercises for Quarto. https://github.com/Erasmus-CTM/py-exercise.",
+    "crumbs": [
+      "Exempelsida",
+      "Tillägg",
+      "py-exercise"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_ext_quizdown.html",
+    "href": "Qmd Files/Tipps and Tricks/exp_ext_quizdown.html",
+    "title": "quizdown – frågesporter",
+    "section": "",
+    "text": "Installation: quarto add parmsam/quizdown Källa: (Sauer 2023), github.com/parmsam/quarto-quizdown\n\n---\nlocale: en\n---\n\n# Vilken fil styr de globala projektinställningarna i Quarto?\n\n1. [x] `_quarto.yml`\n1. [ ] `index.qmd`\n1. [ ] `styles.css`\n\n# Välj alla giltiga utdataformat i Quarto.\n\n- [x] HTML\n- [x] PDF\n- [x] Word (.docx)\n- [ ] Excel (.xlsx)\n\n# Sätt stegen i Quartos rendering i rätt ordning.\n\n1. Läsa in `.qmd`-källan\n2. Köra kodblocken\n3. Omvandla Markdown till HTML/PDF\n4. Lägga på tema och stilar\n\n\nInställningarFrågetyperBilder & kod\n\n\nGlobala inställningar för quizet skrivs i ett ----block högst upp i quizet:\n```{quizdown}\n---\nshuffleAnswers: true    # default: true — randomise answer order\nshuffleQuestions: false # default: false — randomise question order\nlocale: en              # language of the buttons\n---\n```\n\n\n\n\n\n\nTips\n\n\n\nshuffleAnswers: true är standard. Svaren blandas om du inte uttryckligen anger false.\n\n\n\n\nEtt rätt svar, exakt ett svar är rätt:\n```{quizdown}\n# What is 2 + 2?\n1. [ ] 3\n1. [x] 4\n1. [ ] 5\n```\nFlera rätta svar, mer än ett svar är rätt:\n```{quizdown}\n# Which of these are programming languages?\n- [x] Python\n- [ ] Quarto\n- [x] R\n- [x] JavaScript\n```\nSortering, posterna ska sättas i rätt ordning:\n```{quizdown}\n# Put the Quarto render pipeline in the correct order.\n\n1. Parse `.qmd` source\n2. Execute code chunks\n3. Convert Markdown to HTML/PDF\n4. Apply theme and styles\n```\n\n\nTa med en bild i en fråga:\n```{quizdown}\n# What does this logo belong to?\n![](https://quarto.org/quarto.png)\n1. [x] Quarto\n1. [ ] RMarkdown\n```\nTa med kod i svaren:\n```{quizdown}\n# Which chunk option hides the source code?\n1. [x] `echo: false`\n1. [ ] `eval: false`\n1. [ ] `output: false`\n```\n\n\n\n\n\n\n\n\n\nReferenser\n\nSauer, Patrick. 2023. quarto-quizdown: Quizdown Extension for Quarto. Released. https://github.com/parmsam/quarto-quizdown.",
+    "crumbs": [
+      "Exempelsida",
+      "Tillägg",
+      "quizdown"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_multilanguage.html",
+    "href": "Qmd Files/Tipps and Tricks/exp_multilanguage.html",
+    "title": "Flerspråkiga projekt",
+    "section": "",
+    "text": "Quarto har inget inbyggt översättningssystem, men med profiler går det att bygga ett projekt på flera språk. Den här handledningen går ett steg längre: den har två axlar, språk (tyska, engelska, svenska, norska, danska) och nivå (Beginner/Intermediate/Expert). Varje kombination renderas till en egen mapp.",
+    "crumbs": [
+      "Exempelsida",
+      "Flerspråkiga projekt"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_multilanguage.html#idén-i-korthet",
+    "href": "Qmd Files/Tipps and Tricks/exp_multilanguage.html#idén-i-korthet",
+    "title": "Flerspråkiga projekt",
+    "section": "Idén i korthet",
+    "text": "Idén i korthet\n                 beg                int                exp\ndeutsch   docs/de/beg/...    docs/de/int/...    docs/de/exp/...     + docs/de/index.html\nenglish   docs/en/beg/...    docs/en/int/...    docs/en/exp/...     + docs/en/index.html\nsvenska   docs/sv/beg/...    docs/sv/int/...    docs/sv/exp/...     + docs/sv/index.html\nnorsk     docs/no/beg/...    docs/no/int/...    docs/no/exp/...     + docs/no/index.html\ndansk     docs/da/beg/...    docs/da/int/...    docs/da/exp/...     + docs/da/index.html\n\nEn .qmd per sida, med alla språk i samma fil (se nedan).\nNivåprofilen (_quarto-beg.yml …) avgör vilka sidor som renderas.\nSpråkprofilen (_quarto-english.yml …) avgör vad saker heter: menyrad, sidofält, lang.\nbuild.py knyter ihop det efter renderingen: när du byter språk stannar du på samma sida, när du byter nivå kommer du till den nivåns startsida.",
+    "crumbs": [
+      "Exempelsida",
+      "Flerspråkiga projekt"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_multilanguage.html#steg-1-två-profilgrupper",
+    "href": "Qmd Files/Tipps and Tricks/exp_multilanguage.html#steg-1-två-profilgrupper",
+    "title": "Flerspråkiga projekt",
+    "section": "Steg 1 – Två profilgrupper",
+    "text": "Steg 1 – Två profilgrupper\n\n\n_quarto.yml\n\nprofile:\n  default: [beg, deutsch]\n  group:\n    - [beg, int, exp, root]   # level (root = start page per language)\n    - [deutsch, english, svenska, norsk, dansk]   # language\n\nExakt en profil ur varje grupp är aktiv. Ange flera profiler åtskilda med komma:\nquarto render --profile int,english --output-dir docs/en/int\nQuarto läser då _quarto.yml, _quarto-int.yml och _quarto-english.yml och slår ihop dem.",
+    "crumbs": [
+      "Exempelsida",
+      "Flerspråkiga projekt"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_multilanguage.html#steg-2-vad-står-var",
+    "href": "Qmd Files/Tipps and Tricks/exp_multilanguage.html#steg-2-vad-står-var",
+    "title": "Flerspråkiga projekt",
+    "section": "Steg 2 – Vad står var?",
+    "text": "Steg 2 – Vad står var?\n\n\n_quarto-int.yml\n\nproject:\n  render:\n    - \"Qmd Files/Getting Started/*.qmd\"\n\n\n\n_quarto-english.yml (shortened)\n\nlang: en\nwebsite:\n  title: \"Quarto Tutorial\"\n  navbar:\n    left:\n      - text: \"Getting Started\"\n        href: \"#niveau-int\"          # placeholder, see step 4\n    right:\n      - icon: globe\n        menu:\n          - text: \"Deutsch\"\n            href: \"#sprache-de\"\n          - text: \"English\"\n            href: \"#sprache-en\"\n          # … Svenska, Norsk, Dansk\n  sidebar:                            # sidebars of ALL levels\n    - id: getting-started-sidebar\n      contents:\n        - text: \"What you need\"\n          href: \"Qmd Files/Getting Started/beg_website_1.qmd\"\n    - id: tips-sidebar\n      ...\n\nSidofälten för alla nivåer ligger i språkfilen, eftersom deras texter måste översättas. Quarto visar på varje sida bara det sidofält där sidan finns med. Poster för sidor som inte renderas i den här körningen gör ingen skada.",
+    "crumbs": [
+      "Exempelsida",
+      "Flerspråkiga projekt"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_multilanguage.html#steg-3-alla-språk-i-en-fil",
+    "href": "Qmd Files/Tipps and Tricks/exp_multilanguage.html#steg-3-alla-språk-i-en-fil",
+    "title": "Flerspråkiga projekt",
+    "section": "Steg 3 – Alla språk i en fil",
+    "text": "Steg 3 – Alla språk i en fil\n---\ntitle: \"Erste Schritte mit Quarto\"\ntitle-en: \"Getting Started with Quarto\"\n---\n\n:::: {.content-visible when-profile=\"deutsch\"}\nWillkommen! ...\n::::\n\n:::: {.content-visible when-profile=\"english\"}\nWelcome! ...\n::::\n\nDet lilla filtret sprache.lua gör om title-en: (eller title-sv:, title-no:, title-da:) till titeln i körningen för det språket.\nInnehållet på de andra språken tas bort, det döljs inte bara. Därför hittar sökningen bara det aktuella språket.\nKodceller i alla block körs i varje körning. Om du beräknar något, skriv koden en gång utanför blocken och översätt bara texten runt omkring.",
+    "crumbs": [
+      "Exempelsida",
+      "Flerspråkiga projekt"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_multilanguage.html#steg-4-navigering-genom-efterbearbetning",
+    "href": "Qmd Files/Tipps and Tricks/exp_multilanguage.html#steg-4-navigering-genom-efterbearbetning",
+    "title": "Flerspråkiga projekt",
+    "section": "Steg 4 – Navigering genom efterbearbetning",
+    "text": "Steg 4 – Navigering genom efterbearbetning\nQuarto kan inte länka mellan profiler: sett från körningen int,english finns varken docs/de/ eller docs/en/beg/. Därför innehåller menyraden bara platshållare (#sprache-de, #niveau-beg).\nNär alla körningar är klara går build.py igenom de färdiga HTML-filerna. Utifrån sökvägen till varje sida, t.ex. en/int/Qmd Files/…, vet det språk och nivå och fyller i fasta relativa länkar:\n\n\n\nPlatshållare\nMål\n\n\n\n\n#sprache-de\nsamma sida, /en/ → /de/\n\n\n#niveau-beg\nstartsidan för Beginner på det aktuella språket\n\n\ntiteln uppe till vänster\nstartsidan för det aktuella språket\n\n\n\nEftersom länkarna står direkt i HTML-koden behöver sidan inget JavaScript för detta. Samma steg lägger också till knappen ”Fäll ut alla” längst ner i sidofältet.\nLänkar i texten till en viss sida på en annan nivå fungerar utan efterbearbetning, som en relativ sökväg in i den färdiga mappstrukturen, t.ex. ../../../int/Qmd Files/Getting Started/getting_started.html.",
+    "crumbs": [
+      "Exempelsida",
+      "Flerspråkiga projekt"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_multilanguage.html#steg-5-bygg-allt",
+    "href": "Qmd Files/Tipps and Tricks/exp_multilanguage.html#steg-5-bygg-allt",
+    "title": "Flerspråkiga projekt",
+    "section": "Steg 5 – Bygg allt",
+    "text": "Steg 5 – Bygg allt\npython build.py            # 5 languages × (start page + 3 levels) = 20 runs, then preview\npython build.py --no-serve # build only\nFör varje språk renderar skriptet först startsidan (root), sedan de tre nivåerna i undermappar, fyller i navigeringen från steg 4 och skriver docs/index.html, som skickar vidare till mappen för webbläsarens språk (engelska om språket saknas).\n\n\n\n\n\n\nVarningBegränsningar\n\n\n\n\nSökning: varje körning har sitt eget sökindex. Sökningen hittar bara sidor på den aktuella nivån på det aktuella språket.\nquarto preview visar en enda kombination, där gör platshållarlänkarna ingenting, och knappen ”Fäll ut alla” saknas (båda kommer från build.py).\nStorlek: varje sida finns en gång per språk i samma fil. För mycket stora projekt är separata mappar per språk lättare att underhålla. Navigeringen från steg 4 fungerar på samma sätt så länge filnamnen stämmer överens.",
+    "crumbs": [
+      "Exempelsida",
+      "Flerspråkiga projekt"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_yml.html",
+    "href": "Qmd Files/Tipps and Tricks/exp_yml.html",
+    "title": "YML-filen",
+    "section": "",
+    "text": "Filen _quarto.yml är kontrollcentralen i ditt Quarto-projekt. Allt du ställer in här gäller globalt, om det inte ändras i en enskild .qmd-fil eller profil.",
+    "crumbs": [
+      "Exempelsida",
+      "YML-filen"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_yml.html#utdataformat",
+    "href": "Qmd Files/Tipps and Tricks/exp_yml.html#utdataformat",
+    "title": "YML-filen",
+    "section": "Utdataformat",
+    "text": "Utdataformat\nQuarto kan rendera samma källa till flera format på en gång:\n\n\n_quarto.yml\n\nformat:\n  html:\n    toc: true\n    theme: cosmo\n  pdf:\n    toc: true\n    documentclass: article\n  docx:\n    toc: true\n\nAlla format: quarto render Ett format: quarto render --to pdf\n\n\n\n\n\n\nTips\n\n\n\nVarje formatinställning kan ändras per sida i huvudet på .qmd-filen.",
+    "crumbs": [
+      "Exempelsida",
+      "YML-filen"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_yml.html#execute-freeze-3",
+    "href": "Qmd Files/Tipps and Tricks/exp_yml.html#execute-freeze-3",
+    "title": "YML-filen",
+    "section": "Execute & freeze",
+    "text": "Execute & freeze\n\n\n_quarto.yml\n\nexecute:\n  echo: true        # show source code\n  eval: true        # run the code\n  warning: false    # suppress warnings\n  freeze: auto      # re-run only when source changes\n\n\n\n\nVärde för freeze\nBeteende\n\n\n\n\nfalse\nKör alltid om\n\n\ntrue\nKör aldrig om, använd sparad utdata\n\n\nauto\nKör om bara när .qmd-filen ändras\n\n\n\nFrysta resultat sparas i _freeze/. Ta med mappen i dina commits, så behöver medarbetare inte köra om allt.\n\n\n\n\n\n\nVarning\n\n\n\nfreeze: auto bevakar .qmd-filen, inte dina datafiler. Om du uppdaterar en CSV-fil men inte .qmd-filen, radera motsvarande mapp i _freeze/ för att tvinga fram en ny körning.",
+    "crumbs": [
+      "Exempelsida",
+      "YML-filen"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_yml.html#profiler-2",
+    "href": "Qmd Files/Tipps and Tricks/exp_yml.html#profiler-2",
+    "title": "YML-filen",
+    "section": "Profiler",
+    "text": "Profiler\nMed profiler kan du ha flera byggvarianter av ett projekt, för olika målgrupper, språk eller format.\n\n\n_quarto.yml\n\nprofile:\n  default: web\n  group:\n    - [web, print]\n\nExakt en profil i en grupp är aktiv åt gången. Varje profil har sin egen konfigurationsfil _quarto-&lt;namn&gt;.yml, som ändrar eller kompletterar grundkonfigurationen:\n\n\n_quarto-print.yml\n\nproject:\n  output-dir: docs/print\nformat:\n  pdf:\n    toc: true\n\nRendera en viss profil:\nquarto render --profile print\n\n\n\n\n\n\nTips\n\n\n\nDen här handledningen har två grupper av profiler: nivån (beg, int, exp) och språket (deutsch, english, svenska, norsk, dansk). I varje körning är en ur varje grupp aktiv, t.ex. quarto render --profile int,english. Mer om det i Flerspråkiga projekt.",
+    "crumbs": [
+      "Exempelsida",
+      "YML-filen"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_yml.html#sidebar",
+    "href": "Qmd Files/Tipps and Tricks/exp_yml.html#sidebar",
+    "title": "YML-filen",
+    "section": "Sidofält",
+    "text": "Sidofält\n\nGrundinställning\n\n\n_quarto.yml\n\nwebsite:\n  sidebar:\n    - id: my-sidebar\n      style: docked       # docked | floating\n      collapse-level: 1   # how many levels are expanded by default\n      contents:\n        - href: page.qmd\n          text: \"Page Title\"\n\n\n\nAvsnitt: grupper som kan fällas ihop\nAnvänd section: för att skapa grupper i sidofältet som kan fällas ihop. Ett avsnitt kan ha en egen översiktssida (href) eller bara vara en etikett:\ncontents:\n  - section: \"Chapter 1\"          # label only, no page\n    contents:\n      - href: ch1/part1.qmd\n        text: Part 1\n\n  - section: \"Chapter 2\"\n    href: ch2/index.qmd           # clicking the section title opens this page\n    contents:\n      - href: ch2/part1.qmd\n        text: Part 1\n\n\nHopfällningsnivå\ncollapse-level styr hur många nivåer som är utfällda när sidan laddas:\n\n\n\nVärde\nEffekt\n\n\n\n\n1\nBara översta nivån syns, alla avsnitt är hopfällda\n\n\n2\nAvsnitt på första nivån är utfällda (standard)\n\n\n3\nÄven avsnitt på andra nivån är utfällda\n\n\n\nsidebar:\n  collapse-level: 1   # start collapsed, readers expand what they need\n\n\nDockat eller flytande sidofält\nstyle: docked visar sidofältet som en fast kolumn med egen bakgrund. style: floating lägger det bredvid texten utan bakgrund:\nwebsite:\n  sidebar:\n    style: floating\nFör att dölja sidofältet på en enskild sida använder du huvudet i den .qmd-filen:\n\n\npage.qmd\n\n---\nsidebar: false\n---",
+    "crumbs": [
+      "Exempelsida",
+      "YML-filen"
+    ]
+  },
+  {
+    "objectID": "Qmd Files/Tipps and Tricks/exp_yml.html#styles--css",
+    "href": "Qmd Files/Tipps and Tricks/exp_yml.html#styles--css",
+    "title": "YML-filen",
+    "section": "Stilar & CSS",
+    "text": "Stilar & CSS\n\nVälja tema\nQuarto använder teman från Bootswatch för HTML:\n\n\n_quarto.yml\n\nformat:\n  html:\n    theme: cosmo\n\nPopulära teman: default, cosmo, flatly, lumen, minty, sandstone, simplex, slate (mörkt), solar (mörkt), superhero (mörkt).\n\n\nVäxla mellan ljust och mörkt\n\n\n_quarto.yml\n\nformat:\n  html:\n    theme:\n      light: flatly\n      dark: darkly\n\nQuarto lägger automatiskt till en växlingsknapp i menyraden.\n\n\nEgen CSS ovanpå ett tema\n\n\n_quarto.yml\n\nformat:\n  html:\n    theme:\n      - cosmo\n      - custom.scss\n\nSkapa custom.scss bredvid _quarto.yml:\n\n\ncustom.scss\n\n/*-- scss:defaults --*/\n/* Override Bootstrap design tokens */\n$primary: #0d6efd;\n$font-size-base: 1rem;\n$headings-font-weight: 600;\n\n/*-- scss:rules --*/\n/* Regular CSS rules */\nh2 {\n  border-bottom: 2px solid $primary;\n  padding-bottom: 0.25rem;\n}\n\nQuarto kräver de två avsnittsmarkeringarna:\n\n\n\nAvsnitt\nSyfte\n\n\n\n\n/*-- scss:defaults --*/\nÄndra Bootstraps SCSS-variabler\n\n\n/*-- scss:rules --*/\nSkriva vanliga CSS-regler\n\n\n\n\n\nViktiga SCSS-variabler\n/*-- scss:defaults --*/\n$primary:             #0d6efd;\n$body-bg:             #ffffff;\n$body-color:          #212529;\n$font-family-base:    \"Inter\", sans-serif;\n$font-size-base:      1rem;\n$headings-font-weight: 600;\n$border-radius:       0.375rem;\n\n\nRegler för mörkt läge\n\n\ncustom.scss\n\n/*-- scss:rules --*/\n[data-bs-theme=\"dark\"] .my-box {\n  background-color: #1e1e2e;\n}\n\n\n\nEgen ikon i en inforuta, ett praktiskt CSS-exempel\nEn inforuta kan få en helt egen ikon genom att kombinera en egen CSS-klass med några regler.\nInforutan nedanför är det färdiga resultatet. Ikonen 🎨 läggs till helt med CSS:\n\n\n\n\n\n\nTipsEgen ikon med CSS\n\n\n\nDen här inforutan använder klassen .palette-callout. Ikonen 🎨 läggs in med ::before, och standardikonen (SVG) döljs med display: none.\n\n\nKoden som ger detta:\n::: {.callout-tip .palette-callout}\n## Custom icon via CSS\nContent here.\n:::\n\n\ncustom.scss\n\n/*-- scss:rules --*/\n.palette-callout &gt; .callout-header .callout-icon-container::before {\n  content: \"🎨\";\n  font-size: 1.1rem;\n  margin-right: 0.4rem;\n}\n.palette-callout &gt; .callout-header .callout-icon-container svg {\n  display: none;\n}\n\n\n\n\n\n\n\nTipsMycket bra att känna till: inspektera med F12\n\n\n\n\n\nInnan du kan ändra en stil måste du veta vilken CSS-klass du ska rikta in dig på.\n① Öppna den renderade HTML-sidan i en webbläsare.\n② Tryck på F12, klicka på pilsymbolen och håll muspekaren över det element du vill formge.\n③ I HTML-panelen ser du elementet och dess klasser:\n&lt;h2 class=\"anchored\" id=\"my-section\"&gt;My Section&lt;/h2&gt;\n④ I panelen Styles ser du vilka CSS-regler som gäller och från vilken stilmall de kommer.\n⑤ Klicka på ett värde för att ändra det direkt. Sidan uppdateras genast, så du kan experimentera innan du skriver någon kod.\n\n\n\n\n\n\n\n\n\nNotera Ikoner fungerar också i inforutors rubriker\n\n\n\nEgna ikoner från Theme/Icons/ visas överallt där Quarto accepterar HTML i texten, även i inforutors rubriker. &lt;i class=\"python\"&gt;&lt;/i&gt; ovanför skapas helt av den här CSS-regeln i SCSS-filen:\ni.python {\n  content: url(\"Theme/Icons/python.svg\");\n  display: inline-block;\n  height: 1em;\n  width: 1em;\n  margin-right: 0.25em;\n}",
+    "crumbs": [
+      "Exempelsida",
+      "YML-filen"
+    ]
+  }
+]

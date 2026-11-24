@@ -1,0 +1,105 @@
+---
+title: "Y-Achsenschnittpunkte ermitteln"
+title-en: "Finding the y-Intercept"
+format: html
+filters:
+  - ctm-assessment
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+# Y-Achsenschnittpunkte ermitteln
+
+Der Titel ist ein wenig provokant gewählt, da für eine Funktion gilt, dass es für jeden $x$-Wert nur genau einen $y$-Wert gibt, der diesem zugeordnet wird! 
+Dementsprechend gibt es **höchstens einen** y-Achsenabschnitt (keinen, wenn die Funktion bei $x = 0$ nicht definiert ist).
+Dies ist hierbei der Wert, welcher dem $x$-Wert 0 zugeordnet wird.
+
+## Bestimmung des Y-Achsenabschnitts
+
+Davon ausgehend, dass die Funktion bei $x=0$ definiert ist, ist es nicht allzu schwierig, den Y-Achsenabschnitt zu bestimmen.
+
+Hierfür können wir wie bei der **[Untersuchung des Symmetrieverhaltens](symmetrieverhalten.qmd#wie-teste-ich-eine-funktion-auf-achsensymmetrie-zur-y-achse)** die Funktion `.subs` nutzen, um die passenden Einträge der Funktion zu verändern.
+
+Gib im folgenden Codeblock einen Code an, der den Y-Achsenschnittpunkt berechnet und ausgibt für die Beispielfunktion: $f(x)=x^2+4x+7$
+
+```{pyodide-python}
+#| label: achsenschnittpunkte-aufgabe
+#Füge hier deinen Code ein (Viel Erfolg)
+
+
+```
+
+Wenn das klappt, verpacke deinen Code in eine Funktion `y_achsenabschnitt(funktion_f)`, die den y-Achsenabschnitt zurückgibt. Versteckte Tests prüfen sie mit mehreren Funktionen, sobald du auf **Überprüfen** klickst:
+
+```{py-exercise}
+#| label: achsenschnittpunkte-funktion
+#| caption: y_achsenabschnitt schreiben
+#| show-test-hints: false
+import sympy
+x = sympy.symbols('x')
+
+def y_achsenabschnitt(funktion_f):
+    # Dein Code hier
+    pass
+
+## TESTS ##
+assert y_achsenabschnitt(x**2 + 4*x + 7) == 7, "f(x) = x**2 + 4*x + 7 schneidet die y-Achse bei 7"
+assert y_achsenabschnitt((x - 3)/(x + 2)) == sympy.Rational(-3, 2), "f(x) = (x-3)/(x+2) schneidet die y-Achse bei -3/2"
+assert y_achsenabschnitt(sympy.cos(x) + x) == 1, "f(x) = cos(x) + x schneidet die y-Achse bei 1"
+```
+
+**Zusatzfrage:** Was gibt deine Funktion für $f(x)=\frac{1}{x}$ zurück? `sympy` antwortet mit `zoo` ("komplexe Unendlichkeit"). Das ist genau der Fall aus dem Satz oben: Die Funktion ist bei $x=0$ nicht definiert und hat deshalb **keinen** y-Achsenabschnitt.
+
+
+Wenn dir das gelungen ist, gibt es hier nichts mehr zu tun, versuche dich gerne an einem der anderen Kapitel. 
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+# Finding y-intercepts
+
+The title is a bit provocative, since a function assigns exactly one $y$-value to each $x$-value! 
+Accordingly, there is **at most one** y-intercept (none if the function is not defined at $x = 0$).
+It is the value assigned to the $x$-value 0.
+
+## Determining the y-intercept
+
+Assuming the function is defined at $x=0$, determining the y-intercept is not too difficult.
+
+As in the **[examination of symmetry](symmetrieverhalten.qmd#how-do-i-test-a-function-for-symmetry-about-the-y-axis)**, we can use the function `.subs` to replace the corresponding parts of the function.
+
+In the following code block, write code that calculates and prints the y-intercept of the example function $f(x)=x^2+4x+7$.
+
+```{pyodide-python}
+#| label: achsenschnittpunkte-aufgabe-en
+#Insert your code here (good luck) 
+
+
+```
+
+Once that works, wrap your code in a function `y_intercept(function_f)` that returns the y-intercept. Hidden tests check it with several functions as soon as you click **Check**:
+
+```{py-exercise}
+#| label: achsenschnittpunkte-funktion-en
+#| caption: Write y_intercept
+#| show-test-hints: false
+import sympy
+x = sympy.symbols('x')
+
+def y_intercept(function_f):
+    # Your code here
+    pass
+
+## TESTS ##
+assert y_intercept(x**2 + 4*x + 7) == 7, "f(x) = x**2 + 4*x + 7 crosses the y-axis at 7"
+assert y_intercept((x - 3)/(x + 2)) == sympy.Rational(-3, 2), "f(x) = (x-3)/(x+2) crosses the y-axis at -3/2"
+assert y_intercept(sympy.cos(x) + x) == 1, "f(x) = cos(x) + x crosses the y-axis at 1"
+```
+
+**Extra question:** What does your function return for $f(x)=\frac{1}{x}$? `sympy` answers with `zoo` ("complex infinity"). This is exactly the case from the sentence above: the function is not defined at $x=0$ and therefore has **no** y-intercept.
+
+Once you have managed that, there is nothing left to do here; feel free to try one of the other chapters.
+
+::::

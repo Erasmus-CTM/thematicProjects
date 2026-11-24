@@ -1,0 +1,613 @@
+---
+title: "8. Überblick über die Inhalte"
+title-en: "8. Overview of the Contents"
+format: html
+filters:
+    - quizdown
+resources:
+    - cheatsheet.pdf
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+Herzlichen Glückwunsch, du hast das Tutorial erfolgreich abgeschlossen!
+
+# 8.1. Cheat Sheet
+
+Hier findest du alle wichtigen Python-Funktionen aus dem Tutorial auf einen Blick, sortiert nach Kapiteln.
+
+### Kapitel 1: Vektoren
+
+| Funktion / Befehl | Beschreibung |
+| :--- | :--- |
+| `np.array([1, 2])` | Erstellt einen Vektor (1D-Array). |
+| `v + w`, `v - w` | Elementweise Addition/Subtraktion von Vektoren. |
+| `s * v` | Skalarmultiplikation eines Vektors. |
+| `v @ w`, `np.dot(v, w)` | Skalarprodukt zweier Vektoren. |
+| `np.linalg.norm(v)` | Länge (euklidische Norm) eines Vektors. |
+| `np.arccos(x)` | Arkuskosinus, für den Winkel zwischen zwei Vektoren. |
+| `np.degrees(rad)`, `np.radians(deg)` | Rechnet zwischen Bogenmaß und Grad um. |
+
+### Kapitel 2: Matrizen in Python definieren
+
+| Funktion / Befehl | Beschreibung |
+| :--- | :--- |
+| `np.array([[1, 2], [3, 4]])` | Erstellt eine Matrix (2D-Array). |
+| `A.shape` | Form als Tupel (Zeilen, Spalten). |
+| `A.ndim`, `A.size`, `A.dtype` | Anzahl Dimensionen, Anzahl Elemente, Datentyp (z.B. `int64`). |
+| `np.eye(n)`, `np.identity(n)` | n×n-Einheitsmatrix. |
+| `np.zeros((r, c))`, `np.ones((r, c))` | r×c-Matrix aus Nullen bzw. Einsen. |
+| `np.diag([a, b])` | Diagonalmatrix mit den Werten auf der Diagonalen. |
+| `A[r, c]` | Einzelnes Element (Zeile `r`, Spalte `c`, ab 0 gezählt). |
+| `A[r, :]`, `A[:, c]` | Ganze Zeile `r` bzw. ganze Spalte `c`. |
+
+### Kapitel 3: Grundlegende Matrix-Operationen
+
+| Funktion / Befehl | Beschreibung |
+| :--- | :--- |
+| `A + B`, `A - B` | Elementweise Addition/Subtraktion (gleiche Form nötig). |
+| `A * B` | Elementweise Multiplikation, **keine** Matrixmultiplikation. |
+| `A.T`, `np.transpose(A)` | Transponieren (Zeilen und Spalten tauschen). |
+| `A @ B`, `np.matmul(A, B)` | Matrixmultiplikation. |
+| `A @ v` | Matrix-Vektor-Multiplikation. |
+
+### Kapitel 4: Kernoperationen der linearen Algebra
+
+| Funktion / Befehl | Beschreibung |
+| :--- | :--- |
+| `np.linalg.matrix_rank(A)` | Rang einer Matrix. |
+| `np.linalg.det(A)` | Determinante einer quadratischen Matrix. |
+| `np.linalg.inv(A)` | Inverse einer quadratischen, invertierbaren Matrix. |
+
+### Kapitel 5: Geometrische Transformationen
+
+| Funktion / Befehl | Beschreibung |
+| :--- | :--- |
+| `A @ v` | Wendet die Transformation `A` auf den Vektor `v` an. |
+| `np.cos(theta)`, `np.sin(theta)` | Für Rotationsmatrizen (Winkel im Bogenmaß). |
+| `np.pi` | Die Kreiszahl π. |
+
+### Kapitel 6: Lineare Gleichungssysteme
+
+| Funktion / Befehl | Beschreibung |
+| :--- | :--- |
+| `np.linalg.solve(A, b)` | Löst $A\vec x = \vec b$. Der empfohlene, stabile Weg. |
+| `np.column_stack([A, b])` | Hängt den Vektor `b` als Spalte an `A` an: die erweiterte Koeffizientenmatrix $(A \mid b)$. |
+| `b.reshape(-1, 1)` | Macht aus einem 1D-Vektor einen Spaltenvektor. |
+| `np.array_equal(a, b)` | Prüft, ob zwei Arrays exakt gleich sind. |
+
+### Kapitel 7: Eigenwerte und Eigenvektoren
+
+| Funktion / Befehl | Beschreibung |
+| :--- | :--- |
+| `np.linalg.eig(A)` | Eigenwerte und Eigenvektoren. Die Eigenvektoren stehen in den **Spalten**. |
+| `np.linalg.eigvals(A)` | Nur die Eigenwerte. |
+| `np.argmax(a)` | Index des größten Elements. |
+| `np.allclose(a, b)`, `np.isclose(x, y)` | Vergleich mit Toleranz, ideal für Kommazahlen. |
+
+Das Cheat Sheet gibt es auch als **[PDF zum Herunterladen](cheatsheet.pdf)**.
+
+# 8.2. Abschluss-Quiz
+
+Zum Abschluss gibt es noch ein Quiz über alle Inhalte des Tutorials (bei jedem Laden werden 10 von 25 Fragen zufällig ausgewählt).
+
+```quizdown
+---
+locale: de
+shuffleQuestions: true
+nQuestions: 10
+---
+
+# Python-Grundlagen: Was ist der entscheidende Unterschied zwischen `[1, 2] + [3, 4]` (Liste) und `np.array([1, 2]) + np.array([3, 4])`?
+1. [ ] Es gibt keinen Unterschied.
+1. [x] Listen werden aneinandergehängt (konkateniert), Arrays werden mathematisch addiert.
+1. [ ] Arrays können nur Ganzzahlen enthalten.
+1. [ ] Listen sind schneller als Arrays.
+
+> Listen verhalten sich wie Textstrings ("a"+"b"="ab"), NumPy-Arrays verhalten sich wie mathematische Vektoren.
+
+# Vektor-Geometrie: Was bedeutet es geometrisch, wenn das Skalarprodukt (Dot Product) zweier Vektoren **0** ist?
+1. [ ] Die Vektoren sind parallel.
+1. [ ] Die Vektoren sind identisch.
+1. [x] Die Vektoren stehen senkrecht (orthogonal) aufeinander.
+1. [ ] Einer der Vektoren muss der Nullvektor sein.
+
+> Erinnere dich an die Formel mit dem Kosinus: $\cos(90°) = 0$.
+
+# Code-Verständnis: Was gibt dieser Code aus?
+~~~python
+import numpy as np
+A = np.array([[1, 2], [3, 4]])
+print(A.shape)
+~~~
+1. [ ] `4`
+1. [ ] `(4,)`
+1. [x] `(2, 2)`
+1. [ ] `(2, 4)`
+
+> `.shape` gibt immer erst die Zeilen, dann die Spalten an. Hier haben wir 2 Zeilen und 2 Spalten.
+
+# Matrix-Operationen: Welche Operation führt in Python die echte Matrix-Multiplikation ("Zeile mal Spalte") aus?
+1. [ ] `A * B`
+1. [ ] `A . B`
+1. [x] `A @ B`
+1. [ ] `A x B`
+
+> `*` macht nur elementweise Multiplikation. Das `@`-Zeichen (At-Zeichen) ist der Operator für lineare Algebra.
+
+# Code-Puzzle: Bringe die Zeilen in die richtige Reihenfolge, um ein LGS $Ax = b$ zu lösen!
+1. `A = np.array([[2, 1], [1, 3]])`
+2. `b = np.array([5, 10])`
+3. `x = np.linalg.solve(A, b)`
+4. `print(x)`
+
+> Erst müssen die Daten (Matrix und Ergebnisvektor) da sein, bevor der Löser (`solve`) arbeiten kann.
+
+# Theorie: Wann ist eine Matrix **nicht** invertierbar (singulär)?
+- [x] Wenn ihre Determinante 0 ist.
+- [ ] Wenn sie negative Zahlen enthält.
+- [x] Wenn ihre Zeilen linear abhängig sind (eine Zeile ist ein Vielfaches der anderen).
+- [ ] Wenn sie sehr groß ist.
+
+> Singulär bedeutet, dass Information verloren gegangen ist ("Plattgedrückt"). Das passiert, wenn die Determinante Null ist.
+
+# Slicing: Du hast eine Matrix `M`. Wie greifst du auf die gesamte **letzte Spalte** zu?
+1. [ ] `M[last, :]`
+1. [ ] `M[:, 0]`
+1. [x] `M[:, -1]`
+1. [ ] `M[-1, :]`
+
+> Der Doppelpunkt `:` vorne heißt "alle Zeilen". Die `-1` hinten heißt "letztes Element der Achse".
+
+# Eigenwerte (Konzept): Ein Vektor $\vec{v}$ ist ein Eigenvektor einer Matrix $A$, wenn gilt...
+1. [ ] $A \cdot \vec{v} = \vec{0}$
+1. [ ] $A \cdot \vec{v} = \vec{v} + \lambda$
+1. [x] $A \cdot \vec{v} = \lambda \cdot \vec{v}$
+1. [ ] $A \cdot \vec{v} = A$
+
+> Der Vektor ändert seine Richtung nicht, er wird nur mit einem Faktor $\lambda$ skaliert.
+
+# Transformationen: Was bewirkt eine Determinante von `0.5` geometrisch (bei einer 2x2 Matrix)?
+1. [ ] Die Transformation dreht alles um 50 Grad.
+1. [x] Die Transformation halbiert den Flächeninhalt von Figuren.
+1. [ ] Die Transformation verdoppelt alle Längen.
+1. [ ] Nichts, die Determinante hat keine geometrische Bedeutung.
+
+> Die Determinante ist der Flächen-Verzerrungs-Faktor.
+
+# Code-Verständnis: Was passiert hier?
+~~~python
+vals, vecs = np.linalg.eig(A)
+v1 = vecs[:, 0]
+~~~
+1. [ ] Wir holen den ersten Eigenwert.
+1. [ ] Wir holen die erste Zeile der Eigenvektoren.
+1. [x] Wir holen den ersten Eigenvektor (Spaltenzugriff!).
+1. [ ] Das gibt einen Fehler.
+
+> Achtung Falle! NumPy liefert Eigenvektoren spaltenweise zurück. Deshalb `[:, 0]`.
+
+# Welche Matrix ist die "Einheitsmatrix" (Neutrales Element)?
+1. [ ] `np.zeros(3)`
+1. [ ] `np.ones((3,3))`
+1. [x] `np.eye(3)`
+1. [ ] `np.unit(3)`
+
+> Sie hat Einsen auf der Diagonalen und sonst Nullen. `eye` klingt wie "I" (Identity).
+
+# Broadcasting: Was ist das Ergebnis von `np.array([10, 20]) + 1`?
+1. [ ] Error
+1. [ ] `[10, 20, 1]`
+1. [x] `[11, 21]`
+1. [ ] `[11, 20]`
+
+> Die Zahl 1 wird auf *jedes* Element des Arrays addiert.
+
+# PCA (Anwendung): Was ist das Ziel der Hauptkomponentenanalyse?
+- [ ] Daten zu verschlüsseln.
+- [x] Die Dimensionen von Daten zu reduzieren, ohne viel Information zu verlieren.
+- [ ] Fehler in Datenbanken zu finden.
+- [x] Die Richtungen der größten Varianz (Streuung) in den Daten zu finden.
+
+> PCA sucht die Eigenvektoren der Kovarianzmatrix, um die "Hauptachsen" der Datenwolke zu bestimmen.
+
+# Code-Puzzle: Berechne die Länge (Norm) eines Vektors manuell.
+1. `v = np.array([3, 4])`
+2. `sq = v**2` (Quadrieren)
+3. `s = np.sum(sq)` (Summieren)
+4. `norm = np.sqrt(s)` (Wurzel ziehen)
+
+> Das ist der Satz des Pythagoras in Code-Form.
+
+# Was passiert, wenn du eine Matrix transponierst (`.T`)?
+1. [ ] Sie wird invertiert.
+1. [x] Zeilen werden zu Spalten und Spalten zu Zeilen.
+1. [ ] Alle Vorzeichen drehen sich um.
+1. [ ] Die Matrix wird um 90 Grad gedreht.
+
+> Transponieren ist eine Spiegelung an der Hauptdiagonalen.
+
+# Eigenwerte: Was bedeutet ein Eigenwert von $\lambda = 1$?
+1. [ ] Der Vektor wird auf 1 gesetzt.
+1. [ ] Der Vektor verschwindet.
+1. [x] Der Vektor bleibt komplett unverändert (Fixrichtung).
+1. [ ] Der Vektor wird umgedreht.
+
+> Multiplikation mit 1 ändert nichts. Der Vektor ist also komplett stabil (z.B. Drehachse).
+
+# Dimensions-Check: Geht das? `(3x2) @ (2x4)`
+1. [x] Ja, Ergebnis ist `(3, 4)`.
+1. [ ] Nein, Error.
+1. [ ] Ja, Ergebnis ist `(2, 2)`.
+
+> Innere Dimensionen (2 und 2) passen. Äußere Dimensionen (3 und 4) bleiben übrig.
+
+# LGS: Wie viele Lösungen hat ein Gleichungssystem mit invertierbarer Matrix $A$?
+1. [ ] Gar keine.
+1. [ ] Unendlich viele.
+1. [x] Genau eine eindeutige Lösung.
+1. [ ] Zwei.
+
+> Wenn die Transformation umkehrbar ist, gibt es genau einen Punkt $x$, der auf das Ziel $b$ abgebildet wird.
+
+# Code-Verständnis: Was erzeugt `np.zeros((2, 3))`?
+1. [ ] Eine Matrix mit 3 Zeilen und 2 Spalten voller Nullen.
+1. [x] Eine Matrix mit 2 Zeilen und 3 Spalten voller Nullen.
+1. [ ] Einen Vektor mit den Einträgen 2 und 3.
+1. [ ] Eine Matrix mit 2 Zeilen und 3 Spalten voller Einsen.
+
+> Das Tupel gibt die Form an: zuerst die Zeilen, dann die Spalten. Einsen liefert `np.ones()`.
+
+# Geometrie: Welche Matrix bewirkt eine reine Skalierung (Streckung/Stauchung) entlang der Achsen?
+1. [ ] Eine Matrix voller Einsen.
+1. [x] Eine Diagonalmatrix (Werte nur auf der Diagonalen).
+1. [ ] Eine Rotationsmatrix.
+1. [ ] Eine Matrix mit Determinante 0.
+
+> Diagonalmatrizen skalieren jede Achse einzeln, ohne zu mischen (keine Scherung/Drehung).
+
+# Code-Puzzle: Erstelle eine Zufallsmatrix und berechne ihren Rang.
+1. `import numpy as np`
+2. `M = np.random.rand(5, 5)`
+3. `r = np.linalg.matrix_rank(M)`
+4. `print(r)`
+
+> `matrix_rank` ist die Funktion, um die Anzahl der unabhängigen Dimensionen zu prüfen.
+
+# Was bedeutet "linear unabhängig"?
+1. [ ] Die Vektoren stehen senkrecht aufeinander.
+1. [x] Kein Vektor lässt sich als Kombination der anderen darstellen (keine Redundanz).
+1. [ ] Die Vektoren sind alle gleich lang.
+1. [ ] Die Vektoren haben keine Verbindung zum Ursprung.
+
+> Unabhängigkeit heißt: Jeder Vektor bringt eine "neue" Richtung ins Spiel, die man nicht durch die anderen erreichen kann.
+
+# Eigenvektoren & Komplexität: Was gibt NumPy zurück, wenn eine Matrix eine Drehung (ohne stabile Achse) beschreibt?
+1. [ ] Einen Fehler.
+1. [ ] `NaN` (Not a Number).
+1. [x] Komplexe Zahlen (z.B. `0.+1.j`).
+1. [ ] Nullen.
+
+> Wenn es im reellen Raum keine Lösung gibt (nichts bleibt stabil bei Drehung), weicht die Mathematik auf komplexe Zahlen aus.
+
+# Code-Verständnis: `A = np.array([[1, 2], [3, 4]])`. Was ist `A[1, 0]`?
+1. [ ] 1
+1. [ ] 2
+1. [x] 3
+1. [ ] 4
+
+> Zeile Index 1 (unten), Spalte Index 0 (links). Also die 3.
+
+# Abschlussfrage: Wofür ist Lineare Algebra in Data Science NICHT wichtig?
+1. [ ] Berechnung von neuronalen Netzen.
+1. [ ] Bildverarbeitung.
+1. [ ] Empfehlungssysteme (Recommender Systems).
+1. [x] Um Kaffee zu kochen (noch nicht).
+
+> Fast alles in modernem ML basiert auf Matrix-Operationen (Vektorisierung)!
+```
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+Congratulations, you have successfully completed the tutorial!
+
+# 8.1. Cheat Sheet {#cheat-sheet}
+
+Here you can find all important Python functions from the tutorial at a glance, sorted by chapter.
+
+### Chapter 1: Vectors
+
+| Function / command | Description |
+| :--- | :--- |
+| `np.array([1, 2])` | Creates a vector (1D array). |
+| `v + w`, `v - w` | Element-wise addition/subtraction of vectors. |
+| `s * v` | Scalar multiplication of a vector. |
+| `v @ w`, `np.dot(v, w)` | Dot product of two vectors. |
+| `np.linalg.norm(v)` | Length (Euclidean norm) of a vector. |
+| `np.arccos(x)` | Arc cosine, for the angle between two vectors. |
+| `np.degrees(rad)`, `np.radians(deg)` | Converts between radians and degrees. |
+
+### Chapter 2: Defining matrices in Python
+
+| Function / command | Description |
+| :--- | :--- |
+| `np.array([[1, 2], [3, 4]])` | Creates a matrix (2D array). |
+| `A.shape` | Shape as a tuple (rows, columns). |
+| `A.ndim`, `A.size`, `A.dtype` | Number of dimensions, number of elements, data type (e.g. `int64`). |
+| `np.eye(n)`, `np.identity(n)` | n×n identity matrix. |
+| `np.zeros((r, c))`, `np.ones((r, c))` | r×c matrix of zeros or ones. |
+| `np.diag([a, b])` | Diagonal matrix with the values on the diagonal. |
+| `A[r, c]` | Single element (row `r`, column `c`, counted from 0). |
+| `A[r, :]`, `A[:, c]` | Whole row `r` or whole column `c`. |
+
+### Chapter 3: Basic matrix operations
+
+| Function / command | Description |
+| :--- | :--- |
+| `A + B`, `A - B` | Element-wise addition/subtraction (same shape required). |
+| `A * B` | Element-wise multiplication, **not** matrix multiplication. |
+| `A.T`, `np.transpose(A)` | Transpose (swap rows and columns). |
+| `A @ B`, `np.matmul(A, B)` | Matrix multiplication. |
+| `A @ v` | Matrix-vector multiplication. |
+
+### Chapter 4: Core operations of linear algebra
+
+| Function / command | Description |
+| :--- | :--- |
+| `np.linalg.matrix_rank(A)` | Rank of a matrix. |
+| `np.linalg.det(A)` | Determinant of a square matrix. |
+| `np.linalg.inv(A)` | Inverse of a square, invertible matrix. |
+
+### Chapter 5: Geometric transformations
+
+| Function / command | Description |
+| :--- | :--- |
+| `A @ v` | Applies the transformation `A` to the vector `v`. |
+| `np.cos(theta)`, `np.sin(theta)` | For rotation matrices (angle in radians). |
+| `np.pi` | The number π. |
+
+### Chapter 6: Systems of linear equations
+
+| Function / command | Description |
+| :--- | :--- |
+| `np.linalg.solve(A, b)` | Solves $A\vec x = \vec b$. The recommended, stable way. |
+| `np.column_stack([A, b])` | Appends the vector `b` as a column to `A`: the augmented coefficient matrix $(A \mid b)$. |
+| `b.reshape(-1, 1)` | Turns a 1D vector into a column vector. |
+| `np.array_equal(a, b)` | Checks whether two arrays are exactly equal. |
+
+### Chapter 7: Eigenvalues and eigenvectors
+
+| Function / command | Description |
+| :--- | :--- |
+| `np.linalg.eig(A)` | Eigenvalues and eigenvectors. The eigenvectors are the **columns**. |
+| `np.linalg.eigvals(A)` | Only the eigenvalues. |
+| `np.argmax(a)` | Index of the largest element. |
+| `np.allclose(a, b)`, `np.isclose(x, y)` | Comparison with tolerance, ideal for floating-point numbers. |
+
+The cheat sheet is also available as a **[PDF to download](cheatsheet.pdf)** (in German).
+
+# 8.2. Final quiz {#abschluss-quiz}
+
+To finish, there is a quiz covering all contents of the tutorial (each time the page loads, 10 of 25 questions are chosen at random).
+
+```quizdown
+---
+locale: en
+shuffleQuestions: true
+nQuestions: 10
+---
+
+# Python basics: What is the key difference between `[1, 2] + [3, 4]` (list) and `np.array([1, 2]) + np.array([3, 4])`?
+1. [ ] There is no difference.
+1. [x] Lists are joined (concatenated), arrays are added mathematically.
+1. [ ] Arrays can only contain integers.
+1. [ ] Lists are faster than arrays.
+
+> Lists behave like text strings ("a"+"b"="ab"), NumPy arrays behave like mathematical vectors.
+
+# Vector geometry: What does it mean geometrically if the dot product of two vectors is **0**?
+1. [ ] The vectors are parallel.
+1. [ ] The vectors are identical.
+1. [x] The vectors are perpendicular (orthogonal) to each other.
+1. [ ] One of the vectors must be the zero vector.
+
+> Remember the formula with the cosine: $\cos(90°) = 0$.
+
+# Code comprehension: What does this code print?
+~~~python
+import numpy as np
+A = np.array([[1, 2], [3, 4]])
+print(A.shape)
+~~~
+1. [ ] `4`
+1. [ ] `(4,)`
+1. [x] `(2, 2)`
+1. [ ] `(2, 4)`
+
+> `.shape` always gives the rows first, then the columns. Here we have 2 rows and 2 columns.
+
+# Matrix operations: Which operation performs the real matrix multiplication ("row times column") in Python?
+1. [ ] `A * B`
+1. [ ] `A . B`
+1. [x] `A @ B`
+1. [ ] `A x B`
+
+> `*` only does element-wise multiplication. The `@` sign (at sign) is the operator for linear algebra.
+
+# Code puzzle: Put the lines in the right order to solve a system $Ax = b$!
+1. `A = np.array([[2, 1], [1, 3]])`
+2. `b = np.array([5, 10])`
+3. `x = np.linalg.solve(A, b)`
+4. `print(x)`
+
+> The data (matrix and right-hand side) must exist before the solver (`solve`) can work.
+
+# Theory: When is a matrix **not** invertible (singular)?
+- [x] If its determinant is 0.
+- [ ] If it contains negative numbers.
+- [x] If its rows are linearly dependent (one row is a multiple of another).
+- [ ] If it is very large.
+
+> Singular means that information has been lost ("squashed flat"). This happens when the determinant is zero.
+
+# Slicing: You have a matrix `M`. How do you access the entire **last column**?
+1. [ ] `M[last, :]`
+1. [ ] `M[:, 0]`
+1. [x] `M[:, -1]`
+1. [ ] `M[-1, :]`
+
+> The colon `:` in front means "all rows". The `-1` at the end means "last element of the axis".
+
+# Eigenvalues (concept): A vector $\vec{v}$ is an eigenvector of a matrix $A$ if...
+1. [ ] $A \cdot \vec{v} = \vec{0}$
+1. [ ] $A \cdot \vec{v} = \vec{v} + \lambda$
+1. [x] $A \cdot \vec{v} = \lambda \cdot \vec{v}$
+1. [ ] $A \cdot \vec{v} = A$
+
+> The vector does not change its direction, it is only scaled by a factor $\lambda$.
+
+# Transformations: What does a determinant of `0.5` do geometrically (for a 2x2 matrix)?
+1. [ ] The transformation rotates everything by 50 degrees.
+1. [x] The transformation halves the area of shapes.
+1. [ ] The transformation doubles all lengths.
+1. [ ] Nothing, the determinant has no geometric meaning.
+
+> The determinant is the area scaling factor.
+
+# Code comprehension: What happens here?
+~~~python
+vals, vecs = np.linalg.eig(A)
+v1 = vecs[:, 0]
+~~~
+1. [ ] We get the first eigenvalue.
+1. [ ] We get the first row of the eigenvectors.
+1. [x] We get the first eigenvector (column access!).
+1. [ ] This gives an error.
+
+> Watch out, trap! NumPy returns the eigenvectors as columns. That is why `[:, 0]`.
+
+# Which matrix is the "identity matrix" (neutral element)?
+1. [ ] `np.zeros(3)`
+1. [ ] `np.ones((3,3))`
+1. [x] `np.eye(3)`
+1. [ ] `np.unit(3)`
+
+> It has ones on the diagonal and zeros elsewhere. `eye` sounds like "I" (identity).
+
+# Broadcasting: What is the result of `np.array([10, 20]) + 1`?
+1. [ ] Error
+1. [ ] `[10, 20, 1]`
+1. [x] `[11, 21]`
+1. [ ] `[11, 20]`
+
+> The number 1 is added to *every* element of the array.
+
+# PCA (application): What is the goal of principal component analysis?
+- [ ] To encrypt data.
+- [x] To reduce the dimensions of data without losing much information.
+- [ ] To find errors in databases.
+- [x] To find the directions of the largest variance (spread) in the data.
+
+> PCA looks for the eigenvectors of the covariance matrix to determine the "principal axes" of the data cloud.
+
+# Code puzzle: Compute the length (norm) of a vector by hand.
+1. `v = np.array([3, 4])`
+2. `sq = v**2` (square)
+3. `s = np.sum(sq)` (sum)
+4. `norm = np.sqrt(s)` (take the square root)
+
+> This is the Pythagorean theorem in code.
+
+# What happens when you transpose a matrix (`.T`)?
+1. [ ] It is inverted.
+1. [x] Rows become columns and columns become rows.
+1. [ ] All signs are flipped.
+1. [ ] The matrix is rotated by 90 degrees.
+
+> Transposing is a reflection across the main diagonal.
+
+# Eigenvalues: What does an eigenvalue of $\lambda = 1$ mean?
+1. [ ] The vector is set to 1.
+1. [ ] The vector disappears.
+1. [x] The vector stays completely unchanged (fixed direction).
+1. [ ] The vector is flipped.
+
+> Multiplying by 1 changes nothing. So the vector is completely stable (e.g. an axis of rotation).
+
+# Dimension check: Does this work? `(3x2) @ (2x4)`
+1. [x] Yes, the result is `(3, 4)`.
+1. [ ] No, error.
+1. [ ] Yes, the result is `(2, 2)`.
+
+> The inner dimensions (2 and 2) match. The outer dimensions (3 and 4) remain.
+
+# Systems of equations: How many solutions does a system with an invertible matrix $A$ have?
+1. [ ] None.
+1. [ ] Infinitely many.
+1. [x] Exactly one unique solution.
+1. [ ] Two.
+
+> If the transformation can be reversed, there is exactly one point $x$ that is mapped to the target $b$.
+
+# Code comprehension: What does `np.zeros((2, 3))` create?
+1. [ ] A matrix with 3 rows and 2 columns full of zeros.
+1. [x] A matrix with 2 rows and 3 columns full of zeros.
+1. [ ] A vector with the entries 2 and 3.
+1. [ ] A matrix with 2 rows and 3 columns full of ones.
+
+> The tuple gives the shape: rows first, then columns. `np.ones()` gives ones.
+
+# Geometry: Which matrix causes a pure scaling (stretching/compressing) along the axes?
+1. [ ] A matrix full of ones.
+1. [x] A diagonal matrix (values only on the diagonal).
+1. [ ] A rotation matrix.
+1. [ ] A matrix with determinant 0.
+
+> Diagonal matrices scale each axis separately without mixing (no shear/rotation).
+
+# Code puzzle: Create a random matrix and compute its rank.
+1. `import numpy as np`
+2. `M = np.random.rand(5, 5)`
+3. `r = np.linalg.matrix_rank(M)`
+4. `print(r)`
+
+> `matrix_rank` is the function for checking the number of independent dimensions.
+
+# What does "linearly independent" mean?
+1. [ ] The vectors are perpendicular to each other.
+1. [x] No vector can be written as a combination of the others (no redundancy).
+1. [ ] The vectors all have the same length.
+1. [ ] The vectors have no connection to the origin.
+
+> Independence means: every vector brings a "new" direction that cannot be reached with the others.
+
+# Eigenvectors & complexity: What does NumPy return if a matrix describes a rotation (without a stable axis)?
+1. [ ] An error.
+1. [ ] `NaN` (not a number).
+1. [x] Complex numbers (e.g. `0.+1.j`).
+1. [ ] Zeros.
+
+> If there is no solution in real space (nothing stays stable under a rotation), mathematics switches to complex numbers.
+
+# Code comprehension: `A = np.array([[1, 2], [3, 4]])`. What is `A[1, 0]`?
+1. [ ] 1
+1. [ ] 2
+1. [x] 3
+1. [ ] 4
+
+> Row index 1 (bottom), column index 0 (left). So the 3.
+
+# Final question: For what is linear algebra NOT important in data science?
+1. [ ] Computing neural networks.
+1. [ ] Image processing.
+1. [ ] Recommender systems.
+1. [x] Making coffee (not yet).
+
+> Almost everything in modern ML is based on matrix operations (vectorization)!
+
+```
+
+::::

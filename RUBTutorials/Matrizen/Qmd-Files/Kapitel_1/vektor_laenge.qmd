@@ -1,0 +1,246 @@
+---
+title: "1.4. Länge (Norm)"
+title-en: "1.4. Length (Norm)"
+format: html
+filters:
+  - ctm-assessment
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+::: {.callout-note title="Zellen der Reihe nach ausführen"}
+Die Code-Zellen dieser Seite bauen aufeinander auf: Importe, Variablen und Funktionen aus einer Zelle gelten auch in allen späteren Zellen und werden dort nicht wiederholt. Führe die Zellen deshalb von oben nach unten aus. Meldet Python einen `NameError`, hast du meist eine frühere Zelle noch nicht ausgeführt.
+:::
+
+Nach den vorherigen Abschnitten sollten alle grundlegenden Rechnungen der Vektorrechnung bekannt sein. Häufig wird für Rechnungen jedoch auch die **Länge** eines Vektors benötigt. Diese betrachten wir in diesem Abschnitt.
+
+Die Länge, auch als **Norm** oder **Betrag** eines Vektors bezeichnet, ist ein Maß für seine Größe. Geometrisch entspricht sie dem Abstand vom Ursprung des Koordinatensystems bis zum Endpunkt des Vektors.
+
+## 1.4.1. Mathematische Grundlagen
+
+Die gebräuchlichste Norm ist die **Euklidische Norm** (oder L2-Norm). Für einen Vektor $\vec{v} = (v_1, v_2, \dots, v_n)$ ist seine Länge $||\vec{v}||$ definiert als die Quadratwurzel aus der Summe der quadrierten Komponenten:
+
+$$ ||\vec{v}|| = \sqrt{v_1^2 + v_2^2 + \dots + v_n^2} $$
+
+Wenn du genau hinsiehst, erkennst du vielleicht den Zusammenhang zum [vorherigen Kapitel](vektor_skalarprodukt.qmd). Die Summe der quadrierten Komponenten ist nichts anderes als das Skalarprodukt des Vektors mit sich selbst!
+
+$$ ||\vec{v}|| = \sqrt{\vec{v} \cdot \vec{v}} $$
+
+Diese Verbindung ist extrem nützlich und wird in der Praxis oft verwendet, um die Länge eines Vektors zu berechnen.
+
+Die Euklidische Norm ist ein spezifisches Beispiel für eine mathematische **Norm**. Eine Funktion, die Vektoren eine Länge zuordnet, wird allgemein als Norm bezeichnet, wenn sie die folgenden drei fundamentalen Eigenschaften für alle Vektoren $\vec{v}, \vec{w}$ und jeden Skalar $\alpha$ erfüllt:
+
+1.  **Definitheit:** $||\vec{v}|| \ge 0$ und $(||\vec{v}|| = 0 \iff \vec{v} = \vec{0})$
+2.  **Absolute Homogenität:** $||\alpha \cdot \vec{v}|| = |\alpha| \cdot ||\vec{v}||$
+3.  **Dreiecksungleichung:** $||\vec{v} + \vec{w}|| \le ||\vec{v}|| + ||\vec{w}||$
+
+## 1.4.2. Länge in NumPy berechnen
+
+NumPy bietet eine dedizierte und optimierte Funktion zur Berechnung der Norm: `np.linalg.norm()`. Alternativ können wir die Länge auch "manuell" über das Skalarprodukt berechnen, um die Formel zu überprüfen.
+
+::: {.callout-tip title="Hinweis: f-Strings in Python" collapse="true"}
+Im Folgenden verwenden wir sogenannte **f-Strings** für die `print()`-Ausgaben. Ein f-String wird durch ein `f` vor dem öffnenden Anführungszeichen eingeleitet (zum Beispiel `f"Hallo"`).
+
+Der große Vorteil ist, dass man Variablen und Ausdrücke direkt in den Text einbetten kann, indem man sie in geschweifte Klammern `{}` setzt. Das macht den Code oft deutlich lesbarer.
+:::
+
+```{pyodide-python}
+import numpy as np
+
+v_np = np.array([3, 4])
+
+# Methode 1: Die empfohlene NumPy-Funktion
+laenge_norm = np.linalg.norm(v_np)
+print(f"Länge mit np.linalg.norm(): {laenge_norm}")
+
+# Methode 2: Manuelle Berechnung über das Skalarprodukt
+# Dies bestätigt die Formel ||v|| = sqrt(v · v)
+laenge_manuell = np.sqrt(np.dot(v_np, v_np))
+print(f"Länge manuell mit np.sqrt(np.dot()): {laenge_manuell}")
+```
+
+## 1.4.2.1 Aufgabe: Vektorlänge mit Listen
+
+Rechne zuerst einen Fall von Hand. Dann weißt du, was deine Funktion liefern muss:
+
+```{math-exercise}
+#| label: laenge-check-1
+#| caption: Länge von Hand berechnen
+Wie lang ist der Vektor $\vec{v} = (6, 8)$ (Euklidische Norm)? _[10]
+```
+
+**Aufgabe**:
+Schreibe eine Funktion `laenge(v)`, die die Länge einer Liste `v` **ohne NumPy** berechnet. Du kannst die `sqrt`-Funktion aus dem `math`-Modul nutzen. Versteckte Tests prüfen automatisch, ob deine Lösung stimmt. Beispiel: `laenge([3, 4])` ergibt `5.0`.
+
+**Befehle, die du brauchst:** eine `for`-Schleife über die Liste, das Quadrat `x**2`, `math.sqrt()`, `return`.
+
+```{py-exercise}
+#| label: vektor-laenge
+#| caption: laenge implementieren
+#| show-test-hints: false
+import math
+
+def laenge(v):
+    # Dein Code hier
+    pass
+
+## TESTS ##
+assert abs(laenge([3, 4]) - 5.0) < 1e-9, "Falsches Ergebnis für [3,4]"
+assert abs(laenge([6, 8]) - 10.0) < 1e-9, "Falsches Ergebnis für [6,8]"
+assert abs(laenge([1, 2, 2]) - 3.0) < 1e-9, "Falsches Ergebnis für [1,2,2]"
+assert abs(laenge([0, 0, 0])) < 1e-9, "Der Nullvektor hat die Länge 0"
+```
+
+::: {.callout-tip collapse="true" title="Tipps"}
+*   Berechne zuerst die Summe der Quadrate der Vektorkomponenten.
+*   Iteriere über die Liste (zum Beispiel mit einer `for`-Schleife) und addiere das Quadrat jedes Elements (`element**2`) zu einer Summenvariable.
+*   Verwende am Ende `math.sqrt(deine_summe)`, um die Quadratwurzel zu ziehen.
+:::
+
+::: {.callout-caution collapse="true" title="Lösung"}
+Mit einer `for`-Schleife:
+
+```python
+def laenge(v):
+    summe_quadrate = 0
+    for x in v:
+        summe_quadrate += x**2
+    return math.sqrt(summe_quadrate)
+```
+
+::: {.callout-caution collapse="true" title="Elegante Lösung"}
+Mit `sum()` und einem Generator-Ausdruck wird der Code deutlich kürzer:
+
+```python
+def laenge(v):
+    return math.sqrt(sum(x**2 for x in v))
+```
+:::
+
+:::
+
+Die Fähigkeit, die Länge eines Vektors zu berechnen, ist ein wichtiger Baustein. Sie ermöglicht es uns zum Beispiel, Vektoren zu **normalisieren** (das heißt sie auf die Länge 1 zu bringen), was eine häufige Anforderung in vielen Algorithmen des maschinellen Lernens und der Computergrafik ist.
+
+Im nächsten Abschnitt schauen wir uns an, wie wir den [Winkel zwischen zwei Vektoren](vektor_winkel.qmd) berechnen können, wofür wir sowohl das Skalarprodukt als auch die Vektorlänge benötigen.
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+::: {.callout-note title="Run the cells in order"}
+The code cells on this page build on each other: imports, variables and functions from one cell are also available in all later cells and are not repeated there. So run the cells from top to bottom. If Python reports a `NameError`, you most likely have not run an earlier cell yet.
+:::
+
+After the previous sections, all the fundamental calculations of vector arithmetic should be familiar. Often, calculations also require the **length** of a vector. We look at that in this section.
+
+The length, also called the **norm** or **magnitude** of a vector, is a measure of its size. Geometrically, it corresponds to the distance from the origin of the coordinate system to the endpoint of the vector.
+
+## 1.4.1. Mathematical Foundations {#mathematische-grundlagen}
+
+The most common norm is the **Euclidean norm** (or L2 norm). For a vector $\vec{v} = (v_1, v_2, \dots, v_n)$, its length $||\vec{v}||$ is defined as the square root of the sum of the squared components:
+
+$$ ||\vec{v}|| = \sqrt{v_1^2 + v_2^2 + \dots + v_n^2} $$
+
+If you look closely, you might notice the connection to the [previous section](vektor_skalarprodukt.qmd). The sum of the squared components is nothing other than the dot product of the vector with itself!
+
+$$ ||\vec{v}|| = \sqrt{\vec{v} \cdot \vec{v}} $$
+
+This connection is extremely useful and is often used in practice to compute the length of a vector.
+
+The Euclidean norm is a specific example of a mathematical **norm**. A function that assigns a length to vectors is generally called a norm if it satisfies the following three fundamental properties for all vectors $\vec{v}, \vec{w}$ and every scalar $\alpha$:
+
+1.  **Positive definiteness:** $||\vec{v}|| \ge 0$ and $(||\vec{v}|| = 0 \iff \vec{v} = \vec{0})$
+2.  **Absolute homogeneity:** $||\alpha \cdot \vec{v}|| = |\alpha| \cdot ||\vec{v}||$
+3.  **Triangle inequality:** $||\vec{v} + \vec{w}|| \le ||\vec{v}|| + ||\vec{w}||$
+
+## 1.4.2. Calculating Length in NumPy {#länge-in-numpy-berechnen}
+
+NumPy provides a dedicated, optimized function for computing the norm: `np.linalg.norm()`. Alternatively, we can also calculate the length "manually" via the dot product, to verify the formula.
+
+::: {.callout-tip title="Note: f-Strings in Python" collapse="true"}
+In the following, we use so-called **f-strings** for `print()` output. An f-string is introduced by an `f` before the opening quotation mark (for example `f"Hello"`).
+
+The big advantage is that you can embed variables and expressions directly into the text by placing them in curly braces `{}`. This often makes the code much more readable.
+:::
+
+```{pyodide-python}
+import numpy as np
+
+v_np = np.array([3, 4])
+
+# Method 1: The recommended NumPy function
+length_norm = np.linalg.norm(v_np)
+print(f"Length with np.linalg.norm(): {length_norm}")
+
+# Method 2: Manual calculation via the dot product
+# This confirms the formula ||v|| = sqrt(v · v)
+length_manual = np.sqrt(np.dot(v_np, v_np))
+print(f"Length manually with np.sqrt(np.dot()): {length_manual}")
+```
+
+## 1.4.2.1 Exercise: Vector Length with Lists
+
+First compute one case by hand. Then you know what your function has to return:
+
+```{math-exercise}
+#| label: laenge-check-1-en
+#| caption: Compute the length by hand
+How long is the vector $\vec{v} = (6, 8)$ (Euclidean norm)? _[10]
+```
+
+**Exercise**:
+Write a function `length(v)` that computes the length of a list `v` **without using NumPy**. You can use the `sqrt` function from Python's `math` module. Hidden tests check your solution automatically. Example: `length([3, 4])` gives `5.0`.
+
+**Commands you need:** a `for` loop over the list, the square `x**2`, `math.sqrt()`, `return`.
+
+```{py-exercise}
+#| label: vektor-laenge-en
+#| caption: Implement length
+#| show-test-hints: false
+import math
+
+def length(v):
+    # Your code here
+    pass
+
+## TESTS ##
+assert abs(length([3, 4]) - 5.0) < 1e-9, "Wrong result for [3,4]"
+assert abs(length([6, 8]) - 10.0) < 1e-9, "Wrong result for [6,8]"
+assert abs(length([1, 2, 2]) - 3.0) < 1e-9, "Wrong result for [1,2,2]"
+assert abs(length([0, 0, 0])) < 1e-9, "The zero vector has length 0"
+```
+
+::: {.callout-tip collapse="true" title="Tips"}
+*   First compute the sum of the squares of the vector components.
+*   Iterate over the list (for example with a `for` loop) and add the square of each element (`element**2`) to a sum variable.
+*   At the end, use `math.sqrt(your_sum)` to take the square root.
+:::
+
+::: {.callout-caution collapse="true" title="Solution"}
+With a `for` loop:
+
+```python
+def length(v):
+    sum_squares = 0
+    for x in v:
+        sum_squares += x**2
+    return math.sqrt(sum_squares)
+```
+
+::: {.callout-caution collapse="true" title="Elegant Solution"}
+With `sum()` and a generator expression the code becomes much shorter:
+
+```python
+def length(v):
+    return math.sqrt(sum(x**2 for x in v))
+```
+:::
+
+:::
+
+The ability to compute the length of a vector is an important building block. It allows us, for example, to **normalize** vectors (i.e. scale them to length 1), which is a common requirement in many machine learning and computer graphics algorithms.
+
+In the next section, we'll look at how to compute the [angle between two vectors](vektor_winkel.qmd), for which we need both the dot product and the vector length.
+
+::::

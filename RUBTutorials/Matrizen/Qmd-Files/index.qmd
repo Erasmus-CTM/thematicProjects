@@ -1,0 +1,361 @@
+---
+title: '0. Willkommen zum Tutorial "Matrizen mit Python"!'
+title-en: '0. Welcome to the "Matrices with Python" Tutorial!'
+subtitle: "Eine praktische Einführung für Studierende"
+subtitle-en: "A practical introduction for students"
+format: html
+filters:
+  - ctm-assessment
+  - quizdown
+engine: markdown
+---
+
+::: {.content-visible when-profile="deutsch"}
+In der linearen Algebra sind Matrizen und Vektoren zentrale Werkzeuge. Während die Berechnungen von Hand für kleine Beispiele machbar sind, werden sie bei größeren Dimensionen schnell komplex, zeitaufwendig und fehleranfällig. Hier kommt Python ins Spiel!
+
+Dieses Tutorial zeigt dir, wie du die Konzepte der linearen Algebra (spezifisch Matrizen und Vektoren) praktisch mit Python umsetzen kannst.
+
+## 0.1. Warum Python und NumPy?
+
+### 0.1.1. Warum Python
+ 
+Manuell sind Rechnungen mit Vektoren oder Matrizen schnell mühsam und fehleranfällig. Hilfsmittel wie Taschenrechner oder **CAS** (Computer-Algebra-Systeme) unterstützen hier, stoßen aber schnell an Grenzen.
+
+**Python** bietet als Programmiersprache entscheidende Vorteile:  
+Es ermöglicht ähnlich wie bei anderen Hilfsmitteln automatisierte Berechnungen, sowie effiziente Berechnungen durch Implementierung von  Bibliotheken, wie `NumPy`, das speziell für numerische Mathematik entwickelt wurde. Hierdurch sind große Datenmengen schnell verarbeitbar.  
+Dazu gibt Python die Möglichkeit Ergebnisse direkt darzustellen, mit Hilfe von zum Beispiel der Bibliothek `matplotlib`. 
+Mit Python ist es ebenso möglich, Datenmengen einzulesen (dieser Teil wird in diesem Tutorial jedoch nicht gezeigt).  
+
+Damit Python solche Aufgaben übernimmt, braucht es einige Grundelemente – dazu gehören zum Beispiel:
+
+- **Schleifen** (`for`, `while`): führen Berechnungen wiederholt automatisch aus  
+- **Bedingte Anweisungen** (`if`, `else`, `elif`): lassen Entscheidungen im Code (die Möglichkeit Entscheidungsbäume zu bauen), zu
+
+---
+
+### 0.1.2. Warum Numpy
+
+Wir verwenden die Python-Bibliothek **NumPy** (Numerical Python), den De-facto-Standard für numerische Berechnungen. Im Vergleich zu nativen Python-Listen bietet NumPy entscheidende Vorteile:
+
+*   **Effizienz:** NumPy-Operationen sind in C implementiert und um ein Vielfaches schneller als Berechnungen mit Python-Listen.
+*   **Funktionalität:** NumPy stellt eine riesige Sammlung an optimierten Funktionen für die lineare Algebra bereit (zum Beispiel Determinante, Inverse, Eigenwerte).
+*   **Bequemlichkeit:** Operationen können auf ganze Matrizen angewendet werden, ohne dass man über einzelne Elemente iterieren muss (zum Beispiel `A + B`).
+
+## 0.2. Interaktive Codeblöcke nutzen
+
+Das Besondere an diesem Tutorial ist, dass du alles direkt im Browser ausprobieren kannst. Es gibt zwei Arten von Codeblöcken:
+
+### 0.2.1. Nicht bearbeitbare Blöcke
+
+Diese Blöcke zeigen ein Konzept. Du kannst den Code nur ausführen, um das Ergebnis zu sehen.
+
+```{pyodide-python}
+#| read-only: true
+# Diesen Code kannst du nur ausführen, nicht ändern.
+a = 5
+b = 10
+print(f"Das Ergebnis ist: {a + b}")
+```
+
+### 0.2.2. Bearbeitbare Blöcke
+
+Hier bist du gefragt! Du kannst den Code verändern, damit experimentieren und eigene Berechnungen durchführen. Bei bearbeitbaren Codeblöcken siehst du auch einen Knopf **"Feedback"**, den es im anderen Block nicht gibt. Dieser sorgt dafür, dass eine KI dir Feedback zu deinem Code gibt und dir somit Stärken und Schwächen aufgezeigt werden. 
+
+::: {.callout-note title="KI-Feedback einrichten" collapse="true"}
+Eingerichtet wird das **einmal** über das <i class="fa-solid fa-gear"></i>-Symbol oben rechts auf der Seite, danach gilt es auf allen Seiten und auch beim nächsten Besuch:
+
+- **Ohne Anmeldung:** Wähle als Feedback-Modus **„Prompt kopieren (ohne API-Key)“** und speichere. Ein Klick auf Feedback erzeugt dann einen fertigen Text, den du in ChatGPT, Claude, das [KI-Angebot der RUB](https://gpt.ruhr-uni-bochum.de/app/chat) o. Ä. einfügst.
+- **Mit kostenlosem Zugang:** Lege bei [OpenRouter](https://openrouter.ai) ein kostenloses Konto an und erstelle unter [openrouter.ai/keys](https://openrouter.ai/keys) einen Schlüssel (API-Key). Wähle im <i class="fa-solid fa-gear"></i>-Menü die **Anbieter-Vorlage „OpenRouter“**, füge den Schlüssel ein und speichere. Mit **Modelle abrufen** kannst du ein anderes Modell wählen, angezeigt werden standardmäßig nur kostenlose. Der Knopf **ℹ️ Wie komme ich an Zugangsdaten?** erklärt das auch für andere Anbieter.
+
+Mit jedem weiteren Klick auf Feedback im selben Block wird der Hinweis konkreter (erst ein Anstoß, dann das Problem konkret benannt, dann der Lösungsweg in Worten), fertigen Code gibt es aber nie. Dein Schlüssel bleibt in deinem Browser. Beim Klick auf Feedback werden aber dein Code und die Aufgabe an den gewählten Anbieter geschickt.
+
+Die **Rechenaufgaben** (Eingabefeld mit **Überprüfen**) haben einen eigenen Feedback-Knopf mit eigenem Einstellungsfenster, in das du dieselben Daten einmal einträgst. Dort gibt es **vier** Hinweisstufen, die komplette Lösung erst beim vierten Klick. Die KI bekommt dabei automatisch den Text über der Aufgabe als Kontext mit.
+:::
+
+```{pyodide-python}
+# Verändere die Zahlen oder die Operation und führe den Code erneut aus!
+x = 2
+y = 7
+print(f"Das Produkt ist: {x * y}")
+```
+
+--- 
+
+### 0.2.3. Wichtiger Hinweis: Bibliotheken werden pro Seite geteilt
+
+Alle Codeblöcke auf einer Seite laufen im **selben** Python-Interpreter. Das heißt: Wenn du `numpy` einmal importierst, steht es in allen folgenden Blöcken derselben Seite automatisch weiter zur Verfügung — ein erneuter Import ist nicht nötig. Für fast alle Kapitel wird das `numpy` sein.
+
+Ein typischer erster Codeblock einer Seite wird also so beginnen:
+```{pyodide-python}
+import numpy as np
+
+# Erstelle einen Vektor
+v = np.array([1, 2, 3])
+print(v)
+```
+
+Und im nächsten Block auf derselben Seite kannst du `np` direkt weiterverwenden, ohne es erneut zu importieren:
+```{pyodide-python}
+# 'np' aus dem Block oben ist hier bereits verfügbar
+w = np.array([4, 5, 6])
+print(v + w)
+```
+
+In späteren Kapiteln zur Visualisierung kommt dann `matplotlib` hinzu.
+Dasselbe gilt für Variablen und Funktionen: Was eine Zelle definiert hat, können alle späteren Zellen derselben Seite benutzen. Die Seiten sind deshalb so geschrieben, dass du sie **von oben nach unten** bearbeitest, und spätere Zellen wiederholen den Code früherer Zellen nicht. Meldet Python einen `NameError`, hast du meist eine frühere Zelle der Seite noch nicht ausgeführt. Nach dem Neuladen der Seite musst du die Zellen erneut ausführen.
+
+
+Achte auch immer auf <details> <summary> -> Ausklappbare Blöcke wie diesen hier <-  </summary>
+```{pyodide-python}
+#Bei sehr langen Codes
+#Werden die Codeblöcke auf diese Art und Weise ausgeblendet, damit
+#die Lesbarkeit der Seite nicht allzu sehr eingeschränkt wird, 
+#alternativ können Codeblöcke auch zugeklappt starten
+#("Python-Code anzeigen" mit kleinem Pfeil davor).
+```
+
+</details>
+
+### 0.2.4. Was die Knöpfe an den Codeblöcken können
+
+*   **Code ausführen** (oder **Shift + Enter**): Python läuft im Hintergrund, die Seite bleibt bedienbar. Dauert etwas zu lange, brichst du es mit **Stopp** ab.
+*   <i class="fa-solid fa-arrows-rotate"></i> setzt einen Block auf den ursprünglichen Code zurück, <i class="fa-regular fa-copy"></i> kopiert den Code.
+*   **+ Codeblock** hängt unter einem Block einen weiteren, leeren Block zum Ausprobieren an.
+*   **Dein Code wird gespeichert:** Was du in bearbeitbaren Blöcken schreibst, bleibt in diesem Browser erhalten und ist beim nächsten Besuch wieder da (es wird aber nicht automatisch ausgeführt). Neben „Editierbar“ steht dann „💾 Gespeichert“; mit <i class="fa-solid fa-trash-can"></i> löschst du die gespeicherte Fassung. Im <i class="fa-solid fa-gear"></i>-Menü oben rechts kannst du das Speichern abschalten oder alles Gespeicherte löschen.
+*   **Plots** bekommen eine Werkzeugleiste zum Zoomen, Verschieben und Herunterladen (PNG/SVG/PDF).
+*   Einige Aufgaben werden **automatisch geprüft**: Bei Programmieraufgaben mit **Überprüfen** laufen versteckte Tests über deinen Code, bei Rechenaufgaben wird dein Ergebnis sofort kontrolliert.
+
+## 0.3. Weitere Eigenschaften dieses Tutorials
+
+Wie dir vermutlich schon aufgefallen ist, gibt es oben, links und rechts Leisten.  
+Die **linke** Leiste gibt eine Übersicht über die Kapitel des Tutorials, du kannst die Kapitel auch aufklappen und so schnell das zuletzt bearbeitete Unterkapitel wiederfinden.  
+**Symbole in der oberen Leiste:**  
+
+*   **Suche (<i class="fa-solid fa-magnifying-glass"></i>):**  
+ Die Lupe ist eine klassische Suchfunktion, um die gesamte Webseite nach Begriffen zu durchsuchen.  
+*   **Light-/Dark-Mode-Schalter (<i class="fa-solid fa-circle-half-stroke"></i>):**  
+ Mit diesem Schalter kannst du zwischen dem hellen und dunklen Design wechseln, ganz wie es dir gefällt.  
+*   **Reader Mode (<i class="fa-solid fa-book-open-reader"></i>):**  
+ Dieses Symbol blendet die Seitenleisten aus, um dir ein ablenkungsfreies Leseerlebnis zu ermöglichen.
+*   **Sprache (<i class="fa-solid fa-globe"></i>):**
+ Wechselt zwischen Deutsch und Englisch, du landest dabei auf derselben Seite in der anderen Sprache.  
+
+Und jetzt viel Spaß beim Entdecken der linearen Algebra mit Python!
+
+## Beispiel-Quiz
+
+In diesem Tutorial wird es auch immer wieder kleine Quizze geben mit denen du dein Wissen testen kannst. 
+
+```quizdown
+---
+locale: de
+---
+
+# Wer wird oft als der "King of Pop" bezeichnet?
+1. [x] Michael Jackson
+1. [ ] Elvis Presley
+1. [ ] Madonna
+1. [ ] Justin Bieber
+> Moonwalks wurden durch diese Person ein Hit
+
+# Welche dieser Begriffe sind sowohl in der Musik als auch in der IT zu finden?
+- [x] Keyboard
+- [x] Band (als in Bandbreite)
+- [x] Maus (Mouse - okay, eher Deadmau5)
+- [ ] Gitarre
+> Hier sind mehrere Antworten richtig! Denk an Eingabegeräte.
+
+# Wie viele Saiten hat eine Standard-Gitarre normalerweise?
+1. [ ] 4
+1. [ ] 5
+1. [x] 6
+1. [ ] 12
+> Bassisten haben meistens 4, aber hier geht es um die Gitarre.
+
+# Was ist der Unterschied zwischen einer Geige und einem Cello?
+1. [ ] Es gibt keinen.
+1. [x] Das Cello ist größer und klingt tiefer.
+1. [ ] Die Geige hat 6 Saiten.
+
+# Welches Tier steckt im Namen der Programmiersprache "Python"?
+1. [ ] Ein Elefant
+1. [x] Eine Schlange (aber benannt nach Monty Python!)
+1. [ ] Eine Spinne (Web)
+> Zischhhh. Aber eigentlich waren englische Komiker die Namenspaten.
+```
+:::
+
+::: {.content-visible when-profile="english"}
+In linear algebra, matrices and vectors are central tools. While manual calculations are feasible for small examples, they quickly become complex, time-consuming, and prone to errors with larger dimensions. This is where Python comes into play!
+
+This tutorial shows you how to practically apply the concepts of linear algebra (specifically matrices and vectors) using Python.
+
+## 0.1. Why Python and NumPy?
+
+### 0.1.1. Why Python
+ 
+Manual calculations with vectors or matrices quickly become tedious and error-prone. Tools like calculators or **CAS** (Computer Algebra Systems) provide support but soon reach their limits.
+
+**Python** offers decisive advantages as a programming language:  
+Similar to other tools, it enables automated calculations, as well as efficient computations through the implementation of libraries like `NumPy`, which was specifically developed for numerical mathematics. This allows large amounts of data to be processed quickly.  
+In addition, Python provides the ability to display results directly using libraries like `matplotlib`. 
+Python also makes it possible to read in datasets (however, this part is not shown in this tutorial).  
+
+For Python to take over such tasks, it requires some basic elements – these include, for example:
+
+- **Loops** (`for`, `while`): execute calculations repeatedly and automatically  
+- **Conditional statements** (`if`, `else`, `elif`): allow decisions in the code (the ability to build decision trees)
+
+---
+
+### 0.1.2. Why Numpy
+
+We use the Python library **NumPy** (Numerical Python), the de facto standard for numerical calculations. Compared to native Python lists, NumPy offers decisive advantages:
+
+*   **Efficiency:** NumPy operations are implemented in C and are many times faster than calculations with Python lists.
+*   **Functionality:** NumPy provides a huge collection of optimized functions for linear algebra (for example, determinant, inverse, eigenvalues).
+*   **Convenience:** Operations can be applied to entire matrices without having to iterate over individual elements (for example, `A + B`).
+
+## 0.2. Using Interactive Code Blocks
+
+The special thing about this tutorial is that you can try everything directly in the browser. There are two types of code blocks:
+
+### 0.2.1. Non-editable Blocks
+
+These blocks demonstrate a concept. You can only execute the code to see the result.
+
+```{pyodide-python}
+#| read-only: true
+# You can only execute this code, not modify it.
+a = 5
+b = 10
+print(f"The result is: {a + b}")
+```
+
+### 0.2.2. Editable Blocks
+
+Here it's your turn! You can modify the code, experiment with it, and perform your own calculations. With editable code blocks, you will also see a **"Feedback"** button, which does not exist in the other blocks. This ensures that an AI gives you feedback on your code, showing you your strengths and weaknesses.
+
+::: {.callout-note title="Setting up AI feedback" collapse="true"}
+You set this up **once** via the <i class="fa-solid fa-gear"></i> symbol at the top right of the page; after that it applies to all pages and to your next visit as well:
+
+- **Without an account:** Choose the feedback mode **"Copy prompt (no API key)"** and save. Clicking Feedback then creates a ready-made text that you paste into ChatGPT, Claude, the [RUB AI service](https://gpt.ruhr-uni-bochum.de/app/chat) or similar.
+- **With a free account:** Create a free account at [OpenRouter](https://openrouter.ai) and generate a key (API key) at [openrouter.ai/keys](https://openrouter.ai/keys). In the <i class="fa-solid fa-gear"></i> menu, choose the **provider template "OpenRouter"**, paste the key and save. With **Fetch models** you can pick a different model; by default only free ones are shown. The button **ℹ️ How do I get credentials?** explains this for other providers as well.
+
+With every further click on Feedback in the same block, the hint becomes more concrete (first a nudge, then the problem named concretely, then the solution approach in words), but you never get finished code. Your key stays in your browser. When you click Feedback, however, your code and the exercise are sent to the chosen provider.
+
+The **calculation exercises** (input field with **Check**) have their own Feedback button with a separate settings window, in which you enter the same data once. There are **four** hint levels there, with the complete solution only on the fourth click. The AI automatically receives the text above the exercise as context.
+:::
+
+```{pyodide-python}
+# Change the numbers or the operation and run the code again!
+x = 2
+y = 7
+print(f"The product is: {x * y}")
+```
+
+--- 
+
+### 0.2.3. Important Note: Libraries Are Shared per Page
+
+All code blocks on a page run in the **same** Python interpreter. This means: once you import `numpy`, it stays available in every following block on the same page automatically — no need to re-import it. For almost all chapters, this will be `numpy`.
+
+A typical first code block on a page will therefore start like this:
+```{pyodide-python}
+import numpy as np
+
+# Create a vector
+v = np.array([1, 2, 3])
+print(v)
+```
+
+And in the next block on the same page, you can keep using `np` directly, without importing it again:
+```{pyodide-python}
+# 'np' from the block above is already available here
+w = np.array([4, 5, 6])
+print(v + w)
+```
+
+In later chapters on visualization, `matplotlib` will be added.
+The same holds for variables and functions: whatever one cell has defined can be used by all later cells on the same page. The pages are therefore written to be worked through **from top to bottom**, and later cells do not repeat the code of earlier cells. If Python reports a `NameError`, you most likely have not run an earlier cell of the page yet. After reloading the page you have to run the cells again.
+
+
+Also always pay attention to <details> <summary> -> Collapsible blocks like this one <-  </summary>
+```{pyodide-python}
+# For very long codes
+# The code blocks are hidden in this way so that
+# the readability of the page is not restricted too much.
+# Alternatively, code blocks can also start collapsed
+# ("Show Python code" with a small arrow in front).
+```
+
+</details>
+
+### 0.2.4. What the buttons on the code blocks do
+
+*   **Run code** (or **Shift + Enter**): Python runs in the background, so the page stays usable. If something takes too long, abort it with **Stop**.
+*   <i class="fa-solid fa-arrows-rotate"></i> resets a block to its original code, <i class="fa-regular fa-copy"></i> copies the code.
+*   **+ Code block** appends another empty block below for trying things out.
+*   **Your code is saved:** Whatever you write in editable blocks is kept in this browser and is back on your next visit (but it is not run automatically). Next to "Editable" it then says "💾 Saved"; with <i class="fa-solid fa-trash-can"></i> you delete the saved version. In the <i class="fa-solid fa-gear"></i> menu at the top right you can turn saving off or delete everything that was saved.
+*   **Plots** get a toolbar for zooming, panning and downloading (PNG/SVG/PDF).
+*   Some exercises are **checked automatically**: in programming exercises with **Check**, hidden tests run on your code; in calculation exercises your result is checked immediately.
+
+## 0.3. Further Features of this Tutorial
+
+As you have probably already noticed, there are bars at the top, left, and right.  
+The **left** bar provides an overview of the chapters of the tutorial; you can also expand the chapters to quickly find the last sub-chapter you worked on.  
+**Icons in the top bar:**  
+
+*   **Search (<i class="fa-solid fa-magnifying-glass"></i>):**  
+ The magnifying glass is a classic search function to search the entire website for terms.  
+*   **Light/Dark Mode Switch (<i class="fa-solid fa-circle-half-stroke"></i>):**  
+ With this switch, you can toggle between the light and dark design, just as you like.  
+*   **Reader Mode (<i class="fa-solid fa-book-open-reader"></i>):**  
+ This icon hides the sidebars to give you a distraction-free reading experience.
+*   **Language (<i class="fa-solid fa-globe"></i>):**
+ Switches between German and English; you end up on the same page in the other language.  
+
+And now have fun discovering linear algebra with Python!
+
+## Example Quiz
+
+Throughout this tutorial, there will also be small quizzes with which you can test your knowledge. 
+
+```quizdown
+---
+locale: en
+---
+
+# Who is often referred to as the "King of Pop"?
+1. [x] Michael Jackson
+1. [ ] Elvis Presley
+1. [ ] Madonna
+1. [ ] Justin Bieber
+> Moonwalks became a hit because of this person
+
+# Which of these terms can be found in both music and IT?
+- [x] Keyboard
+- [x] Band (as in bandwidth)
+- [x] Mouse (okay, more like Deadmau5)
+- [ ] Guitar
+> Multiple answers are correct here! Think of input devices.
+
+# How many strings does a standard guitar usually have?
+1. [ ] 4
+1. [ ] 5
+1. [x] 6
+1. [ ] 12
+> Bassists usually have 4, but this is about the guitar.
+
+# What is the difference between a violin and a cello?
+1. [ ] There is no difference.
+1. [x] The cello is larger and sounds lower.
+1. [ ] The violin has 6 strings.
+
+# Which animal is in the name of the programming language "Python"?
+1. [ ] An elephant
+1. [x] A snake (but named after Monty Python!)
+1. [ ] A spider (Web)
+> Hssssss. But actually, English comedians were the namesakes.
+```
+:::

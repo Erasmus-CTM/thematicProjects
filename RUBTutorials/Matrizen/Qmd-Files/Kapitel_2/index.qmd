@@ -1,0 +1,336 @@
+---
+title: '2. Matrizen in Python definieren'
+title-en: '2. Defining Matrices in Python'
+format: html
+filters:
+  - quizdown
+engine: markdown
+---
+
+::: {.content-visible when-profile="deutsch"}
+Nachdem in Kapitel [0](../index.qmd) und [1](../Kapitel_1/index.qmd) die Grundlagen von Python und Vektoren gelegt wurden, geht es nun an den Kern dieses Tutorials.
+Matrizen, was sind sie genau, welche Eigenschaften/Attribute haben sie und vor allem wie können sie in Python definiert werden? Um all das soll es in diesem Kapitel gehen.
+
+## Kapitelübersicht
+
+- **[2.1. Grundlagen](matrizen_grundlagen.qmd)**
+    - [2.1.1. Was sind Matrizen?](matrizen_grundlagen.qmd#was-sind-matrizen)
+    - [2.1.2. Was eine Matrix repräsentieren kann](matrizen_grundlagen.qmd#was-eine-matrix-repräsentieren-kann)
+    - [2.1.3. Die Dimension einer Matrix](matrizen_grundlagen.qmd#die-dimension-einer-matrix)
+    - [2.1.4. Matrizen in Python erstellen](matrizen_grundlagen.qmd#matrizen-in-python-erstellen)
+- **[2.2. Matrix-Attribute](matrizen_attribute.qmd)**
+    - [2.2.1. Dimension, Form und Größe prüfen](matrizen_attribute.qmd#dimension-form-und-größe-prüfen)
+    - [2.2.2. Den Datentyp prüfen](matrizen_attribute.qmd#den-datentyp-prüfen)
+    - [2.2.3. Übung: Attribute erforschen](matrizen_attribute.qmd#übung-attribute-erforschen)
+- **[2.3. Spezielle Matrizen](matrizen_spezielle.qmd)**
+    - [2.3.1. Nullmatrix](matrizen_spezielle.qmd#nullmatrix)
+    - [2.3.2. Einsmatrix](matrizen_spezielle.qmd#einsmatrix)
+    - [2.3.3. Einheitsmatrix](matrizen_spezielle.qmd#einheitsmatrix)
+    - [2.3.4. Diagonalmatrix](matrizen_spezielle.qmd#diagonalmatrix)
+    - [2.3.5. Zufallsmatrizen](matrizen_spezielle.qmd#zufallsmatrizen)
+- **[2.4. Zugriff auf Elemente](matrizen_zugriff.qmd)**
+    - [2.4.1. Zugriff auf einzelne Elemente](matrizen_zugriff.qmd#zugriff-auf-einzelne-elemente)
+    - [2.4.2. Slicing: Zeilen und Spalten extrahieren](matrizen_zugriff.qmd#slicing-zeilen-und-spalten-extrahieren)
+    - [2.4.3. Slicing: Untermatrizen extrahieren](matrizen_zugriff.qmd#slicing-untermatrizen-extrahieren)
+
+
+
+Weiterhin gilt, um möglichst viel aus diesem Tutorial mitzunehmen, lohnt es sich die Abschnitte in der angegebenen Reihenfolge durchzugehen, da diese sich teilweise aufeinander beziehen und diese Stellen dann leichter zu verstehen sind.
+
+Bevor du in das Kapitel startest kannst du im folgenden Quiz testen ob du das letzte auch wirklich verstanden hast.
+
+## Vorwissen-Quiz
+
+Du hast das Kapitel zu Vektoren abgeschlossen. Bevor wir zu den Matrizen kommen, lass uns schauen, ob die Grundlagen, die Python-Syntax und die mathematischen Konzepte sitzen!
+
+```quizdown
+---
+locale: de
+shuffleQuestions: true
+nQuestions: 10
+---
+
+# Was ist der wesentliche Unterschied zwischen einer Python-Liste `[1, 2]` und einem NumPy-Array `np.array([1, 2])`?
+1. [ ] Es gibt keinen Unterschied, es sind nur andere Namen.
+1. [x] Listen sind allgemeine Container; NumPy-Arrays sind für mathematische Vektoroperationen optimiert.
+1. [ ] NumPy-Arrays können Text und Zahlen gemischt speichern, Listen nicht.
+
+> Listen verhalten sich beim `+` Operator wie Text (sie werden aneinandergehängt), NumPy-Arrays rechnen mathematisch.
+
+# Betrachte diesen Code-Schnipsel. Was wird ausgegeben?
+~~~python
+import numpy as np
+v = np.array([2, 4])
+print(v * 3)
+~~~
+1. [ ] `[2, 4, 2, 4, 2, 4]`
+1. [ ] `[6, 4]`
+1. [x] `[6, 12]`
+1. [ ] `Error`
+
+> Erinnerst du dich an die Skalarmultiplikation? Der Faktor wird auf jedes Element angewendet.
+
+# Welche Aussagen zum Skalarprodukt (Dot Product) sind wahr?
+- [x] Das Ergebnis ist immer eine einzelne Zahl (ein Skalar).
+- [ ] Das Ergebnis ist ein neuer Vektor.
+- [x] Wenn das Skalarprodukt 0 ist, stehen die Vektoren senkrecht (orthogonal) aufeinander.
+- [x] Es kann mit `np.dot(a, b)` oder `a @ b` berechnet werden.
+
+> Überlege: Wird aus zwei Pfeilen ein neuer Pfeil oder ein Wert für "Parallelität"?
+
+# Was passiert bei diesem Listen-Code?
+~~~python
+liste = [10, 20, 30]
+liste[1] = 5
+print(liste)
+~~~
+1. [ ] `[10, 20, 30, 5]`
+1. [x] `[10, 5, 30]`
+1. [ ] `[5, 20, 30]`
+1. [ ] `Error`
+
+> Achtung: Informatiker fangen bei 0 an zu zählen! Welches Element ist also `liste[1]`?
+
+# Du hast den Vektor `v = np.array([3, 4])`. Wie lang ist dieser Vektor (Euklidische Norm)?
+1. [ ] 3.5
+1. [ ] 7
+1. [x] 5
+1. [ ] 25
+
+> Denk an den Satz des Pythagoras ($a^2 + b^2 = c^2$).
+
+# Welche Python-Bibliothek ist der De-facto-Standard für Vektoren und Matrizen?
+1. [ ] `math`
+1. [ ] `pandas`
+1. [x] `numpy`
+1. [ ] `matplotlib`
+
+> Gesucht ist die Bibliothek für **Num**erisches **Py**thon.
+
+# Betrachte folgenden Code. Welchen Wert hat die Variable `x` am Ende?
+~~~python
+a = 10
+if a < 5:
+    x = 0
+elif a == 10:
+    x = 1
+else:
+    x = 2
+~~~
+1. [ ] 0
+1. [x] 1
+1. [ ] 2
+
+> Gehe den Code Zeile für Zeile durch. Welche Bedingung trifft als Erstes zu?
+
+# Wofür werden Vektoren in der Praxis (Data Science) genutzt?
+- [x] Um Eigenschaften von Objekten (z.B. Häuserdaten) als Zahlenreihe darzustellen.
+- [x] Um Texte für Computer verständlich zu machen (Word Embeddings).
+- [ ] Um Kaffee zu kochen.
+- [x] Um Ähnlichkeiten zwischen Objekten zu berechnen (z.B. Kosinus-Ähnlichkeit).
+
+> Vektoren sind "numerische Fingerabdrücke" von Daten.
+
+# Was ist der Unterschied zwischen `.shape` und `.ndim` bei einem NumPy-Array?
+1. [ ] Es gibt keinen.
+1. [x] `.ndim` gibt die Anzahl der Achsen (z.B. 1 für Vektor), `.shape` die genaue Größe (z.B. `(3,)`).
+1. [ ] `.shape` gibt die Farbe des Arrays an.
+
+> Ein Vektor hat `.ndim=1`, aber seine `.shape` sagt uns, wie viele Elemente er hat.
+
+# Ordne die Code-Zeilen, um ein Diagramm zu plotten!
+1. `import matplotlib.pyplot as plt`
+2. `x = [1, 2, 3]` und `y = [2, 4, 6]` definieren.
+3. `plt.plot(x, y)`
+4. `plt.show()`
+
+> Python muss erst wissen, was `plt` ist und welche Daten existieren, bevor es zeichnen kann.
+
+# Was ist Broadcasting in NumPy?
+1. [ ] Eine Methode, um Daten live ins Internet zu streamen.
+1. [x] Ein Mechanismus, der Arrays unterschiedlicher Größe kompatibel macht (z.B. Vektor + Skalar).
+1. [ ] Ein Fehler, der auftritt, wenn Matrizen zu groß sind.
+
+> Broadcasting erlaubt uns Dinge wie `np.array([1, 2]) + 10`, indem es die 10 virtuell anpasst.
+
+# Wenn zwei Vektoren in die exakt gleiche Richtung zeigen, wie groß ist ihre Kosinus-Ähnlichkeit?
+1. [ ] 0
+1. [ ] -1
+1. [x] 1
+1. [ ] 90
+
+> Welchen Winkel haben zwei Pfeile, die übereinander liegen? Und was ist der Kosinus von 0?
+
+# Welche Operation löst bei normalen Python-Listen einen Fehler aus?
+- [x] `[1, 2] * [3, 4]` (Elementweise Multiplikation)
+- [x] `[1, 2] - [1, 2]` (Subtraktion)
+- [ ] `[1, 2] + [3, 4]` (Konkatenation)
+- [x] `[1, 2] / 2` (Division)
+
+> Listen können addieren (anhängen) und mit Zahlen multiplizieren (wiederholen), aber für "echte" Mathe brauchen sie Hilfe.
+```
+:::
+
+::: {.content-visible when-profile="english"}
+Now that Chapters [0](../index.qmd) and [1](../Kapitel_1/index.qmd) have laid the groundwork in Python and vectors, it's time for the core of this tutorial.
+What exactly are matrices, which properties/attributes do they have, and above all, how can they be defined in Python? That is what this chapter is about.
+
+## Chapter Overview
+
+- **[2.1. Basics](matrizen_grundlagen.qmd)**
+    - [2.1.1. What are Matrices?](matrizen_grundlagen.qmd#was-sind-matrizen)
+    - [2.1.2. What a Matrix can Represent](matrizen_grundlagen.qmd#was-eine-matrix-repräsentieren-kann)
+    - [2.1.3. The Dimension of a Matrix](matrizen_grundlagen.qmd#die-dimension-einer-matrix)
+    - [2.1.4. Creating Matrices in Python](matrizen_grundlagen.qmd#matrizen-in-python-erstellen)
+- **[2.2. Matrix Attributes](matrizen_attribute.qmd)**
+    - [2.2.1. Checking Dimension, Shape and Size](matrizen_attribute.qmd#dimension-form-und-größe-prüfen)
+    - [2.2.2. Checking the Data Type](matrizen_attribute.qmd#den-datentyp-prüfen)
+    - [2.2.3. Exercise: Exploring Attributes](matrizen_attribute.qmd#übung-attribute-erforschen)
+- **[2.3. Special Matrices](matrizen_spezielle.qmd)**
+    - [2.3.1. Zero Matrix](matrizen_spezielle.qmd#nullmatrix)
+    - [2.3.2. Ones Matrix](matrizen_spezielle.qmd#einsmatrix)
+    - [2.3.3. Identity Matrix](matrizen_spezielle.qmd#einheitsmatrix)
+    - [2.3.4. Diagonal Matrix](matrizen_spezielle.qmd#diagonalmatrix)
+    - [2.3.5. Random Matrices](matrizen_spezielle.qmd#zufallsmatrizen)
+- **[2.4. Accessing Elements](matrizen_zugriff.qmd)**
+    - [2.4.1. Accessing Individual Elements](matrizen_zugriff.qmd#zugriff-auf-einzelne-elemente)
+    - [2.4.2. Slicing: Extracting Rows and Columns](matrizen_zugriff.qmd#slicing-zeilen-und-spalten-extrahieren)
+    - [2.4.3. Slicing: Extracting Submatrices](matrizen_zugriff.qmd#slicing-untermatrizen-extrahieren)
+
+
+
+As before, to get the most out of this tutorial, it's worthwhile to work through the sections in the given order, since they partially build on one another, which makes them easier to understand.
+
+Before you start the chapter, you can test in the following quiz whether you really understood the last one.
+
+## Prior-Knowledge Quiz
+
+You have finished the chapter on vectors. Before we move on to matrices, let's check whether the basics, the Python syntax, and the mathematical concepts have stuck!
+
+```quizdown
+---
+locale: en
+shuffleQuestions: true
+nQuestions: 10
+---
+
+# What is the essential difference between a Python list `[1, 2]` and a NumPy array `np.array([1, 2])`?
+1. [ ] There is no difference, they are just different names.
+1. [x] Lists are general-purpose containers; NumPy arrays are optimized for mathematical vector operations.
+1. [ ] NumPy arrays can store mixed text and numbers, lists cannot.
+
+> Lists behave like text with the `+` operator (they get concatenated), NumPy arrays compute mathematically.
+
+# Look at this code snippet. What gets printed?
+~~~python
+import numpy as np
+v = np.array([2, 4])
+print(v * 3)
+~~~
+1. [ ] `[2, 4, 2, 4, 2, 4]`
+1. [ ] `[6, 4]`
+1. [x] `[6, 12]`
+1. [ ] `Error`
+
+> Remember scalar multiplication? The factor is applied to every element.
+
+# Which statements about the dot product are true?
+- [x] The result is always a single number (a scalar).
+- [ ] The result is a new vector.
+- [x] If the dot product is 0, the vectors are perpendicular (orthogonal) to each other.
+- [x] It can be computed with `np.dot(a, b)` or `a @ b`.
+
+> Think about it: does combining two arrows produce a new arrow, or a value for "parallelism"?
+
+# What happens with this list code?
+~~~python
+list = [10, 20, 30]
+list[1] = 5
+print(list)
+~~~
+1. [ ] `[10, 20, 30, 5]`
+1. [x] `[10, 5, 30]`
+1. [ ] `[5, 20, 30]`
+1. [ ] `Error`
+
+> Watch out: computer scientists start counting at 0! So which element is `list[1]`?
+
+# You have the vector `v = np.array([3, 4])`. How long is this vector (Euclidean norm)?
+1. [ ] 3.5
+1. [ ] 7
+1. [x] 5
+1. [ ] 25
+
+> Think of the Pythagorean theorem ($a^2 + b^2 = c^2$).
+
+# Which Python library is the de-facto standard for vectors and matrices?
+1. [ ] `math`
+1. [ ] `pandas`
+1. [x] `numpy`
+1. [ ] `matplotlib`
+
+> We're looking for the library for **Num**erical **Py**thon.
+
+# Consider the following code. What value does the variable `x` have at the end?
+~~~python
+a = 10
+if a < 5:
+    x = 0
+elif a == 10:
+    x = 1
+else:
+    x = 2
+~~~
+1. [ ] 0
+1. [x] 1
+1. [ ] 2
+
+> Walk through the code line by line. Which condition is true first?
+
+# What are vectors used for in practice (data science)?
+- [x] To represent properties of objects (e.g. housing data) as a series of numbers.
+- [x] To make text understandable for computers (word embeddings).
+- [ ] To brew coffee.
+- [x] To calculate similarities between objects (e.g. cosine similarity).
+
+> Vectors are "numeric fingerprints" of data.
+
+# What is the difference between `.shape` and `.ndim` for a NumPy array?
+1. [ ] There is none.
+1. [x] `.ndim` gives the number of axes (e.g. 1 for a vector), `.shape` gives the exact size (e.g. `(3,)`).
+1. [ ] `.shape` gives the color of the array.
+
+> A vector has `.ndim=1`, but its `.shape` tells us how many elements it has.
+
+# Order the lines of code to plot a chart!
+1. `import matplotlib.pyplot as plt`
+2. Define `x = [1, 2, 3]` and `y = [2, 4, 6]`.
+3. `plt.plot(x, y)`
+4. `plt.show()`
+
+> Python first needs to know what `plt` is and what data exists before it can draw.
+
+# What is broadcasting in NumPy?
+1. [ ] A method for streaming data live to the internet.
+1. [x] A mechanism that makes arrays of different sizes compatible (e.g. vector + scalar).
+1. [ ] An error that occurs when matrices are too large.
+
+> Broadcasting lets us do things like `np.array([1, 2]) + 10`, by virtually adjusting the 10.
+
+# If two vectors point in exactly the same direction, what is their cosine similarity?
+1. [ ] 0
+1. [ ] -1
+1. [x] 1
+1. [ ] 90
+
+> What angle do two arrows lying on top of each other have? And what is the cosine of 0?
+
+# Which operation raises an error with normal Python lists?
+- [x] `[1, 2] * [3, 4]` (element-wise multiplication)
+- [x] `[1, 2] - [1, 2]` (subtraction)
+- [ ] `[1, 2] + [3, 4]` (concatenation)
+- [x] `[1, 2] / 2` (division)
+
+> Lists can add (append) and multiply with numbers (repeat), but for "real" math they need help.
+```
+:::

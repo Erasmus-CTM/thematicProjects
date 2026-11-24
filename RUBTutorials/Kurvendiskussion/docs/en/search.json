@@ -1,0 +1,762 @@
+[
+  {
+    "objectID": "Qmd-Files/toc.html",
+    "href": "Qmd-Files/toc.html",
+    "title": "Table of Contents",
+    "section": "",
+    "text": "This page gives a short description of what happens in the different chapters.\n\nChapter overview\n\nHome\n\nShort description:\nThis section explains how this website works and shows you what the Python code blocks can do. You can also see here how to create new Python blocks, how your code is saved and how to set up AI feedback.\n\n\n\n\nPython Basics\n\nShort description:\nA refresher of the Python basics (variables, conditionals, data types, lists, functions, loops, libraries) that are needed in the rest of the tutorial. Some exercises here are checked automatically.\n\n\n\n\nDomain and Range\n\nShort description:\nThis section is split into examining the domain and examining the range. Each part shows how the respective set of a function can be determined with the help of Python.\n\n\n\n\nSymmetry and Intercepts\n\nShort description:\nLearn how to examine functions for symmetry (symmetry about the y-axis, point symmetry about the origin) and how to determine the intersections with the x-axis (zeros) and the y-axis with Python.\n\n\n\n\nEnd Behavior and Asymptotes\n\nShort description:\nThis part of the tutorial shows you how to determine the behavior of a function at infinity with Python. It also shows how to examine a function for the different kinds of asymptotes (horizontal, vertical, oblique) and how to let Python output all of this.\n\n\n\n\nMonotonicity and Concavity\n\nShort description:\nLearn how to use derivatives to examine the monotonicity (increasing/decreasing), extrema (maxima/minima), concavity (convex/concave) and inflection points of a function with Python.\n\n\n\n\nDrawing Graphs\n\nShort description:\nThe tutorial ends with visualization. This chapter describes how a graph can generally be displayed, and also how points can be marked and labeled in a plot (extrema, inflection points, asymptotes).",
+    "crumbs": [
+      "Table of Contents"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_5/index.html",
+    "href": "Qmd-Files/Kapitel_5/index.html",
+    "title": "Drawing Graphs",
+    "section": "",
+    "text": "Chapter overview\nIn this chapter, we deal with displaying functions graphically. It is divided into two sections:\n\nCreating graphs\n\nThe first section is about the basics of graphical representation with Python.\nWhich libraries are needed, and which basic commands are important for creating a graph?\n\n\n\n\nLabeling graphs\n\nThis section is meant to be the end of the tutorial, since it covers how, with the help of all the other chapters, functions can be displayed in a graph and how special points of the function can be marked, asymptotes drawn in, and so on.\n\n\n\n\nQuiz: monotonicity, concavity & inflection points\n\n---\nlocale: en\n---\n\n# Which conditions must be met for there to definitely be a maximum (local maximum) at $x_0$? \n- [x] $f'(x_0) = 0$ \n- [x] $f''(x_0) &lt; 0$ \n- [ ] $f''(x_0) &gt; 0$\n- [ ] $f'(x_0) &gt; 0$\n\n&gt; Hint: There is the \"necessary condition\" and the \"sufficient condition\". At a maximum, the slope is zero and the curve is concave down (it looks like a mountain).\n\n# Which Python command gives you the second derivative $f''(x)$?\n1. [x] `f_double_prime = sympy.diff(f, x, 2)`\n1. [ ] `f_double_prime = sympy.diff(f, x)`\n1. [ ] `f_double_prime = sympy.derive(f, x, 2)`\n1. [ ] `f_double_prime = sympy.solve(f, x, 2)`\n\n&gt; Hint: The third argument of `diff` gives the order of the derivative.\n\n# Put the steps of a curve sketching analysis for finding extrema in the right order.\n1. f_prime = sympy.diff(f, x)\n2. critical_points = sympy.solve(f_prime, x)\n3. values = [sympy.diff(f_prime, x).subs(x, s) for s in critical_points]\n\n# What does it mean mathematically if $f''(x) &gt; 0$ on an interval?\n1. [x] The graph is concave up (convex).\n1. [ ] The graph is concave down (concave).\n1. [ ] The graph is strictly decreasing.\n1. [ ] There is an inflection point.\n\n&gt; Hint: Imagine riding a bike from left to right along the graph. For $f''(x) &gt; 0$ you are taking a left turn.\n\n# What holds for an inflection point? \n- [x] The concavity changes (from left to right or vice versa).\n- [x] The second derivative is zero ($f''(x_0) = 0$).\n- [ ] The third derivative is necessarily non-zero ($f'''(x_0) \\neq 0$).\n- [ ] The slope is necessarily zero ($f'(x_0) = 0$).\n\n&gt; Hint: An inflection point does not have to have a horizontal tangent (saddle point), but the concavity has to be 0. $f'''(x_0) \\neq 0$ is enough as proof, but it is not necessary: $f(x) = x^5$ has an inflection point at $0$ with $f'''(0) = 0$.\n\n# What does this code calculate?\n~~~python\nif f_prime.subs(x, value) &gt; 0:\n    print(\"Increasing\")\n~~~\n1. [x] Whether the function is strictly increasing at the point `value`.\n1. [ ] Whether there is a maximum.\n1. [ ] Whether the function is positive.\n\n&gt; Hint: We look at the sign of the first derivative.\n\n# Which statements about saddle points are true? \n- [x] They are inflection points with a horizontal tangent.\n- [x] $f'(x_0) = 0 \\land f''(x_0) = 0 \\land f'''(x_0) \\neq 0$ holds.\n- [ ] They are extrema.\n- [ ] The function changes sign there.\n&gt; Hint: A terrace point where it briefly becomes flat, but then continues in the same direction.\n\n# Put the Python commands for finding inflection points in order.\n1. f_double_prime = sympy.diff(f, x, 2)\n2. candidates = sympy.solve(f_double_prime, x)\n3. test = sympy.diff(f_double_prime, x).subs(x, candidates[0])\n4. if test != 0: print(\"Inflection point!\")\n\n# What happens if both $f'(x_0) = 0$ and $f''(x_0) = 0$?\n1. [x] We cannot draw a conclusion yet (saddle point or flat extremum) and have to look at higher derivatives.\n1. [ ] It is definitely a saddle point.\n1. [ ] It is definitely an extremum.\n\n&gt; Hint: The second-derivative test fails here.\n\n# Which Python libraries or modules did you use in the last chapters? \n- [x] `sympy`\n- [x] `matplotlib` \n- [ ] `pandas`\n- [ ] `pygame`\n\n# If a function is strictly decreasing on the interval $I$, what sign does $f'(x)$ have there?\n1. [x] Minus ($&lt; 0$)\n1. [ ] Plus ($&gt; 0$)\n1. [ ] Zero\n\n&gt; Hint: A negative slope means decreasing.\n\n# (Review) How do you find out whether a function has a horizontal asymptote?\n1. [x] By looking at the limit with `sympy.limit(f, x, sympy.oo)`.\n1. [ ] By computing the zeros with `solve`.\n1. [ ] By setting the derivative equal to zero.\n\n# What is the difference between `sympy.solve` and `sympy.solveset`? \n- [x] `solveset` is newer and mathematically more precise (returns sets).\n- [x] `solve` often returns simple lists (good for further processing).\n- [ ] `solve` cannot solve derivatives.\n\n&gt; Hint: In the tutorials we mostly used `solve` for simple lists, but we know `solveset` from the chapter on zeros.\n\n# You have a list of zeros `z = [-2, 2]`. How do you check the monotonicity *between* them?\n1. [x] I choose a test value (e.g. 0), plug it into $f'(x)$ and check the sign.\n1. [ ] I plug -2 and 2 into $f(x)$.\n1. [ ] That cannot be checked.\n\n&gt; Hint: Between two zeros of the derivative, the sign of the slope does not change.\n\n# Which command sorts a list of found extrema in ascending order?\n1. [x] `my_list.sort()`\n1. [ ] `my_list.order()`\n1. [ ] `sympy.sort(my_list)`\n1. [ ] `my_list.arrange()`\n\n&gt; Hint: A standard Python command for lists.",
+    "crumbs": [
+      "Drawing Graphs"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_5/graphen.html",
+    "href": "Qmd-Files/Kapitel_5/graphen.html",
+    "title": "Creating Graphs",
+    "section": "",
+    "text": "Your answers are saved only in this browser.Do not save on this device\nExport my answers\nDelete answers on this page\nDelete all your answers in this course",
+    "crumbs": [
+      "Drawing Graphs",
+      "Creating Graphs"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_5/graphen.html#the-basic-framework",
+    "href": "Qmd-Files/Kapitel_5/graphen.html#the-basic-framework",
+    "title": "Creating Graphs",
+    "section": "1. The basic framework",
+    "text": "1. The basic framework\nFirst, we need the basic framework to be able to draw a function at all. For this we import the matplotlib.pyplot library, with which graphs can be plotted.\nWe import the library as plt, which makes the function names much shorter.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\n\n\n\n\n\nTipExplanations of the basic framework\n\n\n\n\n\n\nfig, ax = plt.subplots() creates a new, empty figure and gives us direct access to the coordinate system ax. This lets you draw into exactly this coordinate system, which becomes much clearer as soon as there are several plots side by side.\nfig describes the whole figure (the window)\nax is the actual graph (the coordinate system) that we draw on.\nplt.subplots is one of the ways to create a basis on which graphs can be plotted. There is also plt.plot().\nplt.show(): This command is crucial. It takes everything that has been “drawn” so far and displays it in the output. Without this command you see nothing! After that, the figure is “finished”: the next code block starts with an empty figure again, just like in a normal Python environment.",
+    "crumbs": [
+      "Drawing Graphs",
+      "Creating Graphs"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_5/graphen.html#plotting-a-graph",
+    "href": "Qmd-Files/Kapitel_5/graphen.html#plotting-a-graph",
+    "title": "Creating Graphs",
+    "section": "2. Plotting a graph",
+    "text": "2. Plotting a graph\nOnce the basic framework is in place, we can draw our first graph.\nFor this we need data points. So that we do not have to type them in one by one, the numpy library helps out: np.linspace generates values between 0 and 10 (100 of them).\n\n\n\n\n\n\nTipWhat is NumPy? A short explanation\n\n\n\n\n\nNumPy (Numerical Python) is one of the more fundamental Python libraries. It provides calculations with matrices/vectors and large multidimensional arrays.\nNumPy is also the library used for numerical calculations.\n\n\n\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\n\n\n\n\n\nTipTips on plotting a graph\n\n\n\n\n\n\nnp.linspace generates evenly spaced values between 0 and 10 (100 of them).\nWith ax.set_xlabel and ax.set_ylabel you can name the x-/y-axes, and with ax.set_title the title.\n\nAnother way to create a graph is to draw directly with plt.plot(), without creating fig, ax first:\nThis is shorter and works just as well for single, simple graphs. In the tutorial we still mostly use fig, ax, because then you always know exactly which coordinate system you are drawing into.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\nTry it out: run this block and then one of the other blocks. Each graph appears only below its own block, because plt.show() finishes the figure.\n\n\n\n\n\n\n\n\n\nTipToolbar below every plot\n\n\n\nShortly after a graph appears, a toolbar shows up below it:  zooms into an area,  pans the view,  restores the original view. With PNG, SVG or PDF you save the graph as a file, for example for homework or a presentation.",
+    "crumbs": [
+      "Drawing Graphs",
+      "Creating Graphs"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_5/graphen.html#plotting-several-functions-at-once",
+    "href": "Qmd-Files/Kapitel_5/graphen.html#plotting-several-functions-at-once",
+    "title": "Creating Graphs",
+    "section": "3. Plotting several functions at once",
+    "text": "3. Plotting several functions at once\nOften you want to compare several functions in a single graph.\nThis is quite easy with the plot function: each function is plotted separately and plt.show then displays all plotted functions. Matplotlib automatically gives each line a different color.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\n\n\n\n\n\nTipTips on plotting several functions\n\n\n\n\n\n\nThe legend: To show a legend, you have to do two things:\n\nGive each plot a label (e.g. ax.plot(x, y1, label=\"Sine\")).\nCall ax.legend() to actually draw the legend based on the labels.",
+    "crumbs": [
+      "Drawing Graphs",
+      "Creating Graphs"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_5/graphen.html#how-to-plot-points-in-a-graph",
+    "href": "Qmd-Files/Kapitel_5/graphen.html#how-to-plot-points-in-a-graph",
+    "title": "Creating Graphs",
+    "section": "4. How to plot points in a graph",
+    "text": "4. How to plot points in a graph\nSometimes we do not want a continuous line but individual data points, e.g. from an experiment. The scatter function is ideal for this. It is made specifically for drawing a cloud of points.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\n\n\n\n\n\nTipTips on plotting points\n\n\n\n\n\n\nThere are several ways to place points; you can also use ax.plot(x_points, y_points). Feel free to use different ways and try to spot the differences.\n\nAs you can see in the graph, you can also change the type and color of the points.\nYou can combine plot and scatter in the same graph. First draw a function line with plot and then individual measurement points on top with scatter.\nFeel free to try it out! (by creating a block of your own)",
+    "crumbs": [
+      "Drawing Graphs",
+      "Creating Graphs"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_5/graphen.html#how-to-adjust-details",
+    "href": "Qmd-Files/Kapitel_5/graphen.html#how-to-adjust-details",
+    "title": "Creating Graphs",
+    "section": "5. How to adjust details",
+    "text": "5. How to adjust details\nThere are many details that can be changed.\nThe following code changes a lot of things in different ways, and the tips then explain which change does what.\nBasically, the following can be changed:\n\nLine style (dashed, dotted, …)\nMarker style (circle, crosses, …)\nLine width\nColor\nShape of the marker\n\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\n\n\n\n\n\nTipTips on customization\n\n\n\n\n\n\nColors (color): You can use color names ('red', 'green'), short codes ('r', 'g', 'b', 'k' for black) or hex codes ('#FF5733').\nLine styles (linestyle):\n\n'-' or 'solid': solid line (default)\n'--' or 'dashed': dashed line\n':' or 'dotted': dotted line\n'-.' or 'dashdot': dash-dot line\n\nMarkers (marker):\n\n'o': circle\n'x': X\n'+': plus\n's': square\n'.' : small dot\n\nShorthand: For simple styles you can combine color, marker and line style in a single string, e.g. 'go--' for a green (g), dashed (--) line with circle markers (o).",
+    "crumbs": [
+      "Drawing Graphs",
+      "Creating Graphs"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_5/graphen.html#mini-quiz-1",
+    "href": "Qmd-Files/Kapitel_5/graphen.html#mini-quiz-1",
+    "title": "Creating Graphs",
+    "section": "Mini quiz",
+    "text": "Mini quiz\n\n---\nlocale: en\nshuffleQuestions: true\n---\n\n# What does `np.linspace(0, 10, 50)` do?\n- [x] 50 evenly spaced values from 0 to 10\n- [ ] the values 0, 10, 20, ... up to 50\n- [ ] 10 values between 0 and 50\n&gt; Hint: These values are used to compute the graph \"point by point\".\n\n# What does the call `ax.plot(x, y, 'ro-')` draw?\n- [x] a red line with circle markers\n- [ ] a red dashed line without markers\n- [ ] red circles without a line\n&gt; Hint: `r` = red, `o` = circle marker, `-` = solid line.\n\n# Which option creates a dashed line?\n- [ ] `marker='--'`\n- [x] `linestyle='--'`\n- [ ] `color='--'`\n&gt; Hint: The line style is called `linestyle`.\n\n# What happens if you give `ax.plot(...)` no `label=...` and call `ax.legend()`?\n- [ ] Python picks nice names automatically\n- [x] The line does not appear with a name in the legend\n- [ ] The graph is not shown\n&gt; Hint: The legend shows the names you assigned with `label`.",
+    "crumbs": [
+      "Drawing Graphs",
+      "Creating Graphs"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_4/monotonieverhalten.html",
+    "href": "Qmd-Files/Kapitel_4/monotonieverhalten.html",
+    "title": "Examining Monotonicity",
+    "section": "",
+    "text": "Your answers are saved only in this browser.Do not save on this device\nExport my answers\nDelete answers on this page\nDelete all your answers in this course",
+    "crumbs": [
+      "Monotonicity and Concavity",
+      "Examining Monotonicity"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_4/monotonieverhalten.html#the-connection-in-a-picture",
+    "href": "Qmd-Files/Kapitel_4/monotonieverhalten.html#the-connection-in-a-picture",
+    "title": "Examining Monotonicity",
+    "section": "The connection in a picture",
+    "text": "The connection in a picture\nIn the following plot you see \\(f(x) = x^3 - 3x^2 + 2\\) together with its derivative \\(f'(x)\\). Pay attention: wherever \\(f'\\) lies above the \\(x\\)-axis, \\(f\\) increases; where \\(f'\\) lies below it, \\(f\\) decreases. This changes at the zeros of \\(f'\\). With the magnifier from the toolbar you can look at these points more closely.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\nQuick check: Before you automate the procedure, do it once by hand.\n\nPre-check – monotonicity by hand\n\n\nFor \\(g(x)=x^2-4x\\) we have \\(g'(x)=\\) . The function is strictly decreasing for \\(x&lt;\\)  and strictly increasing for \\(x&gt;2\\).\n\n\n  ✓ Check\n  ⓘ Input help\n  \n    💬 Feedback\n    ⚙",
+    "crumbs": [
+      "Monotonicity and Concavity",
+      "Examining Monotonicity"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_4/monotonieverhalten.html#exercise",
+    "href": "Qmd-Files/Kapitel_4/monotonieverhalten.html#exercise",
+    "title": "Examining Monotonicity",
+    "section": "Exercise",
+    "text": "Exercise\nNow it is about writing the last step of the program. It helps to use either a while loop or a for loop.\n\n\nWhile/for loops\n\n\nWhile loop\nIf a calculation or a check has to be carried out several times, loops make this much easier. While loops repeat the code as long as a certain condition is met. A small example:\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\n\nFor loop\nFor loops repeat over a certain range. The keyword range describes the range from \\(a\\) to \\(b\\). Here \\(a\\) is the start of the iteration; \\(b\\) itself is not included: range(5, 20) runs from 5 to 19.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\nOnce you have understood the different loops (feel free to experiment a bit more), try to continue the program above (copied once more below) so that it goes through the list, tests a value in each interval, determines its sign (i.e. whether the function increases/decreases) and uses that to determine the monotonic behavior.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\nWhat must your program find out for \\(f(x) = x^3 - 3x^2 + 2\\)? Enter it to check (the plot above helps):\n\nCheck – monotonicity intervals\n\n\n\\(f(x) = x^3 - 3x^2 + 2\\) is strictly decreasing between \\(x =\\)  and \\(x =\\) , and strictly increasing otherwise.\n\n\n  ✓ Check\n  ⓘ Input help\n  \n    💬 Feedback\n    ⚙",
+    "crumbs": [
+      "Monotonicity and Concavity",
+      "Examining Monotonicity"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_4/monotonieverhalten.html#exercise-2-as-a-function",
+    "href": "Qmd-Files/Kapitel_4/monotonieverhalten.html#exercise-2-as-a-function",
+    "title": "Examining Monotonicity",
+    "section": "Exercise 2: as a function",
+    "text": "Exercise 2: as a function\nOnce you have managed that, wrap the procedure in a function. Complete monotonic_intervals(f): it returns a list of tuples (from, to, direction), for example (-oo, 0, 'increasing'). A tuple groups several values; you add it to a list with append like any other value. The skeleton is given, the part inside the loop is missing.\n\n  \n    Please enable JavaScript to load the interactive exercise.\n  \n\n\nBonus: Merge consecutive intervals with the same direction into one (for \\(x^3\\) only \\((-\\infty,\\infty)\\) would remain). This is optional and not checked.",
+    "crumbs": [
+      "Monotonicity and Concavity",
+      "Examining Monotonicity"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_4/monotonieverhalten.html#exercise-3-bonus-nicer-output",
+    "href": "Qmd-Files/Kapitel_4/monotonieverhalten.html#exercise-3-bonus-nicer-output",
+    "title": "Examining Monotonicity",
+    "section": "Exercise 3 (bonus: nicer output)",
+    "text": "Exercise 3 (bonus: nicer output)\nIf you like, refine the program a little more. Add output that tells users of the program what the monotonic behavior is.\nThere are many ways to make the output more direct. As mentioned above, you can combine consecutive intervals with the same sign into one interval (the function stays strictly monotonic there).\nIt is best to try the whole thing with different functions to test how well your program works for them.\nOnce you are happy with your result, continue with the section Extrema/Saddle Points.",
+    "crumbs": [
+      "Monotonicity and Concavity",
+      "Examining Monotonicity"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_4/index.html",
+    "href": "Qmd-Files/Kapitel_4/index.html",
+    "title": "Monotonicity and Concavity",
+    "section": "",
+    "text": "Chapter overview\nThis chapter covers the main part of curve sketching as done at school.\nIt is about determining extrema, saddle points and inflection points.\n\nDerivatives\n\nA short review of the rules of differentiation and how to compute derivatives with sympy.diff. All further sections of this chapter build on it.\n\n\n\n\nMonotonicity\n\nThis section first explains the concept of monotonicity and how to examine it in the first place. It also establishes the connection to the derivative and shows how to carry out such an examination in Python.\n\n\n\n\nExtrema\n\nThis section uses the knowledge from the first section, together with the definition of extrema given here, to develop a method for finding extrema.\nThe Python implementation includes different ways of determining maxima and minima.\n\n\n\n\nConcavity\n\nThis section of the tutorial fills the term concavity with meaning and explains the difference between curving to the left (convex) and to the right (concave). Apart from that, this chapter of course also describes how Python can be used to determine concavity more efficiently.\n\n\n\n\nInflection points\n\nThe last section of the chapter uses the results of the section on concavity to find out how inflection points can be determined with the help of Python.\n\n\n\n\n\nQuiz: everything learned so far\nThat is, Python basics, domain & range, symmetry & intercepts and end behavior & asymptotes\n\n---\nlocale: en\n---\n\n# Which statements about \"vertical asymptotes\" (poles) are true? \n- [x] They often occur where the denominator of a fraction becomes zero.\n- [x] The function value approaches $\\pm \\infty$ there.\n- [ ] The graph of the function crosses the x-axis there.\n- [ ] They occur when $x \\to \\infty$.\n\n&gt; Hint: Think of the function $1/x$ at $x=0$.\n\n# Which command calculates the limit for $x$ towards infinity in SymPy?\n1. [x] `sympy.limit(f, x, sympy.oo)`\n1. [ ] `sympy.solve(f, x, sympy.oo)`\n1. [ ] `sympy.diff(f, x)`\n1. [ ] `f.subs(x, 999999)`\n\n&gt; Hint: We are looking for the \"limit\".\n\n# Put the code in the right order to check for a horizontal asymptote.\n1. import sympy\n2. f = (2*x)/(x+1)\n3. limit_value = sympy.limit(f, x, sympy.oo)\n4. print(limit_value)\n\n# Which of these functions are symmetric about the y-axis? \n- [x] $f(x) = x^2$\n- [x] $f(x) = x^4 + 2$\n- [x] $f(x) = \\cos(x)$\n- [ ] $f(x) = x^3$\n- [ ] $f(x) = \\sin(x)$\n\n&gt; Hint: Axis symmetry occurs with even exponents and with the cosine.\n\n# What does the result `AccumulationBounds(-1, 1)` mean in a limit calculation?\n1. [x] The function oscillates between -1 and 1 at infinity.\n1. [ ] The limit is 0.\n1. [ ] The function is not defined there (error).\n\n&gt; Hint: This often happens with trigonometric functions at infinity.\n\n# What does the command `sympy.solveset(f, x)` calculate? \n- [x] The zeros of the function.\n- [x] The intersections of the graph with the x-axis.\n- [ ] The intersection with the y-axis.\n- [ ] The derivative.\n\n&gt; Hint: Zeros and x-intercepts are geometrically the same thing.\n\n# Put the steps for finding a gap in the domain (denominator = 0) in the right order.\n1. denominator = x**2 - 4\n2. critical_points = sympy.solveset(denominator, x)\n3. print(f\"Gaps in the domain at: {critical_points}\")\n\n# Which mathematical operations are \"forbidden\" in the real numbers and restrict the domain? \n- [x] Dividing by 0.\n- [x] Taking roots of negative numbers (for even roots).\n- [ ] Logarithm of positive numbers.\n- [x] Logarithm of 0 or negative numbers.\n- [ ] Calculating with decimal numbers.\n\n# Which Python operator checks for equality (e.g. in an `if` condition)?\n1. [x] `==`\n1. [ ] `=`\n1. [ ] `!=`\n1. [ ] `is equal`\n\n&gt; Hint: A single equals sign is for assignments.\n\n# Which statements about the y-intercept are correct? \n- [x] You calculate it by plugging in $x=0$.\n- [x] There is at most one y-intercept per function (for functions in the strict sense).\n- [ ] You calculate it with `solveset(f, x)`.\n- [ ] It exists for every function (e.g. $1/x$).\n\n&gt; Hint: A function assigns only one y to each x. But is x=0 always allowed?\n\n# What happens mathematically with $f(x) = \\frac{x^2}{x^2+1}$ for $x \\to \\infty$?\n1. [x] The function approaches 1 (horizontal asymptote).\n1. [ ] The function tends to $\\infty$.\n1. [ ] The function tends to 0.\n\n&gt; Hint: Numerator and denominator grow equally fast (same degree).\n\n# Which steps are necessary to reliably check symmetry in Python? \n- [x] Substituting $x$ with $-x$ (`f.subs`).\n- [x] Simplifying the term (`sympy.simplify`).\n- [ ] Differentiating the function.\n- [x] Comparing with the original function.\n\n# Put the lines in the right order to determine the range of $f(x) = x^2$.\n1. import sympy\n2. x = sympy.symbols('x')\n3. f = x**2\n4. print(sympy.calculus.util.function_range(f, x, sympy.S.Reals))\n\n&gt; Hint: Each line needs something that is only created in the line before it.\n\n# What is the condition for point symmetry about the origin?\n1. [x] $f(-x) = -f(x)$\n1. [ ] $f(-x) = f(x)$\n1. [ ] $f(x) = 0$\n\n&gt; Hint: Double reflection (x and y are negated).\n\n# What do you need to determine the range with Python? \n- [x] `import sympy`\n- [x] `from sympy.calculus.util import function_range`\n- [ ] `import matplotlib`\n- [ ] `import random`\n\n&gt; Hint: The function is hidden in a submodule.",
+    "crumbs": [
+      "Monotonicity and Concavity"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_4/ableitungen.html",
+    "href": "Qmd-Files/Kapitel_4/ableitungen.html",
+    "title": "Computing Derivatives",
+    "section": "",
+    "text": "Your answers are saved only in this browser.Do not save on this device\nExport my answers\nDelete answers on this page\nDelete all your answers in this course",
+    "crumbs": [
+      "Monotonicity and Concavity",
+      "Computing Derivatives"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_4/ableitungen.html#specific-functions-and-their-derivatives",
+    "href": "Qmd-Files/Kapitel_4/ableitungen.html#specific-functions-and-their-derivatives",
+    "title": "Computing Derivatives",
+    "section": "Specific functions and their derivatives",
+    "text": "Specific functions and their derivatives\nBesides these general rules, there are certain functions whose derivatives are fixed and which you should know by heart. When these functions appear in combination with other terms, you apply the general rules above.\n\nExponential function: The derivative of the exponential function is:\n\n\\(f(x) = e^x \\implies f'(x) = e^x\\)\n\nNatural logarithm: The derivative of the natural logarithm is:\n\n\\(f(x) = \\ln(x) \\implies f'(x) = \\frac{1}{x}\\)\n\nTrigonometric functions: The derivatives of the trigonometric functions are:\n\n\\(f(x) = \\sin(x) \\implies f'(x) = \\cos(x)\\)\n\\(f(x) = \\cos(x) \\implies f'(x) = -\\sin(x)\\)",
+    "crumbs": [
+      "Monotonicity and Concavity",
+      "Computing Derivatives"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_4/ableitungen.html#practising-the-rules",
+    "href": "Qmd-Files/Kapitel_4/ableitungen.html#practising-the-rules",
+    "title": "Computing Derivatives",
+    "section": "Practising the rules",
+    "text": "Practising the rules\nBefore the computer takes over, try it yourself once: find the derivative \\(f'(x)\\) by hand and type it in. Any equivalent form counts; write powers with ^ or ** and \\(e^x\\) as exp(x). In the first exercise you get a different function every time the page loads; use ↻ at the top right to get a new one.\n\nPower, sum and constant factor rules\n\n\n↻\n\n\n\n  ✓ Check\n  ⓘ Input help\n  \n    💬 Feedback\n    ⚙\n  \n\n\n\n\n\n\nProduct rule\n\n\n\\(f(x) = x^2 \\cdot e^x\\)  \n\\(f'(x) =\\) \n\n\n  ✓ Check\n  ⓘ Input help\n  \n    💬 Feedback\n    ⚙\n  \n\n\n\n\n\n\nChain rule\n\n\n\\(f(x) = \\sin(3x^2)\\)  \n\\(f'(x) =\\) \n\n\n  ✓ Check\n  ⓘ Input help\n  \n    💬 Feedback\n    ⚙\n  \n\n\n\n\n\nWith sympy.diff (see below) you can also check your results yourself.",
+    "crumbs": [
+      "Monotonicity and Concavity",
+      "Computing Derivatives"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_4/ableitungen.html#exercise-on-computing-derivatives",
+    "href": "Qmd-Files/Kapitel_4/ableitungen.html#exercise-on-computing-derivatives",
+    "title": "Computing Derivatives",
+    "section": "Exercise on computing derivatives",
+    "text": "Exercise on computing derivatives\nSince this chapter is quite easy thanks to the function sympy.diff, here is an exercise to puzzle over!\nWrite code that determines not only the first but also the second and third derivative of any function.\nGoal: Do not write sympy.diff three times in a row, but let a for loop apply the derivative repeatedly. Every derivative is the derivative of the previous one.\nExperiment a little.\nRemember that there should also be a suitable output.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\nOnce your code works, turn it into a function derivatives(function_f, n) that returns a list with the 1st to n-th derivative. Hidden tests check it when you click Check:\n\n  \n    Please enable JavaScript to load the interactive exercise.\n  \n\n\nNow that you have code for computing derivatives, let’s look at what we can tell from the derivatives. Next, we recommend Examining Monotonicity.",
+    "crumbs": [
+      "Monotonicity and Concavity",
+      "Computing Derivatives"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_3/globalverhalten.html",
+    "href": "Qmd-Files/Kapitel_3/globalverhalten.html",
+    "title": "Examining End Behavior",
+    "section": "",
+    "text": "Your answers are saved only in this browser.Do not save on this device\nExport my answers\nDelete answers on this page\nDelete all your answers in this course",
+    "crumbs": [
+      "End Behavior and Asymptotes",
+      "Examining End Behavior"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_3/globalverhalten.html#determining-end-behavior-with-python",
+    "href": "Qmd-Files/Kapitel_3/globalverhalten.html#determining-end-behavior-with-python",
+    "title": "Examining End Behavior",
+    "section": "Determining end behavior with Python",
+    "text": "Determining end behavior with Python\nThe Python library sympy contains a very helpful function that does the calculation for us: sympy.limit().\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\nsympy writes infinity as oo (two lowercase o’s, looks like \\(\\infty\\)). You type it the same way in the calculation exercises.",
+    "crumbs": [
+      "End Behavior and Asymptotes",
+      "Examining End Behavior"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_3/globalverhalten.html#exercise-letting-python-determine-the-end-behavior",
+    "href": "Qmd-Files/Kapitel_3/globalverhalten.html#exercise-letting-python-determine-the-end-behavior",
+    "title": "Examining End Behavior",
+    "section": "Exercise: letting Python determine the end behavior",
+    "text": "Exercise: letting Python determine the end behavior\nAssuming you have already worked through several of the other sections of this tutorial, embedding this function should be quite easy for you.\nTry to write code that examines a function of your choice for its end behavior, in the positive as well as the negative direction.\nThere should also be output that tells users how the function behaves.\nAs a small extra task: you can also try to output the error message. Best test what output you get for different limit behavior.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\nFor the following functions, first think about how they behave at infinity, and then check yourself with your program. For \\(\\infty\\) you type oo, for \\(-\\infty\\) accordingly -oo.\n\nEnd behavior of a polynomial\n\n\n\\(f(x) = -2x^3 + x\\): For \\(x \\to +\\infty\\), \\(f(x)\\) tends to ; for \\(x \\to -\\infty\\) it tends to .\n\n\n  ✓ Check\n  ⓘ Input help\n  \n    💬 Feedback\n    ⚙\n  \n\n\n\n\n\n\nEnd behavior of a rational function\n\n\n\\(g(x) = \\dfrac{3x^2 - 1}{x^2 + 5}\\): For \\(x \\to \\pm\\infty\\), \\(g(x)\\) tends to .\n\n\n  ✓ Check\n  ⓘ Input help\n  \n    💬 Feedback\n    ⚙\n  \n\n\n\n\n\nOnce you have done that, you are ready for the next chapter.\nThe end behavior is crucial for finding horizontal asymptotes.\nIn the next chapter, Finding Asymptotes, we will use this knowledge.",
+    "crumbs": [
+      "End Behavior and Asymptotes",
+      "Examining End Behavior"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_2/symmetrieverhalten.html",
+    "href": "Qmd-Files/Kapitel_2/symmetrieverhalten.html",
+    "title": "Examining Symmetry",
+    "section": "",
+    "text": "Your answers are saved only in this browser.Do not save on this device\nExport my answers\nDelete answers on this page\nDelete all your answers in this course\nIn this chapter of the tutorial, you will learn how to examine the symmetry of a function with the help of Python.\nThe programs on this page have a place where you write the function to be examined directly into the code. That is usually the quickest way when trying things out. You saw how a program can instead ask for the function with input() in the chapter on the domain.",
+    "crumbs": [
+      "Symmetry and Intercepts",
+      "Examining Symmetry"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_2/symmetrieverhalten.html#how-do-i-test-a-function-for-symmetry-about-the-y-axis",
+    "href": "Qmd-Files/Kapitel_2/symmetrieverhalten.html#how-do-i-test-a-function-for-symmetry-about-the-y-axis",
+    "title": "Examining Symmetry",
+    "section": "How do I test a function for symmetry about the y-axis?",
+    "text": "How do I test a function for symmetry about the y-axis?\nThe basic idea is similar to other chapters. We use sympy. With this library, we can treat functions as mathematical objects whose properties we can examine. Before that, we have to define our variable as a symbol, so that the program treats this variable differently from other Python variables.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.",
+    "crumbs": [
+      "Symmetry and Intercepts",
+      "Examining Symmetry"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_2/symmetrieverhalten.html#how-do-i-test-a-function-for-point-symmetry-about-the-origin",
+    "href": "Qmd-Files/Kapitel_2/symmetrieverhalten.html#how-do-i-test-a-function-for-point-symmetry-about-the-origin",
+    "title": "Examining Symmetry",
+    "section": "How do I test a function for point symmetry about the origin?",
+    "text": "How do I test a function for point symmetry about the origin?\nSince the code for this test is very similar, this is an exercise for you. Write a function check_point_symmetry(function_f) that returns True if the function is point-symmetric about the origin, and False otherwise. The function check_axis_symmetry from above is a good template.\nHidden tests check your function with several examples when you click Check.\n\n  \n    Please enable JavaScript to load the interactive exercise.\n  \n\n\n\n\n\n\n\n\nTipTip\n\n\n\n\n\nFor point symmetry, \\(f(-x) = -f(x)\\) must hold. In other words: \\(f(-x) + f(x)\\) must simplify to \\(0\\).",
+    "crumbs": [
+      "Symmetry and Intercepts",
+      "Examining Symmetry"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_2/index.html",
+    "href": "Qmd-Files/Kapitel_2/index.html",
+    "title": "Symmetry and Intercepts",
+    "section": "",
+    "text": "This section is about determining general properties of the function, which include:\n\nSymmetry\n\nThis section is about determining whether the function is symmetric about an axis or about a point, or whether neither is the case.\n\n\n\n\nZeros\n\nThis chapter is about finding out how zeros can be determined with the help of Python.\n\n\n\n\nIntersection with the y-axis\n\nIn this part of the tutorial, you will learn how to output the y-intercept of a function with the help of Python.\n\n\n\n\nQuiz: Python basics & domain\n\n---\nlocale: en\n---\n\n# Put the code in the right order to determine the range.\n1. from sympy.calculus.util import function_range\n2. f = sympy.sympify(\"x**2\")\n3. value_range = function_range(f, x, sympy.S.Reals)\n4. print(value_range)\n&gt; Hint: First import, then create the function, then calculate, then output.\n\n# Which mathematical condition leads to a gap in the domain of $f(x) = \\frac{1}{x-2}$?\n- [x] $x - 2 = 0$\n- [ ] $x - 2 &gt; 0$\n- [ ] $x = 0$\n- [ ] $f(x) = 0$\n&gt; Hint: The denominator of a fraction must never become 0.\n\n# What does this code print (understanding loops)?\n~~~python\ntotal = 0\nfor i in range(1, 4):\n    total = total + i\nprint(total)\n~~~\n- [x] 6\n- [ ] 4\n- [ ] 3\n- [ ] 10\n&gt; Hint: `range(1, 4)` produces the numbers 1, 2 and 3. (1+2+3).\n\n# Which statement about the \"range\" is correct?\n- [x] It contains all y-values the function can take.\n- [ ] It contains all x-values you are allowed to plug in.\n- [ ] It is always equal to the real numbers ($\\mathbb{R}$).\n\n# What happens if you use `sympy.S.Reals` in Python without having done `import sympy`?\n- [x] You get a `NameError` (sympy is not defined).\n- [ ] Python imports it automatically.\n- [ ] Nothing, it just works.\n\n# We have a list `zeros = [-2, 0, 2]`. How do we access the **last** element?\n- [x] `zeros[-1]`\n- [ ] `zeros[last]`\n- [ ] `zeros[3]`\n- [ ] `zeros.end()`\n&gt; Hint: In Python you can count from the end with negative indices.\n\n# What is the domain of the function $f(x) = \\sqrt{x}$ in the real numbers?\n- [x] $x \\ge 0$ (non-negative numbers)\n- [ ] $x &gt; 0$ (only positive numbers)\n- [ ] all of $\\mathbb{R}$ (everything)\n- [ ] $x \\le 0$ (non-positive numbers)\n\n# Put the lines in the right order to catch a gap in the domain of a function.\n1. try:\n2.     value = 1 / x\n3. except ZeroDivisionError:\n4.     print(\"Division by 0 is not allowed!\")\n&gt; Hint: First try (`try`), then catch the error (`except`).\n\n# What is the difference between `sympy` and `numpy`?\n- [x] `sympy` calculates symbolically (exactly), `numpy` calculates numerically (with numbers/arrays).\n- [ ] `sympy` is only for graphs, `numpy` for equations.\n- [ ] There is no difference.\n\n# If a function is $f(x) = x^2 + 2$ (a parabola shifted upwards), what is its range?\n- [x] $[2, \\infty)$ (all values from 2 upwards)\n- [ ] $(-\\infty, \\infty)$ (all numbers)\n- [ ] $[0, \\infty)$ (all positive numbers)\n&gt; Hint: The smallest value $x^2$ can take is 0. Plus 2 makes...?",
+    "crumbs": [
+      "Symmetry and Intercepts"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_1/wertebereich.html",
+    "href": "Qmd-Files/Kapitel_1/wertebereich.html",
+    "title": "Examining the Range",
+    "section": "",
+    "text": "Your answers are saved only in this browser.Do not save on this device\nExport my answers\nDelete answers on this page\nDelete all your answers in this course",
+    "crumbs": [
+      "Domain and Range",
+      "Determining the Range"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_1/wertebereich.html#python-implementation-determining-the-range",
+    "href": "Qmd-Files/Kapitel_1/wertebereich.html#python-implementation-determining-the-range",
+    "title": "Examining the Range",
+    "section": "Python implementation: determining the range",
+    "text": "Python implementation: determining the range\nAs we have just seen, determining the range is quite difficult because so many factors are involved.\n\nWe have to determine whether there are gaps in the domain.\nThen we have to examine: is the function linear or non-linear?\nIf it is linear, does it have a slope?\nIf it is non-linear, does it have a global minimum or maximum?\nIs there a horizontal asymptote?\nIf there is one, the function approaches it in its end behavior. It is then often a bound of the range that is not reached (but it can also be crossed).\n\nThankfully, sympy has a submodule sympy.calculus.util which contains the function function_range.\nThe function calculates exactly what its name says: the range of the function, i.e. all values the function can take.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\n\n\n\n\n\nNoteTip 1\n\n\n\n\n\n\nAs explained above, the main thing is to apply the function function_range.\nHowever, this function is located in a submodule of sympy.\nThis means it is not enough to import sympy; the submodule sympy.calculus.util has to be imported as well.\nOnce it is imported, the rest of the program should be relatively easy to write (assuming you do this chapter second to last, as recommended).\n\n\n\n\n\n\n\n\n\n\nNoteTip 2\n\n\n\n\n\n\nThe module can be imported like this:\n\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\nImportantly, function_range can now be used without a sympy. or even a sympy.calculus.util. in front of it!\nRemember to write an output that prints the range you determined.\n\n\n\n\n\n\n\n\n\n\nNoteA possible minimal solution\n\n\n\n\n\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.",
+    "crumbs": [
+      "Domain and Range",
+      "Determining the Range"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_1/wertebereich.html#checking-the-range-by-hand",
+    "href": "Qmd-Files/Kapitel_1/wertebereich.html#checking-the-range-by-hand",
+    "title": "Examining the Range",
+    "section": "Checking the range by hand",
+    "text": "Checking the range by hand\nFor the following functions, first think about which values they can take, and then check yourself with your program.\n\nRange of a parabola\n\n\nThe function \\(f(x)=x^2+4\\) has the range \\(W=[\\)\\(;\\ \\infty)\\).\n\n\n  ✓ Check\n  ⓘ Input help\n  \n    💬 Feedback\n    ⚙\n  \n\n\n\n\n\n\nRange of a rational function\n\n\nThe function \\(g(x)=\\dfrac{1}{x^2+1}\\) takes every value between  (never reached) and  (reached at \\(x=0\\)).\n\n\n  ✓ Check\n  ⓘ Input help\n  \n    💬 Feedback\n    ⚙\n  \n\n\n\n\n\nIf you have already worked through chapters 2 to 4 as recommended, this completes the basic curve sketching! In the chapter Drawing Graphs you will then learn how to use all these findings to create a meaningful visualization of your function.",
+    "crumbs": [
+      "Domain and Range",
+      "Determining the Range"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_1/definitionsbereich.html",
+    "href": "Qmd-Files/Kapitel_1/definitionsbereich.html",
+    "title": "Determining the Domain",
+    "section": "",
+    "text": "Your answers are saved only in this browser.Do not save on this device\nExport my answers\nDelete answers on this page\nDelete all your answers in this course",
+    "crumbs": [
+      "Domain and Range",
+      "Determining the Domain"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_1/definitionsbereich.html#finding-gaps-caused-by-the-denominator",
+    "href": "Qmd-Files/Kapitel_1/definitionsbereich.html#finding-gaps-caused-by-the-denominator",
+    "title": "Determining the Domain",
+    "section": "Finding gaps caused by the denominator",
+    "text": "Finding gaps caused by the denominator\nFor rational functions (functions that can be written as a fraction of two polynomials), division by zero is not defined. So the denominator must not become zero.\nOur task is now to write an algorithm that calculates the points at which the denominator can become zero.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\nBefore you start programming, a quick check by hand: enter all gaps in the domain, separated by commas. The order does not matter.\n\nDomain gaps by hand\n\n\nFor which \\(x\\) is \\(f(x)=\\dfrac{x+1}{x^2-9}\\) not defined? \\(x \\in \\{\\)  \\(\\}\\)\n\n\n  ✓ Check\n  ⓘ Input help\n  \n    💬 Feedback\n    ⚙\n  \n\n\n\n\n\n\nExercise on rational functions\nComplete the function domain_gaps(denominator): it receives a denominator (e.g. x**2 - 9) and returns the real gaps in the domain as an ascending sorted list.\nTip: A zero s is real if s.is_real holds. With a for loop and append you build the list of real points, see “Lists” in the Python Basics.\n\n  \n    Please enable JavaScript to load the interactive exercise.",
+    "crumbs": [
+      "Domain and Range",
+      "Determining the Domain"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_1/definitionsbereich.html#reading-the-denominator-from-a-function",
+    "href": "Qmd-Files/Kapitel_1/definitionsbereich.html#reading-the-denominator-from-a-function",
+    "title": "Determining the Domain",
+    "section": "Reading the denominator from a function",
+    "text": "Reading the denominator from a function\nSo now we know how to find out when a known denominator becomes zero. But having to type in the denominator directly is certainly not very practical.\nSo let’s look at how the denominator can be determined from a given function.\nIn a further step, the function can later be entered by the person using the program, and this input is then processed (a possible denominator is extracted and the domain is determined).\nExample: \\[\nf(x)= \\frac{1}{x-2}\n\\]\nFirst of all, we want to write a function that recognizes the denominator in this example.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\nLetting the user enter the function and determining the domain from it\nIdeally, a user would type in the function and our program would determine the domain directly from that input. Python has the command input() for exactly this: the program pauses, an input field appears below the code block, and whatever you type there (confirmed with Enter) is returned to the program as text. sympy.sympify() then turns this text back into a function. Run the block and enter, for example, x**2/(x-4).\n\n\n\n\n\n\nNoteIf input() does not work\n\n\n\n\n\ninput() needs a special browser security setting, which the page switches on by itself when it is first loaded. If a note below the block says that input() is not available, reload the page once. If it still does not work (some browser settings prevent it), replace the input(...) line with your function as text, for example function_input = \"x**2/(x-4)\".\n\n\n\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\n\nExercise: letting Python determine the domain\nTest the given program with different functions, including ones that may have no gaps in the domain and no fractions at all. Check the output: is it what you want?\nMaybe also try a function with a root. How does the program react? Do you already have an idea how to tackle this problem before moving on to the next section?\nA small reminder: If you want to rewrite things yourself rather than just run them: with + Code block you can append an empty block of your own below any block.",
+    "crumbs": [
+      "Domain and Range",
+      "Determining the Domain"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_1/definitionsbereich.html#finding-gaps-caused-by-a-root",
+    "href": "Qmd-Files/Kapitel_1/definitionsbereich.html#finding-gaps-caused-by-a-root",
+    "title": "Determining the Domain",
+    "section": "Finding gaps caused by a root",
+    "text": "Finding gaps caused by a root\nFunctions with a square root in particular (and roots with an even index in general) have gaps in their domain where the number under the root is negative. These gaps do not exist in the complex numbers, but they do in the real numbers that are commonly used (especially at school).\nSo, just like with rational functions, let’s first look at how we can read off from a suitable term for which values it is negative.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\nA quick check by hand here as well:\n\nCondition under the root\n\n\nFor which \\(x\\) is \\(g(x)=\\sqrt{6-2x}\\) defined? For all \\(x \\le\\) \n\n\n  ✓ Check\n  ⓘ Input help\n  \n    💬 Feedback\n    ⚙\n  \n\n\n\n\n\n\nExercise on finding negative values\nComplete the function root_domain(radicand): it receives the term under the root (e.g. x - 2) and returns the interval on which it is \\(\\ge 0\\). You only need the function from the example above.\n\n  \n    Please enable JavaScript to load the interactive exercise.",
+    "crumbs": [
+      "Domain and Range",
+      "Determining the Domain"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_1/definitionsbereich.html#reading-the-radicand-from-a-function",
+    "href": "Qmd-Files/Kapitel_1/definitionsbereich.html#reading-the-radicand-from-a-function",
+    "title": "Determining the Domain",
+    "section": "Reading the radicand from a function",
+    "text": "Reading the radicand from a function\nThis works very much like reading the denominator: first, a function has to be turned into a SymPy object. From SymPy, Python can then read the radicand by requesting the right argument.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\nExercise on finding negative values in the radicand\nComplete the function root_function_domain(g): it receives a whole root function (e.g. sympy.sqrt(x - 2)), reads out the radicand itself and returns the interval on which \\(g\\) is defined. Two steps you already know: read out the radicand (g.args), then solve the inequality.\n\n  \n    Please enable JavaScript to load the interactive exercise.",
+    "crumbs": [
+      "Domain and Range",
+      "Determining the Domain"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/index.html",
+    "href": "Qmd-Files/index.html",
+    "title": "Tutorial Overview",
+    "section": "",
+    "text": "Your answers are saved only in this browser.Do not save on this device\nExport my answers\nDelete answers on this page\nDelete all your answers in this course\n\nCurve sketching with Python\nOn this website, you will get to know Python using a topic you are already familiar with.\n\n\n\n\n\n\nNoteClick here for a few tips on using the tutorial!\n\n\n\n\n\nClickable blocks like this one will appear throughout the tutorial to keep things tidy, or to hide knowledge that some users already have.\n\n\n\nClick here!\n\nThis kind of clickable block will also appear in the tutorial for similar reasons, but unlike the one above it cannot contain icons.\n\nOn the left you see an overview of the whole tutorial.\nYou can expand and collapse the individual sections.\nThe tutorial is designed to be worked through from top to bottom. If you skip chapters or sections, you may not understand later parts.\nOn the right you see an overview of the page you are on. There you can see the headings of the current section and jump straight to them.\nAt the top of the bar you can see several symbols. The  is the search function, which lets you search the whole tutorial for a term. With the  symbol you can switch between light and dark mode. The  symbol activates reader mode, which hides the sidebars so you can read without distraction. With the  symbol you can switch between German and English; you end up on the same page in the other language.\nEvery now and then there will also be quizzes that let you check whether you have understood the material so far. Some questions have a hint button that gives you a nudge without revealing the answer. Try it out right here:\n\n---\nlocale: en\n---\n\n# Single choice quiz example\nWe will we will ____ you! (Queen)\n\n&gt; Think of the stomping and clapping in a stadium.\n\n1. [ ] `sing with`\n1. [ ] `ring`\n1. [ ] `roll`\n1. [x] `rock`\n\n# Multiple choice quiz example\nClassic rock bands of the 60s to 80s are:\n\n&gt; Several answers are correct. One of the bands won the Eurovision Song Contest and is usually counted as pop.\n- [x] `The Beatles`\n- [x] `Queen`\n- [ ] `ABBA`\n- [x] `The Rolling Stones`\n\n# Sorting quiz example\nIn which order were the following inventions made? (Top: closer to today, bottom: further in the past.)\n\n&gt; Siri was launched together with the iPhone 4S, so the first iPhone is older.\n\n2. `First iPhone`\n4. `First 3D printer`\n3. `Facebook`\n1. `First voice assistant (Siri)`\n\nThere are also calculation exercises where you type in a result and get immediate feedback with Check. Any mathematically equivalent form counts, so 2*x is just as correct as x+x. How to type powers, roots etc. is explained under Input help.\n\nExample of a calculation exercise\n\n\nWhat is \\(x \\cdot x + 3x - x^2\\) simplified? \n\n\n  ✓ Check\n  ⓘ Input help\n  \n    💬 Feedback\n    ⚙\n  \n\n\n\n\n\n\n\n\nGoal of the tutorial:\nThe tutorial is meant to introduce you to Python using curve sketching, a classic topic of the German Abitur (school-leaving exam).\nStep by step, we go through the steps of curve sketching and show how each of them can be carried out with Python.\nIn this tutorial you will often see code blocks like the following. These are Pyodide Python blocks; you can run them with the arrow symbol (▶), which executes the code inside them.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\nA Python environment is built into the code blocks.\nThis means you can program in them just like in Python!\n\n\n\n\n\n\nTipMore about the code blocks\n\n\n\nRunning and stopping: Besides the arrow, you can also run a block with Shift + Enter. Python runs in the background, so the page stays usable. If something takes too long (for example an endless loop), you can abort it with Stop.\nOn the right of the bar you find  (reset the block to its original code),  (copy the code) and + Code block, which appends another empty block below for trying things out.\nYour code is saved: Whatever you write in editable blocks is saved in this browser and restored on your next visit (but not run automatically). Next to “Editable” it then says “💾 Saved”. With  you delete the saved version of a block. In the  menu at the top right of every page you can turn saving off or delete everything that was saved, e.g. on a shared computer.\n\n\n\n\n\n\n\n\nNoteSetting up AI feedback\n\n\n\n\n\nBelow editable blocks there is a Feedback button. An AI then looks at your code and its output and gives you a hint. With every further click on the same block, the hint becomes more concrete (first a nudge, then the problem named concretely, then the solution approach in words). You never get finished code, though, so you still have to do the programming yourself.\nYou set this up once via the  symbol at the top right of the page; after that it applies to all pages and to your next visit as well:\n\nWithout an account: Choose the feedback mode “Copy prompt (no API key)” and save. Clicking Feedback then creates a ready-made text that you paste into ChatGPT, Claude or similar.\nWith a free account, using OpenRouter as an example (this is not a recommendation by the authors, other providers work just as well): Create a free account at OpenRouter and generate a key (API key) at openrouter.ai/keys. In the  menu, choose the provider template “OpenRouter”, paste the key and save. With Fetch models you can pick a different model; by default only free ones are shown. The button ℹ️ How do I get credentials? explains this for other providers as well.\n\nYour key stays in your browser. When you click Feedback, however, your code and the exercise are sent to the chosen provider.\nThe calculation exercises have their own Feedback button. On the first click, a separate settings window opens there, in which you enter the same data (provider, key, model) once more. This then also applies to all pages. For calculation exercises there are four hint levels, with the complete solution only on the fourth click.",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_1/index.html",
+    "href": "Qmd-Files/Kapitel_1/index.html",
+    "title": "Domain and Range",
+    "section": "",
+    "text": "The domain\nThe domain of a function \\(f\\) is the set of all values for which the function is defined, i.e. for which a valid function value can be calculated. With Python and the library SymPy, we can try to determine the domain for different kinds of functions. SymPy lets us work with mathematical symbols and expressions, for example to solve equations.\nThere are two reasons why a function can have a gap in its domain; both come from the limits of the operations involved.\nFirst, rational functions, i.e. fractions. Division by zero is not defined, so a function has a gap wherever it would otherwise divide by 0.\nSecond, functions with roots: even roots (square root, 4th root, \\(\\dots\\)) are not defined for negative numbers (unless you work in ℂ). Since negative values inside such a root are not defined, there is a gap here as well, for all values at which the expression under the root would be negative.\nWe look at the two kinds of analysis separately; of course, both can also be carried out in one Python program.\n\n\nThe range\nThe range (also called the image) of a function \\(f\\) is the set of all values the function can take, i.e. the set of all values obtained by plugging in every element of the domain. The range of a function can be restricted for various reasons. There is also the trivial case, which could be examined too, but we leave it out here to keep things clear. In addition, we recommend working through the other chapters first, since the chapter on the range relies on extrema, but also on asymptotes and the behavior of the function at boundaries or at infinity.\nOn the one hand, there are structural properties of the function that can restrict the range. These include the existence of global extrema and natural bounds of certain types of functions (exponential functions, root functions, absolute value functions, trigonometric functions, periodic functions). The behavior of the function at boundaries or at infinity also plays a role, mainly because of horizontal asymptotes, which the function approaches and which therefore often form a bound of the range.\n\n\nQuiz on Python basics\n\n---\nlocale: en\n---\n\n# What does the following Python code print?\n~~~python\na = 10\nb = 2\nprint(a / b)\n~~~\n- [x] 5.0\n- [ ] 5\n- [ ] 20\n- [ ] Error\n&gt; Hint: Remember what always happens with a division in Python (data type float).\n\n# We have a list `numbers = [10, 20, 30, 40]`. How do you access the first entry (10)?\n- [x] `numbers[0]`\n- [ ] `numbers[1]`\n- [ ] `numbers(0)`\n- [ ] `numbers.first()`\n&gt; Hint: Python always starts counting at 0.\n\n# What happens to the list here?\n~~~python\nvalues = [1, 2, 3]\nvalues[1] = 99\nprint(values)\n~~~\n- [x] `[1, 99, 3]`\n- [ ] `[1, 2, 3, 99]`\n- [ ] `[99, 2, 3]`\n- [ ] Error\n&gt; Hint: We overwrite the entry at index 1 (that is the second number).\n\n# Put the code in the right order to import SymPy and define x as a symbol.\n1. import sympy\n2. x = sympy.symbols('x')\n3. f = x**2 + 1\n&gt; Hint: First load the library, then define the variable.\n\n# Which mathematical operation is performed here: `y = x**3`?\n- [x] $x$ to the power of 3 (power)\n- [ ] $x$ times 3 (multiplication)\n- [ ] $x$ plus 3 (addition)\n- [ ] square root of $x$\n\n# Put the lines in the right order to define a simple function.\n1. def my_function(x):\n2.     result = x + 5\n3.     return result\n&gt; Hint: Think of the function header (`def`), the body and the return (`return`).\n\n# Which two reasons typically lead to a gap in the domain (in the real numbers)?\n- [x] Division by zero\n- [x] A negative number under an even root\n- [ ] Multiplication by zero\n- [ ] $x$ is negative in a parabola\n\n# What does this code print (conditional)?\n~~~python\nx = -5\nif x &lt; 0:\n    print(\"Negative\")\nelse:\n    print(\"Positive\")\n~~~\n- [x] \"Negative\"\n- [ ] \"Positive\"\n- [ ] Nothing\n- [ ] Error\n\n# How do you add an element to an existing list in Python?\n~~~python\nmy_list = [1, 2]\n# What is missing here?\nprint(my_list) # should be [1, 2, 3]\n~~~\n- [x] `my_list.append(3)`\n- [ ] `my_list.add(3)`\n- [ ] `my_list + 3`\n- [ ] `my_list.insert(3)`",
+    "crumbs": [
+      "Domain and Range"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_2/achsenschnittpunkte.html",
+    "href": "Qmd-Files/Kapitel_2/achsenschnittpunkte.html",
+    "title": "Finding the y-Intercept",
+    "section": "",
+    "text": "Your answers are saved only in this browser.Do not save on this device\nExport my answers\nDelete answers on this page\nDelete all your answers in this course",
+    "crumbs": [
+      "Symmetry and Intercepts",
+      "Finding the y-Intercept"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_2/achsenschnittpunkte.html#determining-the-y-intercept",
+    "href": "Qmd-Files/Kapitel_2/achsenschnittpunkte.html#determining-the-y-intercept",
+    "title": "Finding the y-Intercept",
+    "section": "Determining the y-intercept",
+    "text": "Determining the y-intercept\nAssuming the function is defined at \\(x=0\\), determining the y-intercept is not too difficult.\nAs in the examination of symmetry, we can use the function .subs to replace the corresponding parts of the function.\nIn the following code block, write code that calculates and prints the y-intercept of the example function \\(f(x)=x^2+4x+7\\).\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\nOnce that works, wrap your code in a function y_intercept(function_f) that returns the y-intercept. Hidden tests check it with several functions as soon as you click Check:\n\n  \n    Please enable JavaScript to load the interactive exercise.\n  \n\n\nExtra question: What does your function return for \\(f(x)=\\frac{1}{x}\\)? sympy answers with zoo (“complex infinity”). This is exactly the case from the sentence above: the function is not defined at \\(x=0\\) and therefore has no y-intercept.\nOnce you have managed that, there is nothing left to do here; feel free to try one of the other chapters.",
+    "crumbs": [
+      "Symmetry and Intercepts",
+      "Finding the y-Intercept"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_2/nullstellen.html",
+    "href": "Qmd-Files/Kapitel_2/nullstellen.html",
+    "title": "Finding Zeros",
+    "section": "",
+    "text": "Your answers are saved only in this browser.Do not save on this device\nExport my answers\nDelete answers on this page\nDelete all your answers in this course\nOn this page, you will learn how to find zeros with Python.",
+    "crumbs": [
+      "Symmetry and Intercepts",
+      "Finding Zeros"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_2/nullstellen.html#checking-the-zeros-in-the-graph",
+    "href": "Qmd-Files/Kapitel_2/nullstellen.html#checking-the-zeros-in-the-graph",
+    "title": "Finding Zeros",
+    "section": "Checking the zeros in the graph",
+    "text": "Checking the zeros in the graph\nYou should always double-check a result from the computer. Here, the quickest way is a graph: run the following block and use the magnifier from the toolbar below the plot to zoom in on the places where the graph crosses the \\(x\\)-axis. Do they match what solveset calculated?\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.",
+    "crumbs": [
+      "Symmetry and Intercepts",
+      "Finding Zeros"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_2/nullstellen.html#exercise-on-finding-zeros",
+    "href": "Qmd-Files/Kapitel_2/nullstellen.html#exercise-on-finding-zeros",
+    "title": "Finding Zeros",
+    "section": "Exercise on finding zeros",
+    "text": "Exercise on finding zeros\nUsing the code given above, write code that finds the zeros of a function and then produces output that tells the users of the program which zeros the given function has.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\nA small tip: You can also sort the zeros so that they appear in number-line order instead of the order in which they were calculated.\nTest your program with \\(g(x) = x^3 - x^2 - 6x\\) and enter the zeros here (separated by commas, any order):\n\nChecking the zeros\n\n\nZeros of \\(g(x) = x^3 - x^2 - 6x\\): \\(x \\in \\{\\)  \\(\\}\\)\n\n\n  ✓ Check\n  ⓘ Input help\n  \n    💬 Feedback\n    ⚙",
+    "crumbs": [
+      "Symmetry and Intercepts",
+      "Finding Zeros"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_2/nullstellen.html#dealing-with-problems-when-finding-zeros",
+    "href": "Qmd-Files/Kapitel_2/nullstellen.html#dealing-with-problems-when-finding-zeros",
+    "title": "Finding Zeros",
+    "section": "Dealing with problems when finding zeros",
+    "text": "Dealing with problems when finding zeros\nSince this tutorial only aims to give a small insight into using Python based on one specific topic, various problems that can arise when finding zeros are not covered here.\n\nNot solvable by sympy.solveset: There are some functions, e.g. composite functions containing trigonometric functions, that cannot be solved by sympy.solveset. For these functions, however, it is usually possible to determine the zeros numerically. That means you can use algorithms such as bisection to find zeros.\nPeriodicity: For periodic functions such as sine and cosine, all zeros are determined correctly in theory, but the result is not as easy to read as for other zeros.\n\nThese problems can be solved, though. If the exercises so far have seemed a bit too easy, feel free to try to handle these problems in your code!",
+    "crumbs": [
+      "Symmetry and Intercepts",
+      "Finding Zeros"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_3/asymptoten.html",
+    "href": "Qmd-Files/Kapitel_3/asymptoten.html",
+    "title": "Finding Asymptotes",
+    "section": "",
+    "text": "Your answers are saved only in this browser.Do not save on this device\nExport my answers\nDelete answers on this page\nDelete all your answers in this course",
+    "crumbs": [
+      "End Behavior and Asymptotes",
+      "Finding Asymptotes"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_3/asymptoten.html#vertical-asymptotes",
+    "href": "Qmd-Files/Kapitel_3/asymptoten.html#vertical-asymptotes",
+    "title": "Finding Asymptotes",
+    "section": "Vertical asymptotes",
+    "text": "Vertical asymptotes\nA vertical asymptote is a vertical line of the form \\(x = a\\) that the function approaches. Such asymptotes typically occur where the function has gaps in its domain, e.g. with division by zero.\nThey can also occur with other functions such as logarithms, but for simplicity we only consider cases with division by zero. Advanced learners are welcome to add a check for logarithmic functions.\nThe graph of the function \\(f(x)\\) has a vertical asymptote at \\(x=a\\) if at least one of the following limits holds: \\[ \\lim_{x \\to a^+} f(x) = \\pm\\infty \\quad \\text{or} \\quad \\lim_{x \\to a^-} f(x) = \\pm\\infty \\]\nQuick check: Is the maths solid? Then the code will be easier.\n\nPre-check – zeros of the denominator\n\n\nAt which \\(x\\) is the denominator of \\(f(x)=\\dfrac{x}{x^2-9}\\) equal to zero? \\(x \\in \\{\\)  \\(\\}\\)\n\n\n  ✓ Check\n  ⓘ Input help\n  \n    💬 Feedback\n    ⚙\n  \n\n\n\n\n\n\nPre-check – gap or asymptote?\n\n\nWe have \\(\\dfrac{x^2-1}{x-1}=x+1\\) for \\(x\\neq 1\\). What is the value of the reduced function \\(x+1\\) at \\(x=1\\)? There is no asymptote there, only a gap. \\(y =\\) \n\n\n  ✓ Check\n  ⓘ Input help\n  \n    💬 Feedback\n    ⚙\n  \n\n\n\n\n\n\nPython implementation: finding vertical asymptotes\nTo find the vertical asymptote, we proceed as in the section Domain. A small reminder of the basics from that section:\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\nExercise\nComplete the function vertical_asymptotes(f) so that it returns the \\(x\\)-values of all vertical asymptotes as an ascending sorted list. The skeleton is ready, only one line is missing (sorted(...) turns a set into a sorted list).\nNote that an asymptote only exists where \\(\\text{the denominator}=0 \\text{ and the numerator } \\neq 0\\). This holds for a fully reduced fraction: for \\(f(x) = \\frac{x^2-1}{(x-1)^3}\\), numerator and denominator are both zero at \\(x = 1\\), but after reducing (\\(\\frac{x+1}{(x-1)^2}\\)) you can see that there is an asymptote after all. sympy.cancel(f) reduces the fraction for you.\n\n  \n    Please enable JavaScript to load the interactive exercise.\n  \n\n\n\n\n\n\n\n\nNoteTip 1:\n\n\n\n\n\n\nsympy.solveset(denominator, x, sympy.Reals) returns the real zeros of the denominator as a set.\nSince the fraction is already reduced, the numerator is \\(\\neq 0\\) at each of these points. So they really are asymptotes.\n\n\n\n\n\n\n\n\n\n\nNoteTip 2:\n\n\n\n\n\nThe line could look like this: return sorted(sympy.solveset(denominator, x, sympy.Reals))",
+    "crumbs": [
+      "End Behavior and Asymptotes",
+      "Finding Asymptotes"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_3/asymptoten.html#horizontal-asymptotes",
+    "href": "Qmd-Files/Kapitel_3/asymptoten.html#horizontal-asymptotes",
+    "title": "Finding Asymptotes",
+    "section": "Horizontal asymptotes",
+    "text": "Horizontal asymptotes\nA horizontal asymptote is a horizontal line of the form \\(y=a\\) that the function approaches in its end behavior.\nThe line \\(y=a\\) is a horizontal asymptote of \\(f(x)\\) if for \\(a\\in \\mathbb{R}\\): \\[ \\lim_{x \\to \\infty} f(x) = a \\quad \\text{or} \\quad \\lim_{x \\to -\\infty} f(x) = a \\]\nQuick check:\n\nPre-check – limit at infinity\n\n\nWhat is the limit of \\(f(x)=\\dfrac{3x^2+1}{x^2-5}\\) as \\(x\\to\\infty\\)? \\(\\lim f(x) =\\) \n\n\n  ✓ Check\n  ⓘ Input help\n  \n    💬 Feedback\n    ⚙\n  \n\n\n\n\n\n\nPython implementation: finding horizontal asymptotes\nHere we proceed as in Examining End Behavior, i.e. we determine the sympy.limits. However, we need one more step that we have not used so far: a horizontal asymptote only exists if the value is real (finite).\nComplete the function horizontal_asymptotes(f): it should return all \\(y\\)-values of horizontal asymptotes as an ascending sorted list (no duplicates, an empty list if there is no asymptote).\n\n  \n    Please enable JavaScript to load the interactive exercise.\n  \n\n\n\n\n\n\n\n\nNoteTip:\n\n\n\n\n\n\nThe property .is_finite tells you whether a value is finite (for oo it is False).\nThe check could look like this: if g.is_finite and g not in result:",
+    "crumbs": [
+      "End Behavior and Asymptotes",
+      "Finding Asymptotes"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_3/asymptoten.html#oblique-asymptotes",
+    "href": "Qmd-Files/Kapitel_3/asymptoten.html#oblique-asymptotes",
+    "title": "Finding Asymptotes",
+    "section": "Oblique asymptotes",
+    "text": "Oblique asymptotes\nAn oblique (or slant) asymptote is a line of the form \\(y = mx + b\\) that the function approaches.\nIt occurs with rational functions when the degree of the numerator polynomial is exactly one greater than the degree of the denominator polynomial and the polynomial division leaves a remainder. The result of the polynomial division is the equation of the asymptote.\nThe line \\(f_a(x) = mx + b\\) is an oblique asymptote of \\(f\\) if the distance between \\(f\\) and \\(f_a\\) tends to 0 at infinity: \\[ \\lim_{x \\to \\infty} | f(x) - f_a(x) | = 0 \\quad \\text{or} \\quad \\lim_{x \\to -\\infty} | f(x) - f_a(x) | = 0 \\]\nQuick check:\n\nPre-check – compare degrees\n\n\nBy how much is the numerator degree greater than the denominator degree for \\(f(x)=\\dfrac{x^3+1}{x^2-4}\\)? Difference \\(=\\) \n\n\n  ✓ Check\n  ⓘ Input help\n  \n    💬 Feedback\n    ⚙\n  \n\n\n\n\n\n\nPre-check – polynomial division\n\n\nCarry out the polynomial division \\((x^2+x+2):(x-1)\\) by hand. The result without remainder is \\(x+2\\), the remainder is \\(4\\). So which oblique asymptote does \\(f(x)=\\dfrac{x^2+x+2}{x-1}\\) have? \\(y =\\) \n\n\n  ✓ Check\n  ⓘ Input help\n  \n    💬 Feedback\n    ⚙\n  \n\n\n\n\n\n\nPython implementation: finding oblique asymptotes\nLike many of the calculations we have already done in other chapters, polynomial division can be carried out in Python with the sympy library.\nThe matching function is called sympy.div(). The degree of a function can be determined with sympy.degree.\nComplete the function oblique_asymptote(f): it should return the line \\(mx+b\\) of the oblique asymptote, or None if there is none. Note that one exists only if the numerator degree is exactly one greater and the polynomial division leaves a remainder.\n\n  \n    Please enable JavaScript to load the interactive exercise.\n  \n\n\n\n\n\n\n\n\nNoteTip 1:\n\n\n\n\n\n\nTwo conditions must hold together: deg_n == deg_d + 1 and remainder != 0.\nWith if not (...): you can handle the no case first and return None.\n\n\n\n\n\n\n\n\n\n\nNoteTip 2:\n\n\n\n\n\nif deg_n != deg_d + 1 or remainder == 0:\n    return None\nreturn quotient",
+    "crumbs": [
+      "End Behavior and Asymptotes",
+      "Finding Asymptotes"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_3/asymptoten.html#final-quiz",
+    "href": "Qmd-Files/Kapitel_3/asymptoten.html#final-quiz",
+    "title": "Finding Asymptotes",
+    "section": "Final quiz",
+    "text": "Final quiz\n\n---\nlocale: en\nshuffleQuestions: true\n---\n\n# What does `sympy.limit(1/x, x, sympy.oo)` return?\n- [x] `0`\n- [ ] `oo`\n- [ ] `1`\n- [ ] `zoo`\n&gt; Hint: $\\frac{1}{x}$ becomes arbitrarily small for large $x$. So $y=0$ is a horizontal asymptote.\n\n# What is `sympy.oo.is_finite`?\n- [x] `False`\n- [ ] `True`\n- [ ] `None`\n&gt; Hint: Infinity is not a finite number. That is exactly why it is used to filter out horizontal asymptotes.\n\n# $f(x)=\\dfrac{x^2-1}{x-1}$: numerator and denominator are zero at $x=1$. What is there?\n- [ ] a vertical asymptote\n- [x] only a gap, after reducing $x+1$ remains\n- [ ] an oblique asymptote\n&gt; Hint: Always reduce completely first, then examine the denominator.\n\n# Numerator degree 3, denominator degree 2 (with a remainder in the polynomial division). Which asymptote arises?\n- [ ] a horizontal asymptote\n- [x] an oblique asymptote\n- [ ] a non-linear asymptote\n&gt; Hint: numerator degree = denominator degree + 1.\n\n# Numerator degree 4, denominator degree 2 (with a remainder in the polynomial division). Which asymptote arises?\n- [ ] a horizontal asymptote\n- [ ] an oblique asymptote\n- [x] a non-linear asymptote\n&gt; Hint: numerator degree &gt; denominator degree + 1, so the quotient is no longer a line.\n\nOnce you have finished this section, you have successfully completed the chapter End Behavior and Asymptotes. Next up is the chapter Monotonicity and Concavity.",
+    "crumbs": [
+      "End Behavior and Asymptotes",
+      "Finding Asymptotes"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_3/index.html",
+    "href": "Qmd-Files/Kapitel_3/index.html",
+    "title": "End Behavior and Asymptotes",
+    "section": "",
+    "text": "Chapter overview\nThis chapter has two sections dealing with the following topics:\n\nEnd behavior\n\nThis section deals with the behavior of functions at infinity. That is, we look at how the function values change when you plug in \\(\\infty\\) or \\(-\\infty\\). This is generally called the end behavior of the function.\n\n\n\n\nAsymptotes\n\nThis section deals with the concept of asymptotes.\nThere are horizontal and vertical asymptotes.\nVertical asymptotes form, for example, around gaps in the domain, such as a point where you would divide by zero.\nHorizontal asymptotes, on the other hand, form for example with fractions such as \\(\\frac{1}{x}\\). The graph gets arbitrarily close to a vertical asymptote without reaching it (the function is not defined there). A horizontal asymptote describes the behavior at infinity, but the graph may well cross it.\n\n\n\n\nQuiz: Symmetry & intercepts\n\n---\nlocale: en\n---\n\n# Which mathematical condition must hold for a function to be symmetric about the y-axis?\n1. [x] $f(x) = f(-x)$\n1. [ ] $f(-x) = -f(x)$\n1. [ ] $f(x) = -f(x)$\n1. [ ] $f(0) = 0$\n&gt; Hint: If you plug in the negative value for $x$, you must get the original function value back (reflection in the y-axis).\n\n# Which Python command replaces the variable `x` with `-x` in `sympy` (substitution)?\n1. [x] `f.subs(x, -x)`\n1. [ ] `f.replace(x, -x)`\n1. [ ] `f.set(x, -x)`\n1. [ ] `f(-x)`\n&gt; Hint: The command comes from the word \"substitute\".\n\n# Put the steps of a symmetry test in Python into the right order.\n1. f_minus_x = f.subs(x, -x)\n2. difference = f - f_minus_x\n3. if sympy.simplify(difference) == 0:\n4.     print(\"Symmetric about the y-axis\")\n&gt; Hint: First substitute, then compare (take the difference), then check/simplify, then output.\n\n# What do you have to do to calculate the intersection with the y-axis (y-intercept)?\n1. [x] I set $x = 0$ and calculate $f(0)$.\n1. [ ] I set $f(x) = 0$ and solve for $x$.\n1. [ ] I set $x = 1$.\n&gt; Hint: The y-axis runs exactly where the x-coordinate is zero.\n\n# Which Python code calculates the y-intercept correctly?\n1. [x] `y_value = f.subs(x, 0)`\n1. [ ] `y_value = sympy.solve(f, 0)`\n1. [ ] `y_value = f(0)`\n&gt; Hint: We want to plug in (substitute) a concrete value for $x$.\n\n# What do we calculate when we use `sympy.solveset(f, x, domain=sympy.S.Reals)`?\n1. [x] The zeros (intersections with the x-axis).\n1. [ ] The y-intercept.\n1. [ ] The extrema.\n1. [ ] The symmetry.\n&gt; Hint: `solve` looks for solutions of an equation (by default $f(x)=0$).\n\n# A function is point-symmetric about the origin. What holds?\n1. [x] $f(-x) = -f(x)$\n1. [ ] $f(x) = f(-x)$\n1. [ ] $f(x) &gt; 0$\n&gt; Hint: If you flip the sign of $x$, the sign of the result must flip too (double reflection).\n\n# Why do we use `sympy.simplify(...)` in the symmetry test?\n1. [x] Because otherwise Python sometimes does not recognize that two terms are mathematically equal (e.g. $x(x+1)$ vs $x^2+x$).\n1. [ ] To take the derivative.\n1. [ ] To plot the function.\n&gt; Hint: Computers often just compare strings; `simplify` reduces the term mathematically as far as possible.\n\n# What does it mean if `sympy.solveset` returns `EmptySet()`?\n1. [x] The function has no zeros (does not cross the x-axis).\n1. [ ] An error occurred in the code.\n1. [ ] The function is 0 everywhere.\n&gt; Hint: An \"empty set\" is a set without content, so no solutions were found.\n\n# Which point is guaranteed to lie on the graph of EVERY function of the form $f(x) = ax^3 + bx$ (polynomial with only odd exponents)?\n1. [x] The origin $(0|0)$.\n1. [ ] The point $(1|1)$.\n1. [ ] No intersection with the axes.\n&gt; Hint: If all exponents are odd, there is no constant term (the number without x). What happens at $x=0$?",
+    "crumbs": [
+      "End Behavior and Asymptotes"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_4/extrempunkte.html",
+    "href": "Qmd-Files/Kapitel_4/extrempunkte.html",
+    "title": "Finding Extrema",
+    "section": "",
+    "text": "Your answers are saved only in this browser.Do not save on this device\nExport my answers\nDelete answers on this page\nDelete all your answers in this course",
+    "crumbs": [
+      "Monotonicity and Concavity",
+      "Finding Extrema / Saddle Points"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_4/extrempunkte.html#local-vs.-global-extrema",
+    "href": "Qmd-Files/Kapitel_4/extrempunkte.html#local-vs.-global-extrema",
+    "title": "Finding Extrema",
+    "section": "Local vs. global extrema",
+    "text": "Local vs. global extrema\nThe distinction between local and global extrema is not that easy to understand.\nA function can have several local extrema, but at most one global maximum value and at most one global minimum value (which can, however, be attained at several points, e.g. for \\(\\sin(x)\\)).\nA function definitely has an extremum at the point \\(x\\) if the following two conditions are met. The first one is necessary (without it there is no extremum); together they are sufficient.\n\n\\(f'(x)=0\\) This means that the slope at this point is zero; the value does not keep rising/falling.\n\n\\(f''(x) \\neq 0\\) This means that the concavity at this point is either positive or negative. This makes the monotonic behavior change. If \\(f''(x) = 0\\), there can still be an extremum (see the box below).\n\nThe 2nd point can also be checked differently. If you do not want to compute the second derivative, you can plug a value slightly smaller and slightly larger than \\(x\\) into the derivative; if the signs differ, there is an extremum.\nIf the sign is minus for the smaller \\(x\\)-value and plus for the larger one, it is a minimum;\nif the sign is plus for the smaller \\(x\\)-value and minus for the larger one, it is a maximum.\n\nGlobal extrema\nFor a local maximum/minimum to be a global maximum/minimum, a further condition must hold:\nFor a global maximum \\(x_{max}\\): \\(f(x_{max}) \\ge f(x) \\forall x \\in \\text{domain}\\)\nFor a global minimum \\(x_{min}\\): \\(f(x_{min}) \\le f(x) \\forall x \\in \\text{domain}\\)",
+    "crumbs": [
+      "Monotonicity and Concavity",
+      "Finding Extrema / Saddle Points"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_4/extrempunkte.html#saddle-points",
+    "href": "Qmd-Files/Kapitel_4/extrempunkte.html#saddle-points",
+    "title": "Finding Extrema",
+    "section": "Saddle points",
+    "text": "Saddle points\nA saddle point is a potential extremum that turns out not to be one.\nPotential in the sense that for a saddle point it holds that: \\(f'(x_{sat})=0\\), but unlike an extremum, the second derivative must satisfy \\(f''(x_{sat})=0\\).\nSo a saddle point is a point of a function where the slope is zero, but the direction of the function does not change before and after it.\n\n\n\n\n\n\nWarningCareful with \\(f''(x) = 0\\)\n\n\n\n\\(f''(x) = 0\\) alone is not enough for a saddle point. Example: \\(f(x) = x^4\\) has both \\(f'(0)=0\\) and \\(f''(0)=0\\) at \\(x=0\\), yet there is a minimum there. Conversely, this also means: the condition \\(f''(x)\\neq 0\\) above is sufficient for an extremum, but not necessary.\nYou are on the safe side in two ways:\n\nwith the third derivative: if \\(f'(x)=0\\), \\(f''(x)=0\\) and \\(f'''(x)\\neq 0\\), it is a saddle point.\nwith the sign change of \\(f'\\) (see exercise 2 below): if \\(f'\\) changes sign, it is an extremum, otherwise a saddle point.\n\n\n\nQuick check: Before you program, calculate once by hand. Is the procedure solid (differentiate, set to zero, plug into the second derivative)?\n\nPre-check – extremum by hand\n\n\nFor \\(g(x)=x^2-4x\\) we have \\(g'(x)=\\) . The derivative is zero at \\(x=\\)  and the second derivative there is \\(g''(x)=\\) . Since \\(g''&gt;0\\), there is a minimum.\n\n\n  ✓ Check\n  ⓘ Input help\n  \n    💬 Feedback\n    ⚙",
+    "crumbs": [
+      "Monotonicity and Concavity",
+      "Finding Extrema / Saddle Points"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_4/extrempunkte.html#exercise-finding-saddle-points",
+    "href": "Qmd-Files/Kapitel_4/extrempunkte.html#exercise-finding-saddle-points",
+    "title": "Finding Extrema",
+    "section": "Exercise: finding saddle points",
+    "text": "Exercise: finding saddle points\nAn easy exercise to get started.\nWith the explanation above, it should hopefully not be too hard to write code that tests whether a function has a saddle point.\nIdeally, of course, code that checks for maxima/minima and saddle points\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\nThen wrap your solution in a function saddle_points(function_f) that returns a list of the \\(x\\)-values of all saddle points (an empty list if there are none). The hidden tests also include \\(f(x)=x^4\\), so remember the warning box above.\n\n  \n    Please enable JavaScript to load the interactive exercise.",
+    "crumbs": [
+      "Monotonicity and Concavity",
+      "Finding Extrema / Saddle Points"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_4/extrempunkte.html#exercise-2-finding-extrema-without-the-2nd-derivative",
+    "href": "Qmd-Files/Kapitel_4/extrempunkte.html#exercise-2-finding-extrema-without-the-2nd-derivative",
+    "title": "Finding Extrema",
+    "section": "Exercise 2: finding extrema without the 2nd derivative",
+    "text": "Exercise 2: finding extrema without the 2nd derivative\nAfter the warm-up, here is a somewhat trickier exercise.\nAs already explained in the text, there is not only the variant of checking for extrema that we have already coded, but at least one more that does not need the 2nd derivative.\nComplete the function extrema_sign_change(function_f). It should return the \\(x\\)-values of all extrema as an ascending sorted list, without the 2nd derivative: you check whether \\(f'\\) has a different sign to the left and to the right of the zero.\n\n  \n    Please enable JavaScript to load the interactive exercise.\n  \n\n\n\n\n\n\n\n\nNoteTip:\n\n\n\n\n\nTwo numbers have different signs exactly when their product is negative: if left * right &lt; 0:\n\n\n\nAlso test your program with \\(f(x)=x^4\\): here the sign change finds the minimum where the test with the 2nd derivative fails.",
+    "crumbs": [
+      "Monotonicity and Concavity",
+      "Finding Extrema / Saddle Points"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_4/extrempunkte.html#final-quiz",
+    "href": "Qmd-Files/Kapitel_4/extrempunkte.html#final-quiz",
+    "title": "Finding Extrema",
+    "section": "Final quiz",
+    "text": "Final quiz\n\n---\nlocale: en\nshuffleQuestions: true\n---\n\n# $f'(x_0)=0$ and $f''(x_0)=-2$. What is at $x_0$?\n- [x] a maximum\n- [ ] a minimum\n- [ ] a saddle point\n&gt; Hint: $f''&lt;0$ means concave down, so a peak.\n\n# $f'(x_0)=0$, $f''(x_0)=0$ and $f'''(x_0)=6$. What is at $x_0$?\n- [ ] a maximum\n- [ ] a minimum\n- [x] a saddle point\n&gt; Hint: The third derivative is not zero.\n\n# $f'$ is negative to the left of $x_0$ and positive to the right. What is at $x_0$?\n- [ ] a maximum\n- [x] a minimum\n- [ ] a saddle point\n&gt; Hint: First the function falls, then it rises.\n\n# What does `sympy.solve(3*x**2 - 12, x)` return (with `x = sympy.symbols('x')`)?\n- [ ] `[2]`\n- [x] `[-2, 2]`\n- [ ] `[4]`\n&gt; Hint: $3x^2=12$ gives $x^2=4$, so $x=\\pm 2$.\n\n# $f(x)=x^4$ has $f''(0)=0$. What is at $x=0$?\n- [ ] a saddle point\n- [x] a minimum\n- [ ] no extremum\n&gt; Hint: $f'(x)=4x^3$ changes from negative to positive at $0$.\n\nWhen you are done, continue with Concavity.",
+    "crumbs": [
+      "Monotonicity and Concavity",
+      "Finding Extrema / Saddle Points"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_4/kruemmungsverhalten.html",
+    "href": "Qmd-Files/Kapitel_4/kruemmungsverhalten.html",
+    "title": "Examining Concavity",
+    "section": "",
+    "text": "Your answers are saved only in this browser.Do not save on this device\nExport my answers\nDelete answers on this page\nDelete all your answers in this course",
+    "crumbs": [
+      "Monotonicity and Concavity",
+      "Examining Concavity"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_4/kruemmungsverhalten.html#determining-concavity",
+    "href": "Qmd-Files/Kapitel_4/kruemmungsverhalten.html#determining-concavity",
+    "title": "Examining Concavity",
+    "section": "Determining concavity",
+    "text": "Determining concavity\nTo determine the concavity of a function, we use the second derivative \\(f''(x)\\), It is the derivative of \\(f'\\) and therefore shows whether \\(f'\\) increases or decreases. The steps for determining concavity are as follows:\n\nCompute the second derivative: Compute the second derivative \\(f''(x)\\) of the function \\(f(x)\\).\nFind the zeros of the second derivative: Determine the zeros of the second derivative by solving the equation \\(f''(x) = 0\\). These zeros are potential inflection points, where the concavity might change.\nSet up the intervals: The zeros of \\(f''(x)\\) form the boundaries of the intervals.\nCheck the sign of \\(f''(x)\\): For each interval, choose any value inside it and plug it into \\(f''(x)\\). The sign of the result tells you the concavity on that whole interval:\n\n\\(f''(x) &gt; 0 \\implies\\) The graph is concave up (convex) on this interval.\n\\(f''(x) &lt; 0 \\implies\\) The graph is concave down (concave) on this interval.",
+    "crumbs": [
+      "Monotonicity and Concavity",
+      "Examining Concavity"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_4/kruemmungsverhalten.html#concavity-in-a-picture",
+    "href": "Qmd-Files/Kapitel_4/kruemmungsverhalten.html#concavity-in-a-picture",
+    "title": "Examining Concavity",
+    "section": "Concavity in a picture",
+    "text": "Concavity in a picture\nThe following plot shows \\(f(x) = x^4 - 4x^3 + 2\\). The green background marks the regions where \\(f''(x) &gt; 0\\) (concave up), the red one those with \\(f''(x) &lt; 0\\) (concave down). Imagine riding a bike from left to right along the graph: in the green region you steer to the left, in the red one to the right.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\nQuick check: Where does the concavity change? Once by hand.\n\nPre-check – concavity by hand\n\n\nFor \\(g(x)=x^3-3x\\) we have \\(g''(x)=\\) . The graph is concave up for \\(x&gt;\\)  and concave down for \\(x&lt;0\\).\n\n\n  ✓ Check\n  ⓘ Input help\n  \n    💬 Feedback\n    ⚙",
+    "crumbs": [
+      "Monotonicity and Concavity",
+      "Examining Concavity"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_4/kruemmungsverhalten.html#exercise-determining-concavity",
+    "href": "Qmd-Files/Kapitel_4/kruemmungsverhalten.html#exercise-determining-concavity",
+    "title": "Examining Concavity",
+    "section": "Exercise: determining concavity",
+    "text": "Exercise: determining concavity\nThe code above does not produce any output yet.\nTo test whether you have really understood the code, try to write output that assigns the matching description to the values determined in the function.\nThat is: on which interval does the function have which concavity?\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\nCheck – concavity intervals\n\n\n\\(f(x) = x^4 - 4x^3 + 2\\) is concave down between \\(x =\\)  and \\(x =\\) , and concave up otherwise.\n\n\n  ✓ Check\n  ⓘ Input help\n  \n    💬 Feedback\n    ⚙\n  \n\n\n\n\n\n\n\n\n\n\n\nNoteHint\n\n\n\n\n\n\nThink about which part of the code is responsible for calculating the concavity\nThen think about why the variables are named the way they are (what does each one mean?)\nFinally: what was explained in the text above? What has to be stated when describing the concavity?\n\n\n\n\nThen wrap it in a function. Complete concavity_intervals(f): it returns a list of tuples (from, to, kind), where kind is either 'up' (concave up) or 'down' (concave down).\n\n  \n    Please enable JavaScript to load the interactive exercise.\n  \n\n\nOnce you are done, the last part of this chapter is the section Finding Inflection Points.",
+    "crumbs": [
+      "Monotonicity and Concavity",
+      "Examining Concavity"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_4/wendepunkte.html",
+    "href": "Qmd-Files/Kapitel_4/wendepunkte.html",
+    "title": "Finding Inflection Points",
+    "section": "",
+    "text": "Your answers are saved only in this browser.Do not save on this device\nExport my answers\nDelete answers on this page\nDelete all your answers in this course",
+    "crumbs": [
+      "Monotonicity and Concavity",
+      "Finding Inflection Points"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_4/wendepunkte.html#exercise-finding-inflection-points",
+    "href": "Qmd-Files/Kapitel_4/wendepunkte.html#exercise-finding-inflection-points",
+    "title": "Finding Inflection Points",
+    "section": "Exercise: finding inflection points",
+    "text": "Exercise: finding inflection points\nThe code above does not determine any inflection points yet, but it offers a very good basis for doing so.\nUse your knowledge from the previous sections to write code that determines the inflection points of a function.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\nWhat must your program find for the function above?\n\nCheck – inflection points\n\n\n\\(f(x) = x^4 - 4x^3 + 2\\) has the inflection points \\(W_1(\\)\\(\\,|\\,\\)\\()\\) and \\(W_2(\\)\\(\\,|\\,\\)\\()\\).\n\n\n  ✓ Check\n  ⓘ Input help\n  \n    💬 Feedback\n    ⚙\n  \n\n\n\n\n\nDo you notice something about \\(W_1\\)? There, \\(f'(0) = 0\\) as well: the tangent is horizontal. An inflection point with a horizontal tangent is exactly a saddle point.\nTurn your code into a function inflection_points(function_f) that returns the sorted list of the \\(x\\)-values of all inflection points. Hidden tests check it:\n\n  \n    Please enable JavaScript to load the interactive exercise.\n  \n\n\nFood for thought: do you check with \\(f'''(x)\\neq 0\\)? Then look at \\(f(x)=x^5\\). At \\(x=0\\), \\(f'''(0)=0\\), and yet the concavity changes. With the sign change of \\(f''\\) you will find this inflection point.",
+    "crumbs": [
+      "Monotonicity and Concavity",
+      "Finding Inflection Points"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_4/wendepunkte.html#bonus-exercise",
+    "href": "Qmd-Files/Kapitel_4/wendepunkte.html#bonus-exercise",
+    "title": "Finding Inflection Points",
+    "section": "Bonus exercise",
+    "text": "Bonus exercise\nIf all the exercises so far were too easy for you, you can write a program below that combines all sections of this chapter.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\nOnce you are done with that, this chapter is complete.",
+    "crumbs": [
+      "Monotonicity and Concavity",
+      "Finding Inflection Points"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_5/graphen_beschriften.html",
+    "href": "Qmd-Files/Kapitel_5/graphen_beschriften.html",
+    "title": "Labeling Graphs",
+    "section": "",
+    "text": "Your answers are saved only in this browser.Do not save on this device\nExport my answers\nDelete answers on this page\nDelete all your answers in this course",
+    "crumbs": [
+      "Drawing Graphs",
+      "Labeling Graphs"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_5/graphen_beschriften.html#step-1-the-basic-framework-plotting-a-function",
+    "href": "Qmd-Files/Kapitel_5/graphen_beschriften.html#step-1-the-basic-framework-plotting-a-function",
+    "title": "Labeling Graphs",
+    "section": "Step 1: The basic framework – plotting a function",
+    "text": "Step 1: The basic framework – plotting a function\nEverything starts with being able to display a function graphically. The knowledge from the section Creating Graphs can help you lay the foundation here.\n\n\n\n\n\n\nNoteReminder: creating graphs\n\n\n\n\n\nIn the section Creating Graphs we learned how to plot a function with numpy and matplotlib. The basic procedure was:\n\nDefine variables/the function with sympy.\nGenerate a series of x-values with numpy.linspace.\nCalculate the y-values.\nDraw the graph with matplotlib.pyplot.plot.\n\n\n\n\n\n\nPlotting the base function\nA small piece of starter code from which you will work out the rest of the chapter (with tips, of course!).\n\n\nClick here to show the starter code!\n\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\n\n\n\n\n\n\nNoteNote on the different kinds of objects in Python\n\n\n\n\n\nThe code above lists once more all the ways of feeding a function into Python that appeared in this tutorial.\nHere is an overview of the advantages/disadvantages of the different objects.\n\nString object: A string is a sequence of characters. That means when the function is given, Python treats it like any other word.\n\nThis is especially important when you want to ask the user for input outside the code, i.e. when you want the program to ask its users “Which function do you want to examine?”\nWith input() this also works here on the website (see Domain): the users type the function into the input field below the code block, Python receives it as a string, and after the program has run, all relevant properties of the function are displayed.\n\nSymPy object: With a function stored like this, you can work algebraically, i.e. compute zeros and derivatives.\nNumPy object: A function stored like this is very good for calculating; it is stored in efficient vector form so that calculations can be carried out as efficiently as possible.\n\nx = sympy.symbols('x') \nf = x**3 - 6*x**2 + 9*x\nThis variant was used frequently in the tutorial; \\(f\\) is a SymPy object here, because \\(f\\) contains a variable that was explicitly defined as a SymPy variable beforehand.\nf_str=\"x**3 - 6*x**2 + 9*x\"\nIn this case, f_str is a function stored as a string object.\nf_str=\"x**3 - 6*x**2 + 9*x\"\nf_sym = sympy.sympify(f_str) \nsympy.sympify creates a SymPy object from the string (identical to the first example).\nf_np = sympy.lambdify(x, f_sym, 'numpy')  \nsympy.lambdify is a kind of translator that turns objects into another type of object; in this case, \\(f_{sym}\\) is translated into numpy based on the variable \\(x\\), i.e. \\(f_{np}\\) is a NumPy object.",
+    "crumbs": [
+      "Drawing Graphs",
+      "Labeling Graphs"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_5/graphen_beschriften.html#step-2-calculating-and-marking-special-points",
+    "href": "Qmd-Files/Kapitel_5/graphen_beschriften.html#step-2-calculating-and-marking-special-points",
+    "title": "Labeling Graphs",
+    "section": "Step 2: Calculating and marking special points",
+    "text": "Step 2: Calculating and marking special points\nThe goal of this section is to automatically mark all relevant points in a graph, so that ideally the users only have to enter the function and the program does the rest.\nThis especially means that zeros, extrema/saddle points, inflection points and the y-intercept should be drawn in.\n\n\n\n\n\n\nNoteNote on step 2\n\n\n\n\n\nNote: for all parts of step 2, you can calculate a relevant x-value and then determine the y-value with \\(f(x_{\\text{relevant value}})\\). All relevant points of one kind can be written into the same list of variables and plotted, so that the matching term also appears in their label and in the legend.\nE.g. \\(x_{zero} =\\{x_1,\\dots,x_n\\} \\quad \\text{and} \\quad y_{zero} =\\{f(x_1),\\dots,f(x_n)\\}\\) should be such that \\(\\forall \\quad x_i \\in x_{zero}\\): \\(f(x_i)=0\\).\nIn all programs, \\(f(x)= x^3 - 6x^2 + 9x\\) is only meant as an example; of course, the programs should work for as many functions as possible, or at least for many different ones.\n\n\n\n\nSketch first, then plot\nBefore Python calculates and draws the points, do it once by hand: determine the maximum, minimum and inflection point of \\(f(x) = x^3 - 6x^2 + 9x\\) (with the programs from the previous chapters or in your head) and drag the three points in the coordinate system to the right place. They snap to half steps. Then open the exercise below the picture and click Check. With the checkbox at the top of the picture you can show the graph to check yourself.\n\n\nSketch – maximum, minimum and inflection point\n\n\nDrag \\(H\\) onto the maximum, \\(T\\) onto the minimum and \\(W\\) onto the inflection point of \\(f(x) = x^3 - 6x^2 + 9x\\).\n\n\n  ✓ Check\n  ⓘ Input help\n  \n    💬 Feedback\n    ⚙\n  \n\n\n\n\n\n\n\nZeros\nFirst, even though you have already seen it, you should look at the section Finding Zeros.\nIn principle, you can combine the code from there with the code from here.\nSo in the following block, together with your knowledge from Graphs, try to write a program that both calculates the zeros of \\(f(x)= x^3 - 6x^2 + 9x\\) and marks them in a plot.\nIf it is easier for you, you can leave out plotting the function at first, but the goal should be to integrate the function and the zeros into one program, ideally so that both appear in the legend.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\n\n\n\n\n\nNoteTip: zeros\n\n\n\n\n\nThe important command from the section Finding Zeros was:\n\nsympy.solveset(f, x, domain=sympy.S.Reals), which determines the zeros of f with respect to the variable x and only returns solutions in the domain of the real numbers.\n\n\n\n\n\n\nExtrema/saddle points\nBefore you work on this, you should look at the section Extrema.\nHere you are to combine the content of that section with the content of Graphs, with the goal of developing a program that determines the extrema of \\(f(x)= x^3 - 6x^2 + 9x\\) and also marks them as such in the graph.\nIdeally, of course, maxima and minima would each be marked as such.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\n\n\n\n\n\nNoteTip: extrema/saddle points\n\n\n\n\n\nThe important functions from the section Extrema were:\n\nsympy.diff(f,x), which determines the derivative of f with respect to the variable x.\nsympy.solveset(f, x, domain=sympy.S.Reals), which determines the zeros of a function.\n\n\n\n\n\n\nInflection points\nBefore you work on this section, we advise you to look at the section Inflection Points, since the goal here is to create a program that, with the help of your knowledge about Graphs, calculates the inflection points of the function \\(f(x)= x^3 - 6x^2 + 9x\\) and draws them into a plot so that they also appear in the legend.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\n\n\n\n\n\nNoteTip: inflection points\n\n\n\n\n\nThe important functions from the section Inflection Points were:\n\nsympy.diff(f,x), which determines the derivative of f with respect to the variable x.\nsympy.solveset(f, x, domain=sympy.S.Reals), which determines the zeros of a function.\n\n\n\n\n\n\nY-intercept\nYour prior knowledge from the section Intercepts will help you enormously with this part.\nUsing the section Graphs, your task is to write code that determines the y-intercept of the function \\(f(x)= x^3 - 6x^2 + 9x\\) and marks it appropriately in the plot.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\n\n\n\n\n\nNoteTip: y-intercept\n\n\n\n\n\nAs a tip: the y-intercept of any function is where \\(x=0\\), i.e. \\(f(0)=\\text{y-intercept}\\).\n\n\n\n\n\nCombining everything so far\nNow try to put everything so far into a single piece of code. For clarity and for the sake of the program, remember to use separately named variables that fit their purpose.\nYour code should also output the values as text, as in the previous chapters, so that users get the information both graphically and as a list; some information, such as the monotonicity intervals later on, is also a bit tricky to draw.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\n\n\n\n\n\nNoteA possible, very simple solution\n\n\n\n\n\nYour solution should ideally look nicer than this one, but if you are completely stuck, feel free to get ideas here.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.",
+    "crumbs": [
+      "Drawing Graphs",
+      "Labeling Graphs"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_5/graphen_beschriften.html#step-3-drawing-asymptotes",
+    "href": "Qmd-Files/Kapitel_5/graphen_beschriften.html#step-3-drawing-asymptotes",
+    "title": "Labeling Graphs",
+    "section": "Step 3: Drawing asymptotes",
+    "text": "Step 3: Drawing asymptotes\nAs already discussed in the sections Asymptotes and End Behavior, some functions have asymptotes, so for this part of the tutorial you should definitely look at those sections.\n\n\n\n\n\n\nNoteReminder: finding asymptotes\n\n\n\n\n\n\nVertical asymptotes: zeros of the denominator that are not zeros of the numerator. (sympy.fraction, sympy.solve)\nHorizontal asymptotes: limit of f(x) for x -&gt; oo and x -&gt; -oo. (sympy.limit)\nOblique asymptotes: result of the polynomial division if numerator degree = denominator degree + 1. (sympy.div)\n\n\n\n\n\nCalculating and displaying asymptotes\nSince the function used above as a test has no asymptotes, we look at the function \\(g(x) = \\frac{2x^2 - 1}{x^2 - 4}\\) here.\nYour task now is to write a program that carries out the following steps:\n\nCalculate the vertical and horizontal asymptotes.\nDraw the asymptotes use dashed lines or similar to tell them apart\nBonus: Make sure the graph has a gap at the vertical asymptotes and no connecting line is drawn.\n\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\n\n\n\n\n\nNoteTip: asymptote\n\n\n\n\n\nMaybe you have already become aware of the problem and are therefore looking at the tips; otherwise, try your hand at the program a little before reading this.\n\n\nTips for plotting asymptotes\n\nIt is not trivial to draw the asymptotes, and there are several ways to do it\n\nCalculate the asymptote function and then plot it as a function.\nDraw horizontal/vertical lines at the right places with plt.axhline() and plt.axvline().\n\nWhy would you do 2.? Unfortunately, there is a problem when plotting with matplotlib, especially for the vertical asymptote: \\(x=a\\) cannot easily be plotted, but a vertical line (plt.axvline()) can be drawn quite easily.\nFor the oblique asymptote, however, 2. cannot be used, since we are not looking for a horizontal/vertical line but either an oblique line or a curve; for both, the only way is to actually plot the asymptote function.\n\n\n\nTip for a clean graphical representation\n\nYou will notice that matplotlib tries to draw a continuous line, even across the vertical asymptote. That does not look nice.\nTo prevent this, you can use a trick:\n\nFind the x-values that lie very close to your asymptote (near the zero of the denominator).\nReplace the corresponding y-values at these points with np.nan (Not a Number).\nmatplotlib then automatically draws a gap in the graph.\n\nA code snippet for this could look like this:\ny_vals[np.abs(x_vals - asymptote_x_value) &lt; 0.1] = np.nan\nThe code makes sure that the y-values within a distance of 0.1 around the x-value where there is a gap in the domain are not drawn.",
+    "crumbs": [
+      "Drawing Graphs",
+      "Labeling Graphs"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_5/graphen_beschriften.html#a-quiz-about-everything-you-need-for-your-analysis-tool",
+    "href": "Qmd-Files/Kapitel_5/graphen_beschriften.html#a-quiz-about-everything-you-need-for-your-analysis-tool",
+    "title": "Labeling Graphs",
+    "section": "A quiz about everything you need for your analysis tool",
+    "text": "A quiz about everything you need for your analysis tool\n\n\n\n\n\n\nTipThe quiz is hidden here so that it does not clutter the page.\n\n\n\n\n\n\n---\nlocale: en\n---\n\n# Which three libraries are the \"dream team\" for our analysis project?\n- [x] `sympy` \n- [x] `matplotlib.pyplot` \n- [x] `numpy` \n- [ ] `pandas` \n- [ ] `random` \n\n&gt; Hint: We need symbolics, numerics and graphics.\n\n# Why do we have to convert a SymPy function with `sympy.lambdify` before plotting it with Matplotlib?\n1. [x] Because Matplotlib cannot calculate directly with symbolic SymPy formulas. We need a function that processes NumPy arrays.\n1. [ ] Because otherwise the function is differentiated incorrectly.\n1. [ ] Because otherwise the code is too slow.\n\n&gt; Hint: Matplotlib needs many concrete numbers (x and y), not letters.\n\n# Put the workflow for creating a graph in the right order.\n1. f_numpy = sympy.lambdify(x, f, \"numpy\")\n2. x_values = np.linspace(-5, 5, 400)\n3. y_values = f_numpy(x_values)\n4. plt.plot(x_values, y_values)\n5. plt.show()\n\n&gt; Hint: First convert, then generate x-values, then calculate y-values, then draw.\n\n# Which command creates an array of 100 x-values between -10 and 10?\n1. [x] `np.linspace(-10, 10, 100)`\n1. [ ] `np.range(-10, 10)`\n1. [ ] `sympy.symbols(-10, 10)`\n1. [ ] `plt.axis(-10, 10)`\n\n# You have calculated extrema. Which command is best for marking these *individual points* in the graph?\n1. [x] `plt.scatter(x_list, y_list)`\n1. [ ] `plt.plot(x_list, y_list)`\n1. [ ] `plt.bar(x_list, y_list)`\n\n&gt; Hint: `plot` connects points with lines, but we only want the points (scatter plot).\n\n# Which commands help you make the graph clearer?\n- [x] `plt.grid()` \n- [x] `plt.title(\"My graph\")` \n- [x] `plt.xlabel(\"x\")` and `plt.ylabel(\"f(x)\")` \n- [ ] `plt.make_pretty()`\n- [x] `plt.axhline(0, color='black')` \n\n&gt; Hint: Think about what makes a graph \"clearer\": what should be easy to see?\n\n# You want to write the text \"Max\" at a maximum $(2|4)$. Which command does that?\n1. [x] `plt.annotate(\"Max\", (2, 4))`\n1. [ ] `plt.write(\"Max\", 2, 4)`\n1. [ ] `plt.print(2, 4, \"Max\")`\n\n&gt; Hint: We want to attach an annotation to coordinates.\n\n# How do you make sure your plotted lines get a legend (e.g. \"f(x)\" and \"f'(x)\")?\n1. [x] I use the label argument in `plt.plot(..., label=\"Name\")` and call `plt.legend()` at the end.\n1. [ ] Matplotlib does that automatically.\n1. [ ] I write it next to it with `plt.text`.\n\n# What happens if you forget `plt.show()`?\n1. [x] The graph may not be displayed (depending on the environment).\n1. [ ] The graph is deleted.\n1. [ ] There is an error message.\n\n&gt; Hint: `show()` is the command: \"Now paint everything on the screen!\".\n\n# You want to draw a vertical asymptote (vertical line) at $x=2$. Which command fits?\n1. [x] `plt.axvline(2, color='red', linestyle='--')`\n1. [ ] `plt.axhline(2)`\n1. [ ] `plt.plot(2)`\n\n&gt; Hint: \"v\" stands for vertical.\n\n# What does `sympy.diff(f, x, 2)` calculate?\n1. [x] The second derivative $f''(x)$.\n1. [ ] The first derivative squared.\n1. [ ] The integral.\n\n# Which mathematical condition do you check in the code to confirm an inflection point?\n- [x] $f''(x_0) = 0$\n- [x] $f'''(x_0) \\neq 0$ (or a sign change of $f''$)\n- [ ] $f'(x_0) = 0$\n\n&gt; Hint: The concavity has to be zero and has to change. $f'''(x_0) \\neq 0$ confirms this for sure, but the sign change of $f''$ also covers cases like $f(x) = x^5$.\n\n# How do you restrict the view of the y-axis to the range -10 to 10 (zoom)?\n1. [x] `plt.ylim(-10, 10)`\n1. [ ] `plt.range_y(-10, 10)`\n1. [ ] `plt.zoom(-10, 10)`\n\n# You have a list of x-coordinates of maxima: `max_x = [-2, 2]`. How do you get the matching y-values to plot them?\n1. [x] I plug each x-value into the function (e.g. in a loop or with `f_numpy(np.array(max_x))`).\n1. [ ] The y-values are always 0.\n1. [ ] I guess them.\n\n&gt; Hint: A point always consists of $(x | f(x))$.\n\n# If you want to plot several curves in one picture (e.g. $f$ and $f'$), what do you have to do?\n1. [x] Simply call several `plt.plot(...)` commands one after the other before `plt.show()`.\n1. [ ] Write a new script for each curve.\n1. [ ] Use `plt.multi_plot()`.\n\n# What is the advantage of `f-strings` (e.g. `f\"Max at {x}\"`) for labels?\n1. [x] You can insert variable values (such as calculated coordinates) directly into the text.\n1. [ ] They are faster to type.\n1. [ ] They make the text bold.\n\n# Which color does the abbreviation `'k'` produce in Matplotlib?\n1. [x] Black ('b' is already taken by blue).\n1. [ ] Multicolored.\n1. [ ] Copper.\n\n# Put the steps for marking zeros in the right order.\n1. zeros = sympy.solve(f, x)\n2. # Convert the SymPy numbers to float (for Matplotlib)\n3. for z in zeros:\n4.     y_coord = 0\n5.     plt.scatter(z, y_coord, color='red')\n\n# What does `linestyle='--'` mean in the plot command?\n1. [x] The line is drawn dashed.\n1. [ ] The line is particularly thin.\n1. [ ] The line is drawn twice.\n\n# Your code throws an error: `NameError: name 'np' is not defined`. What did you forget?\n1. [x] `import numpy as np`\n1. [ ] `import number_python`\n1. [ ] To install NumPy.\n\n&gt; Hint: You have to give the child a name (alias) if you want to call it that.",
+    "crumbs": [
+      "Drawing Graphs",
+      "Labeling Graphs"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/Kapitel_5/graphen_beschriften.html#build-your-analysis-tool",
+    "href": "Qmd-Files/Kapitel_5/graphen_beschriften.html#build-your-analysis-tool",
+    "title": "Labeling Graphs",
+    "section": "Build your analysis tool",
+    "text": "Build your analysis tool\nNow it is time to get to work!\nIt is important to get an overview of everything you want to handle in the program, and maybe to open the chapters you need for it in another tab.\nIt is also important to think about which aspects you can draw into the graph. Nevertheless, you should also output all information about the function as text once; the values are calculated anyway.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\nYour code in this block is saved in the browser (see Home). So you can calmly work on your analysis tool over several days. To test it with other functions, input() comes in handy.\n\n\n\n\n\n\nNoteYour analysis tool: tip 1\n\n\n\n\n\nWhen it comes to creating a large piece of code, the code should be structured for your own overview, but also for others.\nIn this case, that means for example:\n\nImport the relevant libraries\nDefine the variables/objects, or even better, a function\n\nFunctions have already appeared in this tutorial, but here is a short summary anyway. One of the most elegant solutions would be to write the program as a function, so that you can add curve_sketching(\"x**2 + 3*x - 7\") at the bottom of the Python code and a curve sketching analysis of \\(x^2+3x-7\\) is carried out.\n\n\nCalculate the relevant values\n\nFeel free to separate each of the values, e.g. by writing #inflection points above a group of calculations.\nx_inflection, y_inflection also help enormously to keep an overview, i.e. naming matching pairs of values after their origin in their definition\n\nPlot the relevant values\n\nThe same applies here as above (both help a lot when fixing bugs)\n\nDetermine the properties of the graph\n\nLegend\nGrid\nAxis labels\nTitle of the graph etc.\n\n\n\n\nClick HERE to see a possible function that computes the factorial of any number:\n\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\n\n\n\n\n\n\n\n\n\nNoteYour analysis tool: tip 2\n\n\n\n\n\nA good program stands out through details and robustness. Here are some ideas on how to make your tool even better:\n\nDistinguish between maxima and minima:\n\nInstead of putting all extrema into one list, go through the found x-values of the extrema in a loop that checks the conditions.\nSort the points into separate lists (e.g. x_maxima, x_minima, y_minima, x_saddle_points, y_saddle_points) and plot them with different colors or markers to clearly distinguish them\n\nHandling possible errors:\n\nIdeally, your code should output an error if the function cannot be processed by your program:\n\n\n\n\nAn example\n\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\n\nClean text output:\n\nWhen writing your own code, it helps a lot to print the calculated values; that way you notice more quickly where the error might be.\n\n\n\n\n\n\n\n\n\n\n\nNoteYour analysis tool: tip 3\n\n\n\n\n\nThe home stretch! The basic function is probably already in place; here are a few more tips to round off your program.\n\nComplete text analysis:\n\nA graph is great, but a complete curve sketching analysis also needs text. Plot not only the points but also the intervals of monotonicity and concavity.\nDon’t forget to output the domain and range as well!\n\nDynamic and smart plot range:\n\nInstead of using fixed x_min and x_max values, adapt the plot range dynamically to the function!\nIdea: Collect all relevant x-values (zeros, extrema, inflection points). Find the smallest and largest of these values and add a small buffer on both sides (e.g. 20% of the total range). This ensures that all important features are always clearly visible, no matter which function is analyzed.\n\n\n\n\nAn example of code that determines the x-range dynamically\n\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\n\n\n\nCONGRATULATIONS, if you have made it this far, you have worked through the whole tutorial. By now you should:\n\nHave had a small refresher of school mathematics\nHave understood the basic mechanics of Python\nBe able to carry out a curve sketching analysis in Python\nAlso be able to solve other problems in Python by applying the approaches you have learned here!\n\nIf you did not even have to open all the tips, or if you opened one or the other and thought “Oh, I’ve already got that…”, then you can give yourself a pat on the back: you did exceptionally well!",
+    "crumbs": [
+      "Drawing Graphs",
+      "Labeling Graphs"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/grundlagen.html",
+    "href": "Qmd-Files/grundlagen.html",
+    "title": "Python Basics",
+    "section": "",
+    "text": "Your answers are saved only in this browser.Do not save on this device\nExport my answers\nDelete answers on this page\nDelete all your answers in this course\nThis page is a refresher on the basics of Python. If you skip the content of this page and it is not already familiar to you, the rest of the tutorial will be difficult to follow.",
+    "crumbs": [
+      "Python Basics"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/grundlagen.html#summary-with-implementations",
+    "href": "Qmd-Files/grundlagen.html#summary-with-implementations",
+    "title": "Python Basics",
+    "section": "Summary with implementations",
+    "text": "Summary with implementations\n\nVariablesConditionalsData typesListsFunctionsLoopsLibraries\n\n\nFor an easy start with Python, let’s first look at variables. It is worth pointing out how they differ from variables in mathematics. Here is a small example:\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\nThis is a variable assignment. After the assignment, the variables can be used in calculations. You can see a few examples in the following code:\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\nPython uses an asterisk * for multiplication. You divide with the slash /.\nThe following example illustrates the difference to variables in mathematics:\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\nAs you can see, variables can change, i.e. they can be reassigned. In Python, a variable always holds the value that was assigned to it last.\nInstead of individual statements, let’s now look at a whole program. Imagine we are driving a longer distance by car and write down the odometer reading at the start of the trip as well as at certain points during the trip, together with the time elapsed so far. We can use this information to calculate the average speed for the whole trip as well as for the individual sections. A simple Python program that does this for us is the following:\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\nThis example also shows that variable names can be longer than one letter. In Python, variables can even be named with whole words, which is a good idea because fitting variable names make the code easier to understand.\n\nExercise on variables\nTry to change the code so that the calculation is extended by a 4th and a 5th measurement. At the fourth measurement, the odometer read 13281 km, 75 minutes after the start. At the fifth measurement, the odometer read 13334 km, 119 minutes after the start. These results should also be printed with the print() command.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\n\n\nWith a conditional, you want to distinguish between two or more cases. In words: if “x”, do “y”, otherwise do “z”.\nLook at the following example:\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\nTry it yourself and write code that distinguishes between a and b. If a equals b, a suitable text should be printed, and if they are different, a different text.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\nIf you want to distinguish more than two cases, you can use “elif” between “if” and “else”. It is short for “else if”. Look at the following code:\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\nYou don’t always have to use both if and else. You can use if on its own if you don’t want to do anything in the else case:\n\nExercise on conditionals\nChange the following code and try out what happens when a is not equal to b.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\n\n\nPython distinguishes between different data types. Whole numbers are called integers. Decimal numbers are called “floats”. As soon as a decimal number is involved in a calculation, the result is a float as well, even if it is actually a whole number. You can see this in the following example:\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\nDivision always results in a floating-point number, even when one integer is divided by another:\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\nAnother data type is the so-called Boolean, which evaluates to true or false. Run the following code and change it so that “false” is printed.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\nIn the example above, we used the comparison operator “==” to check for equality. If you want to check whether a is not equal to a certain value, say 7, you use “a!=7”.\n\nExercise on data types\nNow rewrite the program so that it checks whether a is not equal to 8. If that is the case, print “true”, otherwise print “false”.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\n\n\nBesides the numeric data types, there are others that can hold several numbers as a collection. These are called lists. They can either be created directly with numbers or start out empty. Look at the following examples:\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\nIn the example above, a list of five numbers is created. Then the list and its fifth entry are printed. The reason we use “my_list[4]” and not “my_list[5]” is that the index of list entries starts at zero. So the first entry is “my_list[0]” and the fifth one is “my_list[4]”.\nIn the next example, we create an empty list and then add two entries. After that, we change one of the entries. Pay attention to the output:\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\nExercise on lists\nTry it yourself: create a list with the entries 2, -13, 6 and 4. Print the list. Then change the second entry to 4 and print the new list.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\n\nSorting lists and creating lists from sets\nYou will often need this later, for example when sympy returns several solutions. sorted(...) works for lists and sets ({...}) and always returns a new, ascending sorted list. In a set, every value appears only once.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\n\n\nSo far, we have written code that runs from top to bottom. If we wanted to repeat a calculation such as the factorial or the average speed at different places with different values, we would have to copy and paste the code. That is confusing and error-prone.\nFunctions solve this problem. A function is a named, reusable block of code that performs a specific task. You define it once and can then “call” it as often as you like.\nA function is defined with the keyword def, followed by a name and parentheses (). Inside the parentheses, parameters (input values) can be passed. With return, the function returns a result.\n\nf-strings in Python\nIn the following, we use so-called f-strings for the print() output. An f-string starts with an f before the opening quotation mark (e.g. f\"Hello\").\nThe big advantage is that you can embed variables and expressions directly in the text by putting them in curly braces {}. This often makes the code much easier to read.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\n\nExercise on functions\nWrite a function named rectangle_area that takes the length and width of a rectangle as parameters, calculates its area and returns it.\n\nThe function should take two parameters: length and width.\nIt should calculate the product of the two parameters and return it with return.\nTest your function with different pairs of values and print the results\n\nThis time, hidden tests automatically check whether your function returns the right result for different values. Click Check once you’re done. Your own print() output is shown as well.\n\n  \n    Please enable JavaScript to load the interactive exercise.\n  \n\n\n\n\n\nA few examples and an exercise to help you understand:\nFor loops repeat over a certain range. The keyword range describes the range from \\(a\\) to \\(b\\). Here \\(a\\) is the start of the iteration; \\(b\\) itself is not included: range(5, 20) runs from 5 to 19.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\nIf a calculation or a check has to be carried out several times, loops make this much easier. While loops repeat the code as long as a certain condition is met. A small example:\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\nExercise on for/while loops\nThe blocks above are editable on purpose. Play around with them a bit to get a feeling for how the two kinds of loops work.\nOnce you are sure you understand both, try to write a program that calculates a factorial using a while loop.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\n  \n    Please enable JavaScript to load the interactive exercise.\n  \n\n\nThe hidden tests check your function with several values. The keyword for is blocked here so that you really use a while loop.\n\nYour while loop will have a very similar basic structure to the for loop You will also need the following:\n\n\nInitialization\nresult = 1 and i = 1\nLoop logic\nRepeat as long as i &lt;= n, each time multiply result = result * i\nIncrement the counter!\ni = i + 1 (→ otherwise endless loop)\nExtra: What happens for n = 0?\n\n\n\nHere is a possible solution with a while loop, in case you are really stuck\n\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\n\n\nFilling a list in a loop\nA very common pattern: you start with an empty list, go through all values with a for loop and use append to add only the suitable ones. Predict the result before you run the block:\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\n\n\nOne of Python’s greatest strengths is its huge selection of libraries (also called modules). A library is a collection of predefined functions and constants that you can use in your code without having to reinvent the wheel.\nTo use a library, you have to “load” it with the import command at the beginning of your code. For this tutorial, the libraries sympy, numpy and matplotlib are particularly relevant:\nimport numpy as np loads the whole library; np is just a shorter name for it. With from library import function, on the other hand, you fetch individual functions that you can then call without a prefix.\n1. numpy – for numerical calculations\nnumpy calculates with many numbers at once. In this tutorial we mainly need it to create tables of values for graphs. It is optimized for working with vectors and matrices (called arrays in NumPy). It is usually imported with the abbreviation np. This means that later in the program you can write np.array instead of numpy.array.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n2. matplotlib – for visualizing data\nWith matplotlib, we can display our data and results as graphs and charts. This helps enormously to understand relationships.\nHere, the abbreviation plt is used for matplotlib.pyplot. This shows how handy aliases are, since instead of matplotlib.pyplot.plot() you can simply write plt.plot(). It is also important that pyplot is a specific submodule of matplotlib that has to be imported explicitly. A plain import matplotlib would not be enough to access functions such as plot().\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n\n\n\n\n\n\nTipPlots are interactive\n\n\n\nWithout plt.show() no plot appears, exactly as in a normal Python environment. Shortly after a plot has appeared, it gets a toolbar: with the  magnifier you drag a rectangle to zoom into, with the  cross you pan the view, and the  house resets it. PNG/PDF/SVG let you download the plot. Zooming will come in very handy later when reading off zeros and extrema.\n\n\nWith matplotlib, you can not only draw graphs of functions but also plot data points.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.\n3. sympy – calculating with formulas (our main tool!) sympy calculates symbolically, i.e. with variables like \\(x\\) instead of numbers: solving equations, differentiating, finding limits. Almost every chapter of this tutorial works with it. You will learn how the individual commands work there, step by step.\n\nPlease enable JavaScript to experience the dynamic code cell content on this page.",
+    "crumbs": [
+      "Python Basics"
+    ]
+  },
+  {
+    "objectID": "Qmd-Files/grundlagen.html#knowledge-check",
+    "href": "Qmd-Files/grundlagen.html#knowledge-check",
+    "title": "Python Basics",
+    "section": "Knowledge check",
+    "text": "Knowledge check\nThe quiz draws 10 random questions out of 35 each time the page is loaded. Reload the page to get a new round with different questions.\n\n---\nlocale: en\nshuffleQuestions: true\nnQuestions: 10\n---\n\n# Multiplication\n\nWhich symbol is used for multiplication in Python?\n\n- [ ] `+`\n- [x] `*`\n- [ ] `-`\n- [ ] `.`\n\n\n# Division\n\nWhat is the result of `10 / 2` in Python?\n\n&gt; Pay attention to the data type! In Python, the dot `.` is used as the decimal separator.\n\n- [ ] 5\n- [x] 5.0\n- [ ] \"5\"\n- [ ] 5,0\n\n# Subtraction\n\nWhat is the result of `10 - 3`?\n\n- [x] 7\n- [ ] 13\n- [ ] 7.0\n- [ ] -7\n\n# Variable assignment\n\nWhat is the value of `a` at the end of this code?\n\n~~~python\na = 4\na = 7 + a\n~~~\n\n- [ ] 4\n- [ ] 7\n- [x] 11\n- [ ] 74\n\n# Data types\n\nWhich of the following statements about data types are true?\n\n&gt; What does `4 / 2` give: `2` or `2.0`?\n\n- [x] `15` is an integer (whole number).\n- [x] `1.5` is a float (floating-point number).\n- [ ] A division `/` of two integers always gives an integer.\n- [x] Boolean values are `True` or `False`.\n\n# Comparison operators\n\nHow do you check whether `a` is **not equal** to `b`?\n\n- [ ] `a &lt;&gt; b`\n- [ ] `a NOT b`\n- [x] `a != b`\n- [ ] `a == b`\n\n# Conditionals\n\nWhat is the short form of \"else if\" in Python?\n\n- [ ] `else if`\n- [ ] `elseif`\n- [x] `elif`\n- [ ] `if else`\n\n# List index\n\nWhat is the index of the **first** element of a list?\n\n&gt; Python does not start counting at 1.\n\n- [ ] 1\n- [x] 0\n- [ ] -1\n- [ ] A\n\n# List access\n\nGiven `L = [10, 20, 30, 40, 50]`. How do you access the number 50?\n\n&gt; The list has 5 elements. If the first has index 0, which index does the last one have?\n\n- [ ] `L[5]`\n- [x] `L[4]`\n- [ ] `L(5)`\n- [ ] `L{4}`\n\n# Creating lists\n\nPut the commands in the right order to create the list `[4, -7]`.\n\n&gt; Before you can append something, the list has to exist.\n\n1. `my_list = []`\n2. `my_list.append(4)`\n3. `my_list.append(-7)`\n\n# Changing lists\n\nWhat happens with `my_list[1] = -9`?\n\n&gt; Remember which number the index starts at.\n\n- [ ] A new element -9 is appended.\n- [ ] The first element becomes -9.\n- [x] The second element becomes -9.\n- [ ] The list is deleted.\n\n# Defining functions\n\nWhich keyword starts a function definition?\n\n- [ ] `function`\n- [ ] `define`\n- [x] `def`\n- [ ] `fun`\n\n# Return values\n\nWhich keyword returns a value from a function?\n\n- [ ] `print`\n- [ ] `output`\n- [x] `return`\n- [ ] `back`\n\n# f-strings\n\nHow do you correctly embed the variable `name` in an f-string?\n\n&gt; Two things have to be right: the letter in front of the quotation mark and the kind of brackets.\n\n- [ ] `\"Hello {name}\"`\n- [x] `f\"Hello {name}\"`\n- [ ] `f\"Hello (name)\"`\n- [ ] `f'Hello [name]'`\n\n# Loops - range\n\nWhich numbers does `range(0, 3)` produce?\n\n&gt; The end value is never included in `range`.\n\n- [ ] 1, 2, 3\n- [x] 0, 1, 2\n- [ ] 0, 1, 2, 3\n- [ ] 0, 3\n\n# Range parameters\n\nWhat do the parameters in `range(a, b, c)` mean?\n\n&gt; Try it: what does `list(range(0, 10, 3))` return?\n\n- [x] a is the start value.\n- [x] b is the end value (exclusive).\n- [x] c is the step size.\n- [ ] b is the end value (inclusive).\n\n# While loop\n\nWhat is a danger of while loops?\n\n- [ ] They are too fast.\n- [x] Endless loops if the condition never becomes false.\n- [ ] They cannot calculate.\n- [ ] They cannot be stopped.\n\n# Importing libraries\n\nHow is NumPy usually imported?\n\n- [ ] `import numpy`\n- [x] `import numpy as np`\n- [ ] `import np from numpy`\n- [ ] `use numpy`\n\n# Matplotlib alias\n\nWhich abbreviation is usually used for `matplotlib.pyplot`?\n\n- [ ] `mat`\n- [ ] `plot`\n- [x] `plt`\n- [ ] `mpp`\n\n# NumPy arrays\n\nWhat are the advantages of NumPy arrays?\n\n- [x] You can calculate with vectors (e.g. `vector * 2`).\n- [x] They are efficient for numerical calculations.\n- [ ] They can only store text.\n- [ ] They are slower than lists.\n\n# Showing a plot\n\nWhich command displays a plot?\n\n- [ ] `plt.render()`\n- [ ] `plt.draw()`\n- [x] `plt.show()`\n- [ ] `plt.display()`\n\n# Reading code\n\nWhat does this code print?\n\n~~~python\na = 15\nb = 20\nif a &gt;= b:\n    print(\"X\")\nelse:\n    print(\"Y\")\n~~~\n\n&gt; Is 15 greater than or equal to 20?\n\n- [ ] X\n- [x] Y\n- [ ] XY\n- [ ] Nothing\n\n# Logic\n\nWhat does the comparison `15 == 15` evaluate to?\n\n- [x] `True`\n- [ ] `False`\n\n# Comments\n\nHow do you write a comment in Python?\n\n- [ ] `// comment`\n- [ ] `/* comment */`\n- [x] `# comment`\n- [ ] ``\n\n# Overwriting a variable\n\nWhat does `print(x)` output?\n\n~~~python\nx = 5\nx = 10\nprint(x)\n~~~\n\n- [ ] 5\n- [x] 10\n- [ ] 15\n- [ ] Error\n\n# Matplotlib grid\n\nHow do you add a grid to a plot?\n\n- [ ] `plt.grid(False)`\n- [x] `plt.grid(True)`\n- [ ] `plt.net()`\n- [ ] `plt.lines()`\n\n# Plot labels\n\nPut the commands for a labeled plot into a sensible order.\n\n1. `plt.plot(x, y)`\n2. `plt.xlabel(\"X\")`\n3. `plt.ylabel(\"Y\")`\n4. `plt.show()`\n\n# Calling a function\n\nHow do you call the function `def test(a):` with the value 5?\n\n- [ ] `test`\n- [ ] `call test 5`\n- [x] `test(5)`\n- [ ] `run test 5`\n\n# Empty list\n\nHow do you create an empty list?\n\n- [ ] `L = ()`\n- [x] `L = []`\n- [ ] `L = {}`\n- [ ] `L = empty`\n\n# String concatenation\n\nWhat is the result of this code?\n\n~~~python\na = \"Py\"\nb = \"thon\"\nprint(a + b)\n~~~\n\n- [x] `\"Python\"`\n- [ ] `\"Py thon\"`\n- [ ] `\"Py+thon\"`\n- [ ] Error\n\n# Modulo operator\n\nWhat does the modulo operator `%` compute?\n\n~~~python\nprint(10 % 3)\n~~~\n\n&gt; 3 fits into 10 three times. What is left over?\n\n- [x] `1` (remainder of the division)\n- [ ] `3` (result of the division)\n- [ ] `3.33` (decimal value)\n- [ ] `0`\n\n# Logical operators\n\nWhat is printed here?\n\n~~~python\nx = True\ny = False\nprint(x and y)\n~~~\n\n&gt; `and` is only `True` if **both** sides are `True`.\n\n- [ ] `True`\n- [x] `False`\n- [ ] `None`\n- [ ] `Error`\n\n# Loop sum\n\nWhat is the value of `s` at the end?\n\n~~~python\ns = 0\nfor i in range(3):\n    s = s + i\nprint(s)\n~~~\n\n&gt; `range(3)` yields 0, 1, 2. Work through the iterations one by one.\n\n- [ ] `0`\n- [ ] `1`\n- [x] `3`\n- [ ] `6`\n\n# List slicing\n\nWhat does this code print?\n\n~~~python\nL = [10, 20, 30, 40]\nprint(L[1:3])\n~~~\n\n&gt; In the slice `L[a:b]`, index `b` is no longer included, just like with `range`.\n\n- [x] `[20, 30]`\n- [ ] `[10, 20]`\n- [ ] `[20, 30, 40]`\n- [ ] `[10, 20, 30]`\n\n# Summary\n\nWhich concepts were covered in the basics?\n\n- [x] Variables\n- [x] Loops\n- [x] Functions\n- [x] Libraries",
+    "crumbs": [
+      "Python Basics"
+    ]
+  }
+]

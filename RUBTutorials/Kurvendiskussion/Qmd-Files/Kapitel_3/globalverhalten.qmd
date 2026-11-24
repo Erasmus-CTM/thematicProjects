@@ -1,0 +1,158 @@
+---
+title: "Globalverhalten untersuchen"
+title-en: "Examining End Behavior"
+format: html
+filters:
+  - ctm-assessment
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+# Globalverhalten (Das Verhalten im Unendlichen)
+
+In diesem Abschnitt geht es um das **Globalverhalten**, auch **Das Verhalten im Unendlichen** genannt.  
+Es wird betrachtet, wie sich die Funktionswerte $f(x)$ verhalten, wenn die $x$-Werte sehr groß (gegen $+\infty$) oder sehr klein (gegen $-\infty$) werden, das heißt wir betrachten die **Grenzwerte (Limes)**:
+
+$$ \lim_{x \to \infty} f(x) \quad \text{und} \quad \lim_{x \to -\infty} f(x) $$
+
+Das Ergebnis dieser Untersuchung verrät uns, ob sich der Graph der Funktion für große/kleine $x$-Werte einer bestimmten Zahl nähert (**[horizontale Asymptote](asymptoten.qmd#horizontale-asymptoten)**) oder ob er unbegrenzt weiter steigt oder fällt.
+
+## Globalverhalten mit Python bestimmen
+
+Innerhalb der Python-Bibliothek `sympy` gibt es eine sehr hilfreiche Funktion, die die Berechnung für uns durchführt, nämlich `sympy.limit()`.
+
+```{pyodide-python}
+#| read-only: true
+import sympy
+x = sympy.symbols('x')
+f = (2*x**2 + 1) / (x**2 - 3)  # Beispielfunktion
+
+# Diese Funktion berechnet den pos. bzw. neg. Limes von x gegen + bzw. - Unendlich.
+
+limit_pos_oo = sympy.limit(f, x, sympy.oo) #positiver Grenzwert
+limit_neg_oo = sympy.limit(f, x, -sympy.oo) #negativer Grenzwert
+
+print(f"Für x -> +oo geht f(x) gegen {limit_pos_oo}")
+print(f"Für x -> -oo geht f(x) gegen {limit_neg_oo}")
+```
+
+`sympy` schreibt Unendlich als `oo` (zwei kleine o, sieht aus wie $\infty$). Genauso tippst du es auch in den Rechenaufgaben ein.
+
+## Aufgabe Globalverhalten mit Python bestimmen lassen
+
+Davon ausgehend, dass du mehrere der anderen Abschnitte dieses Tutorials bereits bearbeitet hast, sollte diese Funktion einzubetten recht leicht für dich sein.  
+Versuche einen Code zu erstellen, welcher eine von dir bestimmte Funktion auf das Globalverhalten untersucht, in positiver wie negativer Richtung.  
+Dazu sollte es eine Ausgabe geben, in welcher Nutzenden angegeben wird, wie sich die Funktion verhält.
+
+_Als kleine Sonderaufgabe: Du kannst auch versuchen, die Fehlermeldung auszugeben. Teste am besten aus, was du für eine Ausgabe bekommst, bei unterschiedlichem Grenzverhalten_
+
+
+```{pyodide-python}
+#| label: globalverhalten-aufgabe
+# Hier deinen Code einfügen
+```
+
+Überlege dir bei den folgenden Funktionen erst selbst, wie sie sich im Unendlichen verhalten, und kontrolliere dich dann mit deinem Programm. Für $\infty$ tippst du `oo`, für $-\infty$ entsprechend `-oo`.
+
+```{math-exercise}
+#| label: globalverhalten-polynom
+#| caption: Globalverhalten eines Polynoms
+#| field-labels: x gegen +unendlich, x gegen -unendlich
+#| mode: custom
+#| checker: |
+#|   def check(response, symbols):
+#|       plus, minus = response["expressions"]
+#|       richtig = [plus == -oo, minus == oo]
+#|       return {"score": sum(richtig) / 2, "feedback": "Beide richtig!" if all(richtig) else ("Eine Richtung stimmt." if any(richtig) else "Schau dir den Summanden mit dem höchsten Exponenten und sein Vorzeichen an.")}
+$f(x) = -2x^3 + x$: Für $x \to +\infty$ geht $f(x)$ gegen _[], für $x \to -\infty$ gegen _[].
+```
+
+```{math-exercise}
+#| label: globalverhalten-bruch
+#| caption: Globalverhalten einer gebrochen-rationalen Funktion
+$g(x) = \dfrac{3x^2 - 1}{x^2 + 5}$: Für $x \to \pm\infty$ geht $g(x)$ gegen _[3].
+```
+
+
+
+Wenn du das geschafft hast, bist du bereit für das nächste Kapitel.  
+Das Globalverhalten ist entscheidend für die Bestimmung von waagerechten Asymptoten.  
+Im nächsten Kapitel [Asymptoten bestimmen](asymptoten.qmd) werden wir dieses Wissen nutzen.
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+# End behavior (behavior at infinity)
+
+This section is about the **end behavior**, also called **the behavior at infinity**.  
+We look at how the function values $f(x)$ behave when the $x$-values become very large (towards $+\infty$) or very small (towards $-\infty$), i.e. we consider the **limits**:
+
+$$ \lim_{x \to \infty} f(x) \quad \text{and} \quad \lim_{x \to -\infty} f(x) $$
+
+The result tells us whether the graph of the function approaches a certain number for large/small $x$-values (**[horizontal asymptote](asymptoten.qmd#horizontal-asymptotes)**) or whether it keeps rising or falling without bound.
+
+## Determining end behavior with Python
+
+The Python library `sympy` contains a very helpful function that does the calculation for us: `sympy.limit()`.
+
+```{pyodide-python}
+#| read-only: true
+import sympy
+x = sympy.symbols('x')
+f = (2*x**2 + 1) / (x**2 - 3)  # example function
+
+# This computes the limit of f for x towards + or - infinity.
+
+limit_pos_oo = sympy.limit(f, x, sympy.oo) #limit towards +infinity
+limit_neg_oo = sympy.limit(f, x, -sympy.oo) #limit towards -infinity
+
+print(f"For x -> +oo, f(x) tends to {limit_pos_oo}")
+print(f"For x -> -oo, f(x) tends to {limit_neg_oo}")
+```
+
+`sympy` writes infinity as `oo` (two lowercase o's, looks like $\infty$). You type it the same way in the calculation exercises.
+
+## Exercise: letting Python determine the end behavior
+
+Assuming you have already worked through several of the other sections of this tutorial, embedding this function should be quite easy for you.  
+Try to write code that examines a function of your choice for its end behavior, in the positive as well as the negative direction.  
+There should also be output that tells users how the function behaves.
+
+_As a small extra task: you can also try to output the error message. Best test what output you get for different limit behavior._
+
+
+```{pyodide-python}
+#| label: globalverhalten-aufgabe-en
+# Insert your code here
+```
+
+For the following functions, first think about how they behave at infinity, and then check yourself with your program. For $\infty$ you type `oo`, for $-\infty$ accordingly `-oo`.
+
+```{math-exercise}
+#| label: globalverhalten-polynom-en
+#| caption: End behavior of a polynomial
+#| field-labels: x to +infinity, x to -infinity
+#| mode: custom
+#| checker: |
+#|   def check(response, symbols):
+#|       plus, minus = response["expressions"]
+#|       richtig = [plus == -oo, minus == oo]
+#|       return {"score": sum(richtig) / 2, "feedback": "Both correct!" if all(richtig) else ("One direction is correct." if any(richtig) else "Look at the term with the highest exponent and its sign.")}
+$f(x) = -2x^3 + x$: For $x \to +\infty$, $f(x)$ tends to _[]; for $x \to -\infty$ it tends to _[].
+```
+
+```{math-exercise}
+#| label: globalverhalten-bruch-en
+#| caption: End behavior of a rational function
+$g(x) = \dfrac{3x^2 - 1}{x^2 + 5}$: For $x \to \pm\infty$, $g(x)$ tends to _[3].
+```
+
+
+
+Once you have done that, you are ready for the next chapter.  
+The end behavior is crucial for finding horizontal asymptotes.  
+In the next chapter, [Finding Asymptotes](asymptoten.qmd), we will use this knowledge.
+
+::::

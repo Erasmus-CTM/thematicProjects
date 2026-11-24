@@ -1,0 +1,713 @@
+---
+title: "Cheatsheet & Quiz"
+title-en: "Cheat Sheet & Quiz"
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+Auf dieser Seite findest du eine kompakte Übersicht aller Konzepte, Formeln und Python-Befehle aus dem Tutorial – ideal zum Nachschlagen und Wiederholen. Unter jedem Abschnitt führt ein Link zur ausführlichen Seite.
+
+Alle Code-Schnipsel setzen diese Importe voraus:
+
+```python
+import numpy as np
+import pandas as pd
+from scipy import stats
+from scipy.stats import gmean, iqr, skew, kurtosis, pearsonr, spearmanr, norm
+```
+
+---
+
+## 1. Deskriptive Statistik
+
+### Häufigkeiten
+
+| Begriff | Formel / Bedeutung |
+|---|---|
+| Absolute Häufigkeit | $H(a_j)$ – Anzahl der Beobachtungen mit Wert $a_j$ |
+| Relative Häufigkeit | $h(a_j) = \dfrac{H(a_j)}{n}$ |
+| Kumulierte relative Häufigkeit | $\sum_{i \le j} h(a_i)$ |
+| Empirische Verteilungsfunktion | $F_n(x)$ = Anteil der Beobachtungen $\le x$ (Treppenfunktion) |
+
+```python
+df["spalte"].value_counts()                    # absolute Häufigkeiten
+df["spalte"].value_counts(normalize=True)      # relative Häufigkeiten
+df["spalte"].value_counts(normalize=True).sort_index().cumsum()  # kumuliert
+(x <= 4000).mean()                             # F_n(4000)
+```
+
+Mehr dazu: [1.2 Häufigkeitsverteilung](Kapitel_1/haeufigkeitsverteilung.qmd) · [1.3 Grafische Darstellungen](Kapitel_1/grafische_darstellungen.qmd)
+
+### Lagemaße
+
+| Maß | Formel |
+|---|---|
+| Arithmetisches Mittel | $\bar{x} = \dfrac{1}{n}\sum_{i=1}^n x_i$ |
+| Median $\tilde{x}_{0{,}5}$ ($= Q_2$) | mittlerer Wert der sortierten Reihe |
+| Modus | häufigster Wert (bei stetigen Merkmalen wenig aussagekräftig) |
+| Geometrisches Mittel | $\bar{x}_{\text{geo}} = \sqrt[n]{x_1 \cdot x_2 \cdots x_n}$ (nur für positive Werte, z. B. Wachstumsfaktoren) |
+| 1. Quartil $Q_1$ | Wert, unter dem 25 % der Daten liegen |
+| 3. Quartil $Q_3$ | Wert, unter dem 75 % der Daten liegen |
+
+```python
+np.mean(x)               # Arithmetisches Mittel
+np.median(x)             # Median
+df["spalte"].mode()[0]   # Modus
+gmean(x)                 # Geometrisches Mittel
+np.percentile(x, [25, 75])  # Q1, Q3
+```
+
+Mehr dazu: [1.4 Kennzahlen: Lage](Kapitel_1/kennzahlen_lage.qmd)
+
+### Streuungsmaße
+
+| Maß | Formel |
+|---|---|
+| Spannweite | $\tilde{q}_0 = x_{\max} - x_{\min}$ (größter minus kleinster Wert) |
+| Varianz (korrigiert) | $s^2 = \dfrac{1}{n-1}\sum_{i=1}^n (x_i - \bar{x})^2$ |
+| Varianz (unkorrigiert) | $\tilde{s}^2 = \dfrac{1}{n}\sum_{i=1}^n (x_i - \bar{x})^2$ |
+| Standardabweichung | $s = \sqrt{s^2}$ bzw. $\tilde{s} = \sqrt{\tilde{s}^2}$ – gleiche Einheit wie die Daten |
+| Interquartilsabstand | $\text{IQR} = Q_3 - Q_1$ – robust gegen Ausreißer |
+
+```python
+np.ptp(x)                        # Spannweite (max - min)
+np.var(x, ddof=1)                # korrigierte Varianz s²
+np.var(x)                        # unkorrigierte Varianz s̃² (NumPy-Standard: ddof=0!)
+np.std(x, ddof=1)                # Standardabweichung s
+df["spalte"].std()               # pandas rechnet schon mit ddof=1
+iqr(x)                           # Interquartilsabstand
+```
+
+### Schiefe & Wölbung
+
+| Begriff | Formel / Bedeutung |
+|---|---|
+| Schiefe | $sk = \dfrac{1}{n}\sum_{i=1}^n \left(\dfrac{x_i - \bar{x}}{s}\right)^3$ |
+| $sk > 0$ | rechtsschief (linkssteil): langer Schweif nach rechts, $\bar{x} > \tilde{x}_{0{,}5}$ |
+| $sk < 0$ | linksschief (rechtssteil): langer Schweif nach links, $\bar{x} < \tilde{x}_{0{,}5}$ |
+| Wölbung | $w = \dfrac{1}{n}\sum_{i=1}^n \left(\dfrac{x_i - \bar{x}}{s}\right)^4$, Normalverteilung: $w = 3$ |
+| Exzess | $ex = w - 3$: $ex > 0$ spitz (leptokurtisch), $ex < 0$ flach (platykurtisch) |
+
+```python
+skew(x)                    # Schiefe
+kurtosis(x)                # EXZESS ex = w - 3 (Voreinstellung fisher=True)
+kurtosis(x, fisher=False)  # Wölbung w
+df.describe()              # Schnellübersicht: Mittelwert, Std, Min, Quartile, Max
+```
+
+::: {.callout-note}
+`skew` und `kurtosis` setzen $\tilde{s}$ statt $s$ ein. Bei kleinen Stichproben weichen sie deshalb etwas von den Formeln oben ab (bei den 12 Personen aus 1.5: Wölbung $1{,}95$ statt $1{,}64$).
+:::
+
+Mehr dazu: [1.5 Kennzahlen: Streuung, Schiefe & Wölbung](Kapitel_1/kennzahlen_streuung.qmd)
+
+### Zweidimensionale Analyse
+
+| Begriff | Formel |
+|---|---|
+| Kovarianz | $s_{xy} = \dfrac{1}{n-1}\sum_{i=1}^n (x_i-\bar{x})(y_i-\bar{y})$ |
+| Pearson-Korrelation | $r = \dfrac{s_{xy}}{s_x \cdot s_y}$, $\quad r \in [-1, 1]$ – misst **lineare** Zusammenhänge |
+| Spearman-Korrelation | $r_s$ = Pearson-Korrelation der Ränge – misst **monotone** Zusammenhänge, robust gegen Ausreißer |
+| Faustregel | $\lvert r \rvert < 0{,}3$ schwach · $0{,}3$–$0{,}7$ mittel · $> 0{,}7$ stark |
+| Regressionsgerade | $\hat{y} = \hat{\alpha} + \hat{\beta}x$ mit $\hat{\beta} = \dfrac{s_{xy}}{s_x^2}$, $\hat{\alpha} = \bar{y} - \hat{\beta}\bar{x}$ |
+
+> **Korrelation ist keine Kausalität:** Ein Zusammenhang kann durch eine dritte Größe entstehen, zufällig sein oder in die andere Richtung wirken. Getrennt nach Gruppen kann er sogar kippen (Simpson-Paradoxon).
+
+```python
+np.cov(x, y, ddof=1)[0, 1]   # Kovarianz
+pearsonr(x, y)               # Pearson r + p-Wert
+spearmanr(x, y)              # Spearman r_s + p-Wert
+df.corr(numeric_only=True)   # Korrelationsmatrix aller Zahlenspalten
+np.polyfit(x, y, 1)          # Steigung β̂ und Achsenabschnitt α̂
+```
+
+Mehr dazu: [1.6 Zweidimensionale Datenanalyse](Kapitel_1/zweidimensional.qmd)
+
+---
+
+## 2. Schätztheorie
+
+### Grundbegriffe und Gütekriterien
+
+| Begriff | Bedeutung |
+|---|---|
+| Parameter | feste, unbekannte Größe der Grundgesamtheit, z. B. $\mu = E[X]$ |
+| Schätzfunktion | Rechenvorschrift auf Basis der Stichprobe, z. B. $T(x_1, \ldots, x_n) = \bar{x}$ |
+| Schätzwert | konkretes Ergebnis für eine konkrete Stichprobe |
+| Schätzer | dieselbe Rechenvorschrift auf Zufallsvariablen angewandt, z. B. $\overline{X}_n$ – selbst eine Zufallsvariable |
+| Erwartungstreue | $E[\hat{\theta}] = \theta$ – kein systematischer Fehler (Bias $= 0$) |
+| Effizienz | Schätzer streut wenig, also kleiner Standardfehler |
+| Konsistenz | Schätzwert konvergiert mit wachsendem $n$ gegen $\theta$ |
+| Standardfehler | $SE(\bar{X}) = \dfrac{\sigma}{\sqrt{n}}$ – $k$-mal so viele Daten → $\sqrt{k}$-mal kleiner |
+| MSE | $\text{MSE}(\hat{\theta}) = \text{Var}(\hat{\theta}) + \text{Bias}(\hat{\theta})^2$ |
+
+```python
+stats.sem(x)                     # geschätzter Standardfehler s/√n
+np.std(x, ddof=1) / np.sqrt(n)   # dasselbe von Hand
+```
+
+Mehr dazu: [2.1 Schätzer](Kapitel_2/schaetzer.qmd) · [2.3 Gütekriterien für Punktschätzer](Kapitel_2/guetekriterien.qmd)
+
+### Schätzmethoden
+
+| Methode | Idee |
+|---|---|
+| Momentenmethode | theoretische Momente = Stichprobenmomente setzen, nach $\theta$ auflösen |
+| Maximum-Likelihood | $\theta$ so wählen, dass $L(\theta) = \prod_{i=1}^n f(x_i;\theta)$ maximal wird (in der Praxis: $\ln L$ maximieren) |
+
+```python
+mu_hat    = np.mean(x)          # Schätzer für Erwartungswert μ
+sigma_hat = np.std(x, ddof=1)   # Schätzer für Standardabweichung σ
+mu_ml, sigma_ml = norm.fit(x)   # ML-Schätzer; sigma_ml rechnet mit 1/n (wie ddof=0)
+```
+
+Mehr dazu: [2.2 Schätzmethoden](Kapitel_2/schaetzmethoden.qmd)
+
+### Konfidenzintervalle
+
+| Situation | Intervall |
+|---|---|
+| $\sigma$ bekannt | $\bar{x} \pm z_{1-\alpha/2} \cdot \dfrac{\sigma}{\sqrt{n}}$ |
+| $\sigma$ unbekannt | $\bar{x} \pm t_{n-1;\,1-\alpha/2} \cdot \dfrac{s}{\sqrt{n}}$ |
+
+$1-\alpha$ = Konfidenzniveau · $z$ = Normalverteilungsquantil · $t$ = $t$-Verteilungsquantil
+
+> **Richtig gelesen:** 95 % bezieht sich auf das **Verfahren**: Bei 95 % aller Stichproben enthält das so berechnete Intervall den wahren Wert. Ein einzelnes Intervall enthält ihn oder nicht.
+
+```python
+# σ unbekannt → t-Verteilung (Standardfall)
+stats.t.interval(0.95, df=n-1, loc=np.mean(x), scale=np.std(x, ddof=1)/np.sqrt(n))
+
+# σ bekannt → Normalverteilung
+stats.norm.interval(0.95, loc=np.mean(x), scale=sigma/np.sqrt(n))
+
+# Quantile nachschlagen
+stats.norm.ppf(0.975)        # z_{0.975} ≈ 1.96
+stats.t.ppf(0.975, df=n-1)   # t-Quantil
+```
+
+Mehr dazu: [2.4 Konfidenzintervalle](Kapitel_2/konfidenzintervalle.qmd)
+
+### Statistische Signifikanz & p-Werte
+
+| Begriff | Bedeutung |
+|---|---|
+| $H_0$ | Nullhypothese – der „nichts Besonderes“-Zustand, den man widerlegen möchte |
+| $H_1$ | Alternativhypothese – was wir zeigen wollen |
+| Signifikanzniveau $\alpha$ | maximal tolerierte Wahrscheinlichkeit für einen Fehler 1. Art (oft 5 %) |
+| p-Wert | Wahrscheinlichkeit für ein mindestens so extremes Ergebnis wie das beobachtete, **wenn $H_0$ wahr ist** |
+| Entscheidung | $p \le \alpha$ → $H_0$ verwerfen · $p > \alpha$ → $H_0$ nicht verwerfen |
+| Fehler 1. Art | $H_0$ verworfen, obwohl sie wahr ist (Wahrscheinlichkeit höchstens $\alpha$) |
+| Fehler 2. Art | $H_0$ nicht verworfen, obwohl $H_1$ wahr ist (Wahrscheinlichkeit $\beta$) |
+| Teststärke (Power) | $1 - \beta$ – Wahrscheinlichkeit, einen vorhandenen Effekt zu entdecken |
+
+> **Wichtig:**
+>
+> - Ein kleiner p-Wert bedeutet statistische Signifikanz – nicht unbedingt praktische Bedeutsamkeit! Bei großen Stichproben wird schon ein winziger Effekt signifikant.
+> - $H_0$ nicht verwerfen heißt nicht, dass $H_0$ bewiesen ist. Die Daten reichen nur nicht aus, um sie zu widerlegen.
+> - Kleineres $\alpha$ → größeres $\beta$. Beide zugleich sinken nur mit mehr Daten.
+
+```python
+# Einstichproben-t-Test (H0: μ = mu0), zweiseitig
+t_stat, p_val = stats.ttest_1samp(x, popmean=mu0)
+
+# einseitig (H1: μ > mu0)
+t_stat, p_val = stats.ttest_1samp(x, popmean=mu0, alternative='greater')
+
+# Zweistichproben-t-Test (H0: μ1 = μ2, Welch)
+t_stat, p_val = stats.ttest_ind(gruppe1, gruppe2, equal_var=False)
+
+# Binomialtest von Hand: P(X ≥ 26) bei n = 40, p0 = 0.6
+p_val = stats.binom.sf(25, 40, 0.6)
+
+# Entscheidung
+alpha = 0.05
+if p_val <= alpha:
+    print(f"p = {p_val:.4f} → H0 verwerfen (signifikant)")
+else:
+    print(f"p = {p_val:.4f} → H0 nicht verwerfen")
+```
+
+Mehr dazu: [2.5 Statistische Signifikanz & p-Werte](Kapitel_3/signifikanz_p_werte.qmd)
+
+---
+
+## Quiz
+
+```{quizdown}
+---
+locale: de
+primaryColor: '#0a9396'
+shuffleQuestions: false
+shuffleAnswers: true
+---
+
+### Was gibt die relative Häufigkeit $h(a_j)$ an?
+
+1. [x] Den Anteil der Beobachtungen mit Wert $a_j$ an der Gesamtzahl $n$
+    > Richtig! $h(a_j) = H(a_j) / n$.
+1. [ ] Die absolute Anzahl der Beobachtungen mit Wert $a_j$
+1. [ ] Den kumulierten Anteil bis zum Wert $a_j$
+1. [ ] Den Mittelwert der Häufigkeiten
+
+### Welches Lagemaß ist am robustesten gegenüber Ausreißern?
+
+1. [ ] Arithmetisches Mittel
+1. [x] Median
+    > Richtig! Der Median hängt nur von der Reihenfolge ab. Ein Ausreißer verschiebt ihn höchstens um eine Position, das Mittel dagegen beliebig weit.
+1. [ ] Geometrisches Mittel
+1. [ ] Modus
+
+### Die Standardabweichung hat gegenüber der Varianz den Vorteil, dass ...
+
+1. [x] sie dieselbe Einheit wie die Ausgangsdaten hat.
+    > Richtig! Die Varianz hat die quadrierte Einheit (z. B. g²), die Standardabweichung wieder g.
+1. [ ] sie immer kleiner als die Varianz ist.
+1. [ ] sie keine Quadratwurzel benötigt.
+1. [ ] sie unabhängig von Ausreißern ist.
+
+### Eine Verteilung hat eine Schiefe von $+1{,}8$. Wie ist sie zu beschreiben?
+
+1. [x] Rechtsschief (linkssteil) – der lange Ausläufer zeigt nach rechts.
+    > Richtig! Positive Schiefe heißt: langer Schweif nach rechts, und meist $\bar{x} > \tilde{x}_{0{,}5}$.
+1. [ ] Linksschief (rechtssteil) – der lange Ausläufer zeigt nach links.
+1. [ ] Symmetrisch mit flachem Gipfel.
+1. [ ] Normalverteilt mit leichter Wölbung.
+
+### `scipy.stats.kurtosis(x)` liefert $0{,}4$. Was bedeutet das?
+
+1. [x] Der Exzess ist $0{,}4$, die Wölbung $w = 3{,}4$: etwas spitzer als eine Normalverteilung.
+    > Richtig! Ohne `fisher=False` gibt scipy den Exzess $w - 3$ zurück.
+1. [ ] Die Wölbung ist $w = 0{,}4$: viel flacher als eine Normalverteilung.
+1. [ ] Die Verteilung ist leicht rechtsschief.
+1. [ ] 40 % der Werte liegen in den Rändern.
+
+### Der Pearson-Korrelationskoeffizient $r = -0{,}85$ bedeutet:
+
+1. [x] Starker negativer linearer Zusammenhang – steigt $x$, sinkt $y$ tendenziell.
+    > Richtig! Über Ursache und Wirkung sagt $r$ nichts.
+1. [ ] Starker positiver linearer Zusammenhang.
+1. [ ] Kein linearer Zusammenhang.
+1. [ ] $x$ verursacht $y$.
+
+### Was ist der Unterschied zwischen Schätzfunktion und Schätzwert?
+
+1. [x] Die Schätzfunktion ist eine allgemeine Rechenvorschrift; der Schätzwert ist das konkrete Ergebnis für eine Stichprobe.
+    > Richtig! Die Schätzfunktion ist die Formel, der Schätzwert die Zahl, die für eine konkrete Stichprobe herauskommt. Wendet man die Formel auf zufällige Daten an, spricht man vom Schätzer – der ist eine Zufallsvariable.
+1. [ ] Der Schätzwert ist immer genauer als die Schätzfunktion.
+1. [ ] Die Schätzfunktion gilt nur für große Stichproben.
+1. [ ] Beide Begriffe bezeichnen dasselbe.
+
+### Ein Schätzer heißt erwartungstreu, wenn ...
+
+1. [x] sein Erwartungswert gleich dem wahren Parameterwert ist: $E[\hat{\theta}] = \theta$.
+    > Richtig! Die anderen Antworten beschreiben Konsistenz und Effizienz.
+1. [ ] er mit wachsendem Stichprobenumfang gegen den wahren Wert konvergiert.
+1. [ ] er die kleinste Varianz aller Schätzer hat.
+1. [ ] er durch die Momentenmethode hergeleitet wurde.
+
+### Wie ändert sich der Standardfehler des Mittelwerts, wenn man den Stichprobenumfang vervierfacht?
+
+1. [x] Er halbiert sich.
+    > Richtig! $SE = \sigma/\sqrt{n}$, und $\sqrt{4} = 2$.
+1. [ ] Er viertelt sich.
+1. [ ] Er bleibt gleich.
+1. [ ] Er verdoppelt sich.
+
+### Welches Konfidenzintervall wird verwendet, wenn $\sigma$ unbekannt ist?
+
+1. [x] $\bar{x} \pm t_{n-1;\,1-\alpha/2} \cdot \dfrac{s}{\sqrt{n}}$
+    > Richtig! Weil $\sigma$ durch $s$ geschätzt wird, nimmt man das etwas breitere $t$-Quantil.
+1. [ ] $\bar{x} \pm z_{1-\alpha/2} \cdot \dfrac{\sigma}{\sqrt{n}}$
+1. [ ] $\bar{x} \pm z_{1-\alpha/2} \cdot \dfrac{s}{n}$
+1. [ ] $\bar{x} \pm t_{n;\,\alpha} \cdot \dfrac{\sigma}{\sqrt{n}}$
+
+### Was bedeutet ein p-Wert von $0{,}03$ bei einem Signifikanzniveau von $\alpha = 0{,}05$?
+
+1. [x] $H_0$ wird verworfen – das Ergebnis ist statistisch signifikant.
+    > Richtig! $0{,}03 \le 0{,}05$.
+1. [ ] $H_0$ wird beibehalten – das Ergebnis ist nicht signifikant.
+1. [ ] Die Wahrscheinlichkeit, dass $H_1$ wahr ist, beträgt 97 %.
+1. [ ] Der Effekt ist praktisch bedeutsam.
+
+### Ein Test ergibt $p = 0{,}40$. Was folgt daraus?
+
+1. [x] Die Daten sprechen nicht gegen $H_0$ – bewiesen ist $H_0$ damit aber nicht.
+    > Richtig! Vielleicht gibt es einen Effekt, und die Stichprobe war nur zu klein, um ihn zu entdecken.
+1. [ ] $H_0$ ist mit 40 % Wahrscheinlichkeit wahr.
+1. [ ] $H_0$ ist bewiesen.
+1. [ ] $H_1$ ist mit 60 % Wahrscheinlichkeit wahr.
+
+### Was ist ein Fehler 1. Art?
+
+1. [x] $H_0$ wird verworfen, obwohl sie wahr ist.
+    > Richtig! Seine Wahrscheinlichkeit ist durch $\alpha$ begrenzt.
+1. [ ] $H_0$ wird beibehalten, obwohl $H_1$ wahr ist.
+1. [ ] Der Schätzer ist nicht erwartungstreu.
+1. [ ] Das Konfidenzintervall enthält den wahren Parameter nicht.
+
+### Ein p-Wert ist sehr klein (z. B. $0{,}001$). Was folgt daraus sicher?
+
+1. [x] Das Ergebnis ist statistisch signifikant – über praktische Relevanz sagt der p-Wert nichts.
+    > Richtig! Bei großen Stichproben wird auch ein winziger Effekt signifikant.
+1. [ ] Der Effekt ist groß und praktisch bedeutsam.
+1. [ ] $H_1$ ist mit 99,9 % Wahrscheinlichkeit wahr.
+1. [ ] Der Fehler 2. Art ist klein.
+```
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+This page gives you a compact overview of all concepts, formulas and Python commands from the tutorial – ideal for looking things up and revising. Below each section, a link leads to the detailed page.
+
+All code snippets assume these imports:
+
+```python
+import numpy as np
+import pandas as pd
+from scipy import stats
+from scipy.stats import gmean, iqr, skew, kurtosis, pearsonr, spearmanr, norm
+```
+
+---
+
+## 1. Descriptive Statistics {#deskriptive-statistik}
+
+### Frequencies {#häufigkeiten}
+
+| Term | Formula / meaning |
+|---|---|
+| Absolute frequency | $H(a_j)$ – number of observations with value $a_j$ |
+| Relative frequency | $h(a_j) = \dfrac{H(a_j)}{n}$ |
+| Cumulative relative frequency | $\sum_{i \le j} h(a_i)$ |
+| Empirical distribution function | $F_n(x)$ = share of observations $\le x$ (step function) |
+
+```python
+df["column"].value_counts()                    # absolute frequencies
+df["column"].value_counts(normalize=True)      # relative frequencies
+df["column"].value_counts(normalize=True).sort_index().cumsum()  # cumulative
+(x <= 4000).mean()                             # F_n(4000)
+```
+
+More: [1.2 Frequency Distribution](Kapitel_1/haeufigkeitsverteilung.qmd) · [1.3 Graphical Representations](Kapitel_1/grafische_darstellungen.qmd)
+
+### Measures of Location {#lagemaße}
+
+| Measure | Formula |
+|---|---|
+| Arithmetic mean | $\bar{x} = \dfrac{1}{n}\sum_{i=1}^n x_i$ |
+| Median $\tilde{x}_{0.5}$ ($= Q_2$) | middle value of the sorted data |
+| Mode | most frequent value (of little use for continuous variables) |
+| Geometric mean | $\bar{x}_{\text{geo}} = \sqrt[n]{x_1 \cdot x_2 \cdots x_n}$ (positive values only, e.g. growth factors) |
+| 1st quartile $Q_1$ | value below which 25 % of the data lie |
+| 3rd quartile $Q_3$ | value below which 75 % of the data lie |
+
+```python
+np.mean(x)               # arithmetic mean
+np.median(x)             # median
+df["column"].mode()[0]   # mode
+gmean(x)                 # geometric mean
+np.percentile(x, [25, 75])  # Q1, Q3
+```
+
+More: [1.4 Measures: Location](Kapitel_1/kennzahlen_lage.qmd)
+
+### Measures of Spread {#streuungsmaße}
+
+| Measure | Formula |
+|---|---|
+| Range | $\tilde{q}_0 = x_{\max} - x_{\min}$ (largest minus smallest value) |
+| Variance (corrected) | $s^2 = \dfrac{1}{n-1}\sum_{i=1}^n (x_i - \bar{x})^2$ |
+| Variance (uncorrected) | $\tilde{s}^2 = \dfrac{1}{n}\sum_{i=1}^n (x_i - \bar{x})^2$ |
+| Standard deviation | $s = \sqrt{s^2}$ or $\tilde{s} = \sqrt{\tilde{s}^2}$ – same unit as the data |
+| Interquartile range | $\text{IQR} = Q_3 - Q_1$ – robust against outliers |
+
+```python
+np.ptp(x)                        # range (max - min)
+np.var(x, ddof=1)                # corrected variance s²
+np.var(x)                        # uncorrected variance s̃² (NumPy default: ddof=0!)
+np.std(x, ddof=1)                # standard deviation s
+df["column"].std()               # pandas already uses ddof=1
+iqr(x)                           # interquartile range
+```
+
+### Skewness & Kurtosis {#schiefe-wölbung}
+
+| Term | Formula / meaning |
+|---|---|
+| Skewness | $sk = \dfrac{1}{n}\sum_{i=1}^n \left(\dfrac{x_i - \bar{x}}{s}\right)^3$ |
+| $sk > 0$ | right-skewed: long tail to the right, $\bar{x} > \tilde{x}_{0.5}$ |
+| $sk < 0$ | left-skewed: long tail to the left, $\bar{x} < \tilde{x}_{0.5}$ |
+| Kurtosis | $w = \dfrac{1}{n}\sum_{i=1}^n \left(\dfrac{x_i - \bar{x}}{s}\right)^4$, normal distribution: $w = 3$ |
+| Excess kurtosis | $ex = w - 3$: $ex > 0$ peaked (leptokurtic), $ex < 0$ flat (platykurtic) |
+
+```python
+skew(x)                    # skewness
+kurtosis(x)                # EXCESS ex = w - 3 (default fisher=True)
+kurtosis(x, fisher=False)  # kurtosis w
+df.describe()              # quick overview: mean, std, min, quartiles, max
+```
+
+::: {.callout-note}
+`skew` and `kurtosis` use $\tilde{s}$ instead of $s$. For small samples they therefore differ slightly from the formulas above (for the 12 persons from 1.5: kurtosis $1.95$ instead of $1.64$).
+:::
+
+More: [1.5 Measures: Spread, Skewness & Kurtosis](Kapitel_1/kennzahlen_streuung.qmd)
+
+### Bivariate Analysis {#zweidimensionale-analyse}
+
+| Term | Formula |
+|---|---|
+| Covariance | $s_{xy} = \dfrac{1}{n-1}\sum_{i=1}^n (x_i-\bar{x})(y_i-\bar{y})$ |
+| Pearson correlation | $r = \dfrac{s_{xy}}{s_x \cdot s_y}$, $\quad r \in [-1, 1]$ – measures **linear** relationships |
+| Spearman correlation | $r_s$ = Pearson correlation of the ranks – measures **monotonic** relationships, robust against outliers |
+| Rule of thumb | $\lvert r \rvert < 0.3$ weak · $0.3$–$0.7$ moderate · $> 0.7$ strong |
+| Regression line | $\hat{y} = \hat{\alpha} + \hat{\beta}x$ with $\hat{\beta} = \dfrac{s_{xy}}{s_x^2}$, $\hat{\alpha} = \bar{y} - \hat{\beta}\bar{x}$ |
+
+> **Correlation is not causation:** a relationship can be caused by a third variable, be coincidental or work in the opposite direction. Split by groups, it can even reverse (Simpson's paradox).
+
+```python
+np.cov(x, y, ddof=1)[0, 1]   # covariance
+pearsonr(x, y)               # Pearson r + p-value
+spearmanr(x, y)              # Spearman r_s + p-value
+df.corr(numeric_only=True)   # correlation matrix of all numeric columns
+np.polyfit(x, y, 1)          # slope β̂ and intercept α̂
+```
+
+More: [1.6 Bivariate Data Analysis](Kapitel_1/zweidimensional.qmd)
+
+---
+
+## 2. Estimation Theory {#schätztheorie}
+
+### Basic Terms and Quality Criteria {#grundbegriffe-und-gütekriterien}
+
+| Term | Meaning |
+|---|---|
+| Parameter | fixed, unknown quantity of the population, e.g. $\mu = E[X]$ |
+| Estimating function | rule computed from the sample, e.g. $T(x_1, \ldots, x_n) = \bar{x}$ |
+| Estimate | concrete result for a concrete sample |
+| Estimator | the same rule applied to random variables, e.g. $\overline{X}_n$ – itself a random variable |
+| Unbiasedness | $E[\hat{\theta}] = \theta$ – no systematic error (bias $= 0$) |
+| Efficiency | the estimator scatters little, i.e. small standard error |
+| Consistency | the estimate converges to $\theta$ as $n$ grows |
+| Standard error | $SE(\bar{X}) = \dfrac{\sigma}{\sqrt{n}}$ – $k$ times as much data → $\sqrt{k}$ times smaller |
+| MSE | $\text{MSE}(\hat{\theta}) = \text{Var}(\hat{\theta}) + \text{Bias}(\hat{\theta})^2$ |
+
+```python
+stats.sem(x)                     # estimated standard error s/√n
+np.std(x, ddof=1) / np.sqrt(n)   # the same by hand
+```
+
+More: [2.1 Estimators](Kapitel_2/schaetzer.qmd) · [2.3 Quality Criteria for Point Estimators](Kapitel_2/guetekriterien.qmd)
+
+### Estimation Methods {#schätzmethoden}
+
+| Method | Idea |
+|---|---|
+| Method of moments | set theoretical moments = sample moments, solve for $\theta$ |
+| Maximum likelihood | choose $\theta$ so that $L(\theta) = \prod_{i=1}^n f(x_i;\theta)$ is maximal (in practice: maximise $\ln L$) |
+
+```python
+mu_hat    = np.mean(x)          # estimator for the expected value μ
+sigma_hat = np.std(x, ddof=1)   # estimator for the standard deviation σ
+mu_ml, sigma_ml = norm.fit(x)   # ML estimators; sigma_ml uses 1/n (like ddof=0)
+```
+
+More: [2.2 Estimation Methods](Kapitel_2/schaetzmethoden.qmd)
+
+### Confidence Intervals {#konfidenzintervalle}
+
+| Situation | Interval |
+|---|---|
+| $\sigma$ known | $\bar{x} \pm z_{1-\alpha/2} \cdot \dfrac{\sigma}{\sqrt{n}}$ |
+| $\sigma$ unknown | $\bar{x} \pm t_{n-1;\,1-\alpha/2} \cdot \dfrac{s}{\sqrt{n}}$ |
+
+$1-\alpha$ = confidence level · $z$ = normal quantile · $t$ = $t$ quantile
+
+> **Read it correctly:** 95 % refers to the **procedure**: in 95 % of all samples, the interval computed this way contains the true value. A single interval either contains it or not.
+
+```python
+# σ unknown → t-distribution (the usual case)
+stats.t.interval(0.95, df=n-1, loc=np.mean(x), scale=np.std(x, ddof=1)/np.sqrt(n))
+
+# σ known → normal distribution
+stats.norm.interval(0.95, loc=np.mean(x), scale=sigma/np.sqrt(n))
+
+# look up quantiles
+stats.norm.ppf(0.975)        # z_{0.975} ≈ 1.96
+stats.t.ppf(0.975, df=n-1)   # t quantile
+```
+
+More: [2.4 Confidence Intervals](Kapitel_2/konfidenzintervalle.qmd)
+
+### Statistical Significance & p-Values {#statistische-signifikanz-p-werte}
+
+| Term | Meaning |
+|---|---|
+| $H_0$ | null hypothesis – the "nothing special" state we want to refute |
+| $H_1$ | alternative hypothesis – what we want to show |
+| Significance level $\alpha$ | maximum tolerated probability of a type I error (often 5 %) |
+| p-value | probability of a result at least as extreme as the observed one, **if $H_0$ is true** |
+| Decision | $p \le \alpha$ → reject $H_0$ · $p > \alpha$ → do not reject $H_0$ |
+| Type I error | $H_0$ rejected although it is true (probability at most $\alpha$) |
+| Type II error | $H_0$ not rejected although $H_1$ is true (probability $\beta$) |
+| Power | $1 - \beta$ – probability of detecting an existing effect |
+
+> **Important:**
+>
+> - A small p-value means statistical significance – not necessarily practical relevance! With large samples, even a tiny effect becomes significant.
+> - Not rejecting $H_0$ does not prove $H_0$. The data are just not enough to refute it.
+> - Smaller $\alpha$ → larger $\beta$. Both only decrease together with more data.
+
+```python
+# one-sample t-test (H0: μ = mu0), two-sided
+t_stat, p_val = stats.ttest_1samp(x, popmean=mu0)
+
+# one-sided (H1: μ > mu0)
+t_stat, p_val = stats.ttest_1samp(x, popmean=mu0, alternative='greater')
+
+# two-sample t-test (H0: μ1 = μ2, Welch)
+t_stat, p_val = stats.ttest_ind(group1, group2, equal_var=False)
+
+# binomial test by hand: P(X ≥ 26) for n = 40, p0 = 0.6
+p_val = stats.binom.sf(25, 40, 0.6)
+
+# decision
+alpha = 0.05
+if p_val <= alpha:
+    print(f"p = {p_val:.4f} → reject H0 (significant)")
+else:
+    print(f"p = {p_val:.4f} → do not reject H0")
+```
+
+More: [2.5 Statistical Significance & p-Values](Kapitel_3/signifikanz_p_werte.qmd)
+
+---
+
+## Quiz {#quiz}
+
+```{quizdown}
+---
+locale: en
+primaryColor: '#0a9396'
+shuffleQuestions: false
+shuffleAnswers: true
+---
+
+### What does the relative frequency $h(a_j)$ describe?
+
+1. [x] The share of observations with value $a_j$ in the total number $n$
+    > Correct! $h(a_j) = H(a_j) / n$.
+1. [ ] The absolute number of observations with value $a_j$
+1. [ ] The cumulative share up to the value $a_j$
+1. [ ] The mean of the frequencies
+
+### Which measure of location is most robust against outliers?
+
+1. [ ] Arithmetic mean
+1. [x] Median
+    > Correct! The median only depends on the order. An outlier shifts it by at most one position, the mean arbitrarily far.
+1. [ ] Geometric mean
+1. [ ] Mode
+
+### Compared with the variance, the standard deviation has the advantage that ...
+
+1. [x] it has the same unit as the original data.
+    > Correct! The variance has the squared unit (e.g. g²), the standard deviation g again.
+1. [ ] it is always smaller than the variance.
+1. [ ] it does not need a square root.
+1. [ ] it is not affected by outliers.
+
+### A distribution has a skewness of $+1.8$. How should it be described?
+
+1. [x] Right-skewed – the long tail points to the right.
+    > Correct! Positive skewness means a long tail to the right, and usually $\bar{x} > \tilde{x}_{0.5}$.
+1. [ ] Left-skewed – the long tail points to the left.
+1. [ ] Symmetric with a flat peak.
+1. [ ] Normally distributed with slight kurtosis.
+
+### `scipy.stats.kurtosis(x)` returns $0.4$. What does that mean?
+
+1. [x] The excess kurtosis is $0.4$, the kurtosis $w = 3.4$: slightly more peaked than a normal distribution.
+    > Correct! Without `fisher=False`, scipy returns the excess $w - 3$.
+1. [ ] The kurtosis is $w = 0.4$: much flatter than a normal distribution.
+1. [ ] The distribution is slightly right-skewed.
+1. [ ] 40 % of the values lie in the tails.
+
+### A Pearson correlation coefficient of $r = -0.85$ means:
+
+1. [x] Strong negative linear relationship – as $x$ increases, $y$ tends to decrease.
+    > Correct! $r$ says nothing about cause and effect.
+1. [ ] Strong positive linear relationship.
+1. [ ] No linear relationship.
+1. [ ] $x$ causes $y$.
+
+### What is the difference between an estimating function and an estimate?
+
+1. [x] The estimating function is a general rule; the estimate is the concrete result for one sample.
+    > Correct! The estimating function is the formula, the estimate the number you get for a concrete sample. Applied to random data, the formula is called an estimator – which is a random variable.
+1. [ ] The estimate is always more precise than the estimator.
+1. [ ] The estimator only applies to large samples.
+1. [ ] Both terms mean the same thing.
+
+### An estimator is called unbiased if ...
+
+1. [x] its expected value equals the true parameter value: $E[\hat{\theta}] = \theta$.
+    > Correct! The other answers describe consistency and efficiency.
+1. [ ] it converges to the true value as the sample size grows.
+1. [ ] it has the smallest variance of all estimators.
+1. [ ] it was derived with the method of moments.
+
+### How does the standard error of the mean change if the sample size is quadrupled?
+
+1. [x] It is halved.
+    > Correct! $SE = \sigma/\sqrt{n}$, and $\sqrt{4} = 2$.
+1. [ ] It is quartered.
+1. [ ] It stays the same.
+1. [ ] It doubles.
+
+### Which confidence interval is used when $\sigma$ is unknown?
+
+1. [x] $\bar{x} \pm t_{n-1;\,1-\alpha/2} \cdot \dfrac{s}{\sqrt{n}}$
+    > Correct! Because $\sigma$ is estimated by $s$, the slightly wider $t$ quantile is used.
+1. [ ] $\bar{x} \pm z_{1-\alpha/2} \cdot \dfrac{\sigma}{\sqrt{n}}$
+1. [ ] $\bar{x} \pm z_{1-\alpha/2} \cdot \dfrac{s}{n}$
+1. [ ] $\bar{x} \pm t_{n;\,\alpha} \cdot \dfrac{\sigma}{\sqrt{n}}$
+
+### What does a p-value of $0.03$ mean at a significance level of $\alpha = 0.05$?
+
+1. [x] $H_0$ is rejected – the result is statistically significant.
+    > Correct! $0.03 \le 0.05$.
+1. [ ] $H_0$ is retained – the result is not significant.
+1. [ ] The probability that $H_1$ is true is 97 %.
+1. [ ] The effect is practically relevant.
+
+### A test gives $p = 0.40$. What follows?
+
+1. [x] The data do not speak against $H_0$ – but that does not prove $H_0$.
+    > Correct! Maybe there is an effect and the sample was just too small to detect it.
+1. [ ] $H_0$ is true with a probability of 40 %.
+1. [ ] $H_0$ is proven.
+1. [ ] $H_1$ is true with a probability of 60 %.
+
+### What is a type I error?
+
+1. [x] $H_0$ is rejected although it is true.
+    > Correct! Its probability is bounded by $\alpha$.
+1. [ ] $H_0$ is retained although $H_1$ is true.
+1. [ ] The estimator is biased.
+1. [ ] The confidence interval does not contain the true parameter.
+
+### A p-value is very small (e.g. $0.001$). What follows for certain?
+
+1. [x] The result is statistically significant – the p-value says nothing about practical relevance.
+    > Correct! With large samples, even a tiny effect becomes significant.
+1. [ ] The effect is large and practically relevant.
+1. [ ] $H_1$ is true with a probability of 99.9 %.
+1. [ ] The type II error is small.
+```
+
+::::

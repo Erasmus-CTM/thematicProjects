@@ -1,0 +1,11 @@
+# Level Expert (Tips & Tricks): only WHICH pages are rendered.
+# Labels are in _quarto-<language>.yml,
+# the output folder docs/<lang>/exp/ is set by build.py.
+project:
+  render:
+    - "Qmd Files/Tipps and Tricks/*.qmd"
+
+format:
+  html:
+    toc: true
+    code-tools: true

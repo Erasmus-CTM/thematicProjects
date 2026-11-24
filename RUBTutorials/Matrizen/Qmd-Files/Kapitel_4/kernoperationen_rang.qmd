@@ -1,0 +1,240 @@
+---
+title: "4.1. Rang einer Matrix"
+title-en: "4.1. Rank of a Matrix"
+format: html
+filters:
+  - ctm-assessment
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+::: {.callout-note title="Zellen der Reihe nach ausführen"}
+Die Code-Zellen dieser Seite bauen aufeinander auf: Importe, Variablen und Funktionen aus einer Zelle gelten auch in allen späteren Zellen und werden dort nicht wiederholt. Führe die Zellen deshalb von oben nach unten aus. Meldet Python einen `NameError`, hast du meist eine frühere Zelle noch nicht ausgeführt.
+:::
+
+## 4.1.1. Definition
+
+Der **Rang** einer Matrix $A$, geschrieben $\operatorname{rang}(A)$ (manchmal auch $\operatorname{rg}(A)$), ist die maximale Anzahl **linear unabhängiger** Spaltenvektoren (oder Zeilenvektoren) der Matrix.
+
+Dabei heißen Vektoren $\vec{v}_1, \dots, \vec{v}_k$ **linear unabhängig**, wenn die Gleichung
+$$ a_1 \vec{v}_1 + a_2 \vec{v}_2 + \dots + a_k \vec{v}_k = \vec{0} $$
+nur für $a_1 = a_2 = \dots = a_k = 0$ erfüllt ist. Anschaulich: Keiner der Vektoren lässt sich aus den übrigen durch Vervielfachen und Addieren zusammensetzen. Andernfalls heißen sie **linear abhängig**.
+
+Die maximale Anzahl linear unabhängiger Spalten heißt genauer **Spaltenrang**, die maximale Anzahl linear unabhängiger Zeilen **Zeilenrang**. Dass man in der Definition Spalten oder Zeilen nehmen darf, liegt an folgendem Satz. Für jede Matrix gilt:
+$$ \text{Zeilenrang} = \text{Spaltenrang} = \text{Rang der Matrix} $$
+
+:::{.callout-note title="Warum gilt das?" collapse="true"}
+Sei $A$ eine $m \times n$-Matrix mit Spaltenrang $r$.
+
+1. Wähle $r$ linear unabhängige Spalten von $A$ und schreibe sie nebeneinander in eine $m \times r$-Matrix $C$. Weil $r$ die *maximale* Anzahl ist, lässt sich jede Spalte von $A$ aus den Spalten von $C$ durch Vervielfachen und Addieren bilden.
+2. Schreibe die dafür nötigen Faktoren der $j$-ten Spalte von $A$ in die $j$-te Spalte einer $r \times n$-Matrix $R$. Nach der Definition der [Matrizenmultiplikation](../Kapitel_3/matrizen_multiplikation.qmd) heißt das genau
+$$ A = C \cdot R. $$
+3. Lies dasselbe Produkt nun zeilenweise: Die $i$-te Zeile von $A$ ist die Summe der $r$ Zeilen von $R$, jeweils vervielfacht mit den Einträgen der $i$-ten Zeile von $C$. Jede Zeile von $A$ lässt sich also aus nur $r$ Vektoren bilden. Mehr als $r$ linear unabhängige Zeilen kann $A$ deshalb nicht haben:
+$$ \text{Zeilenrang}(A) \le r = \text{Spaltenrang}(A). $$
+4. Dieselbe Überlegung gilt für die transponierte Matrix $A^T$. Deren Spalten sind die Zeilen von $A$ und deren Zeilen die Spalten von $A$, also folgt $\text{Spaltenrang}(A) \le \text{Zeilenrang}(A)$.
+
+Beide Ungleichungen zusammen ergeben die Gleichheit. Als Folgerung ändert sich der Rang beim Transponieren nicht: $\operatorname{rang}(A^T) = \operatorname{rang}(A)$.
+:::
+
+:::{.callout-important title="Kurzer Exkurs Dimension des Zeilen-/Spaltenraums" collapse="true"}
+Oft taucht im Kopf eines Studierenden beim Begriff **Rang** einer Matrix der Begriff **Dimension** auf.
+Hier eine kurze Einordnung: Mit der Dimension ist in diesem Fall keineswegs das $m$ oder das $n$ einer $m \times n$-Matrix gemeint. Vielmehr ist damit die Dimension des Zeilenraums beziehungsweise des Spaltenraums gemeint.  
+Der **Spaltenraum** von $A$ ist die Menge aller Vektoren, die sich aus den Spalten von $A$ durch Vervielfachen und Addieren bilden lassen, der **Zeilenraum** entsprechend aus den Zeilen. Die **Dimension** $\dim$ eines solchen Raumes ist die Anzahl der Vektoren in einer Basis, also in einer kleinstmöglichen Auswahl linear unabhängiger Vektoren, aus denen sich alle Vektoren des Raumes bilden lassen. Da der **Rang** die maximale Anzahl linear unabhängiger Spalten (bzw. Zeilen) angibt, ist er genau diese Dimension:
+$$\operatorname{rang}(A) = \dim(\text{Zeilenraum}(A)) = \dim(\text{Spaltenraum}(A))$$
+Der Spaltenraum heißt auch **Bild** von $A$, denn er besteht genau aus den Vektoren $A \cdot \vec{x}$. Deshalb schreibt man auch $\operatorname{rang}(A) = \dim(\operatorname{Bild}(A))$.
+:::
+
+
+## 4.1.2. Rang in NumPy berechnen
+
+Einer der großen Vorteile von Python ist, dass wir hier Verfahren wie den Gauß-Algorithmus nicht per Hand bestimmen müssen. So gibt es auch für den Rang eine passende `numpy`-Funktion.
+`np.linalg.matrix_rank()`.
+
+Ein Beispiel: Die zweite Matrix hat eine Zeile, die die Summe der anderen beiden ist, deshalb ist ihr Rang kleiner als 3.
+
+```{pyodide-python}
+#| read-only: true
+import numpy as np
+
+A = np.array([[1, 0, 0],
+              [0, 1, 0],
+              [0, 0, 1]])
+B = np.array([[1, 2, 3],
+              [4, 5, 6],
+              [5, 7, 9]])   # 3. Zeile = 1. Zeile + 2. Zeile
+
+print("Rang von A:", np.linalg.matrix_rank(A))
+print("Rang von B:", np.linalg.matrix_rank(B))
+```
+
+## 4.1.3. Übung
+
+Schau dir zuerst die Zeilen genau an. Für kleine Matrizen kannst du den Rang oft ohne Rechnung sehen, wenn eine Zeile ein Vielfaches oder eine Summe anderer Zeilen ist:
+
+```{math-exercise}
+#| label: rang-hand
+#| caption: Rang ablesen
+#| partial-credit: true
+$\operatorname{rang}\begin{pmatrix} 1 & 2 \\ 2 & 4 \end{pmatrix} =$ _[1]
+
+$\operatorname{rang}\begin{pmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{pmatrix} =$ _[3]
+
+$\operatorname{rang}\begin{pmatrix} 1 & 2 & 3 \\ 2 & 4 & 6 \\ 1 & 1 & 1 \end{pmatrix} =$ _[2]
+```
+
+**Aufgabe:** Eine Matrix hat **vollen Rang**, wenn ihr Rang gleich der kleineren ihrer beiden Dimensionen ist. Schreibe eine Funktion `hat_vollen_rang(M)`, die `True` oder `False` zurückgibt. Versteckte Tests prüfen automatisch, ob deine Lösung stimmt.
+
+**Befehle, die du brauchst:** `np.linalg.matrix_rank()`, das Attribut `.shape`, `min()`, der Vergleich `==`, `return`.
+
+```{py-exercise}
+#| label: rang-uebung
+#| caption: hat_vollen_rang implementieren
+#| show-test-hints: false
+import numpy as np
+
+def hat_vollen_rang(M):
+    # Dein Code hier
+    pass
+
+## TESTS ##
+A = np.array([[1, 0, 1], [2, 1, 1], [1, 1, 2]])
+B = np.array([[1, 0, 1], [2, 1, 1], [3, 1, 2]])
+C = np.array([[1, 2, 3], [4, 5, 6]])
+assert hat_vollen_rang(A) == True, "A hat Rang 3, also vollen Rang"
+assert hat_vollen_rang(B) == False, "B hat nur Rang 2 (3. Zeile = 1. Zeile + 2. Zeile)"
+assert hat_vollen_rang(C) == True, "C (2x3) hat Rang 2 = min(2, 3), also vollen Rang"
+```
+
+::: {.callout-tip title="Tipp" collapse="true"}
+Der Rang kann höchstens so groß sein wie die kleinere der beiden Dimensionen: `min(M.shape)`. Vergleiche `np.linalg.matrix_rank(M)` damit.
+:::
+
+::: {.callout-caution title="Lösung" collapse="true"}
+```python
+def hat_vollen_rang(M):
+    return np.linalg.matrix_rank(M) == min(M.shape)
+```
+
+Warum hat `B` nur Rang 2? Die dritte Zeile ist die Summe der ersten beiden und liefert keine neue Information.
+:::
+
+Der Rang ist eine wichtige Eigenschaft, die eng mit der Lösbarkeit von linearen Gleichungssystemen und der Invertierbarkeit von Matrizen zusammenhängt, wie wir in den nächsten Abschnitten zur [Determinante](kernoperationen_determinante.qmd) und [Inversen](kernoperationen_inverse.qmd) sehen werden.
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+::: {.callout-note title="Run the cells in order"}
+The code cells on this page build on each other: imports, variables and functions from one cell are also available in all later cells and are not repeated there. So run the cells from top to bottom. If Python reports a `NameError`, you most likely have not run an earlier cell yet.
+:::
+
+## 4.1.1. Definition {#definition}
+
+The **rank** of a matrix $A$, written $\operatorname{rank}(A)$ (sometimes also $\operatorname{rk}(A)$), is the maximum number of **linearly independent** column vectors (or row vectors) of the matrix.
+
+Vectors $\vec{v}_1, \dots, \vec{v}_k$ are called **linearly independent** if the equation
+$$ a_1 \vec{v}_1 + a_2 \vec{v}_2 + \dots + a_k \vec{v}_k = \vec{0} $$
+only holds for $a_1 = a_2 = \dots = a_k = 0$. Intuitively: none of the vectors can be built from the others by scaling and adding. Otherwise they are called **linearly dependent**.
+
+More precisely, the maximum number of linearly independent columns is called the **column rank**, and the maximum number of linearly independent rows the **row rank**. That the definition may use columns or rows is due to the following theorem. For every matrix:
+$$ \text{row rank} = \text{column rank} = \text{rank of the matrix} $$
+
+:::{.callout-note title="Why is this true?" collapse="true"}
+Let $A$ be an $m \times n$ matrix with column rank $r$.
+
+1. Choose $r$ linearly independent columns of $A$ and write them side by side into an $m \times r$ matrix $C$. Because $r$ is the *maximum* number, every column of $A$ can be built from the columns of $C$ by scaling and adding.
+2. Write the factors needed for the $j$-th column of $A$ into the $j$-th column of an $r \times n$ matrix $R$. By the definition of [matrix multiplication](../Kapitel_3/matrizen_multiplikation.qmd) this means exactly
+$$ A = C \cdot R. $$
+3. Now read the same product row by row: the $i$-th row of $A$ is the sum of the $r$ rows of $R$, each scaled by the entries of the $i$-th row of $C$. So every row of $A$ can be built from only $r$ vectors. Therefore $A$ cannot have more than $r$ linearly independent rows:
+$$ \text{row rank}(A) \le r = \text{column rank}(A). $$
+4. The same reasoning applies to the transposed matrix $A^T$. Its columns are the rows of $A$ and its rows are the columns of $A$, so $\text{column rank}(A) \le \text{row rank}(A)$ follows.
+
+Both inequalities together give equality. As a consequence, the rank does not change under transposition: $\operatorname{rank}(A^T) = \operatorname{rank}(A)$.
+:::
+
+:::{.callout-important title="Short digression: dimension of the row/column space" collapse="true"}
+When students hear the term **rank** of a matrix, the term **dimension** often comes to mind.
+Here is a short classification: in this case, dimension does not mean the $m$ or the $n$ of an $m \times n$ matrix. Rather, it means the dimension of the row space or of the column space.  
+The **column space** of $A$ is the set of all vectors that can be built from the columns of $A$ by scaling and adding, the **row space** correspondingly from the rows. The **dimension** $\dim$ of such a space is the number of vectors in a basis, that is, in a smallest possible selection of linearly independent vectors from which all vectors of the space can be built. Since the **rank** gives the maximum number of linearly independent columns (or rows), it is exactly this dimension:
+$$\operatorname{rank}(A) = \dim(\text{row space}(A)) = \dim(\text{column space}(A))$$
+The column space is also called the **image** of $A$, because it consists exactly of the vectors $A \cdot \vec{x}$. That is why one also writes $\operatorname{rank}(A) = \dim(\operatorname{Im}(A))$.
+:::
+
+
+## 4.1.2. Computing the rank in NumPy {#rang-in-numpy-berechnen}
+
+One of the big advantages of Python is that we do not have to carry out procedures like Gaussian elimination by hand. So there is also a suitable `numpy` function for the rank:
+`np.linalg.matrix_rank()`.
+
+An example: the second matrix has a row that is the sum of the other two, so its rank is smaller than 3.
+
+```{pyodide-python}
+#| read-only: true
+import numpy as np
+
+A = np.array([[1, 0, 0],
+              [0, 1, 0],
+              [0, 0, 1]])
+B = np.array([[1, 2, 3],
+              [4, 5, 6],
+              [5, 7, 9]])   # 3rd row = 1st row + 2nd row
+
+print("Rank of A:", np.linalg.matrix_rank(A))
+print("Rank of B:", np.linalg.matrix_rank(B))
+```
+
+## 4.1.3. Exercise {#übung}
+
+First take a close look at the rows. For small matrices you can often see the rank without calculating, when one row is a multiple or a sum of other rows:
+
+```{math-exercise}
+#| label: rang-hand-en
+#| caption: Reading off the rank
+#| partial-credit: true
+$\operatorname{rank}\begin{pmatrix} 1 & 2 \\ 2 & 4 \end{pmatrix} =$ _[1]
+
+$\operatorname{rank}\begin{pmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{pmatrix} =$ _[3]
+
+$\operatorname{rank}\begin{pmatrix} 1 & 2 & 3 \\ 2 & 4 & 6 \\ 1 & 1 & 1 \end{pmatrix} =$ _[2]
+```
+
+**Exercise:** A matrix has **full rank** if its rank equals the smaller of its two dimensions. Write a function `has_full_rank(M)` that returns `True` or `False`. Hidden tests check your solution automatically.
+
+**Commands you need:** `np.linalg.matrix_rank()`, the attribute `.shape`, `min()`, the comparison `==`, `return`.
+
+```{py-exercise}
+#| label: rang-uebung-en
+#| caption: Implement has_full_rank
+#| show-test-hints: false
+import numpy as np
+
+def has_full_rank(M):
+    # Your code here
+    pass
+
+## TESTS ##
+A = np.array([[1, 0, 1], [2, 1, 1], [1, 1, 2]])
+B = np.array([[1, 0, 1], [2, 1, 1], [3, 1, 2]])
+C = np.array([[1, 2, 3], [4, 5, 6]])
+assert has_full_rank(A) == True, "A has rank 3, so full rank"
+assert has_full_rank(B) == False, "B only has rank 2 (3rd row = 1st row + 2nd row)"
+assert has_full_rank(C) == True, "C (2x3) has rank 2 = min(2, 3), so full rank"
+```
+
+::: {.callout-tip title="Hint" collapse="true"}
+The rank can be at most as large as the smaller of the two dimensions: `min(M.shape)`. Compare `np.linalg.matrix_rank(M)` with it.
+:::
+
+::: {.callout-caution title="Solution" collapse="true"}
+```python
+def has_full_rank(M):
+    return np.linalg.matrix_rank(M) == min(M.shape)
+```
+
+Why does `B` only have rank 2? The third row is the sum of the first two and provides no new information.
+:::
+
+The rank is an important property that is closely related to the solvability of systems of linear equations and to the invertibility of matrices, as we will see in the next sections on the [determinant](kernoperationen_determinante.qmd) and the [inverse](kernoperationen_inverse.qmd).
+
+::::

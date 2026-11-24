@@ -1,0 +1,2403 @@
+---
+title: "1.4 Kennzahlen: Lage"
+title-en: "1.4 Measures: Location"
+execute:
+  eval: false
+  echo: true
+  warning: false
+filters:
+  - ctm-assessment
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+```{python}
+#| include: true
+#| echo: false
+#| eval: true
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib
+import pandas as pd
+from scipy import stats
+
+matplotlib.rcParams['figure.dpi'] = 110
+matplotlib.rcParams['font.size'] = 11
+
+try:
+    from palmerpenguins import load_penguins
+    penguins = load_penguins()
+except Exception:
+    url = "https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"
+    penguins = pd.read_csv(url)
+```
+
+## Lernziele {.unnumbered}
+
+Am Ende dieses Unterkapitels kannst du:
+
+- erklären, was eine Kennzahl ist und wozu sie genutzt wird.
+- Modalwert, arithmetisches Mittel, geometrisches Mittel und Median berechnen und interpretieren.
+- für einen gegebenen Datensatz das passende Lagemaß auswählen.
+- $p$-Quantile und Quartile berechnen.
+- einen Boxplot ablesen und mit Python erstellen.
+
+---
+
+## Einführung
+
+Wir haben eine Stichprobe $(x_1, x_2, \dots, x_n)$ vorliegen. Häufigkeitstabellen und Grafiken zeigen uns ein vollständiges Bild der Daten – aber manchmal möchten wir die Stichprobe auf **einen einzigen charakteristischen Wert** reduzieren. Solche Werte nennt man **Kennzahlen** (oder Maßzahlen).
+
+Eine Häufigkeitsverteilung lässt sich durch vier wichtige Eigenschaften beschreiben:
+
+::: {.panel-tabset}
+#### Lage
+Die **Lage** beschreibt, wo die Mitte oder der Schwerpunkt der Daten liegt.
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Zwei Gruppen mit gleicher Streuung, aber unterschiedlicher Lage."
+np.random.seed(42)
+x1 = np.random.normal(5, 1.5, 300)
+x2 = np.random.normal(10, 1.5, 300)
+x_range = np.linspace(0, 16, 400)
+
+fig, ax = plt.subplots(figsize=(7, 3))
+for x, color_fill, color_line, label in [
+    (x1, '#0a9396', '#005f73', 'Gruppe A (Lage: 5)'),
+    (x2, '#ae2012', '#9b2226', 'Gruppe B (Lage: 10)')
+]:
+    kde = stats.gaussian_kde(x, bw_method=0.4)
+    ax.fill_between(x_range, kde(x_range), alpha=0.35, color=color_fill)
+    ax.plot(x_range, kde(x_range), color=color_line, lw=2, label=label)
+ax.set_xlabel('Merkmalsausprägung'); ax.set_ylabel('Dichte')
+ax.legend(); ax.set_xlim(0, 16)
+plt.tight_layout(); plt.show()
+```
+
+**Kennzahlen für die Lage** sind z.B. Modalwert, Mittelwert und Median – sie stehen im Mittelpunkt dieses Kapitels.
+
+#### Streuung
+Die **Streuung** beschreibt, wie stark die Werte auseinander liegen.
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Zwei Gruppen mit gleicher Lage, aber unterschiedlicher Streuung."
+np.random.seed(42)
+x1 = np.random.normal(7, 1, 300)
+x2 = np.random.normal(7, 2.5, 300)
+x_range = np.linspace(0, 15, 400)
+
+fig, ax = plt.subplots(figsize=(7, 3))
+for x, color_fill, color_line, label in [
+    (x1, '#0a9396', '#005f73', 'Gruppe A (wenig Streuung)'),
+    (x2, '#ae2012', '#9b2226', 'Gruppe B (viel Streuung)')
+]:
+    kde = stats.gaussian_kde(x, bw_method=0.4)
+    ax.fill_between(x_range, kde(x_range), alpha=0.35, color=color_fill)
+    ax.plot(x_range, kde(x_range), color=color_line, lw=2, label=label)
+ax.set_xlabel('Merkmalsausprägung'); ax.set_ylabel('Dichte')
+ax.legend(); ax.set_xlim(0, 15)
+plt.tight_layout(); plt.show()
+```
+
+Kennzahlen für die Streuung – Varianz, Standardabweichung u.a. – werden in **Kapitel 1.5** behandelt.
+
+#### Schiefe
+Die **Schiefe** beschreibt, ob die Verteilung symmetrisch ist oder ob die Werte auf einer Seite weiter streuen.
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Eine schiefe (blau) und eine symmetrische (rot) Verteilung."
+np.random.seed(42)
+x1 = np.random.exponential(2, 300) + 3
+x2 = np.random.normal(7, 2, 300)
+x_range = np.linspace(2, 16, 400)
+
+fig, ax = plt.subplots(figsize=(7, 3))
+for x, color_fill, color_line, label in [
+    (x1, '#0a9396', '#005f73', 'Gruppe A (rechtsschief)'),
+    (x2, '#ae2012', '#9b2226', 'Gruppe B (symmetrisch)')
+]:
+    kde = stats.gaussian_kde(x, bw_method=0.5)
+    ax.fill_between(x_range, kde(x_range), alpha=0.35, color=color_fill)
+    ax.plot(x_range, kde(x_range), color=color_line, lw=2, label=label)
+ax.set_xlabel('Merkmalsausprägung'); ax.set_ylabel('Dichte')
+ax.legend(); ax.set_xlim(2, 16)
+plt.tight_layout(); plt.show()
+```
+
+Kennzahlen für die Schiefe werden ebenfalls in **Kapitel 1.5** behandelt.
+
+#### Wölbung
+Die **Wölbung** beschreibt, ob die Werte gleichmäßig verteilt sind oder ob sich die meisten Werte eng um die Mitte häufen (mit einzelnen weit entfernten Ausreißern).
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Eine stark gewölbte (blau) und eine flachere (rot) Verteilung."
+np.random.seed(42)
+x1 = np.random.laplace(7, 1, 300)   # stärker gewölbt
+x2 = np.random.normal(7, 1.8, 300)  # flacher
+x_range = np.linspace(0, 14, 400)
+
+fig, ax = plt.subplots(figsize=(7, 3))
+for x, color_fill, color_line, label in [
+    (x1, '#0a9396', '#005f73', 'Gruppe A (stark gewölbt)'),
+    (x2, '#ae2012', '#9b2226', 'Gruppe B (weniger gewölbt)')
+]:
+    kde = stats.gaussian_kde(x, bw_method=0.4)
+    ax.fill_between(x_range, kde(x_range), alpha=0.35, color=color_fill)
+    ax.plot(x_range, kde(x_range), color=color_line, lw=2, label=label)
+ax.set_xlabel('Merkmalsausprägung'); ax.set_ylabel('Dichte')
+ax.legend(); ax.set_xlim(0, 14)
+plt.tight_layout(); plt.show()
+```
+
+Auch Kennzahlen für die Wölbung kommen in **Kapitel 1.5**.
+:::
+
+Wir beginnen in diesem Kapitel mit den **Lagemaßen**: Sie beschreiben, wo sich die Mitte einer Stichprobe befindet.
+
+::: {.callout-tip}
+#### Welches Lagemaß für welchen Merkmalstyp?
+
+| Lagemaß | Skalenniveau | Besonderheit |
+|---------|-------------|--------------|
+| Modalwert | ab nominal | immer anwendbar |
+| Median | ab ordinal | robust gegenüber Ausreißern |
+| Arithmetisches Mittel | kardinal | empfindlich gegenüber Ausreißern |
+| Geometrisches Mittel | kardinal (nur $>0$) | für Wachstumsraten geeignet |
+:::
+
+---
+
+## Modalwert
+
+Der **Modalwert** (oder **Modus**) ist die Merkmalsausprägung, die am häufigsten in der Stichprobe vorkommt.
+
+::: {#def-modalwert}
+### Modalwert
+
+<br>
+
+Sei $(x_1, \dots, x_n)$ eine Stichprobe. Der **Modalwert** $x_\text{mod}$ ist die Merkmalsausprägung mit der größten absoluten Häufigkeit.
+
+Formal: $x_\text{mod}$ ist dasjenige $a_j$, für das $H(a_j)$ maximal ist.
+:::
+
+::: {.callout-caution}
+#### Besonderheiten des Modalwerts
+
+- Eine Stichprobe kann **mehrere Modalwerte** haben, wenn mehrere Ausprägungen gleich oft vorkommen.
+- Bei stetigen Merkmalen, bei denen jeder Wert genau einmal vorkommt, ist der Modalwert wenig sinnvoll. Besser: **Modalklasse** (Klasse mit der höchsten Häufigkeitsdichte).
+:::
+
+::: {#exm-modalwert-blutgruppe}
+### Blutgruppe und Körpergröße
+
+<br>
+
+In einer Umfrage wurden 12 Personen nach Blutgruppe und Körpergröße befragt:
+
+| ID | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 |
+|:---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:--:|:--:|:--:|
+| Blutgruppe | A | A | B | AB | 0 | 0 | A | 0 | B | A | 0 | A |
+| Größe (cm) | 170,5 | 183,0 | 174,5 | 158,0 | 167,5 | 179,5 | 192,0 | 177,5 | 186,5 | 161,5 | 181,0 | 164,0 |
+
+: {.striped .hover .sm}
+
+Die **Blutgruppe A** kommt 5-mal vor – sie ist der Modalwert.
+
+Für die Körpergröße (stetig) macht der Modalwert wenig Sinn – jede Größe kommt genau einmal vor. Stattdessen: Modalklasse bei Klassierung in 10-cm-Intervalle → **(170, 180]** hat die meisten Beobachtungen (4 von 12).
+:::
+
+### Unimodale und bimodale Verteilungen {.unnumbered}
+
+Eine Verteilung mit **genau einem** lokalen Maximum heißt **unimodal**, eine mit **zwei** lokalen Maxima heißt **bimodal**.
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Links: bimodale Verteilung (zwei Häufungspunkte). Rechts: unimodale Verteilung (ein Häufungspunkt)."
+#| layout-ncol: 2
+np.random.seed(42)
+# bimodal
+xb = np.concatenate([np.random.normal(3, 0.8, 100), np.random.normal(7, 0.8, 100)])
+# unimodal
+xu = np.random.normal(5, 1.2, 200)
+
+for x, title in [(xb, 'Bimodale Verteilung'), (xu, 'Unimodale Verteilung')]:
+    fig, ax = plt.subplots(figsize=(4, 3))
+    ax.hist(x, bins=15, color='#0a9396', edgecolor='white', alpha=0.85, density=True)
+    ax.set_xlabel('Merkmalsausprägung'); ax.set_ylabel('rel. Häufigkeit / Dichte')
+    ax.set_title(title)
+    plt.tight_layout(); plt.show()
+```
+
+:::: {#exr-modalwert-pinguine}
+### Pinguine: Modalwert
+
+<br>
+
+Bestimme mit Python den Modalwert der Variablen `species` im Pinguin-Datensatz und speichere ihn in `modalwert`. Wie oft kommt diese Art vor? Speichere die Anzahl in `anzahl`.
+
+**Befehle, die du brauchst:** `penguins['species'].value_counts()` (Häufigkeit jeder Ausprägung), `penguins['species'].mode()` (alle Modalwerte als Series)
+
+**Überprüfen** testet `modalwert` und `anzahl`.
+
+```{py-exercise}
+#| label: modalwert-art
+#| caption: Modalwert der Pinguinart
+#| show-test-hints: false
+import pandas as pd
+from pyodide.http import open_url
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+
+modalwert = None   # Dein Code hier
+anzahl = None      # Dein Code hier
+print(modalwert, anzahl)
+
+## TESTS ##
+assert modalwert is not None, "modalwert ist noch leer."
+assert modalwert is not None and isinstance(modalwert, str), "modalwert sollte ein einzelner Name sein. mode() liefert eine Series, weil es mehrere Modalwerte geben kann. Nimm mit [0] den ersten."
+assert modalwert == 'Adelie', "modalwert stimmt nicht."
+assert anzahl is not None, "anzahl ist noch leer."
+assert anzahl is not None and not hasattr(anzahl, '__len__') and int(anzahl) == 152, "anzahl stimmt nicht. Gesucht ist eine einzelne Zahl: die Häufigkeit des Modalwerts aus value_counts()."
+```
+
+::: {.callout-tip title="Tipp" collapse="true"}
+`mode()` gibt eine Series zurück, weil eine Stichprobe mehrere Modalwerte haben kann. Mit `[0]` bekommst du den ersten (hier einzigen). `value_counts()` sortiert absteigend nach Häufigkeit, der erste Eintrag gehört also zum Modalwert.
+:::
+
+::: {.callout-caution title="Lösung" collapse="true"}
+```python
+modalwert = penguins['species'].mode()[0]
+anzahl = penguins['species'].value_counts()[modalwert]
+```
+
+Adelie ist mit 152 von 344 Tieren die häufigste Art.
+:::
+::::
+
+::: {.callout-python}
+#### Python: Modalwert berechnen
+
+```python
+# Für kategoriale Merkmale – liefert alle Modi (kann mehrere geben)
+df['spalte'].mode()
+
+# Häufigste Ausprägung direkt
+df['spalte'].value_counts().index[0]
+```
+:::
+
+---
+
+## Arithmetisches Mittel
+
+Das **arithmetische Mittel** ist das bekannteste Lagemaß. Im Alltag wird es oft einfach „Durchschnitt" oder „Mittelwert" genannt.
+
+::: {#def-arithm-mittel}
+### Arithmetisches Mittel
+
+<br>
+
+Sei $(x_1, \dots, x_n)$ eine Stichprobe eines **kardinal skalierten** Merkmals. Das **arithmetische Mittel** ist:
+
+$$\bar{x} = \dfrac{1}{n} \sum_{i=1}^{n} x_i = \dfrac{x_1 + x_2 + \cdots + x_n}{n}$$
+:::
+
+::: {#exm-arithm-mittel-groesse}
+### Fortsetzung: Körpergröße bei 12 Personen
+
+<br>
+
+Die Körpergrößen lauten: 170,5 – 183,0 – 174,5 – 158,0 – 167,5 – 179,5 – 192,0 – 177,5 – 186,5 – 161,5 – 181,0 – 164,0
+
+$$\bar{x} = \dfrac{1}{12} (170{,}5 + 183{,}0 + \cdots + 164{,}0) = \dfrac{2095{,}5}{12} \approx 174{,}6 \text{ cm}$$
+:::
+
+::: {.callout-rechnen}
+#### Rechenhinweis: Summenformel
+
+Das Summenzeichen $\sum_{i=1}^{n} x_i$ bedeutet einfach: addiere alle Werte von $x_1$ bis $x_n$. Für $n = 4$ Werte 3, 7, 2, 8 gilt z.B.:
+
+$$\bar{x} = \frac{3 + 7 + 2 + 8}{4} = \frac{20}{4} = 5$$
+:::
+
+### Eigenschaften {.unnumbered}
+
+Das arithmetische Mittel hat zwei wichtige Eigenschaften:
+
+1. **Die Summe der Abweichungen vom Mittelwert ist immer null:**
+$$\sum_{i=1}^n (x_i - \bar{x}) = 0$$
+Das bedeutet: Positive und negative Abweichungen gleichen sich aus.
+
+2. **Das arithmetische Mittel ist nicht robust gegenüber Ausreißern.** Ein einzelner extrem großer oder kleiner Wert kann den Mittelwert stark verschieben.
+
+::: {#exm-ausreisser}
+### Ausreißer und Mittelwert
+
+<br>
+
+Stichprobe (Alter in Jahren): 21, 15, 36, 23 → $\bar{x} = 23{,}75$
+
+Mit einem Tippfehler: 21, **155**, 36, 23 → $\bar{x} = 58{,}75$
+
+Ein einzelner falscher Wert hat den Mittelwert auf das Zweieinhalbfache erhöht.
+:::
+
+Bevor du Python einsetzt, rechne zwei kleine Beispiele von Hand:
+
+```{math-exercise}
+#| label: mittel-hand
+#| caption: Arithmetisches Mittel von Hand
+#| mode: numeric
+#| tolerance: 1%
+#| partial-credit: true
+#| field-labels: Stichprobe 1, Stichprobe 2
+$4,\ 8,\ 5,\ 9,\ 4$: $\bar{x} =$ _[6], $\qquad 2,\ 9,\ 4,\ 7,\ 3$: $\bar{x} =$ _[5]
+```
+
+:::: {#exr-arithm-mittel-pinguine}
+### Pinguine: Arithmetisches Mittel
+
+<br>
+
+Berechne:
+
+a) Das arithmetische Mittel der Schnabeltiefe (`bill_depth_mm`) aller Pinguine. Speichere es in `mw_gesamt`.
+b) Das arithmetische Mittel getrennt nach Pinguinart (`species`). Speichere es in `mw_art`. Sind die Unterschiede groß?
+
+**Befehle, die du brauchst:** `.mean()` (arithmetisches Mittel einer Spalte, fehlende Werte werden übergangen), `penguins.groupby('species')` (nach Art gruppieren)
+
+**Überprüfen** testet `mw_gesamt` und `mw_art`.
+
+```{py-exercise}
+#| label: mittel-schnabeltiefe
+#| caption: Arithmetisches Mittel der Schnabeltiefe
+#| show-test-hints: false
+import pandas as pd
+from pyodide.http import open_url
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+
+mw_gesamt = None   # Dein Code hier
+mw_art = None      # Dein Code hier
+print(mw_gesamt)
+print(mw_art)
+
+## TESTS ##
+assert mw_gesamt is not None, "mw_gesamt ist noch leer."
+assert mw_gesamt is not None and abs(float(mw_gesamt) - 17.151) < 0.01, "mw_gesamt stimmt nicht. Gesucht ist das Mittel der Spalte bill_depth_mm."
+assert mw_art is not None, "mw_art ist noch leer."
+assert mw_art is not None and hasattr(mw_art, '__len__') and len(mw_art) == 3, "mw_art sollte genau einen Wert je Art enthalten (3 Arten)."
+assert mw_art is not None and hasattr(mw_art, '__len__') and len(mw_art) == 3 and abs(float(mw_art['Gentoo']) - 14.982) < 0.01 and abs(float(mw_art['Adelie']) - 18.346) < 0.01, "mw_art stimmt nicht: Für Gentoo sind etwa 14,98 mm erwartet, für Adelie etwa 18,35 mm."
+```
+
+::: {.callout-tip title="Tipp" collapse="true"}
+Eine Spalte wählst du mit `penguins['bill_depth_mm']` aus. Nach `groupby('species')` wählst du die Spalte genauso aus und rufst dann `.mean()` auf. Das Ergebnis hat einen Wert je Art.
+:::
+
+::: {.callout-caution title="Lösung" collapse="true"}
+```python
+mw_gesamt = penguins['bill_depth_mm'].mean()
+mw_art = penguins.groupby('species')['bill_depth_mm'].mean()
+```
+
+Gentoo-Pinguine haben mit etwa 15,0 mm deutlich flachere Schnäbel als Adelie (18,3 mm) und Chinstrap (18,4 mm). Das Gesamtmittel von 17,2 mm beschreibt deshalb keine der drei Arten gut.
+:::
+::::
+
+::: {.callout-python}
+#### Python: Arithmetisches Mittel
+
+```python
+# Für eine Spalte im DataFrame (NaN-Werte werden automatisch ignoriert)
+df['spalte'].mean()
+
+# Mit NumPy
+import numpy as np
+np.mean(daten_array)
+
+# Mittelwert nach Gruppe
+df.groupby('gruppe')['spalte'].mean()
+```
+:::
+
+---
+
+## Geometrisches Mittel
+
+Das **geometrische Mittel** ist ein spezielles Lagemaß für **positive** Werte. Es ist nützlich, wenn sich Werte multiplikativ verändern – z.B. bei Wachstumsraten.
+
+::: {#def-geom-mittel}
+### Geometrisches Mittel
+
+<br>
+
+Sei $(x_1, \dots, x_n)$ eine Stichprobe mit **ausschließlich positiven** Werten ($x_i > 0$). Das **geometrische Mittel** ist:
+
+$$\bar{x}_g = \sqrt[n]{x_1 \cdot x_2 \cdots x_n} = \left(\prod_{i=1}^n x_i\right)^{\frac{1}{n}}$$
+:::
+
+::: {#exm-geom-mittel}
+### Aktienkurs
+
+<br>
+
+Ein Aktienkurs verändert sich drei Jahre lang mit den Wachstumsfaktoren $f_1 = 1{,}2$, $f_2 = 1{,}25$, $f_3 = 0{,}\overline{6}$ (d.h. +20 %, +25 %, −33 %).
+
+Das geometrische Mittel der Wachstumsfaktoren:
+$$\bar{f}_g = \sqrt[3]{1{,}2 \cdot 1{,}25 \cdot 0{,}\overline{6}} = \sqrt[3]{1} = 1$$
+
+Die durchschnittliche Wachstumsrate ist also $0$ – was korrekt ist, da der Kurs am Ende wieder beim Startwert landet.
+
+Das arithmetische Mittel der Wachstumsraten würde $\approx +3{,}9\,\%$ ergeben – und wäre falsch.
+:::
+
+:::: {#exr-geom-mittel}
+### Pinguine: Geometrisches Mittel
+
+<br>
+
+Berechne das arithmetische und das geometrische Mittel der Flossenlänge (`flipper_length_mm`) und speichere sie in `arithm` und `geom`. Ist der Unterschied groß?
+
+**Befehle, die du brauchst:** `.mean()` (arithmetisches Mittel), `gmean(...)` aus `scipy.stats` (geometrisches Mittel)
+
+**Überprüfen** testet `arithm` und `geom`.
+
+```{py-exercise}
+#| label: geom-mittel-flossen
+#| caption: Geometrisches Mittel der Flossenlänge
+#| show-test-hints: false
+import pandas as pd
+from pyodide.http import open_url
+from scipy.stats import gmean
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+flossen = penguins['flipper_length_mm'].dropna()
+
+arithm = None   # Dein Code hier
+geom = None     # Dein Code hier
+print(arithm, geom)
+
+## TESTS ##
+assert arithm is not None, "arithm ist noch leer."
+assert arithm is not None and abs(float(arithm) - 200.915) < 0.01, "arithm stimmt nicht. Gesucht ist das arithmetische Mittel von flossen."
+assert geom is not None, "geom ist noch leer."
+assert geom is not None and abs(float(geom) - 200.431) < 0.01, "geom stimmt nicht. Gesucht ist gmean(flossen)."
+```
+
+::: {.callout-tip title="Tipp" collapse="true"}
+`gmean` ist oben schon importiert und wird wie eine Funktion aufgerufen: `gmean(flossen)`. Die fehlenden Werte sind in `flossen` schon entfernt. Das ist hier wichtig, weil `gmean` fehlende Werte nicht von selbst übergeht.
+:::
+
+::: {.callout-caution title="Lösung" collapse="true"}
+```python
+arithm = flossen.mean()
+geom = gmean(flossen)
+print(f"Unterschied: {arithm - geom:.4f} mm")
+```
+
+Das geometrische Mittel (200,43 mm) liegt nur 0,48 mm unter dem arithmetischen (200,92 mm). Das geometrische Mittel ist nie größer als das arithmetische, und der Abstand ist klein, wenn die Werte relativ zu ihrer Größe wenig streuen.
+:::
+::::
+
+::: {.callout-tip}
+#### Wann geometrisches Mittel?
+
+Verwende das geometrische Mittel, wenn Werte **multipliziert** werden (Wachstumsfaktoren, Zinssätze, Indizes). Für gewöhnliche additive Größen wie Länge, Gewicht oder Temperatur nimm das arithmetische Mittel.
+:::
+
+---
+
+## Median
+
+Der **Median** teilt die (geordnete) Stichprobe genau in der Mitte: Mindestens die Hälfte der Werte liegt unterhalb, mindestens die Hälfte oberhalb des Medians.
+
+::: {#def-median}
+### Median
+
+<br>
+
+Sei $x_{(1)} \le x_{(2)} \le \cdots \le x_{(n)}$ die **sortierte** Stichprobe eines kardinal skalierten Merkmals. Der **Median** ist:
+
+$$\tilde{x}_{0{,}5} = \begin{cases} x_{\left(\frac{n+1}{2}\right)}, & \text{falls } n \text{ ungerade} \\[6pt] \dfrac{1}{2}\!\left(x_{\left(\frac{n}{2}\right)} + x_{\left(\frac{n}{2}+1\right)}\right), & \text{falls } n \text{ gerade} \end{cases}$$
+
+Bei **ungerader** Stichprobengröße ist der Median der mittlere Wert. Bei **gerader** Stichprobengröße ist der Median der Durchschnitt der beiden mittleren Werte. Bei ordinalen Merkmalen kann man nicht mitteln, dort nimmt man einen der beiden mittleren Werte.
+:::
+
+::: {.callout-rechnen}
+#### Schritt-für-Schritt: Median berechnen
+
+1. Stichprobe **aufsteigend sortieren**
+2. Anzahl der Werte $n$ bestimmen
+3. Wenn $n$ ungerade: Wert an Position $\frac{n+1}{2}$
+4. Wenn $n$ gerade: Durchschnitt der Werte an den Positionen $\frac{n}{2}$ und $\frac{n}{2}+1$
+:::
+
+::: {#exm-median-groesse}
+### Fortsetzung: Körpergröße bei 12 Personen
+
+<br>
+
+Sortierte Stichprobe ($n = 12$, also gerade):
+
+$$158{,}0 \;|\; 161{,}5 \;|\; 164{,}0 \;|\; 167{,}5 \;|\; 170{,}5 \;|\; \underbrace{174{,}5}_{\text{Pos. 6}} \;|\; \underbrace{177{,}5}_{\text{Pos. 7}} \;|\; 179{,}5 \;|\; 181{,}0 \;|\; 183{,}0 \;|\; 186{,}5 \;|\; 192{,}0$$
+
+$$\tilde{x}_{0{,}5} = \dfrac{174{,}5 + 177{,}5}{2} = 176{,}0 \text{ cm}$$
+:::
+
+### Median vs. Arithmetisches Mittel {.unnumbered}
+
+Der wichtigste Unterschied:
+
+- Das **arithmetische Mittel** ist empfindlich gegenüber **Ausreißern**.
+- Der **Median** ist **robust**: Ein einzelner extremer Wert ändert ihn kaum.
+
+Bei schiefen Verteilungen weichen Mittelwert und Median voneinander ab:
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Verteilung des Körpergewichts der Pinguine. Bei schiefen Verteilungen liegen Mittelwert und Median auseinander."
+masse = penguins['body_mass_g'].dropna()
+mean_val = masse.mean()
+median_val = masse.median()
+
+fig, ax = plt.subplots(figsize=(7, 3.5))
+ax.hist(masse, bins=20, color='#0a9396', edgecolor='white', alpha=0.8, density=True)
+ax.axvline(mean_val, color='#ae2012', lw=2, linestyle='--', label=f'Mittelwert: {mean_val:.0f} g')
+ax.axvline(median_val, color='#005f73', lw=2, linestyle='-', label=f'Median: {median_val:.0f} g')
+ax.set_xlabel('Körpergewicht (g)'); ax.set_ylabel('Dichte')
+ax.legend()
+plt.tight_layout(); plt.show()
+```
+
+### Mittelwert und Median zum Anfassen {.unnumbered}
+
+Die sieben Punkte sind eine kleine Stichprobe. Ziehe sie mit der Maus (oder dem Finger) entlang der Achse. Die **rote gestrichelte** Linie zeigt den Mittelwert, die **blaue** den Median.
+
+```{.jsxgraph width="100" height="38" unit="%" style="border:1px solid #ccc; border-radius:8px;"}
+document.body.style.background = '#fff';
+const board = JXG.JSXGraph.initBoard(BOARDID, {
+  boundingbox: [-1, 4.2, 21, -1.6], axis: false, showCopyright: false,
+  showNavigation: false, pan: {enabled: false}, zoom: {enabled: false}
+});
+board.create('axis', [[0, 0], [1, 0]], {
+  ticks: {insertTicks: false, ticksDistance: 2, minorTicks: 1, label: {offset: [-4, -14]}}
+});
+const bahn = board.create('segment', [[0, 0], [20, 0]], {visible: false});
+const pts = [3, 5, 6, 7, 8, 10, 12].map(x =>
+  board.create('glider', [x, 0, bahn], {name: '', size: 6, strokeColor: '#0a9396', fillColor: '#0a9396', showInfobox: false}));
+const fmt = x => x.toFixed(2).replace('.', ',');
+const werte = () => pts.map(p => p.X()).sort((a, b) => a - b);
+const mittel = () => werte().reduce((a, b) => a + b, 0) / pts.length;
+const median = () => werte()[(pts.length - 1) / 2];
+const linie = {fixed: true, highlight: false, strokeWidth: 3};
+board.create('segment', [[() => mittel(), -0.4], [() => mittel(), 3.2]],
+  Object.assign({strokeColor: '#ae2012', dash: 2}, linie));
+board.create('segment', [[() => median(), -0.4], [() => median(), 2.2]],
+  Object.assign({strokeColor: '#005f73'}, linie));
+const text = {fixed: true, highlight: false, fontSize: 15};
+board.create('text', [() => Math.min(mittel(), 15) + 0.25, 3.3, () => 'Mittelwert ' + fmt(mittel())],
+  Object.assign({color: '#ae2012', anchorX: 'left'}, text));
+board.create('text', [() => Math.max(median(), 5) - 0.25, 2.3, () => 'Median ' + fmt(median())],
+  Object.assign({color: '#005f73', anchorX: 'right'}, text));
+```
+
+Probiere aus:
+
+- Ziehe den rechten Punkt bis ganz an den Rand. Wie weit wandert der Mittelwert, wie weit der Median?
+- Ziehe die drei linken Punkte ein Stück nach links, ohne dass sie am mittleren Punkt vorbeikommen. Warum bleibt der Median stehen?
+- Schaffst du eine Stichprobe, bei der der Mittelwert **links** vom Median liegt? Wie sieht sie aus?
+
+::: {.callout-tip collapse="true" title="Was dahintersteckt"}
+Der Mittelwert verwendet die **Größe** jedes Werts: Wandert ein Punkt um 7 nach rechts, wandert der Mittelwert um $7/7 = 1$ mit. Der Median verwendet nur die **Reihenfolge**: Solange der mittlere Punkt der mittlere bleibt, ist es egal, wie weit die anderen entfernt sind. Ein langer Ausläufer nach rechts (rechtsschief) zieht den Mittelwert über den Median, ein Ausläufer nach links darunter.
+:::
+
+Rechne auch den Median zuerst von Hand. Denk ans Sortieren, und achte darauf, ob $n$ gerade oder ungerade ist:
+
+```{math-exercise}
+#| label: median-hand
+#| caption: Median von Hand
+#| mode: numeric
+#| tolerance: 1%
+#| partial-credit: true
+#| field-labels: n ungerade, n gerade, mit Ausreißer
+$7,\ 1,\ 9,\ 3,\ 4$: $\tilde{x}_{0{,}5} =$ _[4], $\qquad 8,\ 2,\ 6,\ 4$: $\tilde{x}_{0{,}5} =$ _[5], $\qquad 7,\ 1,\ \mathbf{90},\ 3,\ 4$: $\tilde{x}_{0{,}5} =$ _[4]
+```
+
+:::: {#exr-median-pinguine}
+### Pinguine: Median und Mittelwert
+
+<br>
+
+Berechne Mittelwert und Median des Körpergewichts (`body_mass_g`) für jede Pinguinart und speichere sie in `mw_gewicht` und `med_gewicht`. Gibt es Unterschiede zwischen den Arten? Bei welcher Art liegen Mittelwert und Median am weitesten auseinander?
+
+**Befehle, die du brauchst:** `penguins.groupby('species')` (nach Art gruppieren), `.mean()`, `.median()`
+
+**Überprüfen** testet `mw_gewicht` und `med_gewicht`.
+
+```{py-exercise}
+#| label: median-gewicht-art
+#| caption: Median und Mittelwert des Körpergewichts
+#| show-test-hints: false
+import pandas as pd
+from pyodide.http import open_url
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+
+mw_gewicht = None    # Dein Code hier
+med_gewicht = None   # Dein Code hier
+print(mw_gewicht)
+print(med_gewicht)
+
+## TESTS ##
+assert mw_gewicht is not None, "mw_gewicht ist noch leer."
+assert mw_gewicht is not None and hasattr(mw_gewicht, '__len__') and len(mw_gewicht) == 3 and abs(float(mw_gewicht['Gentoo']) - 5076.02) < 0.1 and abs(float(mw_gewicht['Adelie']) - 3700.66) < 0.1, "mw_gewicht stimmt nicht: Erwartet ist ein Mittelwert je Art, für Gentoo etwa 5076 g."
+assert med_gewicht is not None, "med_gewicht ist noch leer."
+assert med_gewicht is not None and hasattr(med_gewicht, '__len__') and len(med_gewicht) == 3 and abs(float(med_gewicht['Gentoo']) - 5000) < 0.1 and abs(float(med_gewicht['Chinstrap']) - 3700) < 0.1, "med_gewicht stimmt nicht: Erwartet ist ein Median je Art, für Gentoo 5000 g."
+```
+
+::: {.callout-tip title="Tipp" collapse="true"}
+Das Muster ist dasselbe wie beim arithmetischen Mittel nach Art: erst `groupby('species')`, dann die Spalte `['body_mass_g']` auswählen, dann `.mean()` bzw. `.median()`.
+:::
+
+::: {.callout-caution title="Lösung" collapse="true"}
+```python
+mw_gewicht = penguins.groupby('species')['body_mass_g'].mean()
+med_gewicht = penguins.groupby('species')['body_mass_g'].median()
+print(mw_gewicht - med_gewicht)
+```
+
+Gentoo-Pinguine sind mit einem Median von 5000 g deutlich schwerer als Adelie und Chinstrap (je 3700 g). Bei Gentoo liegt der Mittelwert 76 g über dem Median, bei Chinstrap 33 g, bei Adelie weniger als 1 g.
+:::
+::::
+
+::: {.callout-python}
+#### Python: Median berechnen
+
+```python
+# Median einer Spalte
+df['spalte'].median()
+
+# Mittelwert und Median im Vergleich
+print(df['spalte'].mean(), df['spalte'].median())
+```
+:::
+
+### Zwischen-Quiz: Mittelwert, Median, Modalwert
+
+```{quizdown}
+---
+locale: de
+primaryColor: '#0a9396'
+shuffleQuestions: false
+shuffleAnswers: true
+---
+
+### Eine Verteilung ist rechtsschief. Was gilt typischerweise?
+
+1. [x] Der Mittelwert liegt über dem Median
+    > Richtig! Der lange Schweif nach rechts zieht den Mittelwert nach oben, der Median bleibt fast unberührt.
+1. [ ] Der Mittelwert liegt unter dem Median
+1. [ ] Mittelwert und Median sind genau gleich
+1. [ ] Der Modalwert ist immer größer als der Mittelwert
+
+### Welches Lagemaß ist besonders robust gegenüber Ausreißern?
+
+1. [ ] Das arithmetische Mittel
+1. [x] Der Median
+    > Richtig! Der Median verwendet nur die Reihenfolge der Werte, nicht ihre Größe.
+1. [ ] Das geometrische Mittel
+1. [ ] Die Summe aller Werte
+
+### Wie lautet der Median der Stichprobe 2, 4, 6, 8?
+
+1. [ ] 4
+1. [x] 5
+    > Bei gerader Anzahl mittelt man die beiden mittleren Werte: $(4+6)/2 = 5$.
+1. [ ] 6
+1. [ ] 20
+```
+
+---
+
+## Quantile
+
+Eine Verallgemeinerung des Medians sind die **$p$-Quantile**. Das $p$-Quantil $\tilde{x}_p$ teilt die Stichprobe so, dass ungefähr ein Anteil von $p$ der Werte **kleiner oder gleich** und ein Anteil von $1-p$ **größer oder gleich** $\tilde{x}_p$ ist.
+
+::: {#def-quantil}
+### $p$-Quantil
+
+<br>
+
+Sei $x_{(1)} \le \cdots \le x_{(n)}$ die sortierte Stichprobe, und $p \in (0, 1)$. Das **$p$-Quantil** ist:
+
+$$\tilde{x}_p = \begin{cases} x_{(\lfloor np \rfloor + 1)}, & \text{falls } np \notin \mathbb{N} \\[6pt] \dfrac{1}{2}\!\left(x_{(np)} + x_{(np+1)}\right), & \text{falls } np \in \mathbb{N} \end{cases}$$
+
+Dabei bezeichnet $\lfloor c \rfloor$ die **untere Gaußklammer** (größte ganze Zahl $\le c$), z.B. $\lfloor 2{,}7 \rfloor = 2$.
+:::
+
+### Spezielle Quantile {.unnumbered}
+
+| Name | $p$-Wert | Bedeutung |
+|------|----------|-----------|
+| **Quartile** | 0,25 / 0,50 / 0,75 | teilen die Stichprobe in 4 gleiche Teile |
+| **Dezentile** | 0,1 / 0,2 / … / 0,9 | teilen die Stichprobe in 10 gleiche Teile |
+| **Median** | 0,50 | 2. Quartil = 5. Dezentil |
+
+Das **untere Quartil** $\tilde{x}_{0{,}25}$ (= $Q_1$) und das **obere Quartil** $\tilde{x}_{0{,}75}$ (= $Q_3$) spielen besonders beim Boxplot eine wichtige Rolle.
+
+::: {#exm-quartile-groesse}
+### Fortsetzung: Körpergröße bei 12 Personen
+
+<br>
+
+Sortierte Stichprobe: 158,0 – 161,5 – 164,0 – 167,5 – 170,5 – 174,5 – 177,5 – 179,5 – 181,0 – 183,0 – 186,5 – 192,0
+
+**Erstes Quartil** ($p = 0{,}25$, $n \cdot p = 12 \cdot 0{,}25 = 3 \in \mathbb{N}$):
+$$Q_1 = \tilde{x}_{0{,}25} = \dfrac{x_{(3)} + x_{(4)}}{2} = \dfrac{164{,}0 + 167{,}5}{2} = 165{,}75 \text{ cm}$$
+
+**Drittes Quartil** ($p = 0{,}75$, $n \cdot p = 9 \in \mathbb{N}$):
+$$Q_3 = \tilde{x}_{0{,}75} = \dfrac{x_{(9)} + x_{(10)}}{2} = \dfrac{181{,}0 + 183{,}0}{2} = 182{,}0 \text{ cm}$$
+:::
+
+Jetzt du: Für die Stichprobe $12,\ 3,\ 8,\ 5,\ 20,\ 6$ berechne Mittelwert, Median und die beiden Quartile. Achte beim Quartil darauf, ob $n \cdot p$ ganzzahlig ist.
+
+```{math-exercise}
+#| label: lagemasse-hand
+#| caption: Lagemaße von Hand
+#| mode: numeric
+#| tolerance: 1%
+#| partial-credit: true
+#| field-labels: Mittelwert, Median, Q1, Q3
+$\bar{x} =$ _[9], $\tilde{x}_{0{,}5} =$ _[7], $Q_1 =$ _[5], $Q_3 =$ _[12]
+```
+
+::: {.callout-tip collapse="true" title="Lösungsweg"}
+Sortiert: $3,\ 5,\ 6,\ 8,\ 12,\ 20$, also $n = 6$.
+
+- $\bar{x} = 54 / 6 = 9$
+- $n$ gerade: $\tilde{x}_{0{,}5} = (x_{(3)} + x_{(4)})/2 = (6 + 8)/2 = 7$
+- $Q_1$: $n \cdot p = 1{,}5 \notin \mathbb{N}$, also $x_{(\lfloor 1{,}5 \rfloor + 1)} = x_{(2)} = 5$
+- $Q_3$: $n \cdot p = 4{,}5 \notin \mathbb{N}$, also $x_{(5)} = 12$
+
+Der Mittelwert liegt über dem Median, weil der große Wert 20 ihn nach oben zieht.
+:::
+
+:::: {#exr-quantile-pinguine}
+### Pinguine: Quantile
+
+<br>
+
+Berechne das 10 %- und das 90 %-Quantil der Flossenlänge (`flipper_length_mm`) und speichere sie in `q10` und `q90`. Was bedeuten diese Werte?
+
+**Befehle, die du brauchst:** `.quantile(p)` mit $p$ als Dezimalzahl, z.B. `.quantile(0.25)` für das 25 %-Quantil
+
+**Überprüfen** testet `q10` und `q90`.
+
+```{py-exercise}
+#| label: quantile-flossen
+#| caption: Quantile der Flossenlänge
+#| show-test-hints: false
+import pandas as pd
+from pyodide.http import open_url
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+flossen = penguins['flipper_length_mm'].dropna()
+
+q10 = None   # Dein Code hier
+q90 = None   # Dein Code hier
+print(q10, q90)
+
+## TESTS ##
+assert q10 is not None, "q10 ist noch leer."
+assert q10 is not None and abs(float(q10) - 185.0) < 0.2, "q10 stimmt nicht. Das 10 %-Quantil bekommst du mit p = 0.10."
+assert q90 is not None, "q90 ist noch leer."
+assert q90 is not None and abs(float(q90) - 221.0) < 0.2, "q90 stimmt nicht. Das 90 %-Quantil bekommst du mit p = 0.90."
+```
+
+::: {.callout-tip title="Tipp" collapse="true"}
+Der Anteil wird als Dezimalzahl übergeben: `flossen.quantile(0.10)`, nicht `flossen.quantile(10)`.
+:::
+
+::: {.callout-caution title="Lösung" collapse="true"}
+```python
+q10 = flossen.quantile(0.10)
+q90 = flossen.quantile(0.90)
+```
+
+Etwa 80 % der Pinguine haben eine Flossenlänge zwischen 185 mm und 221 mm. Je 10 % liegen darunter und darüber.
+
+pandas liefert für das 90 %-Quantil 220,9 mm, die Definition von oben dagegen 221 mm: Bei $n = 342$ ist $n \cdot p = 307{,}8$ nicht ganzzahlig, also $\tilde{x}_{0{,}9} = x_{(308)} = 221$ mm. pandas interpoliert stattdessen linear zwischen zwei benachbarten Werten. Die Tests akzeptieren beide Ergebnisse. Genau nach der Definition rechnet `np.quantile(flossen, 0.9, method='averaged_inverted_cdf')`.
+:::
+::::
+
+::: {.callout-python}
+#### Python: Quantile berechnen
+
+```python
+# Ein einzelnes Quantil
+df['spalte'].quantile(0.25)   # 25%-Quantil (= Q1)
+
+# Mehrere Quantile auf einmal
+df['spalte'].quantile([0.10, 0.25, 0.50, 0.75, 0.90])
+
+# Schnelle Zusammenfassung inkl. Quartile
+df['spalte'].describe()
+```
+:::
+
+---
+
+## Boxplot
+
+Der **Boxplot** (oder Box-Whisker-Plot) ist eine grafische Darstellung, die auf fünf Lagemaßen basiert – der sogenannten **Fünf-Punkte-Zusammenfassung**:
+
+$$\text{Minimum} \quad Q_1 \quad \text{Median} \quad Q_3 \quad \text{Maximum}$$
+
+::: {#def-boxplot}
+### Boxplot
+
+<br>
+
+**a) Einfacher Boxplot:**
+Eine Rechteck-Box reicht von $Q_1$ bis $Q_3$. Im Inneren markiert eine Linie den Median. Von der Box gehen nach links und rechts **Antennen** (Whisker) bis zum Minimum bzw. Maximum.
+
+**b) Verfeinerter Boxplot** (gebräuchlicher):
+Die Antennen werden nur bis zur **letzten nicht-ausreißerhaften Beobachtung** gezeichnet. Als Ausreißer gelten Werte außerhalb des Bereichs:
+
+$$[Q_1 - 1{,}5 \cdot \text{IQR};\; Q_3 + 1{,}5 \cdot \text{IQR}]$$
+
+mit dem **Interquartilsabstand** $\text{IQR} = Q_3 - Q_1$. Ausreißer werden als einzelne Punkte eingezeichnet.
+:::
+
+::: {.callout-tip}
+#### Wie lese ich einen Boxplot?
+
+```
+     |----[   |    ]---|   o   o
+    Min  Q1  Med  Q3  Max (Ausreißer)
+         |<-- IQR -->|
+```
+
+- Die **Box** enthält ca. 50 % der Beobachtungen.
+- Die **Linie in der Box** ist der Median.
+- Die **Länge der Box** (IQR) zeigt die Streuung der mittleren 50 % der Daten.
+- Weit rechts oder links liegende **Punkte** sind potenzielle Ausreißer.
+- Liegt der Median nicht mittig in der Box → die Verteilung ist schief.
+:::
+
+::: {#exm-boxplot-groesse}
+### Fortsetzung: Körpergröße bei 12 Personen
+
+<br>
+
+Aus den berechneten Kennzahlen:
+
+- Minimum = 158,0 cm
+- $Q_1 = 165{,}75$ cm
+- Median = 176,0 cm
+- $Q_3 = 182{,}0$ cm
+- Maximum = 192,0 cm
+
+$\text{IQR} = 182{,}0 - 165{,}75 = 16{,}25$ cm
+
+Da alle Werte im Bereich $[165{,}75 - 1{,}5 \cdot 16{,}25;\; 182{,}0 + 1{,}5 \cdot 16{,}25] = [141{,}4;\; 206{,}4]$ liegen, gibt es keine Ausreißer – die Antennen reichen bis zu Minimum und Maximum.
+:::
+
+Für unsere Pinguine sieht der Boxplot des Körpergewichts nach Pinguinart so aus:
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Körpergewicht der Pinguine nach Art (verfeinerter Boxplot). Gentoo-Pinguine sind deutlich schwerer als Adélie und Chinstrap."
+fig, ax = plt.subplots(figsize=(7, 4.5))
+
+arten = ['Adelie', 'Chinstrap', 'Gentoo']
+farben = ['#005f73', '#0a9396', '#94d2bd']
+
+daten = [penguins[penguins['species'] == art]['body_mass_g'].dropna().values
+         for art in arten]
+
+bp = ax.boxplot(daten, tick_labels=arten, patch_artist=True,
+                medianprops={'color': 'white', 'linewidth': 2},
+                flierprops={'marker': 'o', 'markerfacecolor': 'gray', 'markersize': 4})
+
+for patch, farbe in zip(bp['boxes'], farben):
+    patch.set_facecolor(farbe)
+    patch.set_alpha(0.85)
+
+ax.set_ylabel('Körpergewicht (g)')
+ax.set_xlabel('Pinguinart')
+ax.yaxis.grid(True, linestyle='--', alpha=0.5)
+plt.tight_layout(); plt.show()
+```
+
+:::: {#exr-boxplot-pinguine}
+### Pinguine: Eigener Boxplot
+
+<br>
+
+Erstelle Boxplots der Schnabellänge (`bill_length_mm`) getrennt nach Geschlecht (`sex`), beide nebeneinander in einem Bild. Beschrifte die Achse und die beiden Boxen. Welche Unterschiede erkennst du?
+
+**Befehle, die du brauchst:** `daten[daten['sex'] == 'male']` (Zeilen auswählen), `ax.boxplot([gruppe1, gruppe2], labels=[...])` (mehrere Boxen nebeneinander), `ax.set_ylabel(...)`, `plt.show()`
+
+```{pyodide-python}
+import pandas as pd
+from pyodide.http import open_url
+import matplotlib.pyplot as plt
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+daten = penguins.dropna(subset=['bill_length_mm', 'sex'])
+
+fig, ax = plt.subplots(figsize=(5, 4))
+# Dein Code hier
+plt.show()
+```
+
+::: {.callout-tip title="Tipp" collapse="true"}
+Lege zuerst für jedes Geschlecht eine eigene Reihe mit den Schnabellängen an, zum Beispiel `weiblich = daten[daten['sex'] == 'female']['bill_length_mm']`. `ax.boxplot` bekommt dann eine Liste mit beiden Reihen.
+:::
+
+::: {.callout-caution title="Lösung" collapse="true"}
+```python
+weiblich = daten[daten['sex'] == 'female']['bill_length_mm']
+maennlich = daten[daten['sex'] == 'male']['bill_length_mm']
+
+fig, ax = plt.subplots(figsize=(5, 4))
+ax.boxplot([weiblich, maennlich], labels=['weiblich', 'männlich'], patch_artist=True)
+ax.set_ylabel('Schnabellänge (mm)')
+ax.set_title('Schnabellänge nach Geschlecht')
+plt.show()
+```
+
+Männliche Pinguine haben im Median längere Schnäbel (46,8 mm) als weibliche (42,8 mm). Die Boxen überlappen sich aber deutlich, weil in beiden Gruppen alle drei Arten stecken.
+:::
+::::
+
+::: {.callout-python}
+#### Python: Boxplot erstellen
+
+```python
+import matplotlib.pyplot as plt
+
+# Einfacher Boxplot einer Spalte
+plt.boxplot(df['spalte'].dropna())
+plt.show()
+
+# Mehrere Gruppen nebeneinander
+gruppe_a = df[df['gruppe'] == 'A']['spalte'].dropna()
+gruppe_b = df[df['gruppe'] == 'B']['spalte'].dropna()
+plt.boxplot([gruppe_a, gruppe_b], labels=['A', 'B'])
+plt.show()
+
+# Schnelle Zusammenfassung (5-Punkte-Summary):
+df['spalte'].describe()
+```
+:::
+
+:::: {.theorem .exercise}
+#### Aufgabe: Lagemaße der Schnabellänge
+
+Die Schnabellänge der Pinguine variiert je nach Art stark. Berechne die wichtigsten Lagemaße und vergleiche die Arten.
+
+**Aufgabe:**
+
+1. Berechne Mittelwert und Median der Schnabellänge (`bill_length_mm`) aller Pinguine und speichere sie in `mittelwert` und `median`.
+2. Berechne den Mittelwert getrennt nach Pinguinart (`species`) und speichere ihn in `mittel_art`. Welche Art hat die längsten Schnäbel im Durchschnitt?
+3. Gib zusätzlich den Modalwert aus. Warum ist er hier wenig aussagekräftig?
+
+**Überprüfen** testet `mittelwert`, `median` und `mittel_art`.
+
+```{py-exercise}
+#| label: lagemasse-schnabel
+#| caption: Lagemaße der Schnabellänge
+#| show-test-hints: false
+import pandas as pd
+from pyodide.http import open_url
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+schnabel = penguins['bill_length_mm'].dropna()
+
+mittelwert = None   # Dein Code hier
+median = None       # Dein Code hier
+mittel_art = None   # Dein Code hier
+print(mittelwert, median)
+print(mittel_art)
+
+## TESTS ##
+assert mittelwert is not None, "mittelwert ist noch leer."
+assert mittelwert is not None and abs(float(mittelwert) - 43.92) < 0.01, "mittelwert stimmt nicht. Tipp: schnabel.mean()"
+assert median is not None, "median ist noch leer."
+assert median is not None and abs(float(median) - 44.45) < 0.01, "median stimmt nicht. Tipp: schnabel.median()"
+assert mittel_art is not None, "mittel_art ist noch leer."
+assert mittel_art is not None and hasattr(mittel_art, 'index') and len(mittel_art) == 3, "mittel_art sollte genau einen Wert je Art enthalten (3 Arten). Tipp: groupby('species')."
+assert mittel_art is not None and hasattr(mittel_art, 'index') and 'Chinstrap' in mittel_art.index and abs(float(mittel_art['Chinstrap']) - 48.83) < 0.01, "mittel_art stimmt nicht: Für Chinstrap erwartet ist etwa 48,83 mm."
+```
+
+::: {.callout-tip title="Tipp 1" collapse="true"}
+Für eine einzelne Spalte: `.mean()` → Mittelwert, `.median()` → Median, `.mode()[0]` → Modalwert (häufigster Wert). Die fehlenden Werte sind in `schnabel` schon mit `.dropna()` entfernt.
+:::
+
+::: {.callout-tip title="Tipp 2" collapse="true"}
+Für den artweisen Mittelwert nutze `penguins.groupby('species')['bill_length_mm'].mean()`. Das gibt dir für jede Art separat den Mittelwert.
+:::
+
+::: {.callout-caution title="Minimale Lösung" collapse="true"}
+```python
+mittelwert = schnabel.mean()
+median = schnabel.median()
+mittel_art = penguins.groupby('species')['bill_length_mm'].mean()
+
+print(f"Modalwert: {schnabel.mode()[0]:.2f} mm, kommt {(schnabel == schnabel.mode()[0]).sum()}-mal vor")
+```
+
+Der Modalwert 41,1 mm kommt nur 7-mal unter 342 Messungen vor. Bei einem stetigen Merkmal sagt der häufigste Einzelwert wenig über die Mitte aus (siehe [Besonderheiten des Modalwerts](#modalwert)).
+:::
+::::
+
+:::: {.theorem .exercise}
+#### Aufgabe: Mittelwert vs. Median beim Körpergewicht
+
+Mittelwert und Median können bei schiefen Verteilungen stark voneinander abweichen.
+
+**Aufgabe:**
+
+1. Berechne Mittelwert und Median des Körpergewichts (`body_mass_g`) aller Pinguine und speichere sie in `mittelwert_alle` und `median_alle`. Ist die Verteilung eher rechts- oder linksschief? Speichere die Antwort als Text (`"rechts"` oder `"links"`) in `schiefe_art`.
+2. Filtere die Gentoo-Pinguine heraus (die sind deutlich schwerer als die anderen Arten), berechne Mittelwert und Median erneut und speichere sie in `mittelwert_ohne` und `median_ohne`. Was ändert sich?
+
+**Befehle, die du brauchst:** `.mean()`, `.median()`, `.dropna()`, Filtern mit `penguins[penguins['species'] != 'Gentoo']`, `if` / `else`.
+
+**Überprüfen** testet alle fünf Variablen.
+
+```{py-exercise}
+#| label: mittelwert-vs-median
+#| caption: Mittelwert vs. Median beim Körpergewicht
+#| show-test-hints: false
+import pandas as pd
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+
+mittelwert_alle = None   # Dein Code hier
+median_alle = None       # Dein Code hier
+schiefe_art = None       # "rechts" oder "links"
+mittelwert_ohne = None   # Dein Code hier
+median_ohne = None       # Dein Code hier
+print(mittelwert_alle, median_alle, schiefe_art)
+print(mittelwert_ohne, median_ohne)
+
+## TESTS ##
+assert mittelwert_alle is not None, "mittelwert_alle ist noch leer."
+assert abs(float(mittelwert_alle) - 4201.75) < 0.1, "mittelwert_alle stimmt nicht. Tipp: body_mass_g ohne fehlende Werte, dann .mean()"
+assert median_alle is not None, "median_alle ist noch leer."
+assert abs(float(median_alle) - 4050.0) < 0.1, "median_alle stimmt nicht. Tipp: .median() auf body_mass_g"
+assert schiefe_art in ("rechts", "links"), "schiefe_art muss der Text \"rechts\" oder \"links\" sein."
+assert schiefe_art == "rechts", "Der Mittelwert liegt über dem Median, das spricht für eine rechtsschiefe Verteilung."
+assert mittelwert_ohne is not None, "mittelwert_ohne ist noch leer."
+assert abs(float(mittelwert_ohne) - 3710.73) < 0.1, "mittelwert_ohne stimmt nicht. Tipp: erst Gentoo herausfiltern (species != 'Gentoo')."
+assert median_ohne is not None, "median_ohne ist noch leer."
+assert abs(float(median_ohne) - 3700.0) < 0.1, "median_ohne stimmt nicht. Tipp: erst Gentoo herausfiltern (species != 'Gentoo')."
+```
+
+::: {.callout-tip title="Tipp 1" collapse="true"}
+Mit `penguins[penguins['species'] != 'Gentoo']` filterst du alle Pinguine heraus, die **nicht** Gentoo sind. Danach wieder `['body_mass_g'].mean()` und `.median()` anwenden. Fehlende Werte entfernst du mit `.dropna()`.
+:::
+
+::: {.callout-tip title="Tipp 2" collapse="true"}
+Wenn Mittelwert > Median: rechtsschiefe Verteilung (langer Schweif nach rechts). Wenn Mittelwert < Median: linksschiefe Verteilung. Gentoo-Pinguine sind schwere Ausreißer nach oben – ihr Entfernen sollte den Mittelwert stärker verschieben als den Median.
+:::
+
+::: {.callout-caution title="Minimale Lösung" collapse="true"}
+```python
+masse_alle = penguins['body_mass_g'].dropna()
+mittelwert_alle = masse_alle.mean()
+median_alle = masse_alle.median()
+schiefe_art = "rechts" if mittelwert_alle > median_alle else "links"
+
+ohne_gentoo = penguins[penguins['species'] != 'Gentoo']['body_mass_g'].dropna()
+mittelwert_ohne = ohne_gentoo.mean()
+median_ohne = ohne_gentoo.median()
+```
+
+Mit Gentoo liegt der Mittelwert (4202 g) deutlich über dem Median (4050 g): rechtsschief. Ohne Gentoo rücken beide auf etwa 3700 g zusammen, die Verteilung ist fast symmetrisch.
+:::
+::::
+
+---
+
+## Zusammenfassung
+
+::: {.callout-tip}
+#### Das Wichtigste auf einen Blick
+
+**Kennzahlen** reduzieren eine Stichprobe auf charakteristische Einzelwerte. **Lagemaße** beschreiben, wo sich die Mitte oder der Schwerpunkt der Daten befindet.
+
+| Lagemaß | Für welche Skala? | Robust? | Python |
+|---------|------------------|---------|--------|
+| **Modalwert** | nominal, ordinal, kardinal | – | `.mode()` |
+| **Median** | ordinal, kardinal | ✓ ja | `.median()` |
+| **Arithm. Mittel** | kardinal | ✗ nein | `.mean()` |
+| **Geom. Mittel** | kardinal (nur $>0$) | – | `gmean()` |
+
+Der **Boxplot** fasst die Verteilung mit 5 Kennzahlen grafisch zusammen: Minimum, $Q_1$, Median, $Q_3$, Maximum. Er eignet sich besonders gut zum Vergleich mehrerer Gruppen.
+:::
+
+---
+
+## Wissenstest
+
+```{quizdown}
+---
+locale: de
+primaryColor: '#0a9396'
+shuffleQuestions: false
+shuffleAnswers: true
+---
+
+### Was ist der Modalwert einer Stichprobe?
+
+1. [ ] Das arithmetische Mittel aller Werte
+1. [x] Die Merkmalsausprägung, die am häufigsten vorkommt
+    > Richtig! Der Modalwert ist die häufigste Ausprägung.
+1. [ ] Der mittlere Wert der sortierten Stichprobe
+1. [ ] Der Durchschnitt des größten und kleinsten Werts
+
+### Eine Stichprobe enthält die Werte: 4, 7, 7, 9, 13. Wie lautet das arithmetische Mittel?
+
+1. [ ] 7
+1. [x] 8
+    > Das arithmetische Mittel ist $(4+7+7+9+13)/5 = 40/5 = 8$.
+1. [ ] 9
+1. [ ] 10
+
+### Die Stichprobe 3, 5, 7, 9, 11 hat den Median 7. Jetzt wird ein Ausreißer 300 hinzugefügt: 3, 5, 7, 9, 11, 300. Was passiert mit dem Median?
+
+1. [x] Der Median verändert sich kaum (er wird 8)
+    > Richtig! Bei 6 Werten ist der Median (7+9)/2 = 8. Der Ausreißer 300 hat kaum Einfluss.
+1. [ ] Der Median springt stark nach oben
+1. [ ] Der Median bleibt genau 7
+1. [ ] Der Median kann nicht mehr berechnet werden
+
+### Du analysierst Haushaltseinkommen in Deutschland. Welches Lagemaß ist sinnvoller: Mittelwert oder Median?
+
+1. [ ] Der Mittelwert, da er alle Werte berücksichtigt
+1. [x] Der Median, da sehr hohe Einkommen den Mittelwert verzerren würden
+    > Genau! Einkommen sind rechtsschief verteilt – wenige sehr Reiche treiben den Mittelwert nach oben. Der Median bildet die „typische" Situation besser ab.
+1. [ ] Beide sind gleich gut geeignet
+1. [ ] Weder noch – man sollte nur den Modalwert verwenden
+
+### Was beschreibt das erste Quartil $Q_1$?
+
+1. [ ] Den kleinsten Wert der Stichprobe
+1. [x] Das 25 %-Quantil – 25 % der Werte liegen unterhalb davon
+    > Richtig! $Q_1 = \tilde{x}_{0{,}25}$ teilt die untersten 25 % der Daten ab.
+1. [ ] Den Mittelwert der unteren Hälfte
+1. [ ] Den Median der Stichprobe
+
+### Wie breit ist die Box in einem Boxplot?
+
+1. [ ] Vom Minimum bis zum Maximum
+1. [ ] Zweimal die Standardabweichung
+1. [x] Vom ersten Quartil $Q_1$ bis zum dritten Quartil $Q_3$ (= IQR)
+    > Korrekt! Die Boxbreite entspricht dem Interquartilsabstand IQR = $Q_3 - Q_1$ und enthält ca. 50 % der Daten.
+1. [ ] Vom Minimum bis zum Median
+
+### Im verfeinerten Boxplot werden Punkte außerhalb der Antennen als Ausreißer markiert. Wo enden die Antennen?
+
+1. [ ] Bei Minimum und Maximum
+1. [ ] Bei $Q_1 - \text{IQR}$ und $Q_3 + \text{IQR}$
+1. [x] Bei der letzten Beobachtung innerhalb von $Q_1 - 1{,}5 \cdot \text{IQR}$ bzw. $Q_3 + 1{,}5 \cdot \text{IQR}$
+    > Genau! Werte jenseits dieser Grenzen werden als einzelne Punkte (potenzielle Ausreißer) eingezeichnet.
+1. [ ] Eine Standardabweichung vom Mittelwert entfernt
+```
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+## Learning objectives {#lernziele .unnumbered}
+
+By the end of this subchapter you can:
+
+- explain what a summary measure is and what it is used for.
+- compute and interpret the mode, arithmetic mean, geometric mean and median.
+- choose the appropriate measure of location for a given data set.
+- compute $p$-quantiles and quartiles.
+- read a box plot and create one with Python.
+
+---
+
+## Introduction {#einführung}
+
+We have a sample $(x_1, x_2, \dots, x_n)$. Frequency tables and charts give us a complete picture of the data – but sometimes we want to reduce the sample to **a single characteristic value**. Such values are called **summary measures** (or statistics).
+
+A frequency distribution can be described by four important properties:
+
+::: {.panel-tabset}
+#### Location
+**Location** describes where the centre or the centre of mass of the data lies.
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Two groups with the same spread but different location."
+np.random.seed(42)
+x1 = np.random.normal(5, 1.5, 300)
+x2 = np.random.normal(10, 1.5, 300)
+x_range = np.linspace(0, 16, 400)
+
+fig, ax = plt.subplots(figsize=(7, 3))
+for x, color_fill, color_line, label in [
+    (x1, '#0a9396', '#005f73', 'Group A (location: 5)'),
+    (x2, '#ae2012', '#9b2226', 'Group B (location: 10)')
+]:
+    kde = stats.gaussian_kde(x, bw_method=0.4)
+    ax.fill_between(x_range, kde(x_range), alpha=0.35, color=color_fill)
+    ax.plot(x_range, kde(x_range), color=color_line, lw=2, label=label)
+ax.set_xlabel('Value'); ax.set_ylabel('Density')
+ax.legend(); ax.set_xlim(0, 16)
+plt.tight_layout(); plt.show()
+```
+
+**Measures of location** are e.g. the mode, mean and median – they are the focus of this chapter.
+
+#### Spread
+**Spread** describes how far apart the values are.
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Two groups with the same location but different spread."
+np.random.seed(42)
+x1 = np.random.normal(7, 1, 300)
+x2 = np.random.normal(7, 2.5, 300)
+x_range = np.linspace(0, 15, 400)
+
+fig, ax = plt.subplots(figsize=(7, 3))
+for x, color_fill, color_line, label in [
+    (x1, '#0a9396', '#005f73', 'Group A (little spread)'),
+    (x2, '#ae2012', '#9b2226', 'Group B (much spread)')
+]:
+    kde = stats.gaussian_kde(x, bw_method=0.4)
+    ax.fill_between(x_range, kde(x_range), alpha=0.35, color=color_fill)
+    ax.plot(x_range, kde(x_range), color=color_line, lw=2, label=label)
+ax.set_xlabel('Value'); ax.set_ylabel('Density')
+ax.legend(); ax.set_xlim(0, 15)
+plt.tight_layout(); plt.show()
+```
+
+Measures of spread – variance, standard deviation and others – are covered in **chapter 1.5**.
+
+#### Skewness
+**Skewness** describes whether the distribution is symmetric or whether the values spread further on one side.
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "A skewed (blue) and a symmetric (red) distribution."
+np.random.seed(42)
+x1 = np.random.exponential(2, 300) + 3
+x2 = np.random.normal(7, 2, 300)
+x_range = np.linspace(2, 16, 400)
+
+fig, ax = plt.subplots(figsize=(7, 3))
+for x, color_fill, color_line, label in [
+    (x1, '#0a9396', '#005f73', 'Group A (right-skewed)'),
+    (x2, '#ae2012', '#9b2226', 'Group B (symmetric)')
+]:
+    kde = stats.gaussian_kde(x, bw_method=0.5)
+    ax.fill_between(x_range, kde(x_range), alpha=0.35, color=color_fill)
+    ax.plot(x_range, kde(x_range), color=color_line, lw=2, label=label)
+ax.set_xlabel('Value'); ax.set_ylabel('Density')
+ax.legend(); ax.set_xlim(2, 16)
+plt.tight_layout(); plt.show()
+```
+
+Measures of skewness are also covered in **chapter 1.5**.
+
+#### Kurtosis
+**Kurtosis** describes whether the values are spread evenly or whether most values cluster tightly around the centre (with a few values far away).
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "A strongly peaked (blue) and a flatter (red) distribution."
+np.random.seed(42)
+x1 = np.random.laplace(7, 1, 300)   # more peaked
+x2 = np.random.normal(7, 1.8, 300)  # flatter
+x_range = np.linspace(0, 14, 400)
+
+fig, ax = plt.subplots(figsize=(7, 3))
+for x, color_fill, color_line, label in [
+    (x1, '#0a9396', '#005f73', 'Group A (strongly peaked)'),
+    (x2, '#ae2012', '#9b2226', 'Group B (less peaked)')
+]:
+    kde = stats.gaussian_kde(x, bw_method=0.4)
+    ax.fill_between(x_range, kde(x_range), alpha=0.35, color=color_fill)
+    ax.plot(x_range, kde(x_range), color=color_line, lw=2, label=label)
+ax.set_xlabel('Value'); ax.set_ylabel('Density')
+ax.legend(); ax.set_xlim(0, 14)
+plt.tight_layout(); plt.show()
+```
+
+Measures of kurtosis are covered in **chapter 1.5** as well.
+:::
+
+In this chapter we start with the **measures of location**: they describe where the centre of a sample lies.
+
+::: {.callout-tip}
+#### Which measure of location for which type of variable?
+
+| Measure of location | Level of measurement | Special feature |
+|---------|-------------|--------------|
+| Mode | nominal and above | always applicable |
+| Median | ordinal and above | robust against outliers |
+| Arithmetic mean | metric | sensitive to outliers |
+| Geometric mean | metric (only $>0$) | suitable for growth rates |
+:::
+
+---
+
+## Mode {#modalwert}
+
+The **mode** is the value that occurs most often in the sample.
+
+::: {#def-modalwert}
+### Mode
+
+<br>
+
+Let $(x_1, \dots, x_n)$ be a sample. The **mode** $x_\text{mod}$ is the value with the largest absolute frequency.
+
+Formally: $x_\text{mod}$ is the $a_j$ for which $H(a_j)$ is maximal.
+:::
+
+::: {.callout-caution}
+#### Special features of the mode
+
+- A sample can have **several modes** if several values occur equally often.
+- For continuous variables where every value occurs exactly once, the mode is of little use. Better: the **modal class** (the class with the highest frequency density).
+:::
+
+::: {#exm-modalwert-blutgruppe}
+### Blood type and body height
+
+<br>
+
+In a survey, 12 people were asked about their blood type and body height:
+
+| ID | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 |
+|:---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:--:|:--:|:--:|
+| Blood type | A | A | B | AB | 0 | 0 | A | 0 | B | A | 0 | A |
+| Height (cm) | 170.5 | 183.0 | 174.5 | 158.0 | 167.5 | 179.5 | 192.0 | 177.5 | 186.5 | 161.5 | 181.0 | 164.0 |
+
+: {.striped .hover .sm}
+
+**Blood type A** occurs 5 times – it is the mode.
+
+For body height (continuous) the mode makes little sense – every height occurs exactly once. Instead: the modal class when grouping into 10 cm intervals → **(170, 180]** has the most observations (4 of 12).
+:::
+
+### Unimodal and bimodal distributions {#unimodale-und-bimodale-verteilungen .unnumbered}
+
+A distribution with **exactly one** local maximum is called **unimodal**, one with **two** local maxima is called **bimodal**.
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Left: bimodal distribution (two peaks). Right: unimodal distribution (one peak)."
+#| layout-ncol: 2
+np.random.seed(42)
+# bimodal
+xb = np.concatenate([np.random.normal(3, 0.8, 100), np.random.normal(7, 0.8, 100)])
+# unimodal
+xu = np.random.normal(5, 1.2, 200)
+
+for x, title in [(xb, 'Bimodal distribution'), (xu, 'Unimodal distribution')]:
+    fig, ax = plt.subplots(figsize=(4, 3))
+    ax.hist(x, bins=15, color='#0a9396', edgecolor='white', alpha=0.85, density=True)
+    ax.set_xlabel('Value'); ax.set_ylabel('rel. frequency / density')
+    ax.set_title(title)
+    plt.tight_layout(); plt.show()
+```
+
+:::: {#exr-modalwert-pinguine}
+### Penguins: mode
+
+<br>
+
+Use Python to find the mode of the variable `species` in the penguin data set and store it in `mode_species`. How often does this species occur? Store the count in `count`.
+
+**Commands you need:** `penguins['species'].value_counts()` (frequency of each value), `penguins['species'].mode()` (all modes as a Series)
+
+**Check** tests `mode_species` and `count`.
+
+```{py-exercise}
+#| label: modalwert-art-en
+#| caption: Mode of the penguin species
+#| show-test-hints: false
+import pandas as pd
+from pyodide.http import open_url
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+
+mode_species = None   # Your code here
+count = None          # Your code here
+print(mode_species, count)
+
+## TESTS ##
+assert mode_species is not None, "mode_species is still empty."
+assert mode_species is not None and isinstance(mode_species, str), "mode_species should be a single name. mode() returns a Series because there can be several modes. Take the first one with [0]."
+assert mode_species == 'Adelie', "mode_species is wrong."
+assert count is not None, "count is still empty."
+assert count is not None and not hasattr(count, '__len__') and int(count) == 152, "count is wrong. A single number is expected: the frequency of the mode from value_counts()."
+```
+
+::: {.callout-tip title="Hint" collapse="true"}
+`mode()` returns a Series because a sample can have several modes. `[0]` gives you the first (here the only) one. `value_counts()` sorts by frequency in descending order, so the first entry belongs to the mode.
+:::
+
+::: {.callout-caution title="Solution" collapse="true"}
+```python
+mode_species = penguins['species'].mode()[0]
+count = penguins['species'].value_counts()[mode_species]
+```
+
+With 152 of 344 animals, Adelie is the most frequent species.
+:::
+::::
+
+::: {.callout-python}
+#### Python: computing the mode
+
+```python
+# For categorical variables – returns all modes (there can be several)
+df['column'].mode()
+
+# Most frequent value directly
+df['column'].value_counts().index[0]
+```
+:::
+
+---
+
+## Arithmetic mean {#arithmetisches-mittel}
+
+The **arithmetic mean** is the best-known measure of location. In everyday language it is often simply called the "average" or the "mean".
+
+::: {#def-arithm-mittel}
+### Arithmetic mean
+
+<br>
+
+Let $(x_1, \dots, x_n)$ be a sample of a **metric** variable. The **arithmetic mean** is:
+
+$$\bar{x} = \dfrac{1}{n} \sum_{i=1}^{n} x_i = \dfrac{x_1 + x_2 + \cdots + x_n}{n}$$
+:::
+
+::: {#exm-arithm-mittel-groesse}
+### Continued: body height of 12 people
+
+<br>
+
+The body heights are: 170.5 – 183.0 – 174.5 – 158.0 – 167.5 – 179.5 – 192.0 – 177.5 – 186.5 – 161.5 – 181.0 – 164.0
+
+$$\bar{x} = \dfrac{1}{12} (170.5 + 183.0 + \cdots + 164.0) = \dfrac{2095.5}{12} \approx 174.6 \text{ cm}$$
+:::
+
+::: {.callout-rechnen}
+#### Calculation note: sum notation
+
+The summation sign $\sum_{i=1}^{n} x_i$ simply means: add up all values from $x_1$ to $x_n$. For the $n = 4$ values 3, 7, 2, 8, for example:
+
+$$\bar{x} = \frac{3 + 7 + 2 + 8}{4} = \frac{20}{4} = 5$$
+:::
+
+### Properties {#eigenschaften .unnumbered}
+
+The arithmetic mean has two important properties:
+
+1. **The sum of the deviations from the mean is always zero:**
+$$\sum_{i=1}^n (x_i - \bar{x}) = 0$$
+This means: positive and negative deviations cancel each other out.
+
+2. **The arithmetic mean is not robust against outliers.** A single extremely large or small value can shift the mean considerably.
+
+::: {#exm-ausreisser}
+### Outliers and the mean
+
+<br>
+
+Sample (age in years): 21, 15, 36, 23 → $\bar{x} = 23.75$
+
+With a typo: 21, **155**, 36, 23 → $\bar{x} = 58.75$
+
+A single wrong value has increased the mean two and a half times.
+:::
+
+Before you use Python, compute two small examples by hand:
+
+```{math-exercise}
+#| label: mittel-hand-en
+#| caption: Arithmetic mean by hand
+#| mode: numeric
+#| tolerance: 1%
+#| partial-credit: true
+#| field-labels: Sample 1, Sample 2
+$4,\ 8,\ 5,\ 9,\ 4$: $\bar{x} =$ _[6], $\qquad 2,\ 9,\ 4,\ 7,\ 3$: $\bar{x} =$ _[5]
+```
+
+:::: {#exr-arithm-mittel-pinguine}
+### Penguins: arithmetic mean
+
+<br>
+
+Compute:
+
+a) The arithmetic mean of the bill depth (`bill_depth_mm`) of all penguins. Store it in `mean_all`.
+b) The arithmetic mean separately for each species (`species`). Store it in `mean_species`. Are the differences large?
+
+**Commands you need:** `.mean()` (arithmetic mean of a column, missing values are skipped), `penguins.groupby('species')` (group by species)
+
+**Check** tests `mean_all` and `mean_species`.
+
+```{py-exercise}
+#| label: mittel-schnabeltiefe-en
+#| caption: Arithmetic mean of the bill depth
+#| show-test-hints: false
+import pandas as pd
+from pyodide.http import open_url
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+
+mean_all = None       # Your code here
+mean_species = None   # Your code here
+print(mean_all)
+print(mean_species)
+
+## TESTS ##
+assert mean_all is not None, "mean_all is still empty."
+assert mean_all is not None and abs(float(mean_all) - 17.151) < 0.01, "mean_all is wrong. The mean of the column bill_depth_mm is expected."
+assert mean_species is not None, "mean_species is still empty."
+assert mean_species is not None and hasattr(mean_species, '__len__') and len(mean_species) == 3, "mean_species should contain exactly one value per species (3 species)."
+assert mean_species is not None and hasattr(mean_species, '__len__') and len(mean_species) == 3 and abs(float(mean_species['Gentoo']) - 14.982) < 0.01 and abs(float(mean_species['Adelie']) - 18.346) < 0.01, "mean_species is wrong: about 14.98 mm is expected for Gentoo and about 18.35 mm for Adelie."
+```
+
+::: {.callout-tip title="Hint" collapse="true"}
+You select a column with `penguins['bill_depth_mm']`. After `groupby('species')` you select the column in the same way and then call `.mean()`. The result has one value per species.
+:::
+
+::: {.callout-caution title="Solution" collapse="true"}
+```python
+mean_all = penguins['bill_depth_mm'].mean()
+mean_species = penguins.groupby('species')['bill_depth_mm'].mean()
+```
+
+At about 15.0 mm, Gentoo penguins have clearly shallower bills than Adelie (18.3 mm) and Chinstrap (18.4 mm). The overall mean of 17.2 mm therefore describes none of the three species well.
+:::
+::::
+
+::: {.callout-python}
+#### Python: arithmetic mean
+
+```python
+# For a column in a DataFrame (NaN values are ignored automatically)
+df['column'].mean()
+
+# With NumPy
+import numpy as np
+np.mean(data_array)
+
+# Mean per group
+df.groupby('group')['column'].mean()
+```
+:::
+
+---
+
+## Geometric mean {#geometrisches-mittel}
+
+The **geometric mean** is a special measure of location for **positive** values. It is useful when values change multiplicatively – e.g. growth rates.
+
+::: {#def-geom-mittel}
+### Geometric mean
+
+<br>
+
+Let $(x_1, \dots, x_n)$ be a sample with **only positive** values ($x_i > 0$). The **geometric mean** is:
+
+$$\bar{x}_g = \sqrt[n]{x_1 \cdot x_2 \cdots x_n} = \left(\prod_{i=1}^n x_i\right)^{\frac{1}{n}}$$
+:::
+
+::: {#exm-geom-mittel}
+### Share price
+
+<br>
+
+A share price changes over three years with the growth factors $f_1 = 1.2$, $f_2 = 1.25$, $f_3 = 0.\overline{6}$ (i.e. +20 %, +25 %, −33 %).
+
+The geometric mean of the growth factors:
+$$\bar{f}_g = \sqrt[3]{1.2 \cdot 1.25 \cdot 0.\overline{6}} = \sqrt[3]{1} = 1$$
+
+So the average growth rate is $0$ – which is correct, because the price ends up back at its starting value.
+
+The arithmetic mean of the growth rates would give $\approx +3.9\,\%$ – and would be wrong.
+:::
+
+:::: {#exr-geom-mittel}
+### Penguins: geometric mean
+
+<br>
+
+Compute the arithmetic and the geometric mean of the flipper length (`flipper_length_mm`) and store them in `arithm` and `geom`. Is the difference large?
+
+**Commands you need:** `.mean()` (arithmetic mean), `gmean(...)` from `scipy.stats` (geometric mean)
+
+**Check** tests `arithm` and `geom`.
+
+```{py-exercise}
+#| label: geom-mittel-flossen-en
+#| caption: Geometric mean of the flipper length
+#| show-test-hints: false
+import pandas as pd
+from pyodide.http import open_url
+from scipy.stats import gmean
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+flippers = penguins['flipper_length_mm'].dropna()
+
+arithm = None   # Your code here
+geom = None     # Your code here
+print(arithm, geom)
+
+## TESTS ##
+assert arithm is not None, "arithm is still empty."
+assert arithm is not None and abs(float(arithm) - 200.915) < 0.01, "arithm is wrong. The arithmetic mean of flippers is expected."
+assert geom is not None, "geom is still empty."
+assert geom is not None and abs(float(geom) - 200.431) < 0.01, "geom is wrong. gmean(flippers) is expected."
+```
+
+::: {.callout-tip title="Hint" collapse="true"}
+`gmean` is already imported above and is called like a function: `gmean(flippers)`. The missing values have already been removed from `flippers`. That matters here because `gmean` does not skip missing values by itself.
+:::
+
+::: {.callout-caution title="Solution" collapse="true"}
+```python
+arithm = flippers.mean()
+geom = gmean(flippers)
+print(f"Difference: {arithm - geom:.4f} mm")
+```
+
+The geometric mean (200.43 mm) is only 0.48 mm below the arithmetic mean (200.92 mm). The geometric mean is never larger than the arithmetic mean, and the gap is small when the values vary little relative to their size.
+:::
+::::
+
+::: {.callout-tip}
+#### When to use the geometric mean?
+
+Use the geometric mean when values are **multiplied** (growth factors, interest rates, indices). For ordinary additive quantities such as length, weight or temperature, use the arithmetic mean.
+:::
+
+---
+
+## Median {#median}
+
+The **median** splits the (ordered) sample exactly in the middle: at least half of the values lie below the median, at least half above it.
+
+::: {#def-median}
+### Median
+
+<br>
+
+Let $x_{(1)} \le x_{(2)} \le \cdots \le x_{(n)}$ be the **sorted** sample of a metric variable. The **median** is:
+
+$$\tilde{x}_{0.5} = \begin{cases} x_{\left(\frac{n+1}{2}\right)}, & \text{if } n \text{ is odd} \\[6pt] \dfrac{1}{2}\!\left(x_{\left(\frac{n}{2}\right)} + x_{\left(\frac{n}{2}+1\right)}\right), & \text{if } n \text{ is even} \end{cases}$$
+
+For an **odd** sample size the median is the middle value. For an **even** sample size the median is the average of the two middle values. For ordinal variables you cannot average, so you take one of the two middle values.
+:::
+
+::: {.callout-rechnen}
+#### Step by step: computing the median
+
+1. **Sort** the sample in ascending order
+2. Determine the number of values $n$
+3. If $n$ is odd: the value at position $\frac{n+1}{2}$
+4. If $n$ is even: the average of the values at positions $\frac{n}{2}$ and $\frac{n}{2}+1$
+:::
+
+::: {#exm-median-groesse}
+### Continued: body height of 12 people
+
+<br>
+
+Sorted sample ($n = 12$, i.e. even):
+
+$$158.0 \;|\; 161.5 \;|\; 164.0 \;|\; 167.5 \;|\; 170.5 \;|\; \underbrace{174.5}_{\text{pos. 6}} \;|\; \underbrace{177.5}_{\text{pos. 7}} \;|\; 179.5 \;|\; 181.0 \;|\; 183.0 \;|\; 186.5 \;|\; 192.0$$
+
+$$\tilde{x}_{0.5} = \dfrac{174.5 + 177.5}{2} = 176.0 \text{ cm}$$
+:::
+
+### Median vs. arithmetic mean {#median-vs.-arithmetisches-mittel .unnumbered}
+
+The most important difference:
+
+- The **arithmetic mean** is sensitive to **outliers**.
+- The **median** is **robust**: a single extreme value hardly changes it.
+
+For skewed distributions, the mean and the median differ:
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Distribution of the penguins' body mass. For skewed distributions, mean and median lie apart."
+mass = penguins['body_mass_g'].dropna()
+mean_val = mass.mean()
+median_val = mass.median()
+
+fig, ax = plt.subplots(figsize=(7, 3.5))
+ax.hist(mass, bins=20, color='#0a9396', edgecolor='white', alpha=0.8, density=True)
+ax.axvline(mean_val, color='#ae2012', lw=2, linestyle='--', label=f'Mean: {mean_val:.0f} g')
+ax.axvline(median_val, color='#005f73', lw=2, linestyle='-', label=f'Median: {median_val:.0f} g')
+ax.set_xlabel('Body mass (g)'); ax.set_ylabel('Density')
+ax.legend()
+plt.tight_layout(); plt.show()
+```
+
+### Mean and median to play with {#mittelwert-und-median-zum-anfassen .unnumbered}
+
+The seven points are a small sample. Drag them along the axis with the mouse (or your finger). The **red dashed** line shows the mean, the **blue** one the median.
+
+```{.jsxgraph width="100" height="38" unit="%" style="border:1px solid #ccc; border-radius:8px;"}
+document.body.style.background = '#fff';
+const board = JXG.JSXGraph.initBoard(BOARDID, {
+  boundingbox: [-1, 4.2, 21, -1.6], axis: false, showCopyright: false,
+  showNavigation: false, pan: {enabled: false}, zoom: {enabled: false}
+});
+board.create('axis', [[0, 0], [1, 0]], {
+  ticks: {insertTicks: false, ticksDistance: 2, minorTicks: 1, label: {offset: [-4, -14]}}
+});
+const track = board.create('segment', [[0, 0], [20, 0]], {visible: false});
+const pts = [3, 5, 6, 7, 8, 10, 12].map(x =>
+  board.create('glider', [x, 0, track], {name: '', size: 6, strokeColor: '#0a9396', fillColor: '#0a9396', showInfobox: false}));
+const fmt = x => x.toFixed(2);
+const values = () => pts.map(p => p.X()).sort((a, b) => a - b);
+const mean = () => values().reduce((a, b) => a + b, 0) / pts.length;
+const median = () => values()[(pts.length - 1) / 2];
+const linie = {fixed: true, highlight: false, strokeWidth: 3};
+board.create('segment', [[() => mean(), -0.4], [() => mean(), 3.2]],
+  Object.assign({strokeColor: '#ae2012', dash: 2}, linie));
+board.create('segment', [[() => median(), -0.4], [() => median(), 2.2]],
+  Object.assign({strokeColor: '#005f73'}, linie));
+const text = {fixed: true, highlight: false, fontSize: 15};
+board.create('text', [() => Math.min(mean(), 15) + 0.25, 3.3, () => 'Mean ' + fmt(mean())],
+  Object.assign({color: '#ae2012', anchorX: 'left'}, text));
+board.create('text', [() => Math.max(median(), 5) - 0.25, 2.3, () => 'Median ' + fmt(median())],
+  Object.assign({color: '#005f73', anchorX: 'right'}, text));
+```
+
+Try this:
+
+- Drag the rightmost point all the way to the edge. How far does the mean move, how far the median?
+- Move the three leftmost points a bit further left without letting them pass the middle point. Why does the median stay put?
+- Can you build a sample where the mean lies **to the left** of the median? What does it look like?
+
+::: {.callout-tip collapse="true" title="What is behind it"}
+The mean uses the **size** of every value: if one point moves 7 to the right, the mean moves along by $7/7 = 1$. The median only uses the **order**: as long as the middle point stays the middle one, it does not matter how far away the others are. A long tail to the right (right-skewed) pulls the mean above the median, a tail to the left pulls it below.
+:::
+
+Compute the median by hand first as well. Remember to sort, and check whether $n$ is even or odd:
+
+```{math-exercise}
+#| label: median-hand-en
+#| caption: Median by hand
+#| mode: numeric
+#| tolerance: 1%
+#| partial-credit: true
+#| field-labels: n odd, n even, with outlier
+$7,\ 1,\ 9,\ 3,\ 4$: $\tilde{x}_{0{,}5} =$ _[4], $\qquad 8,\ 2,\ 6,\ 4$: $\tilde{x}_{0{,}5} =$ _[5], $\qquad 7,\ 1,\ \mathbf{90},\ 3,\ 4$: $\tilde{x}_{0{,}5} =$ _[4]
+```
+
+:::: {#exr-median-pinguine}
+### Penguins: median and mean
+
+<br>
+
+Compute the mean and median of the body mass (`body_mass_g`) for each penguin species and store them in `mean_mass` and `median_mass`. Are there differences between the species? For which species are mean and median furthest apart?
+
+**Commands you need:** `penguins.groupby('species')` (group by species), `.mean()`, `.median()`
+
+**Check** tests `mean_mass` and `median_mass`.
+
+```{py-exercise}
+#| label: median-gewicht-art-en
+#| caption: Median and mean of the body mass
+#| show-test-hints: false
+import pandas as pd
+from pyodide.http import open_url
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+
+mean_mass = None     # Your code here
+median_mass = None   # Your code here
+print(mean_mass)
+print(median_mass)
+
+## TESTS ##
+assert mean_mass is not None, "mean_mass is still empty."
+assert mean_mass is not None and hasattr(mean_mass, '__len__') and len(mean_mass) == 3 and abs(float(mean_mass['Gentoo']) - 5076.02) < 0.1 and abs(float(mean_mass['Adelie']) - 3700.66) < 0.1, "mean_mass is wrong: one mean per species is expected, about 5076 g for Gentoo."
+assert median_mass is not None, "median_mass is still empty."
+assert median_mass is not None and hasattr(median_mass, '__len__') and len(median_mass) == 3 and abs(float(median_mass['Gentoo']) - 5000) < 0.1 and abs(float(median_mass['Chinstrap']) - 3700) < 0.1, "median_mass is wrong: one median per species is expected, 5000 g for Gentoo."
+```
+
+::: {.callout-tip title="Hint" collapse="true"}
+The pattern is the same as for the arithmetic mean per species: first `groupby('species')`, then select the column `['body_mass_g']`, then `.mean()` or `.median()`.
+:::
+
+::: {.callout-caution title="Solution" collapse="true"}
+```python
+mean_mass = penguins.groupby('species')['body_mass_g'].mean()
+median_mass = penguins.groupby('species')['body_mass_g'].median()
+print(mean_mass - median_mass)
+```
+
+With a median of 5000 g, Gentoo penguins are clearly heavier than Adelie and Chinstrap (3700 g each). For Gentoo the mean is 76 g above the median, for Chinstrap 33 g, for Adelie less than 1 g.
+:::
+::::
+
+::: {.callout-python}
+#### Python: computing the median
+
+```python
+# Median of a column
+df['column'].median()
+
+# Mean and median side by side
+print(df['column'].mean(), df['column'].median())
+```
+:::
+
+### Mid-page quiz: mean, median, mode
+
+```{quizdown}
+---
+locale: en
+primaryColor: '#0a9396'
+shuffleQuestions: false
+shuffleAnswers: true
+---
+
+### A distribution is right-skewed. What typically holds?
+
+1. [x] The mean is above the median
+    > Correct! The long tail to the right pulls the mean upwards, while the median hardly moves.
+1. [ ] The mean is below the median
+1. [ ] Mean and median are exactly equal
+1. [ ] The mode is always larger than the mean
+
+### Which measure of location is particularly robust against outliers?
+
+1. [ ] The arithmetic mean
+1. [x] The median
+    > Correct! The median only uses the order of the values, not their size.
+1. [ ] The geometric mean
+1. [ ] The sum of all values
+
+### What is the median of the sample 2, 4, 6, 8?
+
+1. [ ] 4
+1. [x] 5
+    > With an even number of values you average the two middle ones: $(4+6)/2 = 5$.
+1. [ ] 6
+1. [ ] 20
+```
+
+---
+
+## Quantiles {#quantile}
+
+A generalization of the median are the **$p$-quantiles**. The $p$-quantile $\tilde{x}_p$ splits the sample such that roughly a share $p$ of the values is **less than or equal to** $\tilde{x}_p$ and a share $1-p$ is **greater than or equal to** it.
+
+::: {#def-quantil}
+### $p$-quantile
+
+<br>
+
+Let $x_{(1)} \le \cdots \le x_{(n)}$ be the sorted sample and $p \in (0, 1)$. The **$p$-quantile** is:
+
+$$\tilde{x}_p = \begin{cases} x_{(\lfloor np \rfloor + 1)}, & \text{if } np \notin \mathbb{N} \\[6pt] \dfrac{1}{2}\!\left(x_{(np)} + x_{(np+1)}\right), & \text{if } np \in \mathbb{N} \end{cases}$$
+
+Here $\lfloor c \rfloor$ denotes the **floor function** (largest integer $\le c$), e.g. $\lfloor 2.7 \rfloor = 2$.
+:::
+
+### Special quantiles {#spezielle-quantile .unnumbered}
+
+| Name | $p$ value | Meaning |
+|------|----------|-----------|
+| **Quartiles** | 0.25 / 0.50 / 0.75 | split the sample into 4 equal parts |
+| **Deciles** | 0.1 / 0.2 / … / 0.9 | split the sample into 10 equal parts |
+| **Median** | 0.50 | 2nd quartile = 5th decile |
+
+The **lower quartile** $\tilde{x}_{0.25}$ (= $Q_1$) and the **upper quartile** $\tilde{x}_{0.75}$ (= $Q_3$) play a particularly important role in the box plot.
+
+::: {#exm-quartile-groesse}
+### Continued: body height of 12 people
+
+<br>
+
+Sorted sample: 158.0 – 161.5 – 164.0 – 167.5 – 170.5 – 174.5 – 177.5 – 179.5 – 181.0 – 183.0 – 186.5 – 192.0
+
+**First quartile** ($p = 0.25$, $n \cdot p = 12 \cdot 0.25 = 3 \in \mathbb{N}$):
+$$Q_1 = \tilde{x}_{0.25} = \dfrac{x_{(3)} + x_{(4)}}{2} = \dfrac{164.0 + 167.5}{2} = 165.75 \text{ cm}$$
+
+**Third quartile** ($p = 0.75$, $n \cdot p = 9 \in \mathbb{N}$):
+$$Q_3 = \tilde{x}_{0.75} = \dfrac{x_{(9)} + x_{(10)}}{2} = \dfrac{181.0 + 183.0}{2} = 182.0 \text{ cm}$$
+:::
+
+Your turn: for the sample $12,\ 3,\ 8,\ 5,\ 20,\ 6$ compute the mean, the median and both quartiles. For the quartiles, check whether $n \cdot p$ is a whole number.
+
+```{math-exercise}
+#| label: lagemasse-hand-en
+#| caption: Measures of location by hand
+#| mode: numeric
+#| tolerance: 1%
+#| partial-credit: true
+#| field-labels: Mean, Median, Q1, Q3
+$\bar{x} =$ _[9], $\tilde{x}_{0.5} =$ _[7], $Q_1 =$ _[5], $Q_3 =$ _[12]
+```
+
+::: {.callout-tip collapse="true" title="Solution steps"}
+Sorted: $3,\ 5,\ 6,\ 8,\ 12,\ 20$, so $n = 6$.
+
+- $\bar{x} = 54 / 6 = 9$
+- $n$ even: $\tilde{x}_{0.5} = (x_{(3)} + x_{(4)})/2 = (6 + 8)/2 = 7$
+- $Q_1$: $n \cdot p = 1.5 \notin \mathbb{N}$, so $x_{(\lfloor 1.5 \rfloor + 1)} = x_{(2)} = 5$
+- $Q_3$: $n \cdot p = 4.5 \notin \mathbb{N}$, so $x_{(5)} = 12$
+
+The mean lies above the median because the large value 20 pulls it up.
+:::
+
+:::: {#exr-quantile-pinguine}
+### Penguins: quantiles
+
+<br>
+
+Compute the 10 % and the 90 % quantile of the flipper length (`flipper_length_mm`) and store them in `q10` and `q90`. What do these values mean?
+
+**Commands you need:** `.quantile(p)` with $p$ as a decimal number, e.g. `.quantile(0.25)` for the 25 % quantile
+
+**Check** tests `q10` and `q90`.
+
+```{py-exercise}
+#| label: quantile-flossen-en
+#| caption: Quantiles of the flipper length
+#| show-test-hints: false
+import pandas as pd
+from pyodide.http import open_url
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+flippers = penguins['flipper_length_mm'].dropna()
+
+q10 = None   # Your code here
+q90 = None   # Your code here
+print(q10, q90)
+
+## TESTS ##
+assert q10 is not None, "q10 is still empty."
+assert q10 is not None and abs(float(q10) - 185.0) < 0.2, "q10 is wrong. You get the 10 % quantile with p = 0.10."
+assert q90 is not None, "q90 is still empty."
+assert q90 is not None and abs(float(q90) - 221.0) < 0.2, "q90 is wrong. You get the 90 % quantile with p = 0.90."
+```
+
+::: {.callout-tip title="Hint" collapse="true"}
+The proportion is passed as a decimal number: `flippers.quantile(0.10)`, not `flippers.quantile(10)`.
+:::
+
+::: {.callout-caution title="Solution" collapse="true"}
+```python
+q10 = flippers.quantile(0.10)
+q90 = flippers.quantile(0.90)
+```
+
+About 80 % of the penguins have a flipper length between 185 mm and 221 mm. 10 % each lie below and above.
+
+pandas returns 220.9 mm for the 90 % quantile, whereas the definition above gives 221 mm: for $n = 342$, $n \cdot p = 307.8$ is not an integer, so $\tilde{x}_{0.9} = x_{(308)} = 221$ mm. pandas instead interpolates linearly between two neighbouring values. The tests accept both results. `np.quantile(flippers, 0.9, method='averaged_inverted_cdf')` computes exactly according to the definition.
+:::
+::::
+
+::: {.callout-python}
+#### Python: computing quantiles
+
+```python
+# A single quantile
+df['column'].quantile(0.25)   # 25 % quantile (= Q1)
+
+# Several quantiles at once
+df['column'].quantile([0.10, 0.25, 0.50, 0.75, 0.90])
+
+# Quick summary including quartiles
+df['column'].describe()
+```
+:::
+
+---
+
+## Box plot {#boxplot}
+
+The **box plot** (or box-and-whisker plot) is a chart based on five measures of location – the so-called **five-number summary**:
+
+$$\text{Minimum} \quad Q_1 \quad \text{Median} \quad Q_3 \quad \text{Maximum}$$
+
+::: {#def-boxplot}
+### Box plot
+
+<br>
+
+**a) Simple box plot:**
+A rectangular box extends from $Q_1$ to $Q_3$. A line inside it marks the median. From the box, **whiskers** extend to the left and right up to the minimum and maximum.
+
+**b) Refined box plot** (more common):
+The whiskers are only drawn up to the **last observation that is not an outlier**. Outliers are values outside the range:
+
+$$[Q_1 - 1.5 \cdot \text{IQR};\; Q_3 + 1.5 \cdot \text{IQR}]$$
+
+with the **interquartile range** $\text{IQR} = Q_3 - Q_1$. Outliers are drawn as individual points.
+:::
+
+::: {.callout-tip}
+#### How do I read a box plot?
+
+```
+     |----[   |    ]---|   o   o
+    Min  Q1  Med  Q3  Max (outliers)
+         |<-- IQR -->|
+```
+
+- The **box** contains about 50 % of the observations.
+- The **line in the box** is the median.
+- The **length of the box** (IQR) shows the spread of the middle 50 % of the data.
+- **Points** far to the right or left are potential outliers.
+- If the median is not in the middle of the box → the distribution is skewed.
+:::
+
+::: {#exm-boxplot-groesse}
+### Continued: body height of 12 people
+
+<br>
+
+From the measures computed above:
+
+- Minimum = 158.0 cm
+- $Q_1 = 165.75$ cm
+- Median = 176.0 cm
+- $Q_3 = 182.0$ cm
+- Maximum = 192.0 cm
+
+$\text{IQR} = 182.0 - 165.75 = 16.25$ cm
+
+Since all values lie in the range $[165.75 - 1.5 \cdot 16.25;\; 182.0 + 1.5 \cdot 16.25] = [141.4;\; 206.4]$, there are no outliers – the whiskers reach the minimum and maximum.
+:::
+
+For our penguins, the box plot of body mass by species looks like this:
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Body mass of the penguins by species (refined box plot). Gentoo penguins are clearly heavier than Adélie and Chinstrap."
+fig, ax = plt.subplots(figsize=(7, 4.5))
+
+species_list = ['Adelie', 'Chinstrap', 'Gentoo']
+colors = ['#005f73', '#0a9396', '#94d2bd']
+
+data = [penguins[penguins['species'] == s]['body_mass_g'].dropna().values
+        for s in species_list]
+
+bp = ax.boxplot(data, tick_labels=species_list, patch_artist=True,
+                medianprops={'color': 'white', 'linewidth': 2},
+                flierprops={'marker': 'o', 'markerfacecolor': 'gray', 'markersize': 4})
+
+for patch, color in zip(bp['boxes'], colors):
+    patch.set_facecolor(color)
+    patch.set_alpha(0.85)
+
+ax.set_ylabel('Body mass (g)')
+ax.set_xlabel('Species')
+ax.yaxis.grid(True, linestyle='--', alpha=0.5)
+plt.tight_layout(); plt.show()
+```
+
+:::: {#exr-boxplot-pinguine}
+### Penguins: your own box plot
+
+<br>
+
+Create box plots of the bill length (`bill_length_mm`) separately by sex (`sex`), both side by side in one figure. Label the axis and the two boxes. What differences do you notice?
+
+**Commands you need:** `data[data['sex'] == 'male']` (select rows), `ax.boxplot([group1, group2], labels=[...])` (several boxes side by side), `ax.set_ylabel(...)`, `plt.show()`
+
+```{pyodide-python}
+import pandas as pd
+from pyodide.http import open_url
+import matplotlib.pyplot as plt
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+data = penguins.dropna(subset=['bill_length_mm', 'sex'])
+
+fig, ax = plt.subplots(figsize=(5, 4))
+# Your code here
+plt.show()
+```
+
+::: {.callout-tip title="Hint" collapse="true"}
+First create a separate series of bill lengths for each sex, for example `female = data[data['sex'] == 'female']['bill_length_mm']`. `ax.boxplot` then takes a list with both series.
+:::
+
+::: {.callout-caution title="Solution" collapse="true"}
+```python
+female = data[data['sex'] == 'female']['bill_length_mm']
+male = data[data['sex'] == 'male']['bill_length_mm']
+
+fig, ax = plt.subplots(figsize=(5, 4))
+ax.boxplot([female, male], labels=['female', 'male'], patch_artist=True)
+ax.set_ylabel('Bill length (mm)')
+ax.set_title('Bill length by sex')
+plt.show()
+```
+
+Male penguins have longer bills in the median (46.8 mm) than female ones (42.8 mm). The boxes overlap considerably, though, because both groups contain all three species.
+:::
+::::
+
+::: {.callout-python}
+#### Python: creating a box plot
+
+```python
+import matplotlib.pyplot as plt
+
+# Simple box plot of one column
+plt.boxplot(df['column'].dropna())
+plt.show()
+
+# Several groups side by side
+group_a = df[df['group'] == 'A']['column'].dropna()
+group_b = df[df['group'] == 'B']['column'].dropna()
+plt.boxplot([group_a, group_b], labels=['A', 'B'])
+plt.show()
+
+# Quick summary (five-number summary):
+df['column'].describe()
+```
+:::
+
+:::: {.theorem .exercise}
+#### Exercise: Measures of location of the bill length
+
+The bill length of the penguins varies a lot between species. Compute the most important measures of location and compare the species.
+
+**Task:**
+
+1. Compute the mean and median of the bill length (`bill_length_mm`) of all penguins and store them in `mean` and `median`.
+2. Compute the mean separately for each species (`species`) and store it in `mean_by_species`. Which species has the longest bills on average?
+3. Also print the mode. Why does it tell you little here?
+
+**Check** tests `mean`, `median` and `mean_by_species`.
+
+```{py-exercise}
+#| label: lagemasse-schnabel-en
+#| caption: Measures of location of the bill length
+#| show-test-hints: false
+import pandas as pd
+from pyodide.http import open_url
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+bill = penguins['bill_length_mm'].dropna()
+
+mean = None              # Your code here
+median = None            # Your code here
+mean_by_species = None   # Your code here
+print(mean, median)
+print(mean_by_species)
+
+## TESTS ##
+assert mean is not None, "mean is still empty."
+assert mean is not None and abs(float(mean) - 43.92) < 0.01, "mean is wrong. Hint: bill.mean()"
+assert median is not None, "median is still empty."
+assert median is not None and abs(float(median) - 44.45) < 0.01, "median is wrong. Hint: bill.median()"
+assert mean_by_species is not None, "mean_by_species is still empty."
+assert mean_by_species is not None and hasattr(mean_by_species, 'index') and len(mean_by_species) == 3, "mean_by_species should contain exactly one value per species (3 species). Hint: groupby('species')."
+assert mean_by_species is not None and hasattr(mean_by_species, 'index') and 'Chinstrap' in mean_by_species.index and abs(float(mean_by_species['Chinstrap']) - 48.83) < 0.01, "mean_by_species is wrong: for Chinstrap about 48.83 mm is expected."
+```
+
+::: {.callout-tip title="Hint 1" collapse="true"}
+For a single column: `.mean()` → mean, `.median()` → median, `.mode()[0]` → mode (most frequent value). The missing values have already been removed from `bill` with `.dropna()`.
+:::
+
+::: {.callout-tip title="Hint 2" collapse="true"}
+For the mean per species use `penguins.groupby('species')['bill_length_mm'].mean()`. This gives you the mean for each species separately.
+:::
+
+::: {.callout-caution title="Minimal solution" collapse="true"}
+```python
+mean = bill.mean()
+median = bill.median()
+mean_by_species = penguins.groupby('species')['bill_length_mm'].mean()
+
+print(f"Mode: {bill.mode()[0]:.2f} mm, occurs {(bill == bill.mode()[0]).sum()} times")
+```
+
+The mode 41.1 mm occurs only 7 times among 342 measurements. For a continuous variable the most frequent single value says little about the centre (see [special features of the mode](#modalwert)).
+:::
+::::
+
+:::: {.theorem .exercise}
+#### Exercise: Mean vs. median of body mass
+
+Mean and median can differ considerably for skewed distributions.
+
+**Task:**
+
+1. Compute the mean and median of the body mass (`body_mass_g`) of all penguins and store them in `mean_all` and `median_all`. Is the distribution right- or left-skewed? Store the answer as text (`"right"` or `"left"`) in `skew_direction`.
+2. Filter out the Gentoo penguins (they are clearly heavier than the other species), compute mean and median again and store them in `mean_without` and `median_without`. What changes?
+
+**Commands you need:** `.mean()`, `.median()`, `.dropna()`, filtering with `penguins[penguins['species'] != 'Gentoo']`, `if` / `else`.
+
+**Check** tests all five variables.
+
+```{py-exercise}
+#| label: mittelwert-vs-median-en
+#| caption: Mean vs. median of body mass
+#| show-test-hints: false
+import pandas as pd
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+
+mean_all = None       # Your code here
+median_all = None     # Your code here
+skew_direction = None # "right" or "left"
+mean_without = None   # Your code here
+median_without = None # Your code here
+print(mean_all, median_all, skew_direction)
+print(mean_without, median_without)
+
+## TESTS ##
+assert mean_all is not None, "mean_all is still empty."
+assert abs(float(mean_all) - 4201.75) < 0.1, "mean_all is not correct. Hint: body_mass_g without missing values, then .mean()"
+assert median_all is not None, "median_all is still empty."
+assert abs(float(median_all) - 4050.0) < 0.1, "median_all is not correct. Hint: .median() on body_mass_g"
+assert skew_direction in ("right", "left"), "skew_direction must be the text \"right\" or \"left\"."
+assert skew_direction == "right", "The mean is above the median, which indicates a right-skewed distribution."
+assert mean_without is not None, "mean_without is still empty."
+assert abs(float(mean_without) - 3710.73) < 0.1, "mean_without is not correct. Hint: filter out Gentoo first (species != 'Gentoo')."
+assert median_without is not None, "median_without is still empty."
+assert abs(float(median_without) - 3700.0) < 0.1, "median_without is not correct. Hint: filter out Gentoo first (species != 'Gentoo')."
+```
+
+::: {.callout-tip title="Hint 1" collapse="true"}
+With `penguins[penguins['species'] != 'Gentoo']` you select all penguins that are **not** Gentoo. Then apply `['body_mass_g'].mean()` and `.median()` again. Remove missing values with `.dropna()`.
+:::
+
+::: {.callout-tip title="Hint 2" collapse="true"}
+If mean > median: right-skewed distribution (long tail to the right). If mean < median: left-skewed distribution. Gentoo penguins are heavy outliers at the top – removing them should shift the mean more than the median.
+:::
+
+::: {.callout-caution title="Minimal solution" collapse="true"}
+```python
+mass_all = penguins['body_mass_g'].dropna()
+mean_all = mass_all.mean()
+median_all = mass_all.median()
+skew_direction = "right" if mean_all > median_all else "left"
+
+without_gentoo = penguins[penguins['species'] != 'Gentoo']['body_mass_g'].dropna()
+mean_without = without_gentoo.mean()
+median_without = without_gentoo.median()
+```
+
+With Gentoo, the mean (4202 g) is clearly above the median (4050 g): right-skewed. Without Gentoo both move together to about 3700 g, and the distribution is nearly symmetric.
+:::
+::::
+
+---
+
+## Summary {#zusammenfassung}
+
+::: {.callout-tip}
+#### The key points at a glance
+
+**Summary measures** reduce a sample to characteristic single values. **Measures of location** describe where the centre of the data lies.
+
+| Measure of location | For which scale? | Robust? | Python |
+|---------|------------------|---------|--------|
+| **Mode** | nominal, ordinal, metric | – | `.mode()` |
+| **Median** | ordinal, metric | ✓ yes | `.median()` |
+| **Arithm. mean** | metric | ✗ no | `.mean()` |
+| **Geom. mean** | metric (only $>0$) | – | `gmean()` |
+
+The **box plot** summarizes the distribution graphically with 5 measures: minimum, $Q_1$, median, $Q_3$, maximum. It is especially good for comparing several groups.
+:::
+
+---
+
+## Knowledge test {#wissenstest}
+
+```{quizdown}
+---
+primaryColor: '#0a9396'
+shuffleQuestions: false
+shuffleAnswers: true
+locale: en
+---
+
+### What is the mode of a sample?
+
+1. [ ] The arithmetic mean of all values
+1. [x] The value that occurs most often
+    > Correct! The mode is the most frequent value.
+1. [ ] The middle value of the sorted sample
+1. [ ] The average of the largest and smallest value
+
+### A sample contains the values 4, 7, 7, 9, 13. What is the arithmetic mean?
+
+1. [ ] 7
+1. [x] 8
+    > The arithmetic mean is $(4+7+7+9+13)/5 = 40/5 = 8$.
+1. [ ] 9
+1. [ ] 10
+
+### The sample 3, 5, 7, 9, 11 has median 7. Now an outlier 300 is added: 3, 5, 7, 9, 11, 300. What happens to the median?
+
+1. [x] The median hardly changes (it becomes 8)
+    > Correct! With 6 values the median is (7+9)/2 = 8. The outlier 300 has hardly any influence.
+1. [ ] The median jumps up sharply
+1. [ ] The median stays exactly 7
+1. [ ] The median can no longer be computed
+
+### You are analysing household incomes in Germany. Which measure of location makes more sense: mean or median?
+
+1. [ ] The mean, since it takes all values into account
+1. [x] The median, since very high incomes would distort the mean
+    > Exactly! Incomes are right-skewed – a few very rich people push the mean up. The median reflects the "typical" situation better.
+1. [ ] Both are equally suitable
+1. [ ] Neither – you should only use the mode
+
+### What does the first quartile $Q_1$ describe?
+
+1. [ ] The smallest value of the sample
+1. [x] The 25 % quantile – 25 % of the values lie below it
+    > Correct! $Q_1 = \tilde{x}_{0.25}$ cuts off the lowest 25 % of the data.
+1. [ ] The mean of the lower half
+1. [ ] The median of the sample
+
+### How wide is the box in a box plot?
+
+1. [ ] From the minimum to the maximum
+1. [ ] Twice the standard deviation
+1. [x] From the first quartile $Q_1$ to the third quartile $Q_3$ (= IQR)
+    > Correct! The width of the box equals the interquartile range IQR = $Q_3 - Q_1$ and contains about 50 % of the data.
+1. [ ] From the minimum to the median
+
+### In the refined box plot, points outside the whiskers are marked as outliers. Where do the whiskers end?
+
+1. [ ] At the minimum and maximum
+1. [ ] At $Q_1 - \text{IQR}$ and $Q_3 + \text{IQR}$
+1. [x] At the last observation within $Q_1 - 1.5 \cdot \text{IQR}$ and $Q_3 + 1.5 \cdot \text{IQR}$ respectively
+    > Exactly! Values beyond these limits are drawn as individual points (potential outliers).
+1. [ ] One standard deviation away from the mean
+```
+
+::::

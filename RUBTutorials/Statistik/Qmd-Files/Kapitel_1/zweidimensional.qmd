@@ -1,0 +1,2265 @@
+---
+title: "1.6 Zweidimensionale Datenanalyse"
+title-en: "1.6 Bivariate Data Analysis"
+execute:
+  eval: false
+  echo: true
+  warning: false
+filters:
+  - ctm-assessment
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+```{python}
+#| include: true
+#| echo: false
+#| eval: true
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib
+import pandas as pd
+from scipy import stats
+
+matplotlib.rcParams['figure.dpi'] = 110
+matplotlib.rcParams['font.size'] = 11
+
+try:
+    from palmerpenguins import load_penguins
+    penguins = load_penguins()
+except Exception:
+    url = "https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"
+    penguins = pd.read_csv(url)
+```
+
+## Lernziele {.unnumbered}
+
+Am Ende dieses Unterkapitels kannst du:
+
+- zwei Merkmale gemeinsam grafisch darstellen und erste Schlüsse ziehen.
+- eine zweidimensionale Häufigkeitstabelle aufstellen und interpretieren.
+- den Pearson-Korrelationskoeffizienten berechnen und interpretieren.
+- eine einfache lineare Regressionsgerade bestimmen und für Vorhersagen nutzen.
+- den Unterschied zwischen Korrelation und Kausalität erklären und an Beispielen zeigen.
+
+---
+
+## Einführung
+
+Bisher haben wir immer **ein Merkmal** auf einmal analysiert. In der Praxis interessieren uns aber oft die **Beziehungen zwischen zwei Merkmalen**:
+
+- Sind größere Pinguine auch schwerer?
+- Hängt das Geschlecht mit der Körpergröße zusammen?
+- Welche Pinguinarten kommen auf welchen Inseln vor?
+
+Bei der Analyse von zwei Merkmalen stellen sich drei grundlegende Fragen:
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Gibt es einen Zusammenhang? (links: kein Zusammenhang, rechts: deutlicher Zusammenhang)"
+#| layout-ncol: 2
+np.random.seed(42)
+x = np.random.uniform(0, 10, 100)
+y_unabh = np.random.uniform(0, 10, 100)
+y_abh = x + np.random.normal(0, 1.5, 100)
+
+for y, titel in [(y_unabh, 'Kein erkennbarer Zusammenhang'), (y_abh, 'Deutlicher Zusammenhang')]:
+    fig, ax = plt.subplots(figsize=(4, 3.5))
+    ax.scatter(x, y, color='#005f73', s=25, alpha=0.7)
+    ax.set_xlabel('Merkmal X'); ax.set_ylabel('Merkmal Y')
+    ax.set_title(titel, fontsize=10)
+    plt.tight_layout(); plt.show()
+```
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Wie stark ist der Zusammenhang? (schwach, mittel, stark)"
+#| layout-ncol: 3
+np.random.seed(42)
+x = np.random.uniform(0, 10, 100)
+for sd, titel in [(4, 'Schwach'), (1.5, 'Mittel'), (0.3, 'Stark')]:
+    y = x + np.random.normal(0, sd, 100)
+    r = np.corrcoef(x, y)[0, 1]
+    fig, ax = plt.subplots(figsize=(3.5, 3))
+    ax.scatter(x, y, color='#0a9396', s=25, alpha=0.7)
+    m, b = np.polyfit(x, y, 1)
+    ax.plot(sorted(x), [m*xi+b for xi in sorted(x)], color='#ae2012', lw=1.5)
+    ax.set_xlabel('X'); ax.set_ylabel('Y')
+    ax.set_title(f'{titel}\n$r = {r:.2f}$', fontsize=10)
+    plt.tight_layout(); plt.show()
+```
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Welche Form hat der Zusammenhang? (positiv linear, negativ linear, quadratisch)"
+#| layout-ncol: 3
+np.random.seed(42)
+x = np.random.uniform(0, 10, 100)
+for y, titel in [
+    (x + np.random.normal(0, 1.5, 100), 'Positiv linear'),
+    (-0.5*x + 8 + np.random.normal(0, 1.5, 100), 'Negativ linear'),
+    ((x-5)**2 / 4 + np.random.normal(0, 0.5, 100), 'Quadratisch'),
+]:
+    fig, ax = plt.subplots(figsize=(3.5, 3))
+    ax.scatter(x, y, color='#0a9396', s=25, alpha=0.7)
+    ax.set_xlabel('X'); ax.set_ylabel('Y')
+    ax.set_title(titel, fontsize=10)
+    plt.tight_layout(); plt.show()
+```
+
+---
+
+## Streudiagramm
+
+Wenn beide Merkmale **kardinal skaliert** sind, ist das **Streudiagramm** (engl. *scatter plot*) die wichtigste grafische Methode zur gemeinsamen Darstellung:
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Streudiagramm: Schnabellänge vs. Flossenlänge der Pinguine, eingefärbt nach Art. Jeder Punkt ist ein Pinguin."
+peng = penguins.dropna(subset=['bill_length_mm', 'flipper_length_mm', 'species'])
+farben = {'Adelie': '#005f73', 'Chinstrap': '#ae2012', 'Gentoo': '#94d2bd'}
+
+fig, ax = plt.subplots(figsize=(7, 4.5))
+for art, gruppe in peng.groupby('species'):
+    ax.scatter(gruppe['bill_length_mm'], gruppe['flipper_length_mm'],
+               label=art, color=farben[art], s=30, alpha=0.7)
+ax.set_xlabel('Schnabellänge (mm)'); ax.set_ylabel('Flossenlänge (mm)')
+ax.legend(title='Pinguinart')
+plt.tight_layout(); plt.show()
+```
+
+Das Streudiagramm zeigt: Zwischen Schnabellänge und Flossenlänge gibt es einen positiven Zusammenhang – Pinguine mit längerem Schnabel haben tendenziell auch längere Flossen. Gentoo-Pinguine (grün) sind besonders auffällig.
+
+:::: {#exr-streudiagramm}
+### Pinguine: Eigenes Streudiagramm
+
+<br>
+
+Erstelle ein Streudiagramm für Körpergewicht (`body_mass_g`, $x$-Achse) und Flossenlänge (`flipper_length_mm`, $y$-Achse) und beschrifte beide Achsen. Ist ein Zusammenhang erkennbar?
+
+**Befehle, die du brauchst:** `ax.scatter(x, y)` (Streudiagramm), `ax.set_xlabel(...)`, `ax.set_ylabel(...)`, `plt.show()`
+
+```{pyodide-python}
+import pandas as pd
+from pyodide.http import open_url
+import matplotlib.pyplot as plt
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+daten = penguins.dropna(subset=['body_mass_g', 'flipper_length_mm'])
+
+fig, ax = plt.subplots(figsize=(6, 4))
+# Dein Code hier
+plt.show()
+```
+
+::: {.callout-tip title="Tipp" collapse="true"}
+`ax.scatter` bekommt zuerst die Werte für die $x$-Achse, dann die für die $y$-Achse: `ax.scatter(daten['body_mass_g'], daten['flipper_length_mm'])`. Mit `alpha=0.5` werden die Punkte durchscheinend, dann sieht man Überlagerungen besser.
+:::
+
+::: {.callout-caution title="Lösung" collapse="true"}
+```python
+fig, ax = plt.subplots(figsize=(6, 4))
+ax.scatter(daten['body_mass_g'], daten['flipper_length_mm'],
+           color='#0a9396', alpha=0.5, s=25)
+ax.set_xlabel('Körpergewicht (g)')
+ax.set_ylabel('Flossenlänge (mm)')
+ax.set_title('Gewicht vs. Flossenlänge der Pinguine')
+plt.show()
+```
+
+Die Punktwolke steigt deutlich an: Schwerere Pinguine haben tendenziell längere Flossen. Der Zusammenhang ist positiv und annähernd linear.
+:::
+::::
+
+::: {.callout-tip}
+#### Wenn ein Merkmal nominal/ordinal ist
+
+Hat eines der beiden Merkmale nur wenige Kategorien (nominal oder ordinal), dann ist ein **gruppenweiser Boxplot** oder **gruppierte Histogramme** sinnvoller als ein Streudiagramm. Diese Darstellungen haben wir bereits in Kapitel 1.3 kennengelernt.
+:::
+
+---
+
+## Zweidimensionale Häufigkeitsverteilung
+
+Sind beide Merkmale **nominal oder ordinal** (mit endlich vielen Ausprägungen), fasst man ihre gemeinsame Verteilung in einer **Kontingenztabelle** (auch: Kreuztabelle) zusammen.
+
+::: {#def-kontingenz}
+### Kontingenztabelle
+
+<br>
+
+Seien $X$ und $Y$ zwei Merkmale mit Ausprägungen $a_1, \dots, a_l$ (für $X$) und $b_1, \dots, b_k$ (für $Y$). Die **Kontingenztabelle** zeigt, wie oft jede Kombination $(a_{j_1}, b_{j_2})$ in der Stichprobe vorkommt. Die **Randsummen** (Zeilen-/Spaltensummen) geben die eindimensionalen Häufigkeitsverteilungen der einzelnen Merkmale wieder.
+:::
+
+::: {#exm-kontingenz-pinguine}
+### Pinguine: Art und Insel
+
+<br>
+
+Welche Pinguinarten leben auf welchen Inseln?
+
+```{python}
+#| echo: false
+#| eval: true
+tab = pd.crosstab(penguins['species'], penguins['island'], margins=True, margins_name='Gesamt')
+print(tab.to_string())
+```
+
+Die Tabelle zeigt: Gentoo-Pinguine leben ausschließlich auf Biscoe, Chinstrap nur auf Dream. Adelie-Pinguine sind auf allen drei Inseln vertreten. Pinguinart und Insel **hängen also stark zusammen** – die Merkmale sind nicht unabhängig.
+:::
+
+### Unabhängigkeit {.unnumbered}
+
+Zwei Merkmale heißen **unabhängig** in der Stichprobe, wenn das Auftreten einer Ausprägung des einen Merkmals keine Information über das andere liefert. Das erkennt man daran, dass die relativen Häufigkeiten jeder Zelle dem Produkt der entsprechenden Randhäufigkeiten entsprechen:
+
+$$h_{X,Y}(a_j, b_k) = h_X(a_j) \cdot h_Y(b_k) \quad \text{(für alle Kombinationen)}$$
+
+Ist das **nicht** der Fall, besteht ein Zusammenhang.
+
+### Cramérs V – Stärke des Zusammenhangs {.unnumbered}
+
+Um die **Stärke** des Zusammenhangs zweier nominaler Merkmale zu messen, nutzt man das **Cramérs V** (auch: Cramérs Kontingenzmaß). Es liegt immer zwischen 0 und 1:
+
+- $V = 0$: kein Zusammenhang (Unabhängigkeit)
+- $V = 1$: maximaler Zusammenhang
+
+::: {#def-cramers-v}
+### Chi-Quadrat-Koeffizient und Cramérs V
+
+<br>
+
+Seien $X$ und $Y$ zwei Merkmale mit Ausprägungen $a_1, \dots, a_l$ und $b_1, \dots, b_k$ in einer Stichprobe vom Umfang $n$, und jede Ausprägung komme mindestens einmal vor. Der **Chi-Quadrat-Koeffizient** misst, wie weit die gemeinsamen relativen Häufigkeiten von den Werten abweichen, die bei Unabhängigkeit zu erwarten wären:
+
+$$\chi^2 = n \sum_{i=1}^{l} \sum_{j=1}^{k} \frac{\bigl(h_{X,Y}(a_i, b_j) - h_X(a_i) \cdot h_Y(b_j)\bigr)^2}{h_X(a_i) \cdot h_Y(b_j)}$$
+
+**Cramérs V** normiert diesen Wert auf den Bereich von 0 bis 1:
+
+$$V = \sqrt{\frac{\chi^2}{n \cdot (\min(l, k) - 1)}}$$
+:::
+
+Es gilt $\chi^2 = 0$ (und damit $V = 0$) genau dann, wenn die Merkmale in der Stichprobe unabhängig sind.
+
+Bevor du Python einsetzt, rechne Cramérs V aus gegebenen Werten selbst aus (Formel aus der Definition oben):
+
+```{math-exercise}
+#| label: cramers-hand
+#| caption: Cramérs V von Hand
+#| mode: numeric
+#| tolerance: 1%
+#| partial-credit: true
+#| field-labels: V (Fall 1), V (Fall 2)
+$\chi^2 = 25,\ n = 100,\ l = 3,\ k = 2$: $V =$ _[0.5], $\qquad \chi^2 = 36,\ n = 100,\ l = 2,\ k = 2$: $V =$ _[0.6]
+```
+
+::: {.callout-tip collapse="true" title="Lösungsweg"}
+Fall 1: $\min(l, k) = 2$, also $V = \sqrt{25 / (100 \cdot 1)} = \sqrt{0{,}25} = 0{,}5$.
+Fall 2: $\min(l, k) = 2$, also $V = \sqrt{36 / (100 \cdot 1)} = 0{,}6$.
+:::
+
+:::: {#exr-cramers-pinguine}
+### Pinguine: Cramérs V für Art und Insel
+
+<br>
+
+Berechne Cramérs V für die Merkmale `species` und `island`:
+
+1. Erstelle die Kontingenztabelle und speichere sie in `tab`.
+2. Berechne den Chi-Quadrat-Koeffizienten $\chi^2$ und speichere den Wert in `chi2`.
+3. Berechne daraus Cramérs V nach der Formel aus der Definition oben und speichere den Wert in `cramers_v`. Wie stark ist der Zusammenhang?
+
+**Befehle, die du brauchst:** `pd.crosstab(zeilen, spalten)` (Kontingenztabelle), `chi2_contingency(tab)` aus `scipy.stats` (liefert vier Werte, der erste ist $\chi^2$), `tab.sum().sum()` (Stichprobenumfang $n$), `tab.shape` (Anzahl Zeilen und Spalten), `np.sqrt(...)`
+
+**Überprüfen** testet `tab`, `chi2` und `cramers_v`.
+
+```{py-exercise}
+#| label: cramers-art-insel
+#| caption: Cramérs V für Art und Insel
+#| show-test-hints: false
+import pandas as pd
+from pyodide.http import open_url
+import numpy as np
+from scipy.stats import chi2_contingency
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+
+tab = None         # Dein Code hier
+chi2 = None        # Dein Code hier
+cramers_v = None   # Dein Code hier
+print(tab)
+print(chi2, cramers_v)
+
+## TESTS ##
+assert tab is not None, "tab ist noch leer."
+assert tab is not None and getattr(tab, 'shape', None) == (3, 3), "tab sollte eine Tabelle mit 3 Arten und 3 Inseln sein. Tipp: pd.crosstab(penguins['species'], penguins['island'])"
+assert chi2 is not None, "chi2 ist noch leer."
+assert chi2 is not None and not hasattr(chi2, '__len__') and not hasattr(chi2, 'statistic'), "chi2_contingency liefert vier Werte. Gesucht ist nur der erste, z.B. chi2_contingency(tab)[0]."
+assert chi2 is not None and not hasattr(chi2, '__len__') and not hasattr(chi2, 'statistic') and abs(float(chi2) - 299.55) < 0.1, "chi2 stimmt nicht."
+assert cramers_v is not None, "cramers_v ist noch leer."
+assert cramers_v is not None and abs(float(cramers_v) - 0.6598) < 0.002, "cramers_v stimmt nicht. Im Nenner steht n mal (min(Zeilen, Spalten) - 1), hier also 344 mal 2."
+```
+
+::: {.callout-tip title="Tipp 1" collapse="true"}
+`chi2_contingency(tab)` gibt vier Werte zurück: $\chi^2$, den p-Wert, die Freiheitsgrade und die erwarteten Häufigkeiten. Den ersten bekommst du mit `chi2_contingency(tab)[0]`.
+:::
+
+::: {.callout-tip title="Tipp 2" collapse="true"}
+Für den Nenner: `n = tab.sum().sum()` und `min(tab.shape) - 1`. `tab.shape` ist hier `(3, 3)`.
+:::
+
+::: {.callout-caution title="Lösung" collapse="true"}
+```python
+tab = pd.crosstab(penguins['species'], penguins['island'])
+chi2 = chi2_contingency(tab)[0]
+n = tab.sum().sum()
+cramers_v = np.sqrt(chi2 / (n * (min(tab.shape) - 1)))
+```
+
+$V \approx 0{,}66$: ein deutlicher Zusammenhang zwischen Art und Insel. Die Tabelle zeigt, warum: Gentoo leben nur auf Biscoe, Chinstrap nur auf Dream, und nur Adelie kommen auf allen drei Inseln vor.
+:::
+::::
+
+::: {.callout-python}
+#### Python: Kontingenztabelle und Cramérs V
+
+```python
+import pandas as pd
+from scipy.stats import chi2_contingency
+import numpy as np
+
+# Kontingenztabelle
+tab = pd.crosstab(df['merkmal_x'], df['merkmal_y'])
+
+# Cramérs V
+# correction=False: Bei 2x2-Tabellen rechnet scipy sonst mit einer Stetigkeitskorrektur,
+# die nicht zur Formel aus der Definition passt. Bei größeren Tabellen ändert es nichts.
+chi2, p, dof, expected = chi2_contingency(tab, correction=False)
+n = tab.sum().sum()
+k = min(tab.shape) - 1
+cramers_v = np.sqrt(chi2 / (n * k))
+```
+:::
+
+---
+
+## Kovarianz und Korrelation
+
+Für **kardinal skalierte** Merkmale gibt es präzisere Zusammenhangsmaße, die sowohl **Richtung** als auch **Stärke** eines linearen Zusammenhangs quantifizieren.
+
+### Kovarianz {.unnumbered}
+
+Als Vorstufe zum Korrelationskoeffizienten berechnen wir zunächst die **Kovarianz**. Sie misst, ob große $x$-Werte tendenziell mit großen $y$-Werten auftreten (positiver Zusammenhang) oder mit kleinen (negativer Zusammenhang).
+
+::: {#def-kovarianz}
+### Empirische Kovarianz
+
+<br>
+
+$$s_{x,y} = \dfrac{1}{n-1} \sum_{i=1}^n (x_i - \bar{x})(y_i - \bar{y})$$
+
+- $s_{x,y} > 0$: positiver Zusammenhang
+- $s_{x,y} = 0$: kein linearer Zusammenhang
+- $s_{x,y} < 0$: negativer Zusammenhang
+:::
+
+Die Kovarianz ist allerdings **skalenabhängig**: Messen wir Gewicht in Gramm statt Kilogramm, ändert sich ihr Wert – obwohl sich der Zusammenhang nicht geändert hat. Deshalb normieren wir sie.
+
+### Korrelationskoeffizient nach Pearson {.unnumbered}
+
+::: {#def-pearson}
+### Empirischer Korrelationskoeffizient (Pearson)
+
+<br>
+
+$$r_{x,y} = \dfrac{s_{x,y}}{s_x \cdot s_y} = \dfrac{\displaystyle\sum_{i=1}^n (x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\displaystyle\sum_{i=1}^n (x_i - \bar{x})^2} \cdot \sqrt{\displaystyle\sum_{i=1}^n (y_i - \bar{y})^2}}$$
+
+Es gilt immer $-1 \le r_{x,y} \le 1$.
+:::
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Verschiedene Korrelationswerte und ihr optisches Erscheinungsbild im Streudiagramm."
+np.random.seed(42)
+x = np.random.normal(0, 1, 200)
+configs = [
+    (-1.0, 'r = -1 (exakt negativ)'),
+    (-0.8, 'r ≈ -0.8 (stark negativ)'),
+    (-0.3, 'r ≈ -0.3 (schwach negativ)'),
+    (0.0,  'r ≈ 0 (kein Zusammenhang)'),
+    (0.3,  'r ≈ 0.3 (schwach positiv)'),
+    (0.8,  'r ≈ 0.8 (stark positiv)'),
+    (1.0,  'r = 1 (exakt positiv)'),
+]
+
+fig, axes = plt.subplots(1, 7, figsize=(14, 2.5))
+for ax, (rho, label) in zip(axes, configs):
+    if abs(rho) == 1.0:
+        y = rho * x
+    else:
+        cov = [[1, rho], [rho, 1]]
+        xy = np.random.multivariate_normal([0, 0], cov, 200)
+        x_, y = xy[:, 0], xy[:, 1]
+        x = x_
+    ax.scatter(x, y, s=8, alpha=0.5, color='#005f73')
+    ax.set_title(label, fontsize=7.5)
+    ax.set_xticks([]); ax.set_yticks([])
+plt.tight_layout(); plt.show()
+```
+
+**Wichtige Eigenschaften:**
+
+- $r_{x,y} > 0$: positiver linearer Zusammenhang
+- $r_{x,y} < 0$: negativer linearer Zusammenhang
+- $|r_{x,y}| = 1$: **exakter** linearer Zusammenhang (alle Punkte auf einer Geraden)
+- $r_{x,y} = 0$: kein **linearer** Zusammenhang (kann aber andere Formen von Zusammenhang geben!)
+
+::: {.callout-rechnen}
+#### Berechnung per Hand
+
+Die 12 Personen aus Abschnitt 1.2 wurden auch nach ihrem Körpergewicht gefragt:
+
+| ID | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 |
+|:---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:--:|:--:|:--:|
+| Größe $x_i$ (cm) | 170,5 | 183,0 | 174,5 | 158,0 | 167,5 | 179,5 | 192,0 | 177,5 | 186,5 | 161,5 | 181,0 | 164,0 |
+| Gewicht $y_i$ (kg) | 64,2 | 85,7 | 62,3 | 55,7 | 58,6 | 72,2 | 99,9 | 72,5 | 81,2 | 58,0 | 82,7 | 56,0 |
+
+: {.striped .hover .sm}
+
+Für die Körpergröße ($X$) und das Körpergewicht ($Y$) gilt:
+
+$\bar{x} = 174{,}63$ cm, $\bar{y} = 70{,}75$ kg, $s_x = 10{,}51$ cm, $s_y = 14{,}14$ kg
+
+Die Summe der Kreuzprodukte ergibt: $\sum(x_i - \bar{x})(y_i - \bar{y}) \approx 1533{,}0$
+
+$$s_{x,y} = \frac{1533{,}0}{11} = 139{,}4 \qquad r_{x,y} = \frac{139{,}4}{10{,}51 \cdot 14{,}14} = 0{,}938$$
+
+Starke positive Korrelation – größere Personen sind in dieser Stichprobe tendenziell schwerer.
+:::
+
+Bevor du Python einsetzt, rechne $r_{x,y}$ aus gegebenen Kennzahlen selbst aus ($r_{x,y} = s_{x,y} / (s_x \cdot s_y)$):
+
+```{math-exercise}
+#| label: pearson-hand
+#| caption: Pearson-Korrelation aus Kennzahlen
+#| mode: numeric
+#| tolerance: 1%
+#| partial-credit: true
+#| field-labels: r (Fall 1), r (Fall 2)
+$s_{x,y} = 12,\ s_x = 4,\ s_y = 5$: $r_{x,y} =$ _[0.6], $\qquad s_{x,y} = -9,\ s_x = 3,\ s_y = 6$: $r_{x,y} =$ _[-0.5]
+```
+
+::: {.callout-tip collapse="true" title="Lösungsweg"}
+Fall 1: $r = 12 / (4 \cdot 5) = 0{,}6$ (positiver Zusammenhang).
+Fall 2: $r = -9 / (3 \cdot 6) = -0{,}5$ (negativer Zusammenhang).
+:::
+
+:::: {#exr-korrelation-pinguine}
+### Pinguine: Pearson-Korrelation
+
+<br>
+
+Berechne die Pearson-Korrelation zwischen Körpergewicht (`body_mass_g`) und Flossenlänge (`flipper_length_mm`): zuerst für alle Pinguine zusammen (in `r_alle`), dann getrennt nach Pinguinart (in `r_je_art`, ein Wert je Art, z.B. als Dictionary oder Series). Überraschen dich die Ergebnisse?
+
+**Befehle, die du brauchst:** `spalte_a.corr(spalte_b)` (Pearson-Korrelation zweier Spalten), `for art, gruppe in daten.groupby('species'):` (Schleife über die Arten)
+
+**Überprüfen** testet `r_alle` und `r_je_art`.
+
+```{py-exercise}
+#| label: pearson-gewicht-flosse
+#| caption: Pearson-Korrelation von Gewicht und Flossenlänge
+#| show-test-hints: false
+import pandas as pd
+from pyodide.http import open_url
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+daten = penguins.dropna(subset=['body_mass_g', 'flipper_length_mm'])
+
+r_alle = None     # Dein Code hier
+r_je_art = None   # Dein Code hier
+print(r_alle)
+print(r_je_art)
+
+## TESTS ##
+assert r_alle is not None, "r_alle ist noch leer."
+assert r_alle is not None and not hasattr(r_alle, '__len__') and abs(float(r_alle) - 0.8712) < 0.002, "r_alle stimmt nicht. Gesucht ist eine einzelne Zahl, z.B. daten['body_mass_g'].corr(daten['flipper_length_mm'])."
+assert r_je_art is not None, "r_je_art ist noch leer."
+assert r_je_art is not None and hasattr(r_je_art, '__len__') and len(r_je_art) == 3, "r_je_art sollte genau einen Wert je Art enthalten (3 Arten)."
+assert r_je_art is not None and hasattr(r_je_art, '__len__') and len(r_je_art) == 3 and abs(float(r_je_art['Adelie']) - 0.468) < 0.002 and abs(float(r_je_art['Gentoo']) - 0.703) < 0.002, "r_je_art stimmt nicht: Erwartet sind etwa 0,47 für Adelie und 0,70 für Gentoo."
+```
+
+::: {.callout-tip title="Tipp" collapse="true"}
+In der Schleife `for art, gruppe in daten.groupby('species'):` ist `gruppe` die Tabelle nur dieser Art. Lege vorher `r_je_art = {}` an und trage in der Schleife `r_je_art[art] = ...` ein.
+:::
+
+::: {.callout-caution title="Lösung" collapse="true"}
+```python
+r_alle = daten['body_mass_g'].corr(daten['flipper_length_mm'])
+r_je_art = {}
+for art, gruppe in daten.groupby('species'):
+    r_je_art[art] = gruppe['body_mass_g'].corr(gruppe['flipper_length_mm'])
+```
+
+Über alle Pinguine ist die Korrelation mit $r \approx 0{,}87$ stark. Innerhalb der Arten ist sie deutlich schwächer (Adelie 0,47, Chinstrap 0,64, Gentoo 0,70). Ein Teil der Gesamtkorrelation entsteht also durch den Unterschied zwischen den Arten: Gentoo sind zugleich schwerer und haben längere Flossen.
+:::
+::::
+
+### Rangkorrelation nach Spearman {.unnumbered}
+
+Der **Spearman-Korrelationskoeffizient** ist eine Alternative zum Pearson-Koeffizienten. Er ist **robuster gegenüber Ausreißern** und erkennt auch **nicht-lineare, aber monotone** Zusammenhänge. Dazu werden zunächst die Ränge der Beobachtungen bestimmt, und dann der Pearson-Koeffizient auf die Ränge angewandt.
+
+::: {.callout-tip}
+#### Wann welcher Koeffizient?
+
+| | Pearson | Spearman |
+|--|---------|----------|
+| **Misst** | lineare Zusammenhänge | monotone Zusammenhänge |
+| **Ausreißer** | empfindlich | robust |
+| **Skala** | kardinal | ordinal oder kardinal |
+| **Python** | `.corr()` | `.corr(method='spearman')` |
+:::
+
+### Korrelation zum Anfassen {.unnumbered}
+
+Ziehe die Punkte mit der Maus (oder dem Finger). Die rote Gerade ist die Regressionsgerade, oben stehen der Pearson- und der Spearman-Koeffizient.
+
+```{.jsxgraph width="100" height="75" unit="%" style="border:1px solid #ccc; border-radius:8px; max-width:560px;"}
+document.body.style.background = '#fff';
+const board = JXG.JSXGraph.initBoard(BOARDID, {
+  boundingbox: [-0.8, 10.8, 10.8, -0.8], axis: true, showCopyright: false,
+  showNavigation: false, pan: {enabled: false}, zoom: {enabled: false},
+  defaultAxes: {x: {ticks: {insertTicks: false, ticksDistance: 2, minorTicks: 1}},
+                y: {ticks: {insertTicks: false, ticksDistance: 2, minorTicks: 1}}}
+});
+const start = [[1, 2], [2, 3], [3, 3.5], [4, 5], [5, 4.5], [6, 6], [7, 6.5], [8, 7.5]];
+const pts = start.map(([x, y]) => board.create('point', [x, y],
+  {name: '', size: 5, strokeColor: '#0a9396', fillColor: '#0a9396', showInfobox: false}));
+pts.forEach(p => p.on('drag', () => {
+  const x = Math.min(10.5, Math.max(-0.5, p.X())), y = Math.min(10.5, Math.max(-0.5, p.Y()));
+  if (x !== p.X() || y !== p.Y()) p.setPositionDirectly(JXG.COORDS_BY_USER, [x, y]);
+}));
+const fmt = x => x.toFixed(2).replace('.', ',');
+const mean = a => a.reduce((s, v) => s + v, 0) / a.length;
+function fit(xs, ys) {
+  const mx = mean(xs), my = mean(ys);
+  let sxy = 0, sxx = 0, syy = 0;
+  for (let i = 0; i < xs.length; i++) {
+    const dx = xs[i] - mx, dy = ys[i] - my;
+    sxy += dx * dy; sxx += dx * dx; syy += dy * dy;
+  }
+  return {r: sxy / Math.sqrt(sxx * syy), b: sxy / sxx, a: my - sxy / sxx * mx};
+}
+function ranks(a) {
+  const idx = a.map((v, i) => [v, i]).sort((p, q) => p[0] - q[0]);
+  const r = new Array(a.length);
+  let i = 0;
+  while (i < idx.length) {
+    let j = i;
+    while (j + 1 < idx.length && idx[j + 1][0] === idx[i][0]) j++;
+    for (let k = i; k <= j; k++) r[idx[k][1]] = (i + j) / 2 + 1;
+    i = j + 1;
+  }
+  return r;
+}
+const xs = () => pts.map(p => p.X()), ys = () => pts.map(p => p.Y());
+board.create('functiongraph', [x => { const f = fit(xs(), ys()); return f.a + f.b * x; }],
+  {strokeColor: '#ae2012', strokeWidth: 2, highlight: false});
+const text = {fontSize: 15, fixed: true, highlight: false};
+board.create('text', [0.2, 10.1, () => 'Pearson r = ' + fmt(fit(xs(), ys()).r)],
+  Object.assign({color: '#ae2012'}, text));
+board.create('text', [0.2, 9.3, () => 'Spearman r<sub>s</sub> = ' + fmt(fit(ranks(xs()), ranks(ys())).r)],
+  Object.assign({color: '#005f73'}, text));
+```
+
+Probiere aus:
+
+- Ziehe **einen** Punkt ganz nach rechts unten. Wie stark ändert sich $r$, wie stark $r_s$? Was macht die Gerade?
+- Lege die Punkte auf eine Kurve, die immer steigt, aber erst flach und dann steil (wie eine Exponentialfunktion). Welcher Koeffizient erreicht 1?
+- Schaffst du $r \approx 0$, obwohl die Punkte einem klaren Muster folgen?
+
+::: {.callout-tip collapse="true" title="Was dahintersteckt"}
+Pearson verwendet die Abstände zum Mittelwert, ein weit entfernter Punkt zählt deshalb stark. Spearman verwendet nur die **Ränge**: Ein Punkt ganz rechts unten ist beim $x$-Rang der größte und beim $y$-Rang der kleinste, egal wie weit er entfernt ist. Deshalb reagiert $r_s$ auf Ausreißer schwächer. Bei einer steigenden Kurve sind die Ränge von $x$ und $y$ identisch, also $r_s = 1$, obwohl $r < 1$. Eine U-Form ergibt $r \approx 0$ und $r_s \approx 0$: Beide messen nur **gleichgerichtete** Zusammenhänge.
+:::
+
+::: {.callout-python}
+#### Python: Korrelationskoeffizienten
+
+```python
+# Pearson-Korrelationsmatrix (alle numerischen Spalten)
+df[['spalte1', 'spalte2']].corr()
+
+# Spearman-Korrelation
+df[['spalte1', 'spalte2']].corr(method='spearman')
+
+# Pearson mit scipy (gibt auch p-Wert zurück)
+from scipy import stats
+r, p_wert = stats.pearsonr(df['x'], df['y'])
+```
+:::
+
+### Zwischen-Quiz: Zusammenhangsmaße
+
+```{quizdown}
+---
+locale: de
+primaryColor: '#0a9396'
+shuffleQuestions: false
+shuffleAnswers: true
+---
+
+### Zwei Merkmale haben $r_{x,y} = 0$. Was folgt daraus?
+
+1. [ ] Die beiden Merkmale sind unabhängig.
+1. [x] Es gibt keinen **linearen** Zusammenhang, andere Zusammenhänge sind möglich.
+    > Richtig! Eine Parabel kann z.B. $r = 0$ haben und trotzdem einen klaren Zusammenhang zeigen.
+1. [ ] Die Punkte liegen alle auf einer Geraden.
+1. [ ] Ein Messfehler liegt vor.
+
+### Welchen Wertebereich hat Cramérs V?
+
+1. [ ] Von $-1$ bis $1$
+1. [x] Von $0$ bis $1$
+    > Richtig! $V = 0$ bedeutet Unabhängigkeit, $V = 1$ maximalen Zusammenhang.
+1. [ ] Von $0$ bis $\infty$
+1. [ ] Von $-\infty$ bis $\infty$
+
+### Die Kovarianz zweier Merkmale ist negativ. Was bedeutet das?
+
+1. [ ] Beide Merkmale haben negative Werte.
+1. [x] Hohe Werte des einen gehen tendenziell mit niedrigen Werten des anderen einher.
+    > Richtig! Das Vorzeichen der Kovarianz zeigt die Richtung des linearen Zusammenhangs.
+1. [ ] Die Merkmale sind nominal skaliert.
+1. [ ] Die Streuung ist negativ.
+```
+
+---
+
+## Einfache lineare Regression
+
+Haben wir einen linearen Zusammenhang festgestellt, können wir die **Regressionsgerade** bestimmen: die Gerade $\hat{g}(x) = \hat{\alpha} + \hat{\beta} \cdot x$, die die Daten am besten beschreibt.
+
+"Am besten" bedeutet: Die **Summe der quadrierten vertikalen Abstände** (Residuen) zwischen den Datenpunkten und der Geraden wird minimiert. Diese Methode heißt **Methode der kleinsten Quadrate**.
+
+::: {#def-regression}
+### Regressionsgerade (Kleinste-Quadrate)
+
+<br>
+
+Sei $\hat{g}(x) = \hat{\alpha} + \hat{\beta} \cdot x$ die gesuchte Gerade. Die Koeffizienten werden so gewählt, dass $\sum_{i=1}^n (y_i - \hat{g}(x_i))^2$ minimal ist.
+
+Die **Kleinste-Quadrate-Schätzer** lauten:
+
+$$\hat{\beta} = \dfrac{s_{x,y}}{s_x^2} = \dfrac{\displaystyle\sum_{i=1}^n (x_i - \bar{x})(y_i - \bar{y})}{\displaystyle\sum_{i=1}^n (x_i - \bar{x})^2}$$
+
+$$\hat{\alpha} = \bar{y} - \hat{\beta} \cdot \bar{x}$$
+:::
+
+::: {.callout-tip}
+#### Interpretation der Parameter
+
+- $\hat{\beta}$ (**Steigung**): Wenn $X$ um 1 Einheit steigt, verändert sich $Y$ um $\hat{\beta}$ Einheiten.
+- $\hat{\alpha}$ (**Achsenabschnitt**): Vorhergesagter $Y$-Wert für $X = 0$. Achtung: Das muss nicht immer inhaltlich sinnvoll sein (z.B. Gewicht bei Größe = 0 cm).
+:::
+
+::: {#exm-regression-groesse}
+### Körpergröße und -gewicht bei 12 Personen
+
+<br>
+
+Bekannt: $\bar{x} = 174{,}63$, $\bar{y} = 70{,}75$, $s_{x,y} = 139{,}4$, $s_x^2 = 110{,}5$
+
+$$\hat{\beta} = \frac{139{,}4}{110{,}5} \approx 1{,}262 \qquad \hat{\alpha} = 70{,}75 - 1{,}262 \cdot 174{,}63 \approx -149{,}6$$
+
+$$\hat{g}(x) = -149{,}6 + 1{,}262 \cdot x$$
+
+**Interpretation:** Pro 1 cm mehr Körpergröße steigt das Gewicht in dieser Stichprobe um ca. 1,26 kg.
+:::
+
+Jetzt du, mit fünf Wertepaaren:
+
+| $x_i$ | 1 | 2 | 3 | 4 | 5 |
+|---|---|---|---|---|---|
+| $y_i$ | 2 | 4 | 5 | 4 | 5 |
+
+Berechne Kovarianz, Korrelationskoeffizient und die Regressionsgerade (Brüche wie `3/2` oder Dezimalzahlen, $r$ auf zwei Nachkommastellen):
+
+```{math-exercise}
+#| label: regression-hand
+#| caption: Kovarianz, Korrelation und Regression von Hand
+#| mode: numeric
+#| tolerance: 1%
+#| partial-credit: true
+#| field-labels: s_xy, r, beta, alpha
+$s_{x,y} =$ _[1.5], $r_{x,y} =$ _[0.7746], $\hat{\beta} =$ _[0.6], $\hat{\alpha} =$ _[2.2]
+```
+
+::: {.callout-tip collapse="true" title="Lösungsweg"}
+- $\bar{x} = 3$, $\bar{y} = 4$
+- Abweichungen $x_i - \bar{x}$: $-2, -1, 0, 1, 2$; $y_i - \bar{y}$: $-2, 0, 1, 0, 1$
+- Kreuzprodukte: $4, 0, 0, 0, 2$, Summe $6$, also $s_{x,y} = 6/4 = 1{,}5$
+- $\sum (x_i - \bar{x})^2 = 10$, $\sum (y_i - \bar{y})^2 = 6$, also $r = 6 / \sqrt{10 \cdot 6} \approx 0{,}77$
+- $\hat{\beta} = 6/10 = 0{,}6$ und $\hat{\alpha} = 4 - 0{,}6 \cdot 3 = 2{,}2$
+:::
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Regressionsgerade für Schnabellänge und Flossenlänge der Pinguine. Die gestrichelten Linien zeigen die Residuen (Abstände zwischen Datenpunkten und Gerade)."
+peng_clean = penguins.dropna(subset=['bill_length_mm', 'flipper_length_mm'])
+x = peng_clean['bill_length_mm'].values
+y = peng_clean['flipper_length_mm'].values
+
+slope, intercept, r, p, se = stats.linregress(x, y)
+x_line = np.array([x.min(), x.max()])
+
+fig, ax = plt.subplots(figsize=(7, 4.5))
+ax.scatter(x, y, color='#0a9396', s=25, alpha=0.5, zorder=3)
+
+# Residuals für einige Punkte andeuten
+idx_sample = np.random.choice(len(x), 20, replace=False)
+for i in idx_sample:
+    y_pred = slope * x[i] + intercept
+    ax.plot([x[i], x[i]], [y[i], y_pred], color='#ca6702', lw=0.8, alpha=0.7, ls='--')
+
+ax.plot(x_line, slope * x_line + intercept, color='#ae2012', lw=2,
+        label=f'$\\hat{{g}}(x) = {intercept:.1f} + {slope:.2f} \\cdot x$\n$r = {r:.3f}$')
+ax.set_xlabel('Schnabellänge (mm)'); ax.set_ylabel('Flossenlänge (mm)')
+ax.legend()
+plt.tight_layout(); plt.show()
+```
+
+:::: {#exr-regression-pinguine}
+### Pinguine: Regression
+
+<br>
+
+Bestimme die Regressionsgerade für Körpergewicht (`body_mass_g`, $x$-Achse) und Flossenlänge (`flipper_length_mm`, $y$-Achse):
+
+1. Speichere die Steigung $\hat\beta$ in `steigung` und den Achsenabschnitt $\hat\alpha$ in `achsenabschnitt`.
+2. Wie stark steigt die Flossenlänge pro 100 g mehr Gewicht? Speichere die Antwort (in mm) in `pro_100g`.
+
+**Befehle, die du brauchst:** `stats.linregress(x, y)` aus `scipy`. Das Ergebnis hat unter anderem die Einträge `.slope` (Steigung), `.intercept` (Achsenabschnitt) und `.rvalue` (Korrelation).
+
+**Überprüfen** testet `steigung`, `achsenabschnitt` und `pro_100g`.
+
+```{py-exercise}
+#| label: regression-gewicht-flosse
+#| caption: Regressionsgerade für Gewicht und Flossenlänge
+#| show-test-hints: false
+import pandas as pd
+from pyodide.http import open_url
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy import stats
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+daten = penguins.dropna(subset=['body_mass_g', 'flipper_length_mm'])
+x = daten['body_mass_g'].values
+y = daten['flipper_length_mm'].values
+
+steigung = None          # Dein Code hier
+achsenabschnitt = None   # Dein Code hier
+pro_100g = None          # Dein Code hier
+print(steigung, achsenabschnitt, pro_100g)
+
+## TESTS ##
+assert steigung is not None, "steigung ist noch leer."
+assert steigung is None or abs(float(steigung) - 49.69) > 0.5, "x und y sind vertauscht: Das Gewicht gehört auf die x-Achse, also linregress(x, y)."
+assert steigung is not None and abs(float(steigung) - 0.015276) < 0.0001, "steigung stimmt nicht. Erwartet sind etwa 0,0153 mm pro g."
+assert achsenabschnitt is not None, "achsenabschnitt ist noch leer."
+assert achsenabschnitt is not None and abs(float(achsenabschnitt) - 136.73) < 0.05, "achsenabschnitt stimmt nicht. Erwartet sind etwa 136,73 mm."
+assert pro_100g is not None, "pro_100g ist noch leer."
+assert pro_100g is not None and abs(float(pro_100g) - 1.5276) < 0.01, "pro_100g stimmt nicht. Die Steigung gilt pro 1 g, für 100 g also das Hundertfache."
+```
+
+::: {.callout-tip title="Tipp" collapse="true"}
+Speichere das Ergebnis zuerst in einer Variablen: `ergebnis = stats.linregress(x, y)`. Danach greifst du mit `ergebnis.slope` und `ergebnis.intercept` auf die beiden Werte zu.
+:::
+
+::: {.callout-caution title="Lösung" collapse="true"}
+```python
+ergebnis = stats.linregress(x, y)
+steigung = ergebnis.slope
+achsenabschnitt = ergebnis.intercept
+pro_100g = steigung * 100
+```
+
+Die Regressionsgerade lautet $\hat{g}(x) \approx 136{,}73 + 0{,}0153 \cdot x$. Pro 100 g mehr Körpergewicht ist die Flossenlänge in dieser Stichprobe im Mittel etwa 1,53 mm größer.
+:::
+
+3. Zeichne die Regressionsgerade in ein Streudiagramm ein. Die Zelle nutzt `x`, `y`, `steigung` und `achsenabschnitt` aus der Aufgabe oben, führe diese also zuerst aus.
+
+**Befehle, die du brauchst:** `ax.scatter(x, y)` (Punkte), `ax.plot(x_werte, y_werte)` (Linie durch die angegebenen Punkte)
+
+```{pyodide-python}
+fig, ax = plt.subplots(figsize=(6, 4))
+# Dein Code hier
+plt.show()
+```
+
+::: {.callout-tip title="Tipp" collapse="true"}
+Für eine Gerade reichen zwei Punkte. Nimm als $x$-Werte das kleinste und das größte Gewicht, `x_linie = np.array([x.min(), x.max()])`, und berechne die zugehörigen $y$-Werte mit der Geradengleichung.
+:::
+
+::: {.callout-caution title="Lösung" collapse="true"}
+```python
+fig, ax = plt.subplots(figsize=(6, 4))
+ax.scatter(x, y, alpha=0.4, s=20, color='#0a9396')
+x_linie = np.array([x.min(), x.max()])
+ax.plot(x_linie, achsenabschnitt + steigung * x_linie, color='#ae2012', lw=2,
+        label='Regressionsgerade')
+ax.set_xlabel('Körpergewicht (g)')
+ax.set_ylabel('Flossenlänge (mm)')
+ax.legend()
+plt.show()
+```
+:::
+::::
+
+::: {.callout-python}
+#### Python: Lineare Regression
+
+```python
+from scipy import stats
+
+slope, intercept, r, p_value, std_err = stats.linregress(x_array, y_array)
+
+# Vorhersage für neuen Wert
+x_neu = 4500   # Beispiel: Körpergewicht 4500 g
+y_vorhersage = intercept + slope * x_neu
+```
+:::
+
+---
+
+## Anscombe-Quartett: Immer auch plotten!
+
+Korrelation und Regressionsgerade allein sagen noch nicht alles. Das **Anscombe-Quartett** (1973) zeigt vier Datensätze mit nahezu **identischen statistischen Kennzahlen**, die aber grundlegend verschieden aussehen:
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Anscombe-Quartett: Alle vier Datensätze haben fast identischen Mittelwert (x̄≈9, ȳ≈7,5), Varianz, Korrelation (r≈0,82) und Regressionsgerade. Das Streudiagramm zeigt aber sofort die strukturellen Unterschiede."
+anscombe_data = {
+    1: {'x': [10,8,13,9,11,14,6,4,12,7,5], 'y': [8.04,6.95,7.58,8.81,8.33,9.96,7.24,4.26,10.84,4.82,5.68]},
+    2: {'x': [10,8,13,9,11,14,6,4,12,7,5], 'y': [9.14,8.14,8.74,8.77,9.26,8.10,6.13,3.10,9.13,7.26,4.74]},
+    3: {'x': [10,8,13,9,11,14,6,4,12,7,5], 'y': [7.46,6.77,12.74,7.11,7.81,8.84,6.08,5.39,8.15,6.42,5.73]},
+    4: {'x': [8,8,8,8,8,8,8,19,8,8,8], 'y': [6.58,5.76,7.71,8.84,8.47,7.04,5.25,12.50,5.56,7.91,6.89]},
+}
+
+fig, axes = plt.subplots(1, 4, figsize=(12, 3.2))
+for ax, (num, d) in zip(axes, anscombe_data.items()):
+    x, y = np.array(d['x']), np.array(d['y'])
+    slope, intercept, r, _, _ = stats.linregress(x, y)
+    ax.scatter(x, y, color='#005f73', s=50, zorder=5)
+    x_line = np.array([0, 20])
+    ax.plot(x_line, slope * x_line + intercept, color='#ae2012', lw=1.5)
+    ax.set_title(f'Datensatz {num}\n$r = {r:.3f}$', fontsize=10)
+    ax.set_xlim(0, 20); ax.set_ylim(2, 14)
+    ax.set_xlabel('x'); ax.set_ylabel('y') if num == 1 else None
+plt.tight_layout(); plt.show()
+```
+
+::: {.callout-caution}
+#### Regel: Immer zuerst das Streudiagramm anschauen!
+
+Die Regressionsgeraden und Korrelationskoeffizienten der vier Datensätze sind praktisch identisch. Nur das Streudiagramm zeigt:
+
+- (1) normaler linearer Zusammenhang
+- (2) quadratischer Zusammenhang – lineare Regression falsch gewählt!
+- (3) linearer Zusammenhang mit einem massiven Ausreißer
+- (4) rein vertikale Streuung – kein echter Zusammenhang
+
+**Kennzahlen ersetzen keine grafische Datenanalyse!**
+:::
+
+---
+
+## Korrelation ≠ Kausalität
+
+Ein statistischer Zusammenhang (Korrelation) bedeutet **nicht**, dass ein Merkmal das andere verursacht (Kausalität). Dies ist eine der wichtigsten Erkenntnisse der Statistik.
+
+::: {#exm-storch}
+### Babys und Störche
+
+<br>
+
+In manchen europäischen Ländern wurde eine positive Korrelation zwischen der **Storchenpopulation** und der **Geburtenrate** beobachtet. Bedeutet das, dass Störche Babys bringen?
+
+Nein – das **Drittmerkmal Industrialisierung** erklärt beides:
+
+```{mermaid}
+%%| eval: true
+flowchart TB
+  A(Industrialisierung) -->|–| B(Storchenpopulation)
+  A -->|–| C(Geburtenrate)
+```
+
+Die Industrialisierung reduziert sowohl die Storchenpopulation (durch Verstädterung) als auch die Geburtenrate. Die Korrelation zwischen Störchen und Geburten ist eine **Scheinkorrelation**.
+:::
+
+::: {#exm-alterseffekt}
+### Relativer Alterseffekt
+
+<br>
+
+Im Jugendsport werden Altersklassen meist nach Kalenderjahr gebildet. Studien zeigen: Im **Januar geborene Kinder** sind in Auswahlmannschaften deutlich häufiger vertreten als im **Dezember geborene**. Auch in der Schule schneiden die jüngsten Kinder einer Klasse im Schnitt schlechter ab. Macht der Geburtsmonat erfolgreich?
+
+Nein – entscheidend ist das **Alter innerhalb der Gruppe**:
+
+```{mermaid}
+%%| eval: true
+flowchart LR
+  A(Geburtsmonat) -->|Stichtag| C(Alter innerhalb der<br>Klasse / Altersklasse)
+  C --> D(Schulerfolg / Sporterfolg)
+```
+
+Wer kurz **nach** dem Stichtag geboren ist (im Sport: im Januar), ist fast ein Jahr älter als die Kinder derselben Gruppe, die kurz **davor** geboren sind. In jungen Jahren macht dieser Altersunterschied entwicklungsbedingt viel aus – nicht der Geburtsmonat an sich.
+:::
+
+::: {.callout-tip}
+#### Drei mögliche Erklärungen für eine Korrelation
+
+| Szenario | Beispiel |
+|----------|---------|
+| **X verursacht Y** | Rauchen → Lungenkrebs (kausal) |
+| **Y verursacht X** | Viele Rettungssanitäter vor Ort ← viele Verletzte (Umkehrkausalität: die Verletzten sind der Grund für die Sanitäter, nicht umgekehrt) |
+| **Z verursacht beides** (Scheinkorrelation) | Industrialisierung → Störche und Geburtenrate |
+
+Eine Korrelation allein ist **kein Beleg** für Kausalität. Umgekehrt kann ein kausaler Zusammenhang auch ohne (lineare) Korrelation bestehen, etwa wenn er nicht linear ist oder von einer Störvariable überdeckt wird. Kausalität beweist man durch **kontrollierte Experimente**, nicht durch Beobachtungsdaten.
+:::
+
+::: {#exr-korrelation-kausalitaet}
+### Diskussion: Korrelation oder Kausalität?
+
+<br>
+
+Denke nach: Welche Erklärung ist plausibler? Ist die Korrelation kausal, umgekehrt kausal, oder eine Scheinkorrelation?
+
+a) In Städten mit mehr Feuerwehrleuten pro Einwohner gibt es mehr Brandschäden.
+
+b) Kinder mit mehr Büchern zu Hause haben bessere Schulleistungen.
+
+c) Länder mit mehr Fernsehgeräten pro Haushalt haben höhere Lebenserwartung.
+
+```{pyodide-python}
+# Keine Berechnung nötig – hier ist Nachdenken gefragt!
+# Überlege für jede Aussage:
+# - Könnte X → Y (direkte Kausalität)?
+# - Könnte Y → X (Umkehrkausalität)?
+# - Gibt es ein Drittmerkmal Z, das beides erklärt?
+
+beispiele = {
+    'a': 'Mehr Feuerwehrleute → mehr Brandschäden?',
+    'b': 'Mehr Bücher → bessere Schulleistungen?',
+    'c': 'Mehr Fernseher → längeres Leben?',
+}
+
+for key, text in beispiele.items():
+    print(f"({key}) {text}")
+    print("    → Deine Erklärung: ???\n")
+```
+
+::: {.callout-tip collapse="true" title="Mögliche Erklärungen"}
+a) **Scheinkorrelation** über die Stadtgröße: Große Städte haben mehr Feuerwehrleute **und** mehr Brände. Teilweise auch **Umkehrkausalität**: Wo es oft brennt, stellt man mehr Feuerwehrleute ein.
+
+b) Vermutlich vor allem **Scheinkorrelation**: Das Elternhaus (Bildung, Einkommen, Zeit zum Vorlesen) beeinflusst beides. Ein direkter Effekt des Lesens ist möglich, aber aus der Korrelation allein nicht ablesbar.
+
+c) **Scheinkorrelation** über den Wohlstand: Reiche Länder haben mehr Fernseher **und** eine bessere Gesundheitsversorgung. Fernseher verlängern kein Leben.
+:::
+:::
+
+:::: {.theorem .exercise}
+#### Aufgabe: Schnabellänge vs. Schnabeltiefe
+
+Auf den ersten Blick wirkt es seltsam: Längere Schnäbel könnten tiefere Schnäbel bedeuten – oder doch nicht?
+
+**Aufgabe:**
+
+1. Berechne die Pearson-Korrelation zwischen Schnabellänge (`bill_length_mm`) und Schnabeltiefe (`bill_depth_mm`) für **alle** Pinguine zusammen und speichere sie in `r_gesamt`.
+2. Berechne dieselbe Korrelation **getrennt nach Pinguinart** und speichere sie in `r_art` (ein Wert je Art, z.B. als Dictionary oder Series). Was fällt auf?
+
+**Überprüfen** testet `r_gesamt` und `r_art`.
+
+```{py-exercise}
+#| label: simpson-schnabel
+#| caption: Schnabellänge vs. Schnabeltiefe
+#| show-test-hints: false
+import pandas as pd
+from pyodide.http import open_url
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv")).dropna(subset=['bill_length_mm', 'bill_depth_mm'])
+
+r_gesamt = None   # Dein Code hier
+r_art = None      # Dein Code hier
+print(r_gesamt)
+print(r_art)
+
+## TESTS ##
+assert r_gesamt is not None and abs(float(r_gesamt) - (-0.235)) < 0.002, "r_gesamt stimmt nicht. Tipp: penguins['bill_length_mm'].corr(penguins['bill_depth_mm'])"
+assert r_art is not None and len(r_art) == 3, "r_art sollte genau einen Wert je Art enthalten (3 Arten)."
+assert r_art is not None and len(r_art) == 3 and abs(float(r_art['Adelie']) - 0.391) < 0.002 and abs(float(r_art['Gentoo']) - 0.643) < 0.002, "r_art stimmt nicht: Erwartet sind z.B. etwa 0,39 für Adelie und 0,64 für Gentoo."
+```
+
+3. Zeichne danach ein Streudiagramm, in dem die Punkte nach Art eingefärbt sind. Lässt sich das Ergebnis visuell erklären?
+
+```{pyodide-python}
+import matplotlib.pyplot as plt
+import pandas as pd
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+
+# Dein Code hier
+```
+
+::: {.callout-tip title="Tipp 1" collapse="true"}
+Für die Gesamt-Korrelation: `penguins['bill_length_mm'].corr(penguins['bill_depth_mm'])`. Für die artweise Korrelation eine Schleife über `penguins.groupby('species')`, die die Werte in einem Dictionary sammelt.
+:::
+
+::: {.callout-tip title="Tipp 2" collapse="true"}
+Gesamt ist die Korrelation negativ, innerhalb jeder Art positiv – das ist das **Simpson-Paradoxon**: Eine globale Tendenz kann sich umkehren, wenn man nach einer dritten Variablen (hier: Art) gruppiert. Für das Streudiagramm: Nutze eine Schleife über die Arten und rufe `plt.scatter()` für jede Art mit einer eigenen Farbe auf.
+:::
+
+::: {.callout-caution title="Minimale Lösung" collapse="true"}
+```python
+# Korrelationen (in der Aufgabe oben)
+r_gesamt = penguins['bill_length_mm'].corr(penguins['bill_depth_mm'])
+r_art = {}
+for art, gr in penguins.groupby('species'):
+    r_art[art] = gr['bill_length_mm'].corr(gr['bill_depth_mm'])
+```
+
+```python
+# Streudiagramm (in der Zelle darunter)
+import matplotlib.pyplot as plt
+import pandas as pd
+from pyodide.http import open_url
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv")).dropna(subset=['bill_length_mm', 'bill_depth_mm'])
+
+farben = {'Adelie': '#4c72b0', 'Chinstrap': '#dd8452', 'Gentoo': '#55a868'}
+for art, gr in penguins.groupby('species'):
+    plt.scatter(gr['bill_length_mm'], gr['bill_depth_mm'],
+                label=art, color=farben[art], alpha=0.6, s=20)
+plt.xlabel('Schnabellänge (mm)')
+plt.ylabel('Schnabeltiefe (mm)')
+plt.legend()
+plt.show()
+```
+:::
+::::
+
+---
+
+## Zusammenfassung
+
+::: {.callout-tip}
+#### Das Wichtigste auf einen Blick
+
+**Grafische Analyse:**
+
+- Streudiagramm für zwei kardinale Merkmale
+- Gruppierte Boxplots / Histogramme für nominal + kardinal
+- Kontingenztabelle für zwei nominale Merkmale
+
+**Zusammenhangsmaße:**
+
+| Maß | Merkmalstypen | Bereich | Python |
+|-----|--------------|---------|--------|
+| **Cramérs V** | nominal × nominal | [0, 1] | `chi2_contingency` + Formel |
+| **Pearson** $r$ | kardinal × kardinal | [–1, 1] | `.corr()` |
+| **Spearman** $r_s$ | ordinal/kardinal | [–1, 1] | `.corr(method='spearman')` |
+
+**Regression:**
+
+- Regressionsgerade $\hat{g}(x) = \hat{\alpha} + \hat{\beta} \cdot x$ mit KQ-Methode
+- $\hat{\beta} = s_{x,y} / s_x^2$, $\hat{\alpha} = \bar{y} - \hat{\beta}\bar{x}$
+
+**Wichtigste Warnung:** Korrelation ≠ Kausalität. **Immer das Streudiagramm anschauen!**
+:::
+
+---
+
+## Wissenstest
+
+```{quizdown}
+---
+locale: de
+primaryColor: '#0a9396'
+shuffleQuestions: false
+shuffleAnswers: true
+---
+
+### Welche Grafik eignet sich am besten zur gemeinsamen Darstellung zweier kardinaler Merkmale?
+
+1. [x] Streudiagramm (scatter plot)
+    > Richtig! Das Streudiagramm zeigt jeden Datenpunkt als Punkt im zweidimensionalen Raum und macht Zusammenhänge direkt sichtbar.
+1. [ ] Balkendiagramm
+1. [ ] Kreisdiagramm
+1. [ ] Boxplot
+
+### Der Pearson-Korrelationskoeffizient $r = -0{,}85$ zeigt...
+
+1. [ ] einen starken positiven linearen Zusammenhang
+1. [x] einen starken negativen linearen Zusammenhang
+    > Richtig! Negative Werte bedeuten: je größer X, desto kleiner Y. Je näher an –1, desto stärker der Zusammenhang.
+1. [ ] keinen Zusammenhang
+1. [ ] einen quadratischen Zusammenhang
+
+### Was bedeutet $r_{x,y} = 0$?
+
+1. [ ] Die Merkmale sind unabhängig
+1. [ ] Es gibt sicher keinen Zusammenhang zwischen X und Y
+1. [x] Es gibt keinen linearen Zusammenhang – andere Formen von Zusammenhang sind aber möglich
+    > Wichtig! Ein Korrelationskoeffizient von 0 schließt nur lineare Zusammenhänge aus. Ein quadratischer oder anderer Zusammenhang kann trotzdem bestehen (wie im Anscombe-Quartett!).
+1. [ ] Die Berechnung ist fehlgeschlagen
+
+### Wie lautet die Formel für die Steigung der Regressionsgeraden?
+
+1. [ ] $\hat{\beta} = \bar{y} / \bar{x}$
+1. [ ] $\hat{\beta} = s_x / s_{x,y}$
+1. [x] $\hat{\beta} = s_{x,y} / s_x^2$
+    > Korrekt! Die Steigung ist das Verhältnis von Kovarianz zur Varianz des erklärenden Merkmals.
+1. [ ] $\hat{\beta} = s_{x,y} \cdot s_x$
+
+### Was besagt die KQ-Methode (Kleinste Quadrate)?
+
+1. [x] Die Regressionsgerade wird so gewählt, dass die Summe der quadrierten Abstände (Residuen) zwischen Datenpunkten und Gerade minimiert wird
+    > Genau! Die Methode minimiert $\sum (y_i - \hat{g}(x_i))^2$.
+1. [ ] Die Gerade verläuft durch möglichst viele Datenpunkte
+1. [ ] Die Gerade hat die kleinste Steigung
+1. [ ] Die Gerade minimiert die Summe der absoluten Abstände
+
+### In Städten mit mehr Eisdielen gibt es mehr Ertrinkungsunfälle. Was schließt du daraus?
+
+1. [ ] Eisdielen verursachen Ertrinkungsunfälle
+1. [ ] Ertrinkungsunfälle verursachen mehr Eisdielen
+1. [x] Es liegt eine Scheinkorrelation vor – heißes Wetter (Drittmerkmal) erhöht beides
+    > Richtig! Heißes Wetter führt sowohl zu mehr Eiskonsum als auch zu mehr Badegästen und damit mehr Ertrinkungsunfällen. Die Korrelation zwischen Eisdielen und Ertrinkungen ist eine klassische Scheinkorrelation.
+1. [ ] Es gibt gar keine Korrelation zwischen den beiden Merkmalen
+
+### Wann sollte man den Spearman-Korrelationskoeffizienten dem Pearson-Koeffizienten vorziehen?
+
+1. [ ] Wenn beide Merkmale normalverteilt sind
+1. [ ] Immer – Spearman ist generell besser
+1. [x] Bei Ausreißern in den Daten oder wenn man monotone (nicht notwendig lineare) Zusammenhänge messen will
+    > Richtig! Spearman basiert auf Rängen und ist dadurch robuster. Er erkennt auch nicht-lineare, aber monotone Zusammenhänge.
+1. [ ] Nur bei nominal skalierten Merkmalen
+```
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+## Learning objectives {#lernziele .unnumbered}
+
+By the end of this subchapter you can:
+
+- display two variables together graphically and draw first conclusions.
+- set up and interpret a two-way frequency table.
+- compute and interpret Pearson's correlation coefficient.
+- determine a simple linear regression line and use it for predictions.
+- explain the difference between correlation and causation and illustrate it with examples.
+
+---
+
+## Introduction {#einführung}
+
+So far we have always analysed **one variable** at a time. In practice, however, we are often interested in the **relationships between two variables**:
+
+- Are larger penguins also heavier?
+- Is sex related to body size?
+- Which penguin species live on which islands?
+
+When analysing two variables, three basic questions arise:
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Is there a relationship? (left: no relationship, right: clear relationship)"
+#| layout-ncol: 2
+np.random.seed(42)
+x = np.random.uniform(0, 10, 100)
+y_indep = np.random.uniform(0, 10, 100)
+y_dep = x + np.random.normal(0, 1.5, 100)
+
+for y, title in [(y_indep, 'No visible relationship'), (y_dep, 'Clear relationship')]:
+    fig, ax = plt.subplots(figsize=(4, 3.5))
+    ax.scatter(x, y, color='#005f73', s=25, alpha=0.7)
+    ax.set_xlabel('Variable X'); ax.set_ylabel('Variable Y')
+    ax.set_title(title, fontsize=10)
+    plt.tight_layout(); plt.show()
+```
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "How strong is the relationship? (weak, medium, strong)"
+#| layout-ncol: 3
+np.random.seed(42)
+x = np.random.uniform(0, 10, 100)
+for sd, title in [(4, 'Weak'), (1.5, 'Medium'), (0.3, 'Strong')]:
+    y = x + np.random.normal(0, sd, 100)
+    r = np.corrcoef(x, y)[0, 1]
+    fig, ax = plt.subplots(figsize=(3.5, 3))
+    ax.scatter(x, y, color='#0a9396', s=25, alpha=0.7)
+    m, b = np.polyfit(x, y, 1)
+    ax.plot(sorted(x), [m*xi+b for xi in sorted(x)], color='#ae2012', lw=1.5)
+    ax.set_xlabel('X'); ax.set_ylabel('Y')
+    ax.set_title(f'{title}\n$r = {r:.2f}$', fontsize=10)
+    plt.tight_layout(); plt.show()
+```
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "What form does the relationship take? (positive linear, negative linear, quadratic)"
+#| layout-ncol: 3
+np.random.seed(42)
+x = np.random.uniform(0, 10, 100)
+for y, title in [
+    (x + np.random.normal(0, 1.5, 100), 'Positive linear'),
+    (-0.5*x + 8 + np.random.normal(0, 1.5, 100), 'Negative linear'),
+    ((x-5)**2 / 4 + np.random.normal(0, 0.5, 100), 'Quadratic'),
+]:
+    fig, ax = plt.subplots(figsize=(3.5, 3))
+    ax.scatter(x, y, color='#0a9396', s=25, alpha=0.7)
+    ax.set_xlabel('X'); ax.set_ylabel('Y')
+    ax.set_title(title, fontsize=10)
+    plt.tight_layout(); plt.show()
+```
+
+---
+
+## Scatter plot {#streudiagramm}
+
+If both variables are **metric**, the **scatter plot** is the most important way of displaying them together:
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Scatter plot: bill length vs. flipper length of the penguins, coloured by species. Each point is one penguin."
+peng = penguins.dropna(subset=['bill_length_mm', 'flipper_length_mm', 'species'])
+colors = {'Adelie': '#005f73', 'Chinstrap': '#ae2012', 'Gentoo': '#94d2bd'}
+
+fig, ax = plt.subplots(figsize=(7, 4.5))
+for species, group in peng.groupby('species'):
+    ax.scatter(group['bill_length_mm'], group['flipper_length_mm'],
+               label=species, color=colors[species], s=30, alpha=0.7)
+ax.set_xlabel('Bill length (mm)'); ax.set_ylabel('Flipper length (mm)')
+ax.legend(title='Species')
+plt.tight_layout(); plt.show()
+```
+
+The scatter plot shows a positive relationship between bill length and flipper length – penguins with longer bills tend to have longer flippers too. Gentoo penguins (green) stand out in particular.
+
+:::: {#exr-streudiagramm}
+### Penguins: your own scatter plot
+
+<br>
+
+Create a scatter plot of body mass (`body_mass_g`, $x$-axis) and flipper length (`flipper_length_mm`, $y$-axis) and label both axes. Can you see a relationship?
+
+**Commands you need:** `ax.scatter(x, y)` (scatter plot), `ax.set_xlabel(...)`, `ax.set_ylabel(...)`, `plt.show()`
+
+```{pyodide-python}
+import pandas as pd
+from pyodide.http import open_url
+import matplotlib.pyplot as plt
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+data = penguins.dropna(subset=['body_mass_g', 'flipper_length_mm'])
+
+fig, ax = plt.subplots(figsize=(6, 4))
+# Your code here
+plt.show()
+```
+
+::: {.callout-tip title="Hint" collapse="true"}
+`ax.scatter` takes the values for the $x$-axis first, then those for the $y$-axis: `ax.scatter(data['body_mass_g'], data['flipper_length_mm'])`. With `alpha=0.5` the points become translucent, which makes overlaps easier to see.
+:::
+
+::: {.callout-caution title="Solution" collapse="true"}
+```python
+fig, ax = plt.subplots(figsize=(6, 4))
+ax.scatter(data['body_mass_g'], data['flipper_length_mm'],
+           color='#0a9396', alpha=0.5, s=25)
+ax.set_xlabel('Body mass (g)')
+ax.set_ylabel('Flipper length (mm)')
+ax.set_title('Body mass vs. flipper length of the penguins')
+plt.show()
+```
+
+The point cloud rises clearly: heavier penguins tend to have longer flippers. The relationship is positive and approximately linear.
+:::
+::::
+
+::: {.callout-tip}
+#### If one variable is nominal/ordinal
+
+If one of the two variables has only a few categories (nominal or ordinal), **box plots per group** or **grouped histograms** are more useful than a scatter plot. We already met these displays in chapter 1.3.
+:::
+
+---
+
+## Two-way frequency distribution {#zweidimensionale-häufigkeitsverteilung}
+
+If both variables are **nominal or ordinal** (with finitely many values), their joint distribution is summarized in a **contingency table** (also: cross table).
+
+::: {#def-kontingenz}
+### Contingency table
+
+<br>
+
+Let $X$ and $Y$ be two variables with values $a_1, \dots, a_l$ (for $X$) and $b_1, \dots, b_k$ (for $Y$). The **contingency table** shows how often each combination $(a_{j_1}, b_{j_2})$ occurs in the sample. The **marginal totals** (row/column totals) give the one-dimensional frequency distributions of the individual variables.
+:::
+
+::: {#exm-kontingenz-pinguine}
+### Penguins: species and island
+
+<br>
+
+Which penguin species live on which islands?
+
+```{python}
+#| echo: false
+#| eval: true
+tab = pd.crosstab(penguins['species'], penguins['island'], margins=True, margins_name='Total')
+print(tab.to_string())
+```
+
+The table shows: Gentoo penguins live exclusively on Biscoe, Chinstrap only on Dream. Adelie penguins are found on all three islands. Species and island are therefore **strongly related** – the variables are not independent.
+:::
+
+### Independence {#unabhängigkeit .unnumbered}
+
+Two variables are called **independent** in the sample if the occurrence of a value of one variable gives no information about the other. You can recognize this by the relative frequency of each cell being equal to the product of the corresponding marginal frequencies:
+
+$$h_{X,Y}(a_j, b_k) = h_X(a_j) \cdot h_Y(b_k) \quad \text{(for all combinations)}$$
+
+If this is **not** the case, there is a relationship.
+
+### Cramér's V – strength of the relationship {#cramérs-v-stärke-des-zusammenhangs .unnumbered}
+
+To measure the **strength** of the relationship between two nominal variables, we use **Cramér's V**. It always lies between 0 and 1:
+
+- $V = 0$: no relationship (independence)
+- $V = 1$: maximal relationship
+
+::: {#def-cramers-v}
+### Chi-squared coefficient and Cramér's V
+
+<br>
+
+Let $X$ and $Y$ be two variables with values $a_1, \dots, a_l$ and $b_1, \dots, b_k$ in a sample of size $n$, and let every value occur at least once. The **chi-squared coefficient** measures how far the joint relative frequencies deviate from the values that would be expected under independence:
+
+$$\chi^2 = n \sum_{i=1}^{l} \sum_{j=1}^{k} \frac{\bigl(h_{X,Y}(a_i, b_j) - h_X(a_i) \cdot h_Y(b_j)\bigr)^2}{h_X(a_i) \cdot h_Y(b_j)}$$
+
+**Cramér's V** normalises this value to the range from 0 to 1:
+
+$$V = \sqrt{\frac{\chi^2}{n \cdot (\min(l, k) - 1)}}$$
+:::
+
+$\chi^2 = 0$ (and therefore $V = 0$) holds exactly when the variables are independent in the sample.
+
+Before you use Python, compute Cramér's V yourself from given values (formula from the definition above):
+
+```{math-exercise}
+#| label: cramers-hand-en
+#| caption: Cramér's V by hand
+#| mode: numeric
+#| tolerance: 1%
+#| partial-credit: true
+#| field-labels: V (case 1), V (case 2)
+$\chi^2 = 25,\ n = 100,\ l = 3,\ k = 2$: $V =$ _[0.5], $\qquad \chi^2 = 36,\ n = 100,\ l = 2,\ k = 2$: $V =$ _[0.6]
+```
+
+::: {.callout-tip collapse="true" title="Solution path"}
+Case 1: $\min(l, k) = 2$, so $V = \sqrt{25 / (100 \cdot 1)} = \sqrt{0.25} = 0.5$.
+Case 2: $\min(l, k) = 2$, so $V = \sqrt{36 / (100 \cdot 1)} = 0.6$.
+:::
+
+:::: {#exr-cramers-pinguine}
+### Penguins: Cramér's V for species and island
+
+<br>
+
+Compute Cramér's V for the variables `species` and `island`:
+
+1. Create the contingency table and store it in `tab`.
+2. Compute the chi-squared coefficient $\chi^2$ and store the value in `chi2`.
+3. From it compute Cramér's V using the formula from the definition above and store the value in `cramers_v`. How strong is the relationship?
+
+**Commands you need:** `pd.crosstab(rows, columns)` (contingency table), `chi2_contingency(tab)` from `scipy.stats` (returns four values, the first is $\chi^2$), `tab.sum().sum()` (sample size $n$), `tab.shape` (number of rows and columns), `np.sqrt(...)`
+
+**Check** tests `tab`, `chi2` and `cramers_v`.
+
+```{py-exercise}
+#| label: cramers-art-insel-en
+#| caption: Cramér's V for species and island
+#| show-test-hints: false
+import pandas as pd
+from pyodide.http import open_url
+import numpy as np
+from scipy.stats import chi2_contingency
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+
+tab = None         # Your code here
+chi2 = None        # Your code here
+cramers_v = None   # Your code here
+print(tab)
+print(chi2, cramers_v)
+
+## TESTS ##
+assert tab is not None, "tab is still empty."
+assert tab is not None and getattr(tab, 'shape', None) == (3, 3), "tab should be a table with 3 species and 3 islands. Hint: pd.crosstab(penguins['species'], penguins['island'])"
+assert chi2 is not None, "chi2 is still empty."
+assert chi2 is not None and not hasattr(chi2, '__len__') and not hasattr(chi2, 'statistic'), "chi2_contingency returns four values. Only the first is expected, e.g. chi2_contingency(tab)[0]."
+assert chi2 is not None and not hasattr(chi2, '__len__') and not hasattr(chi2, 'statistic') and abs(float(chi2) - 299.55) < 0.1, "chi2 is wrong."
+assert cramers_v is not None, "cramers_v is still empty."
+assert cramers_v is not None and abs(float(cramers_v) - 0.6598) < 0.002, "cramers_v is wrong. The denominator is n times (min(rows, columns) - 1), here 344 times 2."
+```
+
+::: {.callout-tip title="Hint 1" collapse="true"}
+`chi2_contingency(tab)` returns four values: $\chi^2$, the p-value, the degrees of freedom and the expected frequencies. You get the first with `chi2_contingency(tab)[0]`.
+:::
+
+::: {.callout-tip title="Hint 2" collapse="true"}
+For the denominator: `n = tab.sum().sum()` and `min(tab.shape) - 1`. Here `tab.shape` is `(3, 3)`.
+:::
+
+::: {.callout-caution title="Solution" collapse="true"}
+```python
+tab = pd.crosstab(penguins['species'], penguins['island'])
+chi2 = chi2_contingency(tab)[0]
+n = tab.sum().sum()
+cramers_v = np.sqrt(chi2 / (n * (min(tab.shape) - 1)))
+```
+
+$V \approx 0.66$: a clear association between species and island. The table shows why: Gentoo live only on Biscoe, Chinstrap only on Dream, and only Adelie occur on all three islands.
+:::
+::::
+
+::: {.callout-python}
+#### Python: contingency table and Cramér's V
+
+```python
+import pandas as pd
+from scipy.stats import chi2_contingency
+import numpy as np
+
+# Contingency table
+tab = pd.crosstab(df['variable_x'], df['variable_y'])
+
+# Cramér's V
+# correction=False: for 2x2 tables scipy otherwise applies a continuity correction
+# that does not match the formula from the definition. For larger tables it changes nothing.
+chi2, p, dof, expected = chi2_contingency(tab, correction=False)
+n = tab.sum().sum()
+k = min(tab.shape) - 1
+cramers_v = np.sqrt(chi2 / (n * k))
+```
+:::
+
+---
+
+## Covariance and correlation {#kovarianz-und-korrelation}
+
+For **metric** variables there are more precise measures of association that quantify both the **direction** and the **strength** of a linear relationship.
+
+### Covariance {#kovarianz .unnumbered}
+
+As a first step towards the correlation coefficient we compute the **covariance**. It measures whether large $x$ values tend to occur together with large $y$ values (positive relationship) or with small ones (negative relationship).
+
+::: {#def-kovarianz}
+### Empirical covariance
+
+<br>
+
+$$s_{x,y} = \dfrac{1}{n-1} \sum_{i=1}^n (x_i - \bar{x})(y_i - \bar{y})$$
+
+- $s_{x,y} > 0$: positive relationship
+- $s_{x,y} = 0$: no linear relationship
+- $s_{x,y} < 0$: negative relationship
+:::
+
+However, the covariance **depends on the scale**: if we measure weight in grams instead of kilograms, its value changes – although the relationship has not changed. That is why we normalize it.
+
+### Pearson's correlation coefficient {#korrelationskoeffizient-nach-pearson .unnumbered}
+
+::: {#def-pearson}
+### Empirical correlation coefficient (Pearson)
+
+<br>
+
+$$r_{x,y} = \dfrac{s_{x,y}}{s_x \cdot s_y} = \dfrac{\displaystyle\sum_{i=1}^n (x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\displaystyle\sum_{i=1}^n (x_i - \bar{x})^2} \cdot \sqrt{\displaystyle\sum_{i=1}^n (y_i - \bar{y})^2}}$$
+
+It always holds that $-1 \le r_{x,y} \le 1$.
+:::
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Different correlation values and what they look like in a scatter plot."
+np.random.seed(42)
+x = np.random.normal(0, 1, 200)
+configs = [
+    (-1.0, 'r = -1 (exactly negative)'),
+    (-0.8, 'r ≈ -0.8 (strongly negative)'),
+    (-0.3, 'r ≈ -0.3 (weakly negative)'),
+    (0.0,  'r ≈ 0 (no relationship)'),
+    (0.3,  'r ≈ 0.3 (weakly positive)'),
+    (0.8,  'r ≈ 0.8 (strongly positive)'),
+    (1.0,  'r = 1 (exactly positive)'),
+]
+
+fig, axes = plt.subplots(1, 7, figsize=(14, 2.5))
+for ax, (rho, label) in zip(axes, configs):
+    if abs(rho) == 1.0:
+        y = rho * x
+    else:
+        cov = [[1, rho], [rho, 1]]
+        xy = np.random.multivariate_normal([0, 0], cov, 200)
+        x_, y = xy[:, 0], xy[:, 1]
+        x = x_
+    ax.scatter(x, y, s=8, alpha=0.5, color='#005f73')
+    ax.set_title(label, fontsize=7.5)
+    ax.set_xticks([]); ax.set_yticks([])
+plt.tight_layout(); plt.show()
+```
+
+**Important properties:**
+
+- $r_{x,y} > 0$: positive linear relationship
+- $r_{x,y} < 0$: negative linear relationship
+- $|r_{x,y}| = 1$: **exact** linear relationship (all points on a straight line)
+- $r_{x,y} = 0$: no **linear** relationship (but other forms of relationship are possible!)
+
+::: {.callout-rechnen}
+#### Computing by hand
+
+The 12 people from Section 1.2 were also asked about their body weight:
+
+| ID | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 |
+|:---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:--:|:--:|:--:|
+| Height $x_i$ (cm) | 170.5 | 183.0 | 174.5 | 158.0 | 167.5 | 179.5 | 192.0 | 177.5 | 186.5 | 161.5 | 181.0 | 164.0 |
+| Weight $y_i$ (kg) | 64.2 | 85.7 | 62.3 | 55.7 | 58.6 | 72.2 | 99.9 | 72.5 | 81.2 | 58.0 | 82.7 | 56.0 |
+
+: {.striped .hover .sm}
+
+For body height ($X$) and body weight ($Y$):
+
+$\bar{x} = 174.63$ cm, $\bar{y} = 70.75$ kg, $s_x = 10.51$ cm, $s_y = 14.14$ kg
+
+The sum of the cross products is: $\sum(x_i - \bar{x})(y_i - \bar{y}) \approx 1533.0$
+
+$$s_{x,y} = \frac{1533.0}{11} = 139.4 \qquad r_{x,y} = \frac{139.4}{10.51 \cdot 14.14} = 0.938$$
+
+Strong positive correlation – taller people in this sample tend to be heavier.
+:::
+
+Before you use Python, compute $r_{x,y}$ yourself from given summary values ($r_{x,y} = s_{x,y} / (s_x \cdot s_y)$):
+
+```{math-exercise}
+#| label: pearson-hand-en
+#| caption: Pearson correlation from summary values
+#| mode: numeric
+#| tolerance: 1%
+#| partial-credit: true
+#| field-labels: r (case 1), r (case 2)
+$s_{x,y} = 12,\ s_x = 4,\ s_y = 5$: $r_{x,y} =$ _[0.6], $\qquad s_{x,y} = -9,\ s_x = 3,\ s_y = 6$: $r_{x,y} =$ _[-0.5]
+```
+
+::: {.callout-tip collapse="true" title="Solution path"}
+Case 1: $r = 12 / (4 \cdot 5) = 0.6$ (positive relationship).
+Case 2: $r = -9 / (3 \cdot 6) = -0.5$ (negative relationship).
+:::
+
+:::: {#exr-korrelation-pinguine}
+### Penguins: Pearson correlation
+
+<br>
+
+Compute the Pearson correlation between body mass (`body_mass_g`) and flipper length (`flipper_length_mm`): first for all penguins together (in `r_all`), then separately for each species (in `r_per_species`, one value per species, e.g. as a dictionary or Series). Do the results surprise you?
+
+**Commands you need:** `column_a.corr(column_b)` (Pearson correlation of two columns), `for species, group in data.groupby('species'):` (loop over the species)
+
+**Check** tests `r_all` and `r_per_species`.
+
+```{py-exercise}
+#| label: pearson-gewicht-flosse-en
+#| caption: Pearson correlation of body mass and flipper length
+#| show-test-hints: false
+import pandas as pd
+from pyodide.http import open_url
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+data = penguins.dropna(subset=['body_mass_g', 'flipper_length_mm'])
+
+r_all = None           # Your code here
+r_per_species = None   # Your code here
+print(r_all)
+print(r_per_species)
+
+## TESTS ##
+assert r_all is not None, "r_all is still empty."
+assert r_all is not None and not hasattr(r_all, '__len__') and abs(float(r_all) - 0.8712) < 0.002, "r_all is wrong. A single number is expected, e.g. data['body_mass_g'].corr(data['flipper_length_mm'])."
+assert r_per_species is not None, "r_per_species is still empty."
+assert r_per_species is not None and hasattr(r_per_species, '__len__') and len(r_per_species) == 3, "r_per_species should contain exactly one value per species (3 species)."
+assert r_per_species is not None and hasattr(r_per_species, '__len__') and len(r_per_species) == 3 and abs(float(r_per_species['Adelie']) - 0.468) < 0.002 and abs(float(r_per_species['Gentoo']) - 0.703) < 0.002, "r_per_species is wrong: about 0.47 is expected for Adelie and 0.70 for Gentoo."
+```
+
+::: {.callout-tip title="Hint" collapse="true"}
+In the loop `for species, group in data.groupby('species'):`, `group` is the table of that species only. Create `r_per_species = {}` beforehand and set `r_per_species[species] = ...` inside the loop.
+:::
+
+::: {.callout-caution title="Solution" collapse="true"}
+```python
+r_all = data['body_mass_g'].corr(data['flipper_length_mm'])
+r_per_species = {}
+for species, group in data.groupby('species'):
+    r_per_species[species] = group['body_mass_g'].corr(group['flipper_length_mm'])
+```
+
+Across all penguins the correlation is strong at $r \approx 0.87$. Within the species it is clearly weaker (Adelie 0.47, Chinstrap 0.64, Gentoo 0.70). Part of the overall correlation therefore arises from the difference between the species: Gentoo are both heavier and have longer flippers.
+:::
+::::
+
+### Spearman's rank correlation {#rangkorrelation-nach-spearman .unnumbered}
+
+**Spearman's correlation coefficient** is an alternative to Pearson's coefficient. It is **more robust against outliers** and also detects **non-linear but monotonic** relationships. To compute it, the ranks of the observations are determined first, and then Pearson's coefficient is applied to the ranks.
+
+::: {.callout-tip}
+#### Which coefficient when?
+
+| | Pearson | Spearman |
+|--|---------|----------|
+| **Measures** | linear relationships | monotonic relationships |
+| **Outliers** | sensitive | robust |
+| **Scale** | metric | ordinal or metric |
+| **Python** | `.corr()` | `.corr(method='spearman')` |
+:::
+
+### Correlation to play with {#korrelation-zum-anfassen .unnumbered}
+
+Drag the points with the mouse (or your finger). The red line is the regression line; the Pearson and Spearman coefficients are shown at the top.
+
+```{.jsxgraph width="100" height="75" unit="%" style="border:1px solid #ccc; border-radius:8px; max-width:560px;"}
+document.body.style.background = '#fff';
+const board = JXG.JSXGraph.initBoard(BOARDID, {
+  boundingbox: [-0.8, 10.8, 10.8, -0.8], axis: true, showCopyright: false,
+  showNavigation: false, pan: {enabled: false}, zoom: {enabled: false},
+  defaultAxes: {x: {ticks: {insertTicks: false, ticksDistance: 2, minorTicks: 1}},
+                y: {ticks: {insertTicks: false, ticksDistance: 2, minorTicks: 1}}}
+});
+const start = [[1, 2], [2, 3], [3, 3.5], [4, 5], [5, 4.5], [6, 6], [7, 6.5], [8, 7.5]];
+const pts = start.map(([x, y]) => board.create('point', [x, y],
+  {name: '', size: 5, strokeColor: '#0a9396', fillColor: '#0a9396', showInfobox: false}));
+pts.forEach(p => p.on('drag', () => {
+  const x = Math.min(10.5, Math.max(-0.5, p.X())), y = Math.min(10.5, Math.max(-0.5, p.Y()));
+  if (x !== p.X() || y !== p.Y()) p.setPositionDirectly(JXG.COORDS_BY_USER, [x, y]);
+}));
+const fmt = x => x.toFixed(2);
+const mean = a => a.reduce((s, v) => s + v, 0) / a.length;
+function fit(xs, ys) {
+  const mx = mean(xs), my = mean(ys);
+  let sxy = 0, sxx = 0, syy = 0;
+  for (let i = 0; i < xs.length; i++) {
+    const dx = xs[i] - mx, dy = ys[i] - my;
+    sxy += dx * dy; sxx += dx * dx; syy += dy * dy;
+  }
+  return {r: sxy / Math.sqrt(sxx * syy), b: sxy / sxx, a: my - sxy / sxx * mx};
+}
+function ranks(a) {
+  const idx = a.map((v, i) => [v, i]).sort((p, q) => p[0] - q[0]);
+  const r = new Array(a.length);
+  let i = 0;
+  while (i < idx.length) {
+    let j = i;
+    while (j + 1 < idx.length && idx[j + 1][0] === idx[i][0]) j++;
+    for (let k = i; k <= j; k++) r[idx[k][1]] = (i + j) / 2 + 1;
+    i = j + 1;
+  }
+  return r;
+}
+const xs = () => pts.map(p => p.X()), ys = () => pts.map(p => p.Y());
+board.create('functiongraph', [x => { const f = fit(xs(), ys()); return f.a + f.b * x; }],
+  {strokeColor: '#ae2012', strokeWidth: 2, highlight: false});
+const text = {fontSize: 15, fixed: true, highlight: false};
+board.create('text', [0.2, 10.1, () => 'Pearson r = ' + fmt(fit(xs(), ys()).r)],
+  Object.assign({color: '#ae2012'}, text));
+board.create('text', [0.2, 9.3, () => 'Spearman r<sub>s</sub> = ' + fmt(fit(ranks(xs()), ranks(ys())).r)],
+  Object.assign({color: '#005f73'}, text));
+```
+
+Try this:
+
+- Drag **one** point all the way to the bottom right. How much does $r$ change, how much $r_s$? What does the line do?
+- Arrange the points on a curve that always rises, first flat and then steep (like an exponential function). Which coefficient reaches 1?
+- Can you get $r \approx 0$ even though the points follow a clear pattern?
+
+::: {.callout-tip collapse="true" title="What is behind it"}
+Pearson uses the distances to the mean, so a point far away counts heavily. Spearman only uses the **ranks**: a point at the far bottom right has the largest $x$ rank and the smallest $y$ rank, no matter how far away it is. That is why $r_s$ reacts less strongly to outliers. On a rising curve the ranks of $x$ and $y$ are identical, so $r_s = 1$ although $r < 1$. A U shape gives $r \approx 0$ and $r_s \approx 0$: both only measure relationships **in one direction**.
+:::
+
+::: {.callout-python}
+#### Python: correlation coefficients
+
+```python
+# Pearson correlation matrix (all numeric columns)
+df[['column1', 'column2']].corr()
+
+# Spearman correlation
+df[['column1', 'column2']].corr(method='spearman')
+
+# Pearson with scipy (also returns the p-value)
+from scipy import stats
+r, p_value = stats.pearsonr(df['x'], df['y'])
+```
+:::
+
+### Mid-page quiz: measures of association
+
+```{quizdown}
+---
+locale: en
+primaryColor: '#0a9396'
+shuffleQuestions: false
+shuffleAnswers: true
+---
+
+### Two variables have $r_{x,y} = 0$. What follows?
+
+1. [ ] The two variables are independent.
+1. [x] There is no **linear** relationship, other relationships are possible.
+    > Correct! A parabola can have $r = 0$ and still show a clear relationship.
+1. [ ] All points lie on a straight line.
+1. [ ] There is a measurement error.
+
+### What is the range of Cramér's V?
+
+1. [ ] From $-1$ to $1$
+1. [x] From $0$ to $1$
+    > Correct! $V = 0$ means independence, $V = 1$ maximal association.
+1. [ ] From $0$ to $\infty$
+1. [ ] From $-\infty$ to $\infty$
+
+### The covariance of two variables is negative. What does that mean?
+
+1. [ ] Both variables have negative values.
+1. [x] High values of one tend to go together with low values of the other.
+    > Correct! The sign of the covariance shows the direction of the linear relationship.
+1. [ ] The variables are nominally scaled.
+1. [ ] The spread is negative.
+```
+
+---
+
+## Simple linear regression {#einfache-lineare-regression}
+
+Once we have found a linear relationship, we can determine the **regression line**: the line $\hat{g}(x) = \hat{\alpha} + \hat{\beta} \cdot x$ that describes the data best.
+
+"Best" means: the **sum of the squared vertical distances** (residuals) between the data points and the line is minimized. This method is called the **method of least squares**.
+
+::: {#def-regression}
+### Regression line (least squares)
+
+<br>
+
+Let $\hat{g}(x) = \hat{\alpha} + \hat{\beta} \cdot x$ be the line we are looking for. The coefficients are chosen such that $\sum_{i=1}^n (y_i - \hat{g}(x_i))^2$ is minimal.
+
+The **least squares estimators** are:
+
+$$\hat{\beta} = \dfrac{s_{x,y}}{s_x^2} = \dfrac{\displaystyle\sum_{i=1}^n (x_i - \bar{x})(y_i - \bar{y})}{\displaystyle\sum_{i=1}^n (x_i - \bar{x})^2}$$
+
+$$\hat{\alpha} = \bar{y} - \hat{\beta} \cdot \bar{x}$$
+:::
+
+::: {.callout-tip}
+#### Interpreting the parameters
+
+- $\hat{\beta}$ (**slope**): if $X$ increases by 1 unit, $Y$ changes by $\hat{\beta}$ units.
+- $\hat{\alpha}$ (**intercept**): predicted $Y$ value for $X = 0$. Caution: this is not always meaningful (e.g. weight at a height of 0 cm).
+:::
+
+::: {#exm-regression-groesse}
+### Body height and weight of 12 people
+
+<br>
+
+Known: $\bar{x} = 174.63$, $\bar{y} = 70.75$, $s_{x,y} = 139.4$, $s_x^2 = 110.5$
+
+$$\hat{\beta} = \frac{139.4}{110.5} \approx 1.262 \qquad \hat{\alpha} = 70.75 - 1.262 \cdot 174.63 \approx -149.6$$
+
+$$\hat{g}(x) = -149.6 + 1.262 \cdot x$$
+
+**Interpretation:** for every 1 cm more body height, the weight in this sample increases by about 1.26 kg.
+:::
+
+Your turn, with five pairs of values:
+
+| $x_i$ | 1 | 2 | 3 | 4 | 5 |
+|---|---|---|---|---|---|
+| $y_i$ | 2 | 4 | 5 | 4 | 5 |
+
+Compute the covariance, the correlation coefficient and the regression line (fractions like `3/2` or decimals, $r$ to two decimal places):
+
+```{math-exercise}
+#| label: regression-hand-en
+#| caption: Covariance, correlation and regression by hand
+#| mode: numeric
+#| tolerance: 1%
+#| partial-credit: true
+#| field-labels: s_xy, r, beta, alpha
+$s_{x,y} =$ _[1.5], $r_{x,y} =$ _[0.7746], $\hat{\beta} =$ _[0.6], $\hat{\alpha} =$ _[2.2]
+```
+
+::: {.callout-tip collapse="true" title="Solution steps"}
+- $\bar{x} = 3$, $\bar{y} = 4$
+- Deviations $x_i - \bar{x}$: $-2, -1, 0, 1, 2$; $y_i - \bar{y}$: $-2, 0, 1, 0, 1$
+- Cross products: $4, 0, 0, 0, 2$, sum $6$, so $s_{x,y} = 6/4 = 1.5$
+- $\sum (x_i - \bar{x})^2 = 10$, $\sum (y_i - \bar{y})^2 = 6$, so $r = 6 / \sqrt{10 \cdot 6} \approx 0.77$
+- $\hat{\beta} = 6/10 = 0.6$ and $\hat{\alpha} = 4 - 0.6 \cdot 3 = 2.2$
+:::
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Regression line for bill length and flipper length of the penguins. The dashed lines show the residuals (distances between data points and the line)."
+peng_clean = penguins.dropna(subset=['bill_length_mm', 'flipper_length_mm'])
+x = peng_clean['bill_length_mm'].values
+y = peng_clean['flipper_length_mm'].values
+
+slope, intercept, r, p, se = stats.linregress(x, y)
+x_line = np.array([x.min(), x.max()])
+
+fig, ax = plt.subplots(figsize=(7, 4.5))
+ax.scatter(x, y, color='#0a9396', s=25, alpha=0.5, zorder=3)
+
+# Indicate residuals for some points
+idx_sample = np.random.choice(len(x), 20, replace=False)
+for i in idx_sample:
+    y_pred = slope * x[i] + intercept
+    ax.plot([x[i], x[i]], [y[i], y_pred], color='#ca6702', lw=0.8, alpha=0.7, ls='--')
+
+ax.plot(x_line, slope * x_line + intercept, color='#ae2012', lw=2,
+        label=f'$\\hat{{g}}(x) = {intercept:.1f} + {slope:.2f} \\cdot x$\n$r = {r:.3f}$')
+ax.set_xlabel('Bill length (mm)'); ax.set_ylabel('Flipper length (mm)')
+ax.legend()
+plt.tight_layout(); plt.show()
+```
+
+:::: {#exr-regression-pinguine}
+### Penguins: regression
+
+<br>
+
+Determine the regression line for body mass (`body_mass_g`, $x$-axis) and flipper length (`flipper_length_mm`, $y$-axis):
+
+1. Store the slope $\hat\beta$ in `slope` and the intercept $\hat\alpha$ in `intercept`.
+2. By how much does the flipper length increase per 100 g of additional body mass? Store the answer (in mm) in `per_100g`.
+
+**Commands you need:** `stats.linregress(x, y)` from `scipy`. Among other things the result has the entries `.slope`, `.intercept` and `.rvalue` (correlation).
+
+**Check** tests `slope`, `intercept` and `per_100g`.
+
+```{py-exercise}
+#| label: regression-gewicht-flosse-en
+#| caption: Regression line for body mass and flipper length
+#| show-test-hints: false
+import pandas as pd
+from pyodide.http import open_url
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy import stats
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+data = penguins.dropna(subset=['body_mass_g', 'flipper_length_mm'])
+x = data['body_mass_g'].values
+y = data['flipper_length_mm'].values
+
+slope = None       # Your code here
+intercept = None   # Your code here
+per_100g = None    # Your code here
+print(slope, intercept, per_100g)
+
+## TESTS ##
+assert slope is not None, "slope is still empty."
+assert slope is None or abs(float(slope) - 49.69) > 0.5, "x and y are swapped: the body mass belongs on the x-axis, so linregress(x, y)."
+assert slope is not None and abs(float(slope) - 0.015276) < 0.0001, "slope is wrong. About 0.0153 mm per g is expected."
+assert intercept is not None, "intercept is still empty."
+assert intercept is not None and abs(float(intercept) - 136.73) < 0.05, "intercept is wrong. About 136.73 mm is expected."
+assert per_100g is not None, "per_100g is still empty."
+assert per_100g is not None and abs(float(per_100g) - 1.5276) < 0.01, "per_100g is wrong. The slope holds per 1 g, so for 100 g it is a hundred times that."
+```
+
+::: {.callout-tip title="Hint" collapse="true"}
+Store the result in a variable first: `result = stats.linregress(x, y)`. Then you access the two values with `result.slope` and `result.intercept`.
+:::
+
+::: {.callout-caution title="Solution" collapse="true"}
+```python
+result = stats.linregress(x, y)
+slope = result.slope
+intercept = result.intercept
+per_100g = slope * 100
+```
+
+The regression line is $\hat{g}(x) \approx 136.73 + 0.0153 \cdot x$. Per 100 g of additional body mass, the flipper length in this sample is on average about 1.53 mm larger.
+:::
+
+3. Draw the regression line into a scatter plot. The cell uses `x`, `y`, `slope` and `intercept` from the exercise above, so run that one first.
+
+**Commands you need:** `ax.scatter(x, y)` (points), `ax.plot(x_values, y_values)` (line through the given points)
+
+```{pyodide-python}
+fig, ax = plt.subplots(figsize=(6, 4))
+# Your code here
+plt.show()
+```
+
+::: {.callout-tip title="Hint" collapse="true"}
+Two points are enough for a straight line. Take the smallest and the largest body mass as $x$-values, `x_line = np.array([x.min(), x.max()])`, and compute the corresponding $y$-values with the equation of the line.
+:::
+
+::: {.callout-caution title="Solution" collapse="true"}
+```python
+fig, ax = plt.subplots(figsize=(6, 4))
+ax.scatter(x, y, alpha=0.4, s=20, color='#0a9396')
+x_line = np.array([x.min(), x.max()])
+ax.plot(x_line, intercept + slope * x_line, color='#ae2012', lw=2,
+        label='Regression line')
+ax.set_xlabel('Body mass (g)')
+ax.set_ylabel('Flipper length (mm)')
+ax.legend()
+plt.show()
+```
+:::
+::::
+
+::: {.callout-python}
+#### Python: linear regression
+
+```python
+from scipy import stats
+
+slope, intercept, r, p_value, std_err = stats.linregress(x_array, y_array)
+
+# Prediction for a new value
+x_new = 4500   # example: body mass 4500 g
+y_pred = intercept + slope * x_new
+```
+:::
+
+---
+
+## Anscombe's quartet: always plot too! {#anscombe-quartett-immer-auch-plotten}
+
+Correlation and regression line alone do not tell the whole story. **Anscombe's quartet** (1973) shows four data sets with almost **identical summary statistics** that nevertheless look fundamentally different:
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Anscombe's quartet: all four data sets have almost identical means (x̄≈9, ȳ≈7.5), variances, correlation (r≈0.82) and regression line. The scatter plot, however, immediately reveals the structural differences."
+anscombe_data = {
+    1: {'x': [10,8,13,9,11,14,6,4,12,7,5], 'y': [8.04,6.95,7.58,8.81,8.33,9.96,7.24,4.26,10.84,4.82,5.68]},
+    2: {'x': [10,8,13,9,11,14,6,4,12,7,5], 'y': [9.14,8.14,8.74,8.77,9.26,8.10,6.13,3.10,9.13,7.26,4.74]},
+    3: {'x': [10,8,13,9,11,14,6,4,12,7,5], 'y': [7.46,6.77,12.74,7.11,7.81,8.84,6.08,5.39,8.15,6.42,5.73]},
+    4: {'x': [8,8,8,8,8,8,8,19,8,8,8], 'y': [6.58,5.76,7.71,8.84,8.47,7.04,5.25,12.50,5.56,7.91,6.89]},
+}
+
+fig, axes = plt.subplots(1, 4, figsize=(12, 3.2))
+for ax, (num, d) in zip(axes, anscombe_data.items()):
+    x, y = np.array(d['x']), np.array(d['y'])
+    slope, intercept, r, _, _ = stats.linregress(x, y)
+    ax.scatter(x, y, color='#005f73', s=50, zorder=5)
+    x_line = np.array([0, 20])
+    ax.plot(x_line, slope * x_line + intercept, color='#ae2012', lw=1.5)
+    ax.set_title(f'Data set {num}\n$r = {r:.3f}$', fontsize=10)
+    ax.set_xlim(0, 20); ax.set_ylim(2, 14)
+    ax.set_xlabel('x'); ax.set_ylabel('y') if num == 1 else None
+plt.tight_layout(); plt.show()
+```
+
+::: {.callout-caution}
+#### Rule: always look at the scatter plot first!
+
+The regression lines and correlation coefficients of the four data sets are practically identical. Only the scatter plot shows:
+
+- (1) a normal linear relationship
+- (2) a quadratic relationship – linear regression is the wrong choice!
+- (3) a linear relationship with one massive outlier
+- (4) purely vertical scatter – no real relationship
+
+**Summary statistics do not replace graphical data analysis!**
+:::
+
+---
+
+## Correlation ≠ causation {#korrelation-kausalität}
+
+A statistical relationship (correlation) does **not** mean that one variable causes the other (causation). This is one of the most important insights in statistics.
+
+::: {#exm-storch}
+### Babies and storks
+
+<br>
+
+In some European countries a positive correlation between the **stork population** and the **birth rate** was observed. Does that mean storks bring babies?
+
+No – the **third variable industrialization** explains both:
+
+```{mermaid}
+%%| eval: true
+flowchart TB
+  A(Industrialization) -->|–| B(Stork population)
+  A -->|–| C(Birth rate)
+```
+
+Industrialization reduces both the stork population (through urbanization) and the birth rate. The correlation between storks and births is a **spurious correlation**.
+:::
+
+::: {#exm-alterseffekt}
+### Relative age effect
+
+<br>
+
+In youth sport, age groups are usually formed by calendar year. Studies show: children born in **January** are clearly over-represented in selection teams compared to children born in **December**. At school, too, the youngest children of a class do worse on average. Does the month of birth make you successful?
+
+No – what matters is the **age within the group**:
+
+```{mermaid}
+%%| eval: true
+flowchart LR
+  A(Month of birth) -->|cut-off date| C(Age within the<br>class / age group)
+  C --> D(Success at school / in sport)
+```
+
+Someone born shortly **after** the cut-off date (in sport: in January) is almost a year older than the children in the same group who were born shortly **before** it. At a young age this age difference matters a lot for development – not the month of birth as such.
+:::
+
+::: {.callout-tip}
+#### Three possible explanations for a correlation
+
+| Scenario | Example |
+|----------|---------|
+| **X causes Y** | smoking → lung cancer (causal) |
+| **Y causes X** | many paramedics on site ← many injured people (reverse causation: the injured are the reason for the paramedics, not the other way round) |
+| **Z causes both** (spurious correlation) | industrialization → storks and birth rate |
+
+A correlation alone is **no proof** of causation. Conversely, a causal relationship can exist without a (linear) correlation, e.g. if it is non-linear or masked by a confounding variable. Causation is established by **controlled experiments**, not by observational data.
+:::
+
+::: {#exr-korrelation-kausalitaet}
+### Discussion: correlation or causation?
+
+<br>
+
+Think about it: which explanation is more plausible? Is the correlation causal, reverse causal, or spurious?
+
+a) Cities with more firefighters per inhabitant have more fire damage.
+
+b) Children with more books at home do better at school.
+
+c) Countries with more TV sets per household have a higher life expectancy.
+
+```{pyodide-python}
+# No calculation needed – thinking is required here!
+# For each statement, consider:
+# - Could X → Y (direct causation)?
+# - Could Y → X (reverse causation)?
+# - Is there a third variable Z that explains both?
+
+examples = {
+    'a': 'More firefighters → more fire damage?',
+    'b': 'More books → better school performance?',
+    'c': 'More TV sets → longer life?',
+}
+
+for key, text in examples.items():
+    print(f"({key}) {text}")
+    print("    → Your explanation: ???\n")
+```
+
+::: {.callout-tip collapse="true" title="Possible explanations"}
+a) **Spurious correlation** via city size: large cities have more firefighters **and** more fires. Partly also **reverse causation**: where fires are frequent, more firefighters are hired.
+
+b) Probably mainly a **spurious correlation**: the family background (education, income, time for reading aloud) influences both. A direct effect of reading is possible, but cannot be read off the correlation alone.
+
+c) **Spurious correlation** via wealth: rich countries have more TV sets **and** better health care. TV sets do not prolong life.
+:::
+:::
+
+:::: {.theorem .exercise}
+#### Exercise: Bill length vs. bill depth
+
+At first glance it seems strange: longer bills might mean deeper bills – or not?
+
+**Task:**
+
+1. Compute the Pearson correlation between bill length (`bill_length_mm`) and bill depth (`bill_depth_mm`) for **all** penguins together and store it in `r_total`.
+2. Compute the same correlation **separately for each species** and store it in `r_by_species` (one value per species, e.g. as a dictionary or Series). What do you notice?
+
+**Check** tests `r_total` and `r_by_species`.
+
+```{py-exercise}
+#| label: simpson-schnabel-en
+#| caption: Bill length vs. bill depth
+#| show-test-hints: false
+import pandas as pd
+from pyodide.http import open_url
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv")).dropna(subset=['bill_length_mm', 'bill_depth_mm'])
+
+r_total = None        # Your code here
+r_by_species = None   # Your code here
+print(r_total)
+print(r_by_species)
+
+## TESTS ##
+assert r_total is not None and abs(float(r_total) - (-0.235)) < 0.002, "r_total is wrong. Hint: penguins['bill_length_mm'].corr(penguins['bill_depth_mm'])"
+assert r_by_species is not None and len(r_by_species) == 3, "r_by_species should contain exactly one value per species (3 species)."
+assert r_by_species is not None and len(r_by_species) == 3 and abs(float(r_by_species['Adelie']) - 0.391) < 0.002 and abs(float(r_by_species['Gentoo']) - 0.643) < 0.002, "r_by_species is wrong: expected are e.g. about 0.39 for Adelie and 0.64 for Gentoo."
+```
+
+3. Then draw a scatter plot with the points coloured by species. Can the result be explained visually?
+
+```{pyodide-python}
+import matplotlib.pyplot as plt
+import pandas as pd
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+
+# Your code here
+```
+
+::: {.callout-tip title="Hint 1" collapse="true"}
+For the overall correlation: `penguins['bill_length_mm'].corr(penguins['bill_depth_mm'])`. For the correlation per species, loop over `penguins.groupby('species')` and collect the values in a dictionary.
+:::
+
+::: {.callout-tip title="Hint 2" collapse="true"}
+Overall the correlation is negative, within each species it is positive – this is **Simpson's paradox**: a global trend can reverse when you group by a third variable (here: species). For the scatter plot: loop over the species and call `plt.scatter()` for each species with its own colour.
+:::
+
+::: {.callout-caution title="Minimal solution" collapse="true"}
+```python
+# Correlations (in the exercise above)
+r_total = penguins['bill_length_mm'].corr(penguins['bill_depth_mm'])
+r_by_species = {}
+for species, gr in penguins.groupby('species'):
+    r_by_species[species] = gr['bill_length_mm'].corr(gr['bill_depth_mm'])
+```
+
+```python
+# Scatter plot (in the cell below)
+import matplotlib.pyplot as plt
+import pandas as pd
+from pyodide.http import open_url
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv")).dropna(subset=['bill_length_mm', 'bill_depth_mm'])
+
+colors = {'Adelie': '#4c72b0', 'Chinstrap': '#dd8452', 'Gentoo': '#55a868'}
+for species, gr in penguins.groupby('species'):
+    plt.scatter(gr['bill_length_mm'], gr['bill_depth_mm'],
+                label=species, color=colors[species], alpha=0.6, s=20)
+plt.xlabel('Bill length (mm)')
+plt.ylabel('Bill depth (mm)')
+plt.legend()
+plt.show()
+```
+:::
+::::
+
+---
+
+## Summary {#zusammenfassung}
+
+::: {.callout-tip}
+#### The key points at a glance
+
+**Graphical analysis:**
+
+- Scatter plot for two metric variables
+- Grouped box plots / histograms for nominal + metric
+- Contingency table for two nominal variables
+
+**Measures of association:**
+
+| Measure | Types of variables | Range | Python |
+|-----|--------------|---------|--------|
+| **Cramér's V** | nominal × nominal | [0, 1] | `chi2_contingency` + formula |
+| **Pearson** $r$ | metric × metric | [–1, 1] | `.corr()` |
+| **Spearman** $r_s$ | ordinal/metric | [–1, 1] | `.corr(method='spearman')` |
+
+**Regression:**
+
+- Regression line $\hat{g}(x) = \hat{\alpha} + \hat{\beta} \cdot x$ with the least squares method
+- $\hat{\beta} = s_{x,y} / s_x^2$, $\hat{\alpha} = \bar{y} - \hat{\beta}\bar{x}$
+
+**Most important warning:** correlation ≠ causation. **Always look at the scatter plot!**
+:::
+
+---
+
+## Knowledge test {#wissenstest}
+
+```{quizdown}
+---
+primaryColor: '#0a9396'
+shuffleQuestions: false
+shuffleAnswers: true
+locale: en
+---
+
+### Which chart is best suited for displaying two metric variables together?
+
+1. [x] Scatter plot
+    > Correct! The scatter plot shows each data point as a point in two-dimensional space and makes relationships directly visible.
+1. [ ] Bar chart
+1. [ ] Pie chart
+1. [ ] Box plot
+
+### A Pearson correlation coefficient of $r = -0.85$ shows...
+
+1. [ ] a strong positive linear relationship
+1. [x] a strong negative linear relationship
+    > Correct! Negative values mean: the larger X, the smaller Y. The closer to –1, the stronger the relationship.
+1. [ ] no relationship
+1. [ ] a quadratic relationship
+
+### What does $r_{x,y} = 0$ mean?
+
+1. [ ] The variables are independent
+1. [ ] There is certainly no relationship between X and Y
+1. [x] There is no linear relationship – but other forms of relationship are possible
+    > Important! A correlation coefficient of 0 only rules out linear relationships. A quadratic or other relationship may still exist (as in Anscombe's quartet!).
+1. [ ] The computation failed
+
+### What is the formula for the slope of the regression line?
+
+1. [ ] $\hat{\beta} = \bar{y} / \bar{x}$
+1. [ ] $\hat{\beta} = s_x / s_{x,y}$
+1. [x] $\hat{\beta} = s_{x,y} / s_x^2$
+    > Correct! The slope is the ratio of the covariance to the variance of the explanatory variable.
+1. [ ] $\hat{\beta} = s_{x,y} \cdot s_x$
+
+### What does the least squares method say?
+
+1. [x] The regression line is chosen such that the sum of the squared distances (residuals) between data points and line is minimized
+    > Exactly! The method minimizes $\sum (y_i - \hat{g}(x_i))^2$.
+1. [ ] The line passes through as many data points as possible
+1. [ ] The line has the smallest slope
+1. [ ] The line minimizes the sum of the absolute distances
+
+### Cities with more ice cream parlours have more drowning accidents. What do you conclude?
+
+1. [ ] Ice cream parlours cause drowning accidents
+1. [ ] Drowning accidents cause more ice cream parlours
+1. [x] It is a spurious correlation – hot weather (third variable) increases both
+    > Correct! Hot weather leads both to more ice cream consumption and to more swimmers and thus more drowning accidents. The correlation between ice cream parlours and drownings is a classic spurious correlation.
+1. [ ] There is no correlation at all between the two variables
+
+### When should Spearman's correlation coefficient be preferred to Pearson's?
+
+1. [ ] When both variables are normally distributed
+1. [ ] Always – Spearman is generally better
+1. [x] With outliers in the data or when you want to measure monotonic (not necessarily linear) relationships
+    > Correct! Spearman is based on ranks and is therefore more robust. It also detects non-linear but monotonic relationships.
+1. [ ] Only for nominal variables
+```
+
+::::

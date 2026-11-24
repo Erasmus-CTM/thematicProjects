@@ -1,0 +1,320 @@
+---
+title: "4. Kernoperationen der Linearen Algebra"
+title-en: "4. Core Operations of Linear Algebra"
+format: html
+filters:
+  - quizdown
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+Inzwischen sollte bekannt sein, was Matrizen sind, wie sie funktionieren und wie sie innerhalb von Python/`Numpy` umgesetzt werden. Nun geht es darum zu klären, wie wichtige Matrix-Eigenschaften bestimmt werden können. 
+
+# Kapitelübersicht
+
+- **[4.1. Rang einer Matrix](kernoperationen_rang.qmd)**
+  - [4.1.1. Definition](kernoperationen_rang.qmd#definition)
+  - [4.1.2. Rang in Numpy](kernoperationen_rang.qmd#rang-in-numpy-berechnen)
+  - [4.1.3. Übung](kernoperationen_rang.qmd#übung)
+- **[4.2. Determinante einer Matrix](kernoperationen_determinante.qmd)**
+  - [4.2.1. Definition](kernoperationen_determinante.qmd#definition)
+  - [4.2.2. Determinante in Numpy](kernoperationen_determinante.qmd#determinante-in-numpy-berechnen)
+  - [4.2.3. Übung](kernoperationen_determinante.qmd#übung)
+- **[4.3. Inverse einer Matrix](kernoperationen_inverse.qmd)**
+  - [4.3.1. Definition](kernoperationen_inverse.qmd#definition)
+  - [4.3.2. Inverse in Numpy ](kernoperationen_inverse.qmd#inverse-in-numpy-berechnen)
+  - [4.3.3. Übung](kernoperationen_inverse.qmd#übung)
+
+
+Es wird empfohlen, die Abschnitte in der angegebenen Reihenfolge durchzugehen, da sie aufeinander aufbauen.
+
+# Vorwissen-Quiz
+
+Bevor du mit dem Kapitel zu den Kernoperationen der Linearen Algebra startest, hier ein kleines Quiz über die bisherigen Inhalte des Tutorials, damit du sichergehen kannst, dass du diese verinnerlicht hast.
+
+```quizdown
+---
+locale: de
+shuffleQuestions: true
+nQuestions: 10
+---
+
+# Welche Dimension hat das Ergebnis der Matrix-Multiplikation `(3x5) @ (5x2)`?
+1. [ ] `(3, 5)`
+1. [ ] `(5, 5)`
+1. [x] `(3, 2)`
+1. [ ] Error
+
+> Die inneren Dimensionen (5) müssen übereinstimmen und fallen weg. Übrig bleiben die Äußeren (Zeilen von A, Spalten von B).
+
+# Was ist der Unterschied zwischen `A * B` und `A @ B` in NumPy?
+1. [ ] Es gibt keinen, beides ist Matrixmultiplikation.
+1. [x] `*` ist elementweise Multiplikation, `@` ist die mathematische Matrixmultiplikation.
+1. [ ] `@` ist für Vektoren, `*` ist für Matrizen.
+1. [ ] `*` ist schneller, aber ungenauer.
+
+> Das ist der häufigste Fehler in NumPy! `*` rechnet stumpf "Zelle mal Zelle", `@` rechnet "Zeile mal Spalte".
+
+# Was passiert bei `[1, 2] + [3, 4]` (normale Python-Listen)?
+1. [ ] `[4, 6]`
+1. [x] `[1, 2, 3, 4]`
+1. [ ] `Error`
+1. [ ] `10`
+
+> Listen verhalten sich wie Text: "Hallo" + "Welt" wird auch aneinandergehängt. Matrizen addieren mathematisch.
+
+# Bringe die Schritte in die richtige Reihenfolge, um $(A \cdot B)^T$ zu berechnen.
+1. `A` und `B` definieren.
+2. `C = A @ B` (Multiplikation)
+3. `D = C.T` (Transposition)
+4. `print(D)`
+
+> Punkt-vor-Strich: Erst muss das Produkt existieren, bevor du es spiegeln (transponieren) kannst.
+
+# Warum ist `A @ B` meistens nicht dasselbe wie `B @ A`?
+- [x] Weil Matrixmultiplikation nicht kommutativ ist.
+- [ ] Weil NumPy Rundungsfehler macht.
+- [x] Weil oft nur eine der beiden Reihenfolgen überhaupt definiert ist (z.B. 2x3 mal 3x4 geht, 3x4 mal 2x3 nicht).
+- [ ] Weil Matrizen immer von rechts nach links gelesen werden.
+
+> Bei Zahlen ist $2 \cdot 3 = 3 \cdot 2$. Bei Matrizen ändert sich beim Tausch die ganze Zuordnung von Zeilen und Spalten.
+
+# Du willst auf das Element in der **letzten** Zeile und **letzten** Spalte einer Matrix `M` zugreifen. Welcher Code ist am robustesten?
+1. [ ] `M[0, 0]`
+1. [ ] `M[end, end]`
+1. [x] `M[-1, -1]`
+1. [ ] `M.last()`
+
+> Negative Indizes sind dein Freund! `-1` bedeutet immer "das Letzte", egal wie groß die Matrix ist.
+
+# Was gibt dieser Code aus?
+~~~python
+A = np.array([[1, 2], [3, 4]])
+v = np.array([10, 20])
+# Matrix A (2x2) mal Vektor v (2 Elemente)
+print(A @ v)
+~~~
+1. [ ] `[10, 40]` (Elementweise)
+1. [x] `[50, 110]` (Zeile mal Spalte)
+1. [ ] `[[10, 20], [30, 40]]`
+1. [ ] Error
+
+# Du erhältst den Fehler `ValueError: shapes (2,3) and (2,3) not aligned`. Was ist das Problem?
+1. [ ] Die Matrizen enthalten falsche Datentypen.
+1. [ ] Du hast `*` statt `@` benutzt.
+1. [x] Du versuchst Matrixmultiplikation, aber Spaltenanzahl (3) ungleich Zeilenanzahl (2).
+1. [ ] Die Matrizen sind zu groß für den Speicher.
+
+> "Not aligned" ist NumPy-Sprache für: "Der Stecker passt nicht in die Dose". Die inneren Zahlen müssen gleich sein!
+
+# Extrahiere die **zweite Spalte** aus Matrix `M` und multipliziere sie mit 10.
+1. `M = np.array([[1, 2], [3, 4]])`
+2. `spalte = M[:, 1]`
+3. `ergebnis = spalte * 10`
+4. `print(ergebnis)`
+
+> Denk an das Slicing `[Zeilen, Spalten]`. Index 1 ist die zweite Spalte.
+
+# Welche Aussage zum Transponieren ist FALSCH?
+1. [ ] Aus einer $3 \times 2$ Matrix wird eine $2 \times 3$ Matrix.
+1. [ ] Die Werte auf der Hauptdiagonalen bleiben unverändert (bei quadratischen Matrizen).
+1. [x] Das Vorzeichen aller Elemente wird umgekehrt (Plus wird Minus).
+1. [ ] Es wird technisch mit `A.T` oder `np.transpose(A)` durchgeführt.
+
+> Transponieren ist eine Spiegelung/Drehung, keine Negation. Die Zahlenwerte an sich bleiben gleich, sie wechseln nur den Platz.
+
+# Was passiert hier (Broadcasting)?
+~~~python
+M = np.array([[10, 10], [20, 20]])
+print(M + 1)
+~~~
+1. [ ] Error, man kann Zahl nicht auf Matrix addieren.
+1. [ ] `[11, 11, 21, 21]` (wird zum Vektor)
+1. [x] `[[11, 11], [21, 21]]` (Matrix bleibt erhalten)
+1. [ ] `[[10, 11], [20, 21]]` (Nur letzte Spalte)
+
+> NumPy ist nett: Wenn du eine einzelne Zahl (`1`) auf eine Matrix addierst, wird sie einfach auf *jedes* Element draufgerechnet.
+
+# Wann sind zwei Vektoren orthogonal?
+1. [ ] Wenn ihr Skalarprodukt 1 ist.
+1. [ ] Wenn sie in die gleiche Richtung zeigen.
+1. [x] Wenn ihr Skalarprodukt 0 ist.
+1. [ ] Wenn ihre Länge 0 ist.
+
+> Orthogonal bedeutet "rechtwinklig". Da der Kosinus von 90° Null ist, wird auch das ganze Skalarprodukt Null.
+
+# Berechne das Skalarprodukt (Dot Product) manuell Zeile für Zeile!
+1. `a = np.array([1, 2])` und `b = np.array([3, 4])`
+2. `p1 = a[0] * b[0]` (Erste Elemente: 1*3)
+3. `p2 = a[1] * b[1]` (Zweite Elemente: 2*4)
+4. `summe = p1 + p2` (Zusammenzählen: 3+8)
+
+> Das Skalarprodukt ist die Summe der elementweisen Produkte. Erst malnehmen, dann plusrechnen.
+
+# Was ist eine Einheitsmatrix $E$ in Bezug auf die Matrixmultiplikation?
+1. [ ] Sie macht alle Werte zu 1.
+1. [ ] Sie invertiert das Vorzeichen.
+1. [x] Sie ist das neutrale Element ($A \cdot E = A$).
+1. [ ] Sie setzt die Matrix auf Null zurück.
+
+> Die Einheitsmatrix ist für Matrizen das, was die Zahl `1` für normale Zahlen ist. Malnehmen ändert nichts.
+```
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+By now you should know what matrices are, how they work and how they are implemented in Python/`NumPy`. Now it is time to clarify how important properties of a matrix can be determined.
+
+# Chapter overview
+
+- **[4.1. Rank of a matrix](kernoperationen_rang.qmd)**
+  - [4.1.1. Definition](kernoperationen_rang.qmd#definition)
+  - [4.1.2. Rank in NumPy](kernoperationen_rang.qmd#rang-in-numpy-berechnen)
+  - [4.1.3. Exercise](kernoperationen_rang.qmd#übung)
+- **[4.2. Determinant of a matrix](kernoperationen_determinante.qmd)**
+  - [4.2.1. Definition](kernoperationen_determinante.qmd#definition)
+  - [4.2.2. Determinant in NumPy](kernoperationen_determinante.qmd#determinante-in-numpy-berechnen)
+  - [4.2.3. Exercise](kernoperationen_determinante.qmd#übung)
+- **[4.3. Inverse of a matrix](kernoperationen_inverse.qmd)**
+  - [4.3.1. Definition](kernoperationen_inverse.qmd#definition)
+  - [4.3.2. Inverse in NumPy](kernoperationen_inverse.qmd#inverse-in-numpy-berechnen)
+  - [4.3.3. Exercise](kernoperationen_inverse.qmd#übung)
+
+
+We recommend working through the sections in the given order, since they build on each other.
+
+# Prior knowledge quiz
+
+Before you start the chapter on the core operations of linear algebra, here is a small quiz on the previous contents of the tutorial, so that you can make sure you have internalized them.
+
+```quizdown
+---
+locale: en
+shuffleQuestions: true
+nQuestions: 10
+---
+
+# What is the dimension of the result of the matrix multiplication `(3x5) @ (5x2)`?
+1. [ ] `(3, 5)`
+1. [ ] `(5, 5)`
+1. [x] `(3, 2)`
+1. [ ] Error
+
+> The inner dimensions (5) must match and drop out. What remains are the outer ones (rows of A, columns of B).
+
+# What is the difference between `A * B` and `A @ B` in NumPy?
+1. [ ] There is none, both are matrix multiplication.
+1. [x] `*` is element-wise multiplication, `@` is the mathematical matrix multiplication.
+1. [ ] `@` is for vectors, `*` is for matrices.
+1. [ ] `*` is faster but less accurate.
+
+> This is the most common mistake in NumPy! `*` simply computes "cell times cell", `@` computes "row times column".
+
+# What happens with `[1, 2] + [3, 4]` (plain Python lists)?
+1. [ ] `[4, 6]`
+1. [x] `[1, 2, 3, 4]`
+1. [ ] `Error`
+1. [ ] `10`
+
+> Lists behave like text: "Hello" + "World" is also joined together. Matrices add mathematically.
+
+# Put the steps in the right order to compute $(A \cdot B)^T$.
+1. Define `A` and `B`.
+2. `C = A @ B` (multiplication)
+3. `D = C.T` (transposition)
+4. `print(D)`
+
+> The product has to exist first before you can mirror (transpose) it.
+
+# Why is `A @ B` usually not the same as `B @ A`?
+- [x] Because matrix multiplication is not commutative.
+- [ ] Because NumPy makes rounding errors.
+- [x] Because often only one of the two orders is defined at all (e.g. 2x3 times 3x4 works, 3x4 times 2x3 does not).
+- [ ] Because matrices are always read from right to left.
+
+> For numbers, $2 \cdot 3 = 3 \cdot 2$. For matrices, swapping changes the whole assignment of rows and columns.
+
+# You want to access the element in the **last** row and **last** column of a matrix `M`. Which code is most robust?
+1. [ ] `M[0, 0]`
+1. [ ] `M[end, end]`
+1. [x] `M[-1, -1]`
+1. [ ] `M.last()`
+
+> Negative indices are your friend! `-1` always means "the last one", no matter how big the matrix is.
+
+# What does this code print?
+~~~python
+A = np.array([[1, 2], [3, 4]])
+v = np.array([10, 20])
+# Matrix A (2x2) times vector v (2 elements)
+print(A @ v)
+~~~
+1. [ ] `[10, 40]` (element-wise)
+1. [x] `[50, 110]` (row times column)
+1. [ ] `[[10, 20], [30, 40]]`
+1. [ ] Error
+
+# You get the error `ValueError: shapes (2,3) and (2,3) not aligned`. What is the problem?
+1. [ ] The matrices contain wrong data types.
+1. [ ] You used `*` instead of `@`.
+1. [x] You are trying matrix multiplication, but the number of columns (3) differs from the number of rows (2).
+1. [ ] The matrices are too big for the memory.
+
+> "Not aligned" is NumPy language for: "The plug does not fit the socket". The inner numbers must be equal!
+
+# Extract the **second column** of matrix `M` and multiply it by 10.
+1. `M = np.array([[1, 2], [3, 4]])`
+2. `column = M[:, 1]`
+3. `result = column * 10`
+4. `print(result)`
+
+> Remember slicing `[rows, columns]`. Index 1 is the second column.
+
+# Which statement about transposing is FALSE?
+1. [ ] A $3 \times 2$ matrix becomes a $2 \times 3$ matrix.
+1. [ ] The values on the main diagonal stay unchanged (for square matrices).
+1. [x] The sign of all elements is reversed (plus becomes minus).
+1. [ ] Technically it is done with `A.T` or `np.transpose(A)`.
+
+> Transposing is a mirroring/rotation, not a negation. The values themselves stay the same, they only change places.
+
+# What happens here (broadcasting)?
+~~~python
+M = np.array([[10, 10], [20, 20]])
+print(M + 1)
+~~~
+1. [ ] Error, you cannot add a number to a matrix.
+1. [ ] `[11, 11, 21, 21]` (becomes a vector)
+1. [x] `[[11, 11], [21, 21]]` (the matrix is kept)
+1. [ ] `[[10, 11], [20, 21]]` (only the last column)
+
+> NumPy is nice: if you add a single number (`1`) to a matrix, it is simply added to *every* element.
+
+# When are two vectors orthogonal?
+1. [ ] When their dot product is 1.
+1. [ ] When they point in the same direction.
+1. [x] When their dot product is 0.
+1. [ ] When their length is 0.
+
+> Orthogonal means "at a right angle". Since the cosine of 90° is zero, the whole dot product is zero as well.
+
+# Compute the dot product manually, line by line!
+1. `a = np.array([1, 2])` and `b = np.array([3, 4])`
+2. `p1 = a[0] * b[0]` (first elements: 1*3)
+3. `p2 = a[1] * b[1]` (second elements: 2*4)
+4. `total = p1 + p2` (add up: 3+8)
+
+> The dot product is the sum of the element-wise products. Multiply first, then add.
+
+# What is an identity matrix $I$ with respect to matrix multiplication?
+1. [ ] It makes all values 1.
+1. [ ] It inverts the sign.
+1. [x] It is the neutral element ($A \cdot I = A$).
+1. [ ] It resets the matrix to zero.
+
+> The identity matrix is to matrices what the number `1` is to ordinary numbers. Multiplying by it changes nothing.
+```
+
+::::

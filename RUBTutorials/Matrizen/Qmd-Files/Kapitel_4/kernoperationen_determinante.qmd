@@ -1,0 +1,244 @@
+---
+title: "4.2. Determinante einer Matrix"
+title-en: "4.2. Determinant of a Matrix"
+format: html
+filters:
+  - ctm-assessment
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+::: {.callout-note title="Zellen der Reihe nach ausführen"}
+Die Code-Zellen dieser Seite bauen aufeinander auf: Importe, Variablen und Funktionen aus einer Zelle gelten auch in allen späteren Zellen und werden dort nicht wiederholt. Führe die Zellen deshalb von oben nach unten aus. Meldet Python einen `NameError`, hast du meist eine frühere Zelle noch nicht ausgeführt.
+:::
+
+Die Determinante ist ein Skalarwert, welcher aus einer quadratischen Matrix bestimmt wird. Mithilfe dessen können viele Aussagen über eine Matrix, beziehungsweise die zugrundeliegende Funktion getroffen werden.
+
+## 4.2.1. Definition
+
+Die **Determinante** einer quadratischen Matrix $A$, geschrieben als $\det(A)$ oder $|A|$, ist ein Skalarwert, der aus den Elementen der Matrix berechnet wird.
+
+*   **Geometrische Bedeutung:** Die Determinante beschreibt, wie sich das Volumen (oder die Fläche im 2D-Raum) durch die lineare Transformation, die durch die Matrix dargestellt wird, verändert.
+    *   $|\det(A)| > 1$: Das Volumen wird gestreckt.
+    *   $|\det(A)| < 1$: Das Volumen wird gestaucht.
+    *   $\det(A) = 0$: Das Volumen kollabiert zu einer niedrigeren Dimension (zum Beispiel eine Fläche zu einer Linie). Dies bedeutet, dass die Spaltenvektoren der Matrix linear abhängig sind (siehe [4.1](kernoperationen_rang.qmd)) und der Rang der Matrix kleiner als die Anzahl ihrer Spalten ist.
+
+*   **Algebraische Bedeutung:** Eine Matrix ist genau dann **invertierbar**, wenn ihre Determinante **ungleich Null** ist.
+
+Für eine $2 \times 2$-Matrix lässt sich die Determinante noch gut von Hand berechnen: Hauptdiagonale mal Hauptdiagonale minus Nebendiagonale mal Nebendiagonale.
+$$
+\det\begin{pmatrix} a & b \\ c & d \end{pmatrix} = a \cdot d - b \cdot c
+$$
+
+```{math-exercise}
+#| label: determinante-hand
+#| caption: Determinanten von Hand
+#| partial-credit: true
+$\det\begin{pmatrix} 4 & 7 \\ 2 & 6 \end{pmatrix} =$ _[10]
+
+$\det\begin{pmatrix} 3 & 1 \\ 6 & 2 \end{pmatrix} =$ _[0]
+
+$\det\begin{pmatrix} 2 & 0 & 0 \\ 0 & 3 & 0 \\ 0 & 0 & -1 \end{pmatrix} =$ _[-6]
+```
+
+Die zweite Matrix ist also **nicht** invertierbar, ihre zweite Zeile ist das Doppelte der ersten. Bei einer Diagonalmatrix ist die Determinante einfach das Produkt der Diagonaleinträge.
+
+## 4.2.2. Determinante in NumPy berechnen
+
+Die Berechnung der Determinante von Hand ist für Matrizen größer als 3x3 sehr aufwendig. Mithilfe der `numpy`-Funktion `np.linalg.det()` ist es jedoch sehr einfach.
+
+```{pyodide-python}
+#| read-only: true
+import numpy as np
+
+# Eine 2x2 Matrix
+A = np.array([[4, 7],
+              [2, 6]])
+
+# Eine 3x3 Matrix, deren Determinante 0 ist
+# (Die 3. Zeile ist die Summe der ersten beiden)
+B = np.array([[1, 0, 1],
+              [2, 1, 1],
+              [3, 1, 2]])
+
+det_A = np.linalg.det(A)
+det_B = np.linalg.det(B)
+
+print(f"Matrix A:\n{A}")
+print(f"Determinante von A: {det_A}") # 4*6 - 7*2 = 24 - 14 = 10
+
+print(f"Gerundetes Ergebnis det(A): {det_A:.1f}") 
+#:.1f rundet auf die erste Nachkommastelle
+
+print(f"Determinante von B: {det_B}")  # mathematisch genau 0
+```
+Beachte, dass das Ergebnis für `det_B` aufgrund von Fließkomma-Ungenauigkeiten nicht exakt `0.0` ist, aber sehr nah dran. Hier ein Beispiel, an dem du das erkennen kannst.   
+Versuche dafür zu sorgen, dass eine passende Ausgabe generiert wird. 
+``` {pyodide-python}
+#| label: determinante-ausgabe
+import numpy as np 
+# Eine 3x3 Matrix, deren Determinante 0 ist
+# (Die 3. Zeile ist die Summe der ersten beiden)
+B = np.array([[1, 0, 1],
+              [2, 1, 1],
+              [3, 1, 2]])
+
+#Erstelle für die Matrix eine passende Ausgabe 
+```
+## 4.2.3. Übung
+
+**Aufgabe:** Schreibe eine Funktion `ist_invertierbar(M)`, die `True` zurückgibt, wenn die quadratische Matrix `M` invertierbar ist, sonst `False`. Versteckte Tests prüfen automatisch, ob deine Lösung stimmt.
+
+**Befehle, die du brauchst:** `np.linalg.det()`, `np.isclose()`, `not`, `return`.
+
+```{py-exercise}
+#| label: determinante-uebung
+#| caption: ist_invertierbar implementieren
+#| show-test-hints: false
+import numpy as np
+
+def ist_invertierbar(M):
+    # Dein Code hier
+    pass
+
+## TESTS ##
+M = np.array([[1, -2, 3], [0, 4, -1], [5, 0, 2]])
+S = np.array([[1, 2, 3], [4, 5, 6], [5, 7, 9]])
+assert ist_invertierbar(M) == True, "M hat die Determinante 51 und ist invertierbar"
+assert ist_invertierbar(S) == False, "S ist singulär (3. Zeile = 1. Zeile + 2. Zeile)"
+assert ist_invertierbar(np.eye(3)) == True, "Die Einheitsmatrix ist invertierbar"
+```
+
+::: {.callout-tip title="Tipp" collapse="true"}
+Eine Matrix ist genau dann invertierbar, wenn ihre Determinante nicht 0 ist. Weil `np.linalg.det()` mit Fließkommazahlen rechnet, vergleichst du nicht mit `!= 0`, sondern prüfst mit `np.isclose(det, 0)`.
+:::
+
+::: {.callout-caution title="Lösung" collapse="true"}
+```python
+def ist_invertierbar(M):
+    return not np.isclose(np.linalg.det(M), 0)
+```
+:::
+
+Als Nächstes schauen wir uns an, wie man die [Inverse](kernoperationen_inverse.qmd) einer Matrix berechnet.
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+::: {.callout-note title="Run the cells in order"}
+The code cells on this page build on each other: imports, variables and functions from one cell are also available in all later cells and are not repeated there. So run the cells from top to bottom. If Python reports a `NameError`, you most likely have not run an earlier cell yet.
+:::
+
+The determinant is a scalar value that is computed from a square matrix. With it, many statements can be made about a matrix, or about the underlying function.
+
+## 4.2.1. Definition {#definition}
+
+The **determinant** of a square matrix $A$, written as $\det(A)$ or $|A|$, is a scalar value that is computed from the elements of the matrix.
+
+*   **Geometric meaning:** The determinant describes how the volume (or the area in 2D space) changes under the linear transformation represented by the matrix.
+    *   $|\det(A)| > 1$: The volume is stretched.
+    *   $|\det(A)| < 1$: The volume is compressed.
+    *   $\det(A) = 0$: The volume collapses to a lower dimension (for example an area to a line). This means that the column vectors of the matrix are linearly dependent (see [4.1](kernoperationen_rang.qmd)) and the rank of the matrix is smaller than the number of its columns.
+
+*   **Algebraic meaning:** A matrix is **invertible** if and only if its determinant is **non-zero**.
+
+For a $2 \times 2$ matrix, the determinant can still easily be computed by hand: main diagonal times main diagonal minus off-diagonal times off-diagonal.
+$$
+\det\begin{pmatrix} a & b \\ c & d \end{pmatrix} = a \cdot d - b \cdot c
+$$
+
+```{math-exercise}
+#| label: determinante-hand-en
+#| caption: Determinants by hand
+#| partial-credit: true
+$\det\begin{pmatrix} 4 & 7 \\ 2 & 6 \end{pmatrix} =$ _[10]
+
+$\det\begin{pmatrix} 3 & 1 \\ 6 & 2 \end{pmatrix} =$ _[0]
+
+$\det\begin{pmatrix} 2 & 0 & 0 \\ 0 & 3 & 0 \\ 0 & 0 & -1 \end{pmatrix} =$ _[-6]
+```
+
+So the second matrix is **not** invertible; its second row is twice the first. For a diagonal matrix, the determinant is simply the product of the diagonal entries.
+
+## 4.2.2. Computing the determinant in NumPy {#determinante-in-numpy-berechnen}
+
+Computing the determinant by hand is very laborious for matrices larger than 3x3. With the `numpy` function `np.linalg.det()`, however, it is very easy.
+
+```{pyodide-python}
+#| read-only: true
+import numpy as np
+
+# A 2x2 matrix
+A = np.array([[4, 7],
+              [2, 6]])
+
+# A 3x3 matrix whose determinant is 0
+# (the 3rd row is the sum of the first two)
+B = np.array([[1, 0, 1],
+              [2, 1, 1],
+              [3, 1, 2]])
+
+det_A = np.linalg.det(A)
+det_B = np.linalg.det(B)
+
+print(f"Matrix A:\n{A}")
+print(f"Determinant of A: {det_A}") # 4*6 - 7*2 = 24 - 14 = 10
+
+print(f"Rounded result det(A): {det_A:.1f}") 
+#:.1f rounds to the first decimal place
+
+print(f"Determinant of B: {det_B}")  # mathematically exactly 0
+```
+Note that the result for `det_B` is not exactly `0.0` due to floating-point inaccuracies, but very close to it. Here is an example where you can see this.   
+Try to make sure that a suitable output is generated. 
+``` {pyodide-python}
+#| label: determinante-ausgabe-en
+import numpy as np 
+# A 3x3 matrix whose determinant is 0
+# (the 3rd row is the sum of the first two)
+B = np.array([[1, 0, 1],
+              [2, 1, 1],
+              [3, 1, 2]])
+
+# Create a suitable output for the matrix
+```
+## 4.2.3. Exercise {#übung}
+
+**Exercise:** Write a function `is_invertible(M)` that returns `True` if the square matrix `M` is invertible and `False` otherwise. Hidden tests check your solution automatically.
+
+**Commands you need:** `np.linalg.det()`, `np.isclose()`, `not`, `return`.
+
+```{py-exercise}
+#| label: determinante-uebung-en
+#| caption: Implement is_invertible
+#| show-test-hints: false
+import numpy as np
+
+def is_invertible(M):
+    # Your code here
+    pass
+
+## TESTS ##
+M = np.array([[1, -2, 3], [0, 4, -1], [5, 0, 2]])
+S = np.array([[1, 2, 3], [4, 5, 6], [5, 7, 9]])
+assert is_invertible(M) == True, "M has determinant 51 and is invertible"
+assert is_invertible(S) == False, "S is singular (3rd row = 1st row + 2nd row)"
+assert is_invertible(np.eye(3)) == True, "The identity matrix is invertible"
+```
+
+::: {.callout-tip title="Hint" collapse="true"}
+A matrix is invertible exactly when its determinant is not 0. Because `np.linalg.det()` computes with floating-point numbers, do not compare with `!= 0` but check with `np.isclose(det, 0)`.
+:::
+
+::: {.callout-caution title="Solution" collapse="true"}
+```python
+def is_invertible(M):
+    return not np.isclose(np.linalg.det(M), 0)
+```
+:::
+
+Next, we look at how to compute the [inverse](kernoperationen_inverse.qmd) of a matrix.
+
+::::

@@ -1,0 +1,695 @@
+---
+title: "Mehrsprachige Projekte"
+title-en: "Multilanguage Projects"
+title-sv: "Flerspråkiga projekt"
+title-no: "Flerspråklige prosjekter"
+title-da: "Flersprogede projekter"
+sidebar: tips-sidebar
+---
+
+:::: {.content-visible when-profile="deutsch"}
+Quarto hat kein eingebautes Übersetzungssystem. Mit **Profilen** lässt sich trotzdem ein Projekt bauen,
+das mehrere Sprachen anbietet. Dieses Tutorial geht noch einen Schritt weiter: Es hat **zwei Achsen**,
+Sprache (Deutsch, Englisch,
+Schwedisch, Norwegisch, Dänisch) und Niveau (Beginner/Intermediate/Expert). Jede Kombination wird in einen
+eigenen Ordner gebaut.
+
+## Die Idee in einem Bild
+
+```
+                 beg                int                exp
+deutsch   docs/de/beg/...    docs/de/int/...    docs/de/exp/...     + docs/de/index.html
+english   docs/en/beg/...    docs/en/int/...    docs/en/exp/...     + docs/en/index.html
+svenska   docs/sv/beg/...    docs/sv/int/...    docs/sv/exp/...     + docs/sv/index.html
+norsk     docs/no/beg/...    docs/no/int/...    docs/no/exp/...     + docs/no/index.html
+dansk     docs/da/beg/...    docs/da/int/...    docs/da/exp/...     + docs/da/index.html
+```
+
+- **Eine `.qmd` je Seite**, alle Sprachen darin (siehe unten).
+- **Niveau-Profil** (`_quarto-beg.yml` …) legt fest, *welche Seiten* gebaut werden.
+- **Sprach-Profil** (`_quarto-deutsch.yml` …) legt fest, *wie alles heißt*: Navbar, Seitenleisten, `lang`.
+- `build.py` verbindet nach dem Bauen alles: Sprachwechsel auf **dieselbe Seite**, Niveauwechsel auf
+  die Startseite des Niveaus.
+
+## Schritt 1 – Zwei Profilgruppen
+
+```{.yaml filename="_quarto.yml"}
+profile:
+  default: [beg, deutsch]
+  group:
+    - [beg, int, exp, root]   # Niveau (root = Startseite je Sprache)
+    - [deutsch, english, svenska, norsk, dansk]   # Sprache
+```
+
+Aus jeder Gruppe ist immer genau ein Profil aktiv. Mehrere Profile gibt man mit Komma an:
+
+```{.bash}
+quarto render --profile int,english --output-dir docs/en/int
+```
+
+Quarto liest dann `_quarto.yml`, `_quarto-int.yml` **und** `_quarto-english.yml` und fügt sie zusammen.
+
+## Schritt 2 – Was gehört in welche Datei?
+
+```{.yaml filename="_quarto-int.yml"}
+project:
+  render:
+    - "Qmd Files/Getting Started/*.qmd"
+```
+
+```{.yaml filename="_quarto-deutsch.yml (gekürzt)"}
+lang: de
+website:
+  title: "Quarto-Tutorial"
+  navbar:
+    left:
+      - text: "Erste Schritte"
+        href: "#niveau-int"          # Platzhalter, siehe Schritt 4
+    right:
+      - icon: globe
+        menu:
+          - text: "Deutsch"
+            href: "#sprache-de"
+          - text: "English"
+            href: "#sprache-en"
+          # … Svenska, Norsk, Dansk
+  sidebar:                            # Seitenleisten ALLER Niveaus
+    - id: getting-started-sidebar
+      contents:
+        - text: "Was du brauchst"
+          href: "Qmd Files/Getting Started/beg_website_1.qmd"
+    - id: tips-sidebar
+      ...
+```
+
+Die Seitenleisten aller Niveaus stehen in der Sprachdatei, weil ihre Beschriftungen übersetzt werden müssen.
+Quarto zeigt auf jeder Seite nur die Seitenleiste, in der die Seite vorkommt. Einträge zu Seiten, die in
+diesem Lauf nicht gebaut werden, stören nicht.
+
+## Schritt 3 – Alle Sprachen in einer Datei
+
+````{.markdown}
+---
+title: "Erste Schritte mit Quarto"
+title-en: "Getting Started with Quarto"
+---
+
+:::: {.content-visible when-profile="deutsch"}
+Willkommen! ...
+::::
+
+:::: {.content-visible when-profile="english"}
+Welcome! ...
+::::
+````
+
+- `title-en:` (bzw. `title-sv:`, `title-no:`, `title-da:`) macht der kleine Filter `sprache.lua` im Lauf dieser Sprache zum Titel.
+- Der Inhalt der anderen Sprachen wird **entfernt**, nicht nur versteckt. Die Suche findet also nur die eigene Sprache.
+- Code-Zellen in **allen** Blöcken laufen in jedem Lauf. Wer rechnet, schreibt den Code am besten nur einmal
+  außerhalb der Blöcke und übersetzt nur den Text drumherum.
+
+## Schritt 4 – Navigation per Nachbearbeiten
+
+Quarto kann nicht über Profilgrenzen hinweg verlinken: Aus Sicht des Laufs `int,deutsch` gibt es `docs/en/`
+oder `docs/de/beg/` gar nicht. Deshalb stehen in der Navbar nur Platzhalter (`#sprache-en`, `#niveau-beg`).
+
+Wenn alle Läufe fertig sind, geht `build.py` durch die gebauten HTML-Dateien. Am Pfad jeder Seite,
+z. B. `de/int/Qmd Files/…`, erkennt es Sprache und Niveau und setzt feste relative Links ein:
+
+| Platzhalter | Ziel |
+|---|---|
+| `#sprache-en` | dieselbe Seite, `/de/` → `/en/` |
+| `#niveau-beg` | Startseite von Beginner in der aktuellen Sprache |
+| Titel links oben | Startseite der aktuellen Sprache |
+
+Weil die Links fest im HTML stehen, braucht die Seite dafür kein JavaScript. Derselbe Schritt setzt auch
+den Knopf „Alle ausklappen“ unten in die Seitenleiste.
+
+Links **im Text** zu einer bestimmten Seite eines anderen Niveaus gehen auch ohne Nachbearbeiten, als relativer Pfad
+zur fertigen Ordnerstruktur, z. B. `../../../int/Qmd Files/Getting Started/getting_started.html`.
+
+## Schritt 5 – Alles bauen
+
+```{.bash}
+python build.py            # 5 Sprachen × (Startseite + 3 Niveaus) = 20 Läufe, dann Vorschau
+python build.py --no-serve # nur bauen
+```
+
+Das Skript rendert je Sprache zuerst die Startseite (`root`), dann die drei Niveaus in Unterordner, setzt die Navigation
+aus Schritt 4 ein und schreibt `docs/index.html`, das in den Ordner der Browsersprache weiterleitet (Englisch, wenn es die Sprache nicht gibt).
+
+::: {.callout-warning}
+## Grenzen
+- **Suche:** Jeder Lauf hat seinen eigenen Suchindex. Die Suche findet nur Seiten des aktuellen Niveaus in der aktuellen Sprache.
+- **`quarto preview`** zeigt nur eine Kombination; die Platzhalter-Links wirken dort nicht, und der Knopf „Alle ausklappen“ fehlt (beides setzt erst `build.py` ein).
+- **Umfang:** Jede Seite steht einmal je Sprache in derselben Datei. Bei sehr großen Projekten sind getrennte Ordner je Sprache übersichtlicher; die Navigation aus Schritt 4 funktioniert dann genauso, solange die Dateinamen gleich sind.
+:::
+::::
+
+:::: {.content-visible when-profile="english"}
+Quarto does not have a built-in translation system, but **profiles** make it possible to build a project that
+serves several languages. This tutorial goes one step further: it has **two axes**, language (German, English,
+Swedish, Norwegian, Danish) and level (Beginner/Intermediate/Expert). Every combination is rendered into its own folder.
+
+## The idea at a glance
+
+```
+                 beg                int                exp
+deutsch   docs/de/beg/...    docs/de/int/...    docs/de/exp/...     + docs/de/index.html
+english   docs/en/beg/...    docs/en/int/...    docs/en/exp/...     + docs/en/index.html
+svenska   docs/sv/beg/...    docs/sv/int/...    docs/sv/exp/...     + docs/sv/index.html
+norsk     docs/no/beg/...    docs/no/int/...    docs/no/exp/...     + docs/no/index.html
+dansk     docs/da/beg/...    docs/da/int/...    docs/da/exp/...     + docs/da/index.html
+```
+
+- **One `.qmd` per page**, all languages inside (see below).
+- The **level profile** (`_quarto-beg.yml` …) decides *which pages* are rendered.
+- The **language profile** (`_quarto-english.yml` …) decides *what things are called*: navbar, sidebars, `lang`.
+- `build.py` ties it together after rendering: switching the language keeps **the same page**, switching the
+  level goes to that level's start page.
+
+## Step 1 — Two profile groups
+
+```{.yaml filename="_quarto.yml"}
+profile:
+  default: [beg, deutsch]
+  group:
+    - [beg, int, exp, root]   # level (root = start page per language)
+    - [deutsch, english, svenska, norsk, dansk]   # language
+```
+
+Exactly one profile of each group is active. Pass several profiles separated by commas:
+
+```{.bash}
+quarto render --profile int,english --output-dir docs/en/int
+```
+
+Quarto then reads `_quarto.yml`, `_quarto-int.yml` **and** `_quarto-english.yml` and merges them.
+
+## Step 2 — What goes where?
+
+```{.yaml filename="_quarto-int.yml"}
+project:
+  render:
+    - "Qmd Files/Getting Started/*.qmd"
+```
+
+```{.yaml filename="_quarto-english.yml (shortened)"}
+lang: en
+website:
+  title: "Quarto Tutorial"
+  navbar:
+    left:
+      - text: "Getting Started"
+        href: "#niveau-int"          # placeholder, see step 4
+    right:
+      - icon: globe
+        menu:
+          - text: "Deutsch"
+            href: "#sprache-de"
+          - text: "English"
+            href: "#sprache-en"
+          # … Svenska, Norsk, Dansk
+  sidebar:                            # sidebars of ALL levels
+    - id: getting-started-sidebar
+      contents:
+        - text: "What you need"
+          href: "Qmd Files/Getting Started/beg_website_1.qmd"
+    - id: tips-sidebar
+      ...
+```
+
+The sidebars of all levels live in the language file because their labels need translating.
+Quarto shows on each page only the sidebar that lists it. Entries for pages that are not rendered in this
+run do no harm.
+
+## Step 3 — All languages in one file
+
+````{.markdown}
+---
+title: "Erste Schritte mit Quarto"
+title-en: "Getting Started with Quarto"
+---
+
+:::: {.content-visible when-profile="deutsch"}
+Willkommen! ...
+::::
+
+:::: {.content-visible when-profile="english"}
+Welcome! ...
+::::
+````
+
+- The small filter `sprache.lua` turns `title-en:` (or `title-sv:`, `title-no:`, `title-da:`) into the title in the run for that language.
+- Content of the other languages is **removed**, not just hidden, so search only finds the current language.
+- Code cells in **all** blocks run in every run. If you compute something, write the code once outside the
+  blocks and only translate the text around it.
+
+## Step 4 — Navigation by post-processing
+
+Quarto cannot link across profiles: from the point of view of the run `int,english`, `docs/de/` or
+`docs/en/beg/` do not exist. That is why the navbar only contains placeholders (`#sprache-de`, `#niveau-beg`).
+
+Once all runs are done, `build.py` goes through the rendered HTML files. From the path of each page,
+e.g. `en/int/Qmd Files/…`, it knows the language and level and fills in fixed relative links:
+
+| Placeholder | Target |
+|---|---|
+| `#sprache-de` | the same page, `/en/` → `/de/` |
+| `#niveau-beg` | Beginner start page in the current language |
+| title top left | start page of the current language |
+
+Because the links are written into the HTML, the page needs no JavaScript for this. The same step also adds
+the "Expand all" button at the bottom of the sidebar.
+
+Links **in the text** to a specific page of another level work without post-processing, as a relative path into
+the finished folder structure, e.g. `../../../int/Qmd Files/Getting Started/getting_started.html`.
+
+## Step 5 — Build everything
+
+```{.bash}
+python build.py            # 5 languages × (start page + 3 levels) = 20 runs, then preview
+python build.py --no-serve # build only
+```
+
+For each language the script first renders the start page (`root`), then the three levels into sub-folders,
+fills in the navigation from step 4 and writes `docs/index.html`, which redirects to the folder of the browser language (English if that language is missing).
+
+::: {.callout-warning}
+## Limits
+- **Search:** every run has its own search index. Search only finds pages of the current level in the current language.
+- **`quarto preview`** shows a single combination; the placeholder links do nothing there and the "Expand all" button is missing (both come from `build.py`).
+- **Size:** every page appears once per language in the same file. For very large projects separate folders per language are easier to maintain; the navigation from step 4 works the same way as long as file names match.
+:::
+::::
+
+:::: {.content-visible when-profile="dansk"}
+Quarto har ikke noget indbygget oversættelsessystem, men med **profiler** kan man bygge et projekt
+på flere sprog. Denne vejledning går et skridt videre: den har **to akser**, sprog (tysk, engelsk,
+svensk, norsk, dansk) og niveau (Beginner/Intermediate/Expert). Hver kombination renderes til sin egen mappe.
+
+## Ideen kort fortalt
+
+```
+                 beg                int                exp
+deutsch   docs/de/beg/...    docs/de/int/...    docs/de/exp/...     + docs/de/index.html
+english   docs/en/beg/...    docs/en/int/...    docs/en/exp/...     + docs/en/index.html
+svenska   docs/sv/beg/...    docs/sv/int/...    docs/sv/exp/...     + docs/sv/index.html
+norsk     docs/no/beg/...    docs/no/int/...    docs/no/exp/...     + docs/no/index.html
+dansk     docs/da/beg/...    docs/da/int/...    docs/da/exp/...     + docs/da/index.html
+```
+
+- **Én `.qmd` pr. side**, med alle sprog i den samme fil (se nedenfor).
+- **Niveauprofilen** (`_quarto-beg.yml` …) afgør, *hvilke sider* der renderes.
+- **Sprogprofilen** (`_quarto-english.yml` …) afgør, *hvad tingene hedder*: menulinje, sidepaneler, `lang`.
+- `build.py` binder det sammen efter renderingen: når du skifter sprog, bliver du på **den samme side**, når du
+  skifter niveau, kommer du til det niveaus startside.
+
+## Trin 1 – To profilgrupper
+
+```{.yaml filename="_quarto.yml"}
+profile:
+  default: [beg, deutsch]
+  group:
+    - [beg, int, exp, root]   # level (root = start page per language)
+    - [deutsch, english, svenska, norsk, dansk]   # language
+```
+
+Præcis én profil fra hver gruppe er aktiv. Angiv flere profiler adskilt med komma:
+
+```{.bash}
+quarto render --profile int,english --output-dir docs/en/int
+```
+
+Quarto læser så `_quarto.yml`, `_quarto-int.yml` **og** `_quarto-english.yml` og fletter dem.
+
+## Trin 2 – Hvad står hvor?
+
+```{.yaml filename="_quarto-int.yml"}
+project:
+  render:
+    - "Qmd Files/Getting Started/*.qmd"
+```
+
+```{.yaml filename="_quarto-english.yml (shortened)"}
+lang: en
+website:
+  title: "Quarto Tutorial"
+  navbar:
+    left:
+      - text: "Getting Started"
+        href: "#niveau-int"          # placeholder, see step 4
+    right:
+      - icon: globe
+        menu:
+          - text: "Deutsch"
+            href: "#sprache-de"
+          - text: "English"
+            href: "#sprache-en"
+          # … Svenska, Norsk, Dansk
+  sidebar:                            # sidebars of ALL levels
+    - id: getting-started-sidebar
+      contents:
+        - text: "What you need"
+          href: "Qmd Files/Getting Started/beg_website_1.qmd"
+    - id: tips-sidebar
+      ...
+```
+
+Sidepanelerne for alle niveauer ligger i sprogfilen, fordi deres tekster skal oversættes.
+Quarto viser på hver side kun det sidepanel, hvor siden er nævnt. Poster for sider, der ikke renderes i
+denne kørsel, gør ingen skade.
+
+## Trin 3 – Alle sprog i én fil
+
+````{.markdown}
+---
+title: "Erste Schritte mit Quarto"
+title-en: "Getting Started with Quarto"
+---
+
+:::: {.content-visible when-profile="deutsch"}
+Willkommen! ...
+::::
+
+:::: {.content-visible when-profile="english"}
+Welcome! ...
+::::
+````
+
+- Det lille filter `sprache.lua` gør `title-en:` (eller `title-sv:`, `title-no:`, `title-da:`) til titlen i kørslen for det sprog.
+- Indholdet på de andre sprog bliver **fjernet**, ikke bare skjult. Derfor finder søgningen kun det aktuelle sprog.
+- Kodeceller i **alle** blokke køres i hver kørsel. Hvis du beregner noget, så skriv koden én gang uden for
+  blokkene, og oversæt kun teksten omkring.
+
+## Trin 4 – Navigation ved efterbehandling
+
+Quarto kan ikke linke på tværs af profiler: set fra kørslen `int,english` findes hverken `docs/de/` eller
+`docs/en/beg/`. Derfor indeholder menulinjen kun pladsholdere (`#sprache-de`, `#niveau-beg`).
+
+Når alle kørsler er færdige, gennemgår `build.py` de færdige HTML-filer. Ud fra stien til hver side,
+f.eks. `en/int/Qmd Files/…`, kender det sprog og niveau og indsætter faste relative links:
+
+| Pladsholder | Mål |
+|---|---|
+| `#sprache-de` | den samme side, `/en/` → `/de/` |
+| `#niveau-beg` | startsiden for Beginner på det aktuelle sprog |
+| titlen øverst til venstre | startsiden for det aktuelle sprog |
+
+Fordi linkene står direkte i HTML'en, behøver siden ikke JavaScript til det. Det samme trin tilføjer også
+knappen „Fold alle ud“ nederst i sidepanelet.
+
+Links **i teksten** til en bestemt side på et andet niveau virker uden efterbehandling, som en relativ sti ind i
+den færdige mappestruktur, f.eks. `../../../int/Qmd Files/Getting Started/getting_started.html`.
+
+## Trin 5 – Byg det hele
+
+```{.bash}
+python build.py            # 5 languages × (start page + 3 levels) = 20 runs, then preview
+python build.py --no-serve # build only
+```
+
+For hvert sprog renderer scriptet først startsiden (`root`), derefter de tre niveauer i undermapper,
+indsætter navigationen fra trin 4 og skriver `docs/index.html`, som sender videre til mappen for browserens sprog (engelsk, hvis sproget mangler).
+
+::: {.callout-warning}
+## Begrænsninger
+- **Søgning:** hver kørsel har sit eget søgeindeks. Søgningen finder kun sider på det aktuelle niveau på det aktuelle sprog.
+- **`quarto preview`** viser en enkelt kombination, der gør pladsholderlinkene ingenting, og knappen „Fold alle ud“ mangler (begge kommer fra `build.py`).
+- **Størrelse:** hver side findes én gang pr. sprog i den samme fil. Til meget store projekter er separate mapper pr. sprog lettere at vedligeholde. Navigationen fra trin 4 virker på samme måde, så længe filnavnene passer sammen.
+:::
+::::
+
+:::: {.content-visible when-profile="norsk"}
+Quarto har ikke noe innebygd oversettelsessystem, men med **profiler** går det an å bygge et prosjekt
+på flere språk. Denne veiledningen går ett skritt videre: den har **to akser**, språk (tysk, engelsk,
+svensk, norsk, dansk) og nivå (Beginner/Intermediate/Expert). Hver kombinasjon rendres til sin egen mappe.
+
+## Ideen i korte trekk
+
+```
+                 beg                int                exp
+deutsch   docs/de/beg/...    docs/de/int/...    docs/de/exp/...     + docs/de/index.html
+english   docs/en/beg/...    docs/en/int/...    docs/en/exp/...     + docs/en/index.html
+svenska   docs/sv/beg/...    docs/sv/int/...    docs/sv/exp/...     + docs/sv/index.html
+norsk     docs/no/beg/...    docs/no/int/...    docs/no/exp/...     + docs/no/index.html
+dansk     docs/da/beg/...    docs/da/int/...    docs/da/exp/...     + docs/da/index.html
+```
+
+- **Én `.qmd` per side**, med alle språkene i samme fil (se under).
+- **Nivåprofilen** (`_quarto-beg.yml` …) avgjør *hvilke sider* som rendres.
+- **Språkprofilen** (`_quarto-english.yml` …) avgjør *hva ting heter*: menylinje, sidefelt, `lang`.
+- `build.py` knytter det sammen etter rendringen: når du bytter språk, blir du på **samme side**, når du bytter
+  nivå, kommer du til startsiden for det nivået.
+
+## Trinn 1 – To profilgrupper
+
+```{.yaml filename="_quarto.yml"}
+profile:
+  default: [beg, deutsch]
+  group:
+    - [beg, int, exp, root]   # level (root = start page per language)
+    - [deutsch, english, svenska, norsk, dansk]   # language
+```
+
+Nøyaktig én profil fra hver gruppe er aktiv. Oppgi flere profiler atskilt med komma:
+
+```{.bash}
+quarto render --profile int,english --output-dir docs/en/int
+```
+
+Quarto leser da `_quarto.yml`, `_quarto-int.yml` **og** `_quarto-english.yml` og slår dem sammen.
+
+## Trinn 2 – Hva står hvor?
+
+```{.yaml filename="_quarto-int.yml"}
+project:
+  render:
+    - "Qmd Files/Getting Started/*.qmd"
+```
+
+```{.yaml filename="_quarto-english.yml (shortened)"}
+lang: en
+website:
+  title: "Quarto Tutorial"
+  navbar:
+    left:
+      - text: "Getting Started"
+        href: "#niveau-int"          # placeholder, see step 4
+    right:
+      - icon: globe
+        menu:
+          - text: "Deutsch"
+            href: "#sprache-de"
+          - text: "English"
+            href: "#sprache-en"
+          # … Svenska, Norsk, Dansk
+  sidebar:                            # sidebars of ALL levels
+    - id: getting-started-sidebar
+      contents:
+        - text: "What you need"
+          href: "Qmd Files/Getting Started/beg_website_1.qmd"
+    - id: tips-sidebar
+      ...
+```
+
+Sidefeltene for alle nivåene ligger i språkfilen, fordi tekstene i dem må oversettes.
+Quarto viser på hver side bare det sidefeltet der siden er oppført. Oppføringer for sider som ikke rendres i
+denne kjøringen, gjør ingen skade.
+
+## Trinn 3 – Alle språkene i én fil
+
+````{.markdown}
+---
+title: "Erste Schritte mit Quarto"
+title-en: "Getting Started with Quarto"
+---
+
+:::: {.content-visible when-profile="deutsch"}
+Willkommen! ...
+::::
+
+:::: {.content-visible when-profile="english"}
+Welcome! ...
+::::
+````
+
+- Det lille filteret `sprache.lua` gjør `title-en:` (eller `title-sv:`, `title-no:`, `title-da:`) om til tittelen i kjøringen for det språket.
+- Innholdet på de andre språkene blir **fjernet**, ikke bare skjult. Derfor finner søket bare det gjeldende språket.
+- Kodeceller i **alle** blokkene kjøres i hver kjøring. Hvis du beregner noe, skriver du koden én gang utenfor
+  blokkene og oversetter bare teksten rundt.
+
+## Trinn 4 – Navigasjon ved etterbehandling
+
+Quarto kan ikke lenke på tvers av profiler: sett fra kjøringen `int,english` finnes verken `docs/de/` eller
+`docs/en/beg/`. Derfor inneholder menylinjen bare plassholdere (`#sprache-de`, `#niveau-beg`).
+
+Når alle kjøringene er ferdige, går `build.py` gjennom de ferdige HTML-filene. Ut fra banen til hver side,
+f.eks. `en/int/Qmd Files/…`, vet det språk og nivå og setter inn faste relative lenker:
+
+| Plassholder | Mål |
+|---|---|
+| `#sprache-de` | samme side, `/en/` → `/de/` |
+| `#niveau-beg` | startsiden for Beginner på det gjeldende språket |
+| tittelen øverst til venstre | startsiden for det gjeldende språket |
+
+Fordi lenkene står direkte i HTML-en, trenger siden ikke JavaScript til dette. Det samme trinnet legger også
+inn knappen «Fold ut alle» nederst i sidefeltet.
+
+Lenker **i teksten** til en bestemt side på et annet nivå virker uten etterbehandling, som en relativ bane inn i
+den ferdige mappestrukturen, f.eks. `../../../int/Qmd Files/Getting Started/getting_started.html`.
+
+## Trinn 5 – Bygg alt
+
+```{.bash}
+python build.py            # 5 languages × (start page + 3 levels) = 20 runs, then preview
+python build.py --no-serve # build only
+```
+
+For hvert språk rendrer skriptet først startsiden (`root`), deretter de tre nivåene i undermapper,
+setter inn navigasjonen fra trinn 4 og skriver `docs/index.html`, som sender videre til mappen for språket i nettleseren (engelsk hvis språket mangler).
+
+::: {.callout-warning}
+## Begrensninger
+- **Søk:** hver kjøring har sin egen søkeindeks. Søket finner bare sider på det gjeldende nivået på det gjeldende språket.
+- **`quarto preview`** viser én enkelt kombinasjon, der gjør plassholderlenkene ingenting, og knappen «Fold ut alle» mangler (begge kommer fra `build.py`).
+- **Størrelse:** hver side finnes én gang per språk i samme fil. For svært store prosjekter er egne mapper per språk lettere å vedlikeholde. Navigasjonen fra trinn 4 virker på samme måte så lenge filnavnene stemmer overens.
+:::
+::::
+
+:::: {.content-visible when-profile="svenska"}
+Quarto har inget inbyggt översättningssystem, men med **profiler** går det att bygga ett projekt
+på flera språk. Den här handledningen går ett steg längre: den har **två axlar**, språk (tyska, engelska,
+svenska, norska, danska) och nivå (Beginner/Intermediate/Expert). Varje kombination renderas till en egen mapp.
+
+## Idén i korthet
+
+```
+                 beg                int                exp
+deutsch   docs/de/beg/...    docs/de/int/...    docs/de/exp/...     + docs/de/index.html
+english   docs/en/beg/...    docs/en/int/...    docs/en/exp/...     + docs/en/index.html
+svenska   docs/sv/beg/...    docs/sv/int/...    docs/sv/exp/...     + docs/sv/index.html
+norsk     docs/no/beg/...    docs/no/int/...    docs/no/exp/...     + docs/no/index.html
+dansk     docs/da/beg/...    docs/da/int/...    docs/da/exp/...     + docs/da/index.html
+```
+
+- **En `.qmd` per sida**, med alla språk i samma fil (se nedan).
+- **Nivåprofilen** (`_quarto-beg.yml` …) avgör *vilka sidor* som renderas.
+- **Språkprofilen** (`_quarto-english.yml` …) avgör *vad saker heter*: menyrad, sidofält, `lang`.
+- `build.py` knyter ihop det efter renderingen: när du byter språk stannar du på **samma sida**, när du byter
+  nivå kommer du till den nivåns startsida.
+
+## Steg 1 – Två profilgrupper
+
+```{.yaml filename="_quarto.yml"}
+profile:
+  default: [beg, deutsch]
+  group:
+    - [beg, int, exp, root]   # level (root = start page per language)
+    - [deutsch, english, svenska, norsk, dansk]   # language
+```
+
+Exakt en profil ur varje grupp är aktiv. Ange flera profiler åtskilda med komma:
+
+```{.bash}
+quarto render --profile int,english --output-dir docs/en/int
+```
+
+Quarto läser då `_quarto.yml`, `_quarto-int.yml` **och** `_quarto-english.yml` och slår ihop dem.
+
+## Steg 2 – Vad står var?
+
+```{.yaml filename="_quarto-int.yml"}
+project:
+  render:
+    - "Qmd Files/Getting Started/*.qmd"
+```
+
+```{.yaml filename="_quarto-english.yml (shortened)"}
+lang: en
+website:
+  title: "Quarto Tutorial"
+  navbar:
+    left:
+      - text: "Getting Started"
+        href: "#niveau-int"          # placeholder, see step 4
+    right:
+      - icon: globe
+        menu:
+          - text: "Deutsch"
+            href: "#sprache-de"
+          - text: "English"
+            href: "#sprache-en"
+          # … Svenska, Norsk, Dansk
+  sidebar:                            # sidebars of ALL levels
+    - id: getting-started-sidebar
+      contents:
+        - text: "What you need"
+          href: "Qmd Files/Getting Started/beg_website_1.qmd"
+    - id: tips-sidebar
+      ...
+```
+
+Sidofälten för alla nivåer ligger i språkfilen, eftersom deras texter måste översättas.
+Quarto visar på varje sida bara det sidofält där sidan finns med. Poster för sidor som inte renderas i den
+här körningen gör ingen skada.
+
+## Steg 3 – Alla språk i en fil
+
+````{.markdown}
+---
+title: "Erste Schritte mit Quarto"
+title-en: "Getting Started with Quarto"
+---
+
+:::: {.content-visible when-profile="deutsch"}
+Willkommen! ...
+::::
+
+:::: {.content-visible when-profile="english"}
+Welcome! ...
+::::
+````
+
+- Det lilla filtret `sprache.lua` gör om `title-en:` (eller `title-sv:`, `title-no:`, `title-da:`) till titeln i körningen för det språket.
+- Innehållet på de andra språken **tas bort**, det döljs inte bara. Därför hittar sökningen bara det aktuella språket.
+- Kodceller i **alla** block körs i varje körning. Om du beräknar något, skriv koden en gång utanför
+  blocken och översätt bara texten runt omkring.
+
+## Steg 4 – Navigering genom efterbearbetning
+
+Quarto kan inte länka mellan profiler: sett från körningen `int,english` finns varken `docs/de/` eller
+`docs/en/beg/`. Därför innehåller menyraden bara platshållare (`#sprache-de`, `#niveau-beg`).
+
+När alla körningar är klara går `build.py` igenom de färdiga HTML-filerna. Utifrån sökvägen till varje sida,
+t.ex. `en/int/Qmd Files/…`, vet det språk och nivå och fyller i fasta relativa länkar:
+
+| Platshållare | Mål |
+|---|---|
+| `#sprache-de` | samma sida, `/en/` → `/de/` |
+| `#niveau-beg` | startsidan för Beginner på det aktuella språket |
+| titeln uppe till vänster | startsidan för det aktuella språket |
+
+Eftersom länkarna står direkt i HTML-koden behöver sidan inget JavaScript för detta. Samma steg lägger också
+till knappen ”Fäll ut alla” längst ner i sidofältet.
+
+Länkar **i texten** till en viss sida på en annan nivå fungerar utan efterbearbetning, som en relativ sökväg in i
+den färdiga mappstrukturen, t.ex. `../../../int/Qmd Files/Getting Started/getting_started.html`.
+
+## Steg 5 – Bygg allt
+
+```{.bash}
+python build.py            # 5 languages × (start page + 3 levels) = 20 runs, then preview
+python build.py --no-serve # build only
+```
+
+För varje språk renderar skriptet först startsidan (`root`), sedan de tre nivåerna i undermappar,
+fyller i navigeringen från steg 4 och skriver `docs/index.html`, som skickar vidare till mappen för webbläsarens språk (engelska om språket saknas).
+
+::: {.callout-warning}
+## Begränsningar
+- **Sökning:** varje körning har sitt eget sökindex. Sökningen hittar bara sidor på den aktuella nivån på det aktuella språket.
+- **`quarto preview`** visar en enda kombination, där gör platshållarlänkarna ingenting, och knappen ”Fäll ut alla” saknas (båda kommer från `build.py`).
+- **Storlek:** varje sida finns en gång per språk i samma fil. För mycket stora projekt är separata mappar per språk lättare att underhålla. Navigeringen från steg 4 fungerar på samma sätt så länge filnamnen stämmer överens.
+:::
+::::

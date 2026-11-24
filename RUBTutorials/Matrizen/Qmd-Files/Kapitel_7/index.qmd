@@ -1,0 +1,266 @@
+---
+title: "7. Eigenwerte und Eigenvektoren"
+title-en: "7. Eigenvalues and Eigenvectors"
+format: html
+filters:
+    - quizdown
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+Willkommen zum letzten Kapitel des Tutorials: **Eigenwerte und Eigenvektoren**. Zuerst wird erklärt, was Eigenwerte und Eigenvektoren sind. Danach geht es an die Berechnung in Python, und zum Schluss gibt es eine Visualisierung und einen kurzen Einblick, wofür man Eigenwerte in der Praxis nutzt.
+
+# Kapitelübersicht
+
+- **[7.1. Konzept: Was sind Eigenwerte & -vektoren?](eigenwerte_konzept.qmd)**
+  - [7.1.1. Die geometrische Intuition](eigenwerte_konzept.qmd#die-geometrische-intuition)
+  - [7.1.2. Die mathematische Definition](eigenwerte_konzept.qmd#die-mathematische-definition)
+  - [7.1.3. Bedeutung des Eigenwerts $\lambda$](eigenwerte_konzept.qmd#bedeutung-des-eigenwerts-lambda)
+
+- **[7.2. Berechnung in Python](eigenwerte_berechnung.qmd)**
+  - [7.2.1. Die Funktion `np.linalg.eig()`](eigenwerte_berechnung.qmd#die-funktion-np.linalg.eig)
+  - [7.2.2. Das Ergebnis verstehen (Achtung Stolperfalle!)](eigenwerte_berechnung.qmd#das-ergebnis-verstehen-achtung-stolperfalle)
+  - [7.2.3. Die Probe aufs Exempel](eigenwerte_berechnung.qmd#die-probe-aufs-exempel)
+  - [7.2.4. Aufgabe: Eigenwerte berechnen und zuordnen](eigenwerte_berechnung.qmd#aufgabe-eigenwerte-berechnen-und-zuordnen)
+  - [7.2.5. Was passiert bei komplexen Zahlen?](eigenwerte_berechnung.qmd#was-passiert-bei-komplexen-zahlen)
+
+- **[7.3. Visualisierung & Anwendungsfälle](eigenwerte_visualisierung.qmd)**
+  - [7.3.1. Eigenvektoren sichtbar machen](eigenwerte_visualisierung.qmd#eigenvektoren-sichtbar-machen)
+  - [7.3.2. Wozu braucht man Eigenwerte & Eigenvektoren in der Praxis?](eigenwerte_visualisierung.qmd#wozu-braucht-man-eigenwerte-eigenvektoren-in-der-praxis)
+
+# Vorwissen-Quiz
+
+Bevor du jetzt in das Kapitel startest, kannst du mit dem folgenden Quiz testen, wie gut die bisherigen Inhalte hängen geblieben sind.
+
+```quizdown
+---
+locale: de
+shuffleQuestions: true
+nQuestions: 10
+---
+
+# LGS-Logik: Ein lineares Gleichungssystem $A \cdot x = b$ hat genau eine eindeutige Lösung, wenn...
+1. [ ] ... $b$ gleich 0 ist.
+1. [x] ... die Matrix $A$ invertierbar ist (Determinante ≠ 0).
+1. [ ] ... die Matrix $A$ mehr Zeilen als Spalten hat.
+1. [ ] ... die Matrix $A$ singulär ist.
+
+> Damit du den Punkt $x$ eindeutig findest, muss die Transformation umkehrbar sein.
+
+# Python-Praxis: Welcher Befehl löst das Gleichungssystem $Ax = b$ am stabilsten?
+1. [ ] `x = inv(A) * b`
+1. [ ] `x = A / b`
+1. [x] `x = np.linalg.solve(A, b)`
+1. [ ] `x = solve(b, A)`
+
+> `solve` ist schneller und genauer als die explizite Berechnung der Inversen.
+
+# Geometrie-Check: Wenn du eine Matrix $M$ auf einen Vektor $v$ anwendest ($M \cdot v$), was passiert im Normalfall?
+1. [ ] Der Vektor behält immer seine Richtung.
+1. [ ] Der Vektor behält immer seine Länge.
+1. [x] Der Vektor ändert meistens sowohl Richtung als auch Länge.
+1. [ ] Der Vektor wird immer zum Nullvektor.
+
+> Das ist der Standardfall bei linearen Transformationen (Drehstreckung, Scherung etc.).
+
+# Code-Puzzle: Wie prüfst du, ob eine Lösung `x` für das LGS `A @ x = b` korrekt ist?
+1. `x = np.linalg.solve(A, b)`
+2. `b_check = A @ x`
+3. `print(np.allclose(b, b_check))`
+
+> Wir rechnen die Probe: Wir setzen $x$ in die Gleichung ein und schauen, ob wieder $b$ herauskommt. `allclose` hilft bei Rundungsfehlern.
+
+# Verständnisfrage: Was ist ein "homogenes" Gleichungssystem?
+1. [ ] Ein System, bei dem alle Zahlen gleich sind.
+1. [x] Ein System, bei dem die rechte Seite 0 ist ($A \cdot x = 0$).
+1. [ ] Ein System, das nur aus Einsen besteht.
+1. [ ] Ein System ohne Lösung.
+
+> Homogen bedeutet hier, dass der "Zielvektor" der Nullvektor ist. Die triviale Lösung ist immer $x=0$.
+
+# Determinanten-Wissen: Was weißt du über eine Matrix, deren Determinante 0 ist?
+1. [x] Sie bildet den Raum auf eine niedrigere Dimension ab (z.B. Fläche auf Linie).
+1. [ ] Sie vergrößert alle Vektoren.
+1. [ ] Sie ist besonders gut invertierbar.
+1. [ ] Sie ist eine Einheitsmatrix.
+
+> Wenn der "Flächeninhalt" (Determinante) zu 0 wird, wurde der Raum "plattgedrückt". Information geht verloren.
+
+# Matrix-Arithmetik: Gilt für Matrizen die binomische Formel $(A+B)^2 = A^2 + 2AB + B^2$?
+1. [ ] Ja, immer.
+1. [x] Nein, im Allgemeinen nicht.
+1. [ ] Nur wenn $A$ die Einheitsmatrix ist.
+
+> Vorsicht! Da $A \cdot B ≠ B \cdot A$ ist, gilt: $(A+B)(A+B) = A^2 + AB + BA + B^2$. Man darf $AB$ und $BA$ nicht einfach zusammenfassen.
+
+# Code-Verständnis: Was bedeutet der Fehler `LinAlgError: Singular matrix` bei `np.linalg.solve`?
+1. [ ] Die Matrix enthält Text statt Zahlen.
+1. [ ] Die Matrix ist zu groß.
+1. [x] Die Matrix ist nicht invertierbar (Determinante 0), es gibt keine eindeutige Lösung.
+1. [ ] Du hast NumPy nicht importiert.
+
+> "Singulär" ist das Fachwort für "Kaputt für Invertierung". Die Geraden liegen parallel (kein Schnittpunkt) oder aufeinander (unendlich viele).
+
+# Transformationen: Wenn eine Matrix $M$ nur eine Skalierung (Streckung) bewirkt (z.B. `3 * eye(2)`), was passiert mit den Vektoren?
+1. [ ] Sie drehen sich um 90 Grad.
+1. [x] Sie behalten ihre Richtung, werden aber länger/kürzer.
+1. [ ] Sie werden alle auf 0 gesetzt.
+
+> Das ist ein Spezialfall! Hier ist *jeder* Vektor ein Eigenvektor (Spoiler für das nächste Kapitel!).
+
+# Python-Slicing Refresher: Du hast eine Matrix `A`. Wie holst du dir die komplette 2. Zeile?
+1. [ ] `A[:, 1]`
+1. [x] `A[1, :]`
+1. [ ] `A[2, :]`
+1. [ ] `A[0, 2]`
+
+> Index 1 ist die zweite Zeile. Der Doppelpunkt an zweiter Stelle heißt "alle Spalten".
+
+# Geometrie: Welche Matrix spiegelt einen Punkt an der y-Achse?
+1. [x] `np.array([[-1, 0], [0, 1]])`
+1. [ ] `np.array([[1, 0], [0, -1]])`
+1. [ ] `np.array([[0, 1], [1, 0]])`
+1. [ ] `np.array([[-1, 0], [0, -1]])`
+
+> Bei der Spiegelung an der y-Achse wechselt die x-Koordinate das Vorzeichen, die y-Koordinate bleibt gleich.
+
+# Logik-Check: Wenn $A \cdot x = 2 \cdot x$ ist, was kannst du über die Matrix $A$ und den Vektor $x$ sagen?
+1. [ ] $A$ muss die Zahl 2 sein.
+1. [ ] $x$ muss der Nullvektor sein.
+1. [x] Die Matrix $A$ wirkt auf $x$ wie eine einfache Verdopplung (Skalierung).
+1. [ ] Das ist mathematisch unmöglich.
+
+> Genau das ist die Definition, die wir im nächsten Kapitel suchen: Eine Matrix, die sich wie ein einfacher Faktor verhält.
+```
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+Welcome to the last chapter of the tutorial: **Eigenvalues and Eigenvectors**. First we explain what eigenvalues and eigenvectors are. Then we compute them in Python, and finally there is a visualization and a short look at what eigenvalues are used for in practice.
+
+# Chapter overview
+
+- **[7.1. Concept: What are eigenvalues & eigenvectors?](eigenwerte_konzept.qmd)**
+  - [7.1.1. The geometric intuition](eigenwerte_konzept.qmd#die-geometrische-intuition)
+  - [7.1.2. The mathematical definition](eigenwerte_konzept.qmd#die-mathematische-definition)
+  - [7.1.3. Meaning of the eigenvalue $\lambda$](eigenwerte_konzept.qmd#bedeutung-des-eigenwerts-lambda)
+
+- **[7.2. Computation in Python](eigenwerte_berechnung.qmd)**
+  - [7.2.1. The function `np.linalg.eig()`](eigenwerte_berechnung.qmd#die-funktion-np.linalg.eig)
+  - [7.2.2. Understanding the result (watch out!)](eigenwerte_berechnung.qmd#das-ergebnis-verstehen-achtung-stolperfalle)
+  - [7.2.3. Putting it to the test](eigenwerte_berechnung.qmd#die-probe-aufs-exempel)
+  - [7.2.4. Task: compute and match eigenvalues](eigenwerte_berechnung.qmd#aufgabe-eigenwerte-berechnen-und-zuordnen)
+  - [7.2.5. What happens with complex numbers?](eigenwerte_berechnung.qmd#was-passiert-bei-komplexen-zahlen)
+
+- **[7.3. Visualization & use cases](eigenwerte_visualisierung.qmd)**
+  - [7.3.1. Making eigenvectors visible](eigenwerte_visualisierung.qmd#eigenvektoren-sichtbar-machen)
+  - [7.3.2. What are eigenvalues & eigenvectors needed for in practice?](eigenwerte_visualisierung.qmd#wozu-braucht-man-eigenwerte-eigenvektoren-in-der-praxis)
+
+# Prior knowledge quiz
+
+Before you start the chapter, you can use the following quiz to test how well the previous contents have stuck.
+
+```quizdown
+---
+locale: en
+shuffleQuestions: true
+nQuestions: 10
+---
+
+# Linear systems logic: A system of linear equations $A \cdot x = b$ has exactly one unique solution if...
+1. [ ] ... $b$ equals 0.
+1. [x] ... the matrix $A$ is invertible (determinant ≠ 0).
+1. [ ] ... the matrix $A$ has more rows than columns.
+1. [ ] ... the matrix $A$ is singular.
+
+> To find the point $x$ uniquely, the transformation has to be invertible.
+
+# Python practice: Which command solves the system $Ax = b$ most stably?
+1. [ ] `x = inv(A) * b`
+1. [ ] `x = A / b`
+1. [x] `x = np.linalg.solve(A, b)`
+1. [ ] `x = solve(b, A)`
+
+> `solve` is faster and more accurate than explicitly computing the inverse.
+
+# Geometry check: If you apply a matrix $M$ to a vector $v$ ($M \cdot v$), what normally happens?
+1. [ ] The vector always keeps its direction.
+1. [ ] The vector always keeps its length.
+1. [x] The vector usually changes both direction and length.
+1. [ ] The vector always becomes the zero vector.
+
+> This is the standard case for linear transformations (rotation with scaling, shear etc.).
+
+# Code puzzle: How do you check whether a solution `x` of the system `A @ x = b` is correct?
+1. `x = np.linalg.solve(A, b)`
+2. `b_check = A @ x`
+3. `print(np.allclose(b, b_check))`
+
+> We do the check: we substitute $x$ into the equation and see whether $b$ comes out again. `allclose` helps with rounding errors.
+
+# Understanding: What is a "homogeneous" system of equations?
+1. [ ] A system in which all numbers are equal.
+1. [x] A system in which the right-hand side is 0 ($A \cdot x = 0$).
+1. [ ] A system that consists only of ones.
+1. [ ] A system without a solution.
+
+> Homogeneous here means that the "target vector" is the zero vector. The trivial solution is always $x=0$.
+
+# Determinant knowledge: What do you know about a matrix whose determinant is 0?
+1. [x] It maps space to a lower dimension (e.g. area to line).
+1. [ ] It enlarges all vectors.
+1. [ ] It is particularly easy to invert.
+1. [ ] It is an identity matrix.
+
+> If the "area" (determinant) becomes 0, space has been "squashed". Information is lost.
+
+# Matrix arithmetic: Does the binomial formula $(A+B)^2 = A^2 + 2AB + B^2$ hold for matrices?
+1. [ ] Yes, always.
+1. [x] No, not in general.
+1. [ ] Only if $A$ is the identity matrix.
+
+> Careful! Since $A \cdot B ≠ B \cdot A$: $(A+B)(A+B) = A^2 + AB + BA + B^2$. You cannot simply combine $AB$ and $BA$.
+
+# Code comprehension: What does the error `LinAlgError: Singular matrix` from `np.linalg.solve` mean?
+1. [ ] The matrix contains text instead of numbers.
+1. [ ] The matrix is too large.
+1. [x] The matrix is not invertible (determinant 0), there is no unique solution.
+1. [ ] You did not import NumPy.
+
+> "Singular" is the technical term for "broken for inversion". The lines are parallel (no intersection) or on top of each other (infinitely many).
+
+# Transformations: If a matrix $M$ only causes a scaling (stretching) (e.g. `3 * eye(2)`), what happens to the vectors?
+1. [ ] They rotate by 90 degrees.
+1. [x] They keep their direction but become longer/shorter.
+1. [ ] They are all set to 0.
+
+> This is a special case! Here *every* vector is an eigenvector (spoiler for the next chapter!).
+
+# Python slicing refresher: You have a matrix `A`. How do you get the complete 2nd row?
+1. [ ] `A[:, 1]`
+1. [x] `A[1, :]`
+1. [ ] `A[2, :]`
+1. [ ] `A[0, 2]`
+
+> Index 1 is the second row. The colon in the second position means "all columns".
+
+# Geometry: Which matrix reflects a point across the y-axis?
+1. [x] `np.array([[-1, 0], [0, 1]])`
+1. [ ] `np.array([[1, 0], [0, -1]])`
+1. [ ] `np.array([[0, 1], [1, 0]])`
+1. [ ] `np.array([[-1, 0], [0, -1]])`
+
+> When reflecting across the y-axis, the x-coordinate changes its sign and the y-coordinate stays the same.
+
+# Logic check: If $A \cdot x = 2 \cdot x$, what can you say about the matrix $A$ and the vector $x$?
+1. [ ] $A$ must be the number 2.
+1. [ ] $x$ must be the zero vector.
+1. [x] The matrix $A$ acts on $x$ like a simple doubling (scaling).
+1. [ ] This is mathematically impossible.
+
+> This is exactly the definition we are looking for in the next chapter: a matrix that behaves like a simple factor.
+```
+
+::::

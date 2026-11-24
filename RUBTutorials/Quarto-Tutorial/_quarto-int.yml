@@ -1,0 +1,10 @@
+# Level Intermediate (Getting Started): only WHICH pages are rendered.
+# Labels are in _quarto-<language>.yml,
+# the output folder docs/<lang>/int/ is set by build.py.
+project:
+  render:
+    - "Qmd Files/Getting Started/*.qmd"
+
+format:
+  html:
+    code-tools: true

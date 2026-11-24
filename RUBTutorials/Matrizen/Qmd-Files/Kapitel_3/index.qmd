@@ -1,0 +1,341 @@
+---
+title: "3. Grundlegende Matrix-Operationen"
+title-en: "3. Basic Matrix Operations"
+format: html
+filters:
+  - ctm-assessment
+  - quizdown
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+Nachdem du in [Kapitel 2](../Kapitel_2/index.qmd) gelernt hast, was Matrizen sind, welche Attribute sie haben und wie man sie in Python erstellt, geht es in diesem Kapitel um die grundlegenden Rechenoperationen. Hier wirst du sehen, wie sich diese Rechenoperationen in Python mithilfe von `numpy` umsetzen lassen und dass dies recht intuitiv und einfach funktioniert.
+
+# Kapitelübersicht
+
+- **[3.1. Elementweise Rechnungen](matrizen_elementweise_addition_subtraktion_skalar.qmd)**
+    - [3.1.1. Matrizen als Vektorraum](matrizen_elementweise_addition_subtraktion_skalar.qmd#matrizen-als-vektorraum)
+    - [3.1.2. Skalarmultiplikation](matrizen_elementweise_addition_subtraktion_skalar.qmd#skalarmultiplikation)
+    - [3.1.3. Addition und Subtraktion von Matrizen](matrizen_elementweise_addition_subtraktion_skalar.qmd#addition-und-subtraktion-von-matrizen)
+- **[3.2. Matrizen transponieren](matrizen_transponieren.qmd)**
+    - [3.2.1. Was bedeutet Transponieren?](matrizen_transponieren.qmd#was-bedeutet-transponieren)
+    - [3.2.2. Transponieren in NumPy](matrizen_transponieren.qmd#transponieren-in-numpy)
+    - [3.2.3. Übung](matrizen_transponieren.qmd#übung)
+- **[3.3. Matrizen-Vektor-Multiplikation](matrizen_vektor_multiplikation.qmd)**
+    - [3.3.1. Die Dimensions-Regel](matrizen_vektor_multiplikation.qmd#die-dimensions-regel)
+    - [3.3.2. Matrizen-Vektor-Multiplikation in NumPy](matrizen_vektor_multiplikation.qmd#matrix-vektor-multiplikation-in-numpy)
+    - [3.3.3. Übung](matrizen_vektor_multiplikation.qmd#übung)
+- **[3.4. Matrizen-Multiplikation](matrizen_multiplikation.qmd)**
+    - [3.4.1. Mathematische Regeln](matrizen_multiplikation.qmd#mathematische-regeln)
+    - [3.4.2. Matrizen-Multiplikation in NumPy](matrizen_multiplikation.qmd#matrizen-multiplikation-in-numpy)
+    - [3.4.3. Übung](matrizen_multiplikation.qmd#übung)
+
+Es wird empfohlen, die Abschnitte in der angegebenen Reihenfolge durchzugehen, da sie aufeinander aufbauen.
+
+# Vorwissen-Quiz 
+
+Als kleiner Check vor dem kommenden Kapitel kannst du mit dem folgenden Quiz überprüfen, wie gut die bisherigen Kapitel verstanden wurden.
+
+```quizdown
+---
+locale: de
+shuffleQuestions: true
+nQuestions: 10
+---
+
+# Python-Grundlagen: Was ist das Ergebnis dieses Code-Schnipsels?
+~~~python
+liste = [10, 20, 30, 40]
+print(liste[-1])
+~~~
+1. [ ] 10
+1. [ ] Error
+1. [x] 40
+1. [ ] 30
+
+> Ein negativer Index in Python zählt von hinten. `-1` ist also das allerletzte Element.
+
+# Matrizen-Verständnis: Wir haben eine Matrix `M` mit 3 Zeilen und 5 Spalten. Was liefert `M.shape`?
+1. [ ] `(5, 3)`
+1. [x] `(3, 5)`
+1. [ ] `15`
+1. [ ] `(3, 5, 1)`
+
+> Die Konvention ist immer: Zuerst die Zeilen (Rows), dann die Spalten (Columns). 
+
+# Vektor-Logik: Was passiert bei der Rechnung `np.array([1, 2]) + np.array([3, 4])`?
+1. [ ] `[1, 2, 3, 4]` (Konkatenation)
+1. [x] `[4, 6]` (Elementweise Addition)
+1. [ ] `10` (Summe aller Elemente)
+1. [ ] Error
+
+> NumPy ist schlau: Wenn die Dimensionen passen, wird Position für Position addiert.
+
+# Code-Puzzle: Bringe die Zeilen in die richtige Reihenfolge, um eine 3x3 Einheitsmatrix zu erstellen!
+1. `import numpy as np`
+2. `I = np.eye(3)`
+3. `print(I)`
+
+> Zuerst den Werkzeugkasten (NumPy) öffnen, dann das Werkzeug benutzen.
+
+# Matrix-Zugriff: Betrachte folgenden Code. Welcher Wert wird ausgegeben?
+~~~python
+M = np.array([
+  [1, 2, 3],
+  [4, 5, 6],
+  [7, 8, 9]
+])
+print(M[1, 2])
+~~~
+1. [ ] 2 (Zeile 1, Spalte 2 bei Start 1)
+1. [ ] 8 (Zeile 2, Spalte 1)
+1. [x] 6 (Zeile 1, Spalte 2 bei Start 0)
+1. [ ] 9 (Letztes Element)
+
+> Erinnere dich an den 0-basierten Index: Zeile 1 ist die *mittlere* Zeile, Spalte 2 ist die *rechte* Spalte. 
+
+# Vektor-Wissen: Welche Bedingung muss erfüllt sein, damit du das Skalarprodukt (Dot Product) zweier Vektoren berechnen kannst?
+- [x] Beide Vektoren müssen dieselbe Anzahl an Elementen haben.
+- [ ] Einer der Vektoren muss eine Matrix sein.
+- [ ] Beide Vektoren müssen orthogonal sein.
+- [x] Die Dimensionen müssen übereinstimmen.
+
+> Du rechnest "erstes mal erstes" plus "zweites mal zweites" usw. – das geht nur, wenn jeder Partner ein Gegenüber hat.
+
+# Python-Typen: Was ist der Datentyp (`dtype`) dieser Matrix?
+~~~python
+A = np.array([
+  [1, 2],
+  [3, 0.5]
+])
+~~~
+1. [ ] Integer (Ganzzahl)
+1. [x] Float (Fließkommazahl)
+1. [ ] List
+1. [ ] Mixed
+
+> NumPy mag Ordnung: Wenn auch nur eine Kommazahl dabei ist (`0.5`), wird alles zur Kommazahl, damit nichts abgeschnitten wird.
+
+# Code-Puzzle: Wie extrahierst du die erste Spalte einer Matrix `A` und speicherst sie?
+1. `A = np.array([[10, 20], [30, 40]])`
+2. `spalte_1 = A[:, 0]`
+3. `print(spalte_1)`
+
+> Der Doppelpunkt `:` bedeutet "alle Zeilen nehmen", die `0` wählt die erste Spalte aus.
+
+# Matrizen-Theorie: Welches NumPy-Attribut ist bei einer klassischen Matrix (2D-Array) immer gleich `2`?
+1. [ ] `.size`
+1. [ ] `.shape`
+1. [x] `.ndim`
+1. [ ] `.len`
+
+> `.ndim` steht für "Number of Dimensions". Eine Matrix hat Höhe und Breite, also 2 Dimensionen.
+
+# Python-Logik: Was gibt dieser Code aus?
+~~~python
+x = [1, 2, 3]
+y = x
+y[0] = 99
+print(x[0])
+~~~
+1. [ ] 1
+1. [x] 99
+1. [ ] Error
+1. [ ] 0
+
+> Vorsicht, Falle! Listen in Python sind Referenzen. `y = x` kopiert nicht die Liste, sondern zeigt auf denselben Speicherplatz. Wenn du `y` änderst, änderst du auch `x`.
+
+# Spezial-Matrizen: Du brauchst eine Matrix voller Nullen für eine Initialisierung. Welche Funktion ist am sichersten?
+1. [ ] `np.empty()`
+1. [x] `np.zeros()`
+1. [ ] `np.nothing()`
+1. [ ] `np.null()`
+
+> `zeros` macht genau das, was draufsteht. `empty` reserviert nur Speicher, der noch alten Datenmüll enthalten kann!
+
+# Vektor-Anwendung: Wenn der Winkel zwischen zwei Vektoren 90 Grad beträgt, dann ist ihr Skalarprodukt...
+1. [ ] ... maximal.
+1. [ ] ... 1.
+1. [x] ... 0.
+1. [ ] ... negativ.
+
+> Orthogonalität ist ein Schlüsselkonzept. Mathematisch: $\cos(90°) = 0$.
+
+# Code-Puzzle: Berechne die Länge (Norm) eines Vektors manuell (ohne `np.linalg.norm`)!
+1. `v = np.array([3, 4])`
+2. `quadrate = v**2`
+3. `summe = np.sum(quadrate)`
+4. `laenge = np.sqrt(summe)`
+
+> Das ist der Satz des Pythagoras in Code-Form: Wurzel aus der Summe der Quadrate.
+
+```
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+Now that you have learned in [Chapter 2](../Kapitel_2/index.qmd) what matrices are, which attributes they have and how to create them in Python, this chapter is about the basic arithmetic operations. You will see how these operations can be carried out in Python with `numpy`, and that this works quite intuitively and easily.
+
+# Chapter overview
+
+- **[3.1. Element-wise operations](matrizen_elementweise_addition_subtraktion_skalar.qmd)**
+    - [3.1.1. Matrices as a vector space](matrizen_elementweise_addition_subtraktion_skalar.qmd#matrices-as-a-vector-space)
+    - [3.1.2. Scalar multiplication](matrizen_elementweise_addition_subtraktion_skalar.qmd#scalar-multiplication)
+    - [3.1.3. Addition and subtraction of matrices](matrizen_elementweise_addition_subtraktion_skalar.qmd#addition-and-subtraction-of-matrices)
+- **[3.2. Transposing matrices](matrizen_transponieren.qmd)**
+    - [3.2.1. What does transposing mean?](matrizen_transponieren.qmd#what-does-transposing-mean)
+    - [3.2.2. Transposing in NumPy](matrizen_transponieren.qmd#transposing-in-numpy)
+    - [3.2.3. Exercise](matrizen_transponieren.qmd#exercise)
+- **[3.3. Matrix-vector multiplication](matrizen_vektor_multiplikation.qmd)**
+    - [3.3.1. The dimension rule](matrizen_vektor_multiplikation.qmd#the-dimension-rule)
+    - [3.3.2. Matrix-vector multiplication in NumPy](matrizen_vektor_multiplikation.qmd#matrix-vector-multiplication-in-numpy)
+    - [3.3.3. Exercise](matrizen_vektor_multiplikation.qmd#exercise)
+- **[3.4. Matrix multiplication](matrizen_multiplikation.qmd)**
+    - [3.4.1. Mathematical rules](matrizen_multiplikation.qmd#mathematical-rules)
+    - [3.4.2. Matrix multiplication in NumPy](matrizen_multiplikation.qmd#matrix-multiplication-in-numpy)
+    - [3.4.3. Exercise](matrizen_multiplikation.qmd#exercise)
+
+We recommend working through the sections in the given order, since they build on each other.
+
+# Prior knowledge quiz 
+
+As a small check before the coming chapter, you can use the following quiz to see how well you have understood the previous chapters.
+
+```quizdown
+---
+locale: en
+shuffleQuestions: true
+nQuestions: 10
+---
+
+# Python basics: What is the result of this code snippet?
+~~~python
+my_list = [10, 20, 30, 40]
+print(my_list[-1])
+~~~
+1. [ ] 10
+1. [ ] Error
+1. [x] 40
+1. [ ] 30
+
+> A negative index in Python counts from the end. So `-1` is the very last element.
+
+# Understanding matrices: We have a matrix `M` with 3 rows and 5 columns. What does `M.shape` return?
+1. [ ] `(5, 3)`
+1. [x] `(3, 5)`
+1. [ ] `15`
+1. [ ] `(3, 5, 1)`
+
+> The convention is always: rows first, then columns. 
+
+# Vector logic: What happens in the calculation `np.array([1, 2]) + np.array([3, 4])`?
+1. [ ] `[1, 2, 3, 4]` (concatenation)
+1. [x] `[4, 6]` (element-wise addition)
+1. [ ] `10` (sum of all elements)
+1. [ ] Error
+
+> NumPy is smart: if the dimensions match, it adds position by position.
+
+# Code puzzle: Put the lines in the right order to create a 3x3 identity matrix!
+1. `import numpy as np`
+2. `I = np.eye(3)`
+3. `print(I)`
+
+> First open the toolbox (NumPy), then use the tool.
+
+# Matrix access: Look at the following code. Which value is printed?
+~~~python
+M = np.array([
+  [1, 2, 3],
+  [4, 5, 6],
+  [7, 8, 9]
+])
+print(M[1, 2])
+~~~
+1. [ ] 2 (row 1, column 2 when starting at 1)
+1. [ ] 8 (row 2, column 1)
+1. [x] 6 (row 1, column 2 when starting at 0)
+1. [ ] 9 (last element)
+
+> Remember the 0-based index: row 1 is the *middle* row, column 2 is the *right* column. 
+
+# Vector knowledge: Which condition must be met so that you can compute the dot product of two vectors?
+- [x] Both vectors must have the same number of elements.
+- [ ] One of the vectors must be a matrix.
+- [ ] Both vectors must be orthogonal.
+- [x] The dimensions must match.
+
+> You compute "first times first" plus "second times second" and so on – that only works if every partner has a counterpart.
+
+# Python types: What is the data type (`dtype`) of this matrix?
+~~~python
+A = np.array([
+  [1, 2],
+  [3, 0.5]
+])
+~~~
+1. [ ] Integer
+1. [x] Float
+1. [ ] List
+1. [ ] Mixed
+
+> NumPy likes order: if even one decimal number is included (`0.5`), everything becomes a decimal number so that nothing gets cut off.
+
+# Code puzzle: How do you extract the first column of a matrix `A` and store it?
+1. `A = np.array([[10, 20], [30, 40]])`
+2. `column_1 = A[:, 0]`
+3. `print(column_1)`
+
+> The colon `:` means "take all rows", the `0` selects the first column.
+
+# Matrix theory: Which NumPy attribute is always `2` for a classic matrix (2D array)?
+1. [ ] `.size`
+1. [ ] `.shape`
+1. [x] `.ndim`
+1. [ ] `.len`
+
+> `.ndim` stands for "number of dimensions". A matrix has height and width, i.e. 2 dimensions.
+
+# Python logic: What does this code print?
+~~~python
+x = [1, 2, 3]
+y = x
+y[0] = 99
+print(x[0])
+~~~
+1. [ ] 1
+1. [x] 99
+1. [ ] Error
+1. [ ] 0
+
+> Careful, trap! Lists in Python are references. `y = x` does not copy the list but points to the same memory. If you change `y`, you also change `x`.
+
+# Special matrices: You need a matrix full of zeros for an initialization. Which function is the safest?
+1. [ ] `np.empty()`
+1. [x] `np.zeros()`
+1. [ ] `np.nothing()`
+1. [ ] `np.null()`
+
+> `zeros` does exactly what it says. `empty` only reserves memory, which may still contain old garbage data!
+
+# Vector application: If the angle between two vectors is 90 degrees, then their dot product is...
+1. [ ] ... maximal.
+1. [ ] ... 1.
+1. [x] ... 0.
+1. [ ] ... negative.
+
+> Orthogonality is a key concept. Mathematically: $\cos(90°) = 0$.
+
+# Code puzzle: Compute the length (norm) of a vector manually (without `np.linalg.norm`)!
+1. `v = np.array([3, 4])`
+2. `squares = v**2`
+3. `total = np.sum(squares)`
+4. `length = np.sqrt(total)`
+
+> This is Pythagoras' theorem in code form: the square root of the sum of the squares.
+
+```
+
+::::

@@ -1,0 +1,1812 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.11.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>4.1. Rang einer Matrix – Matrizen mit Python</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../Qmd-Files/Kapitel_4/kernoperationen_determinante.html" rel="next">
+<link href="../../Qmd-Files/Kapitel_4/index.html" rel="prev">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-447e42e69aaa9833c0ba1b986f430b20.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-4de38e511a87c50155c3f4aacf5ec199.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-a75db3605971474577b384640c6b1046.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-4de38e511a87c50155c3f4aacf5ec199.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-contrib/ctm-resize-1/ctm-resize.js"></script>
+<link href="../../site_libs/quarto-contrib/ctm-resize-1/ctm-resize.css" rel="stylesheet">
+<script src="../../site_libs/quarto-contrib/ctm-coi-frame-startup-1/coi-frame-startup.js"></script>
+<script src="../../site_libs/quarto-contrib/ctm-assets-0.9.0/assets.js"></script>
+<script src="../../site_libs/quarto-contrib/ctm-locale-0.9.0/ctm-locale.js"></script>
+<script src="../../site_libs/quarto-contrib/ctm-locale-0.9.0/common.js"></script>
+<script src="../../site_libs/quarto-contrib/ctm-locale-ui-0.9.0/ui.js"></script>
+<script src="../../site_libs/quarto-contrib/ctm-layout-0.9.0/ctm-layout.js"></script>
+<script src="../../site_libs/quarto-contrib/ctm-layout-0.9.0/ctm-settings.js"></script>
+<link href="../../site_libs/quarto-contrib/ctm-layout-0.9.0/ctm-ui.css" rel="stylesheet">
+<script src="../../site_libs/quarto-contrib/ai-feedback-0.9.0/feedback-core.js"></script>
+<script src="../../site_libs/quarto-contrib/ai-feedback-0.9.0/feedback-dom.js"></script>
+<script src="../../site_libs/quarto-contrib/ai-feedback-0.9.0/ai-feedback.js"></script>
+<link href="../../site_libs/quarto-contrib/ai-feedback-0.9.0/ai-feedback.css" rel="stylesheet">
+<script src="../../site_libs/quarto-contrib/ctm-runtime-0.9.0/pyodide-runtime.js"></script>
+<script src="../../site_libs/quarto-contrib/ctm-worker-0.9.0/pyodide-worker.js"></script>
+<script src="../../site_libs/quarto-contrib/ctm-checkers-0.12.0.dev0+dfad141a/ctm-checkers.js"></script>
+<script src="../../site_libs/quarto-contrib/ctm-locale-math-exercise-0.9.0/math-exercise.js"></script>
+<link href="../../site_libs/quarto-contrib/ctm-matrix-input-0.9.0/ctm-matrix-input.css" rel="stylesheet">
+<link href="../../site_libs/quarto-contrib/math-exercise-0.11.0/math-exercise.css" rel="stylesheet">
+<link href="../../site_libs/quarto-contrib/ctm-ui-0.9.0/ctm-ui.css" rel="stylesheet">
+<script src="../../site_libs/quarto-contrib/ctm-copy-0.9.0/ctm-copy.js"></script>
+<script src="../../site_libs/quarto-contrib/ctm-store-0.9.0/ctm-store.js"></script>
+<script src="../../site_libs/quarto-contrib/ctm-locale-py-exercise-0.9.0/py-exercise.js"></script>
+<link href="../../site_libs/quarto-contrib/py-exercise-0.5.0/py-exercise.css" rel="stylesheet">
+<script src="../../site_libs/quarto-contrib/ctm-locale-pyodide-interaktiv-0.9.0/pyodide-interaktiv.js"></script>
+<script src="../../site_libs/quarto-contrib/pyodide-interaktiv-1.10.0/qpyodide-locale.js" type="module"></script>
+<script src="../../site_libs/quarto-contrib/pyodide-interaktiv-1.10.0/qpyodide-storage.js" type="module"></script>
+<script src="../../site_libs/quarto-contrib/pyodide-interaktiv-1.10.0/qpyodide-document-status.js" type="module"></script>
+<script src="../../site_libs/quarto-contrib/pyodide-interaktiv-1.10.0/qpyodide-storage-settings.js" type="module"></script>
+<script src="../../site_libs/quarto-contrib/pyodide-interaktiv-1.10.0/qpyodide-worker-plugin.js" type="module"></script>
+<script src="../../site_libs/quarto-contrib/pyodide-interaktiv-1.10.0/qpyodide-document-engine-initialization.js" type="module"></script>
+<script src="../../site_libs/quarto-contrib/pyodide-interaktiv-1.10.0/qpyodide-canvas-plots.js" type="module"></script>
+<link href="../../site_libs/quarto-contrib/pyodide-interaktiv-1.10.0/qpyodide-styling.css" rel="stylesheet">
+<script src="../../site_libs/quarto-contrib/pyodide-interaktiv-feedback-1.10.0/qpyodide-feedback.js" type="module"></script>
+<script src="../../site_libs/quarto-contrib/ctm-export-0.9.0/ctm-export.js"></script>
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Keine Treffer",
+    "search-matching-documents-text": "Treffer",
+    "search-copy-link-title": "Link in die Suche kopieren",
+    "search-hide-matches-text": "Zusätzliche Treffer verbergen",
+    "search-more-match-text": "weitere Treffer in diesem Dokument",
+    "search-more-matches-text": "weitere Treffer in diesem Dokument",
+    "search-clear-button-title": "Zurücksetzen",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Abbrechen",
+    "search-submit-button-title": "Abschicken",
+    "search-label": "Suchen"
+  }
+}</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<script>globalThis.CTM_ASSETS={"bases":{"font-awesome":"https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/","jsxgraph":"https://cdn.jsdelivr.net/npm/jsxgraph@1.14.2/","katex":"https://cdn.jsdelivr.net/npm/katex@0.16.47/","mathjax-newcm-font":"https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.1.3/","mathjax3":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/","mathjax4":"https://cdn.jsdelivr.net/npm/mathjax@4.1.3/","monaco-editor":"https://cdn.jsdelivr.net/npm/monaco-editor@0.46.0/","pyodide":"https://cdn.jsdelivr.net/pyodide/v0.28.3/full/","source-sans-pro":"https://cdn.jsdelivr.net/npm/@fontsource/source-sans-pro@5.3.0/"},"mode":"cdn","v":1};</script>
+<script src="../../coi-serviceworker.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/monaco-editor@0.46.0/min/vs/editor/editor.main.css">
+<script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/js/all.min.js" defer="" crossorigin="anonymous"></script>
+<script type="text/javascript">
+// qpyodide-document-settings.js – document-wide settings (template)
+//
+// This file is a template: the {{PLACEHOLDERS}} are replaced by the Lua
+// filter (qpyodide.lua, function initializationPyodide) during rendering.
+// It's injected as the first module into the <head>, so that all further
+// modules can access the global settings.
+
+// Document level settings ----
+
+// Determine if we need to install python packages
+globalThis.qpyodideInstallPythonPackagesList = [''];
+
+// Check to see if we have an empty array, if we do set to skip the installation.
+globalThis.qpyodideSetupPythonPackages = !(qpyodideInstallPythonPackagesList.indexOf("") !== -1);
+
+// Automatically preload the HTTP shim and plotting packages? Defaults to true.
+// Explicit pyodide: packages entries still install when this is false.
+globalThis.qpyodidePreloadPackages = true;
+globalThis.qpyodideExamOutput = false;
+globalThis.qpyodideStopAfter = 20;
+
+// Display a startup message?
+globalThis.qpyodideShowStartupMessage = true;
+
+// Describe the Pyodide settings that should be used.
+// Data only (no functions) – the configuration is passed to the Pyodide
+// web worker via postMessage; the worker collects stdout/stderr itself.
+globalThis.qpyodideCustomizedPyodideOptions = {
+  "indexURL": "https://cdn.jsdelivr.net/pyodide/v0.28.3/full/",
+  "env": {
+    "HOME": "/home/pyodide",
+  }
+}
+
+// Interactive plot backend ----
+//
+// "webagg" (Pyodide 0.28+), "html5-canvas" (an older Pyodide pinned via
+// `pyodide: base-url:`) or "auto" (the base URL names no version; decided
+// from the loaded Pyodide). See qpyodide-canvas-plots.js.
+globalThis.qpyodideCanvasBackend = "webagg";
+
+// UI language for this render pass ----
+//
+// Set by the Lua filter (ctm.locale: `pyodide: lang:`, `ctm-assessment: lang:`,
+// Quarto's own `lang:`): a language of the catalogue (en, de, sv, nb, da).
+globalThis.qpyodideLang = "de";
+
+// Store cell data
+globalThis.qpyodideCellDetails = [{"code":"import numpy as np\n\nA = np.array([[1, 0, 0],\n              [0, 1, 0],\n              [0, 0, 1]])\nB = np.array([[1, 2, 3],\n              [4, 5, 6],\n              [5, 7, 9]])   # 3. Zeile = 1. Zeile + 2. Zeile\n\nprint(\"Rang von A:\", np.linalg.matrix_rank(A))\nprint(\"Rang von B:\", np.linalg.matrix_rank(B))","id":1,"options":{"autorun":"","classes":"","code-fold":"show","comment":"","context":"","ctm-extra-save":true,"ctm-extra-source":"d3165623f8c50f1f","ctm-store-id":"cell:6730f45db1b86654","ctm-store-save":false,"ctm-store-source":"6730f45db1b86654","dpi":72,"echo":"","eval":"","feedback-context":"","feedback-policy":"","feedbackContext":{"mode":"auto","refs":"auto","text":"4.1.2. Rang in NumPy berechnen\nEiner der großen Vorteile von Python ist, dass wir hier Verfahren wie den Gauß-Algorithmus nicht per Hand bestimmen müssen. So gibt es auch für den Rang eine passende numpy-Funktion. np.linalg.matrix_rank().\nEin Beispiel: Die zweite Matrix hat eine Zeile, die die Summe der anderen beiden ist, deshalb ist ihr Rang kleiner als 3."},"fig-cap":"","fig-height":5,"fig-width":7,"include":"","label":"","local-storage":"","message":"true","out-height":"","out-width":"700px","output":"true","pdf-fallback":"","policySelection":{"exercise":"","name":""},"read-only":"true","results":"markup","save":"","task":"","warning":"true"}}];
+
+// AI feedback feature settings ----
+//
+// enabled : show a Feedback button per interactive cell?
+// storage : default for where credentials are stored
+//           ("local" = localStorage, persistent; "session" = sessionStorage, per tab).
+//           Can be changed by the user in the settings panel.
+// hints   : progressive hints – the hint level rises with each click of the
+//           Feedback button on the same cell.
+// uiLanguage : the language of the feedback interface and of the feedback
+//              (this extension's interface language).
+globalThis.qpyodideFeedbackOptions = {
+  enabled: true,
+  storage: "local",
+  hints: true,
+  uiLanguage: "de"
+};
+
+// Local-storage autosave feature settings ----
+//
+// enabled : document-wide default (`pyodide: local-storage: true`); a
+//           cell's own `#| local-storage: true/false` overrides this.
+// epoch   : "" (off) unless `pyodide: local-storage-epoch:` was set. When
+//           non-empty, it's folded into every saved-code storage key, so
+//           re-rendering with a new epoch value makes every previously
+//           saved answer on this page unreachable -- an exam-room "next
+//           group gets a clean slate" reset. See qpyodide-storage.js.
+globalThis.qpyodideLocalStorageOptions = {
+  enabled: true,
+  epoch: ""
+};
+
+</script>
+
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../Theme/styles.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Zum Hauptinhalt springen</a><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          toggle.setAttribute("aria-checked", alternate ? "true" : "false");
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455).
+    // Not run on load: stylesheets are set before first paint there, and
+    // scrolling would undo the scroll to a URL fragment (#14973).
+    // The one pixel nudge keeps the reader where they were.
+    const refreshSafariScrollbar = () => {
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        const scrollY = window.scrollY;
+        window.scrollTo(0, scrollY > 0 ? scrollY - 1 : 1);
+        setTimeout(() => {
+          window.scrollTo(0, scrollY);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const queryPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkModeDefault = queryPrefersDark.matches;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      refreshSafariScrollbar();
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    queryPrefersDark.addEventListener("change", e => {
+      if(window.localStorage.getItem("quarto-color-scheme") !== null)
+        return;
+      const alternate = e.matches
+      toggleColorMode(alternate);
+      refreshSafariScrollbar();
+      localAlternateSentinel = e.matches ? 'alternate' : 'default'; // this is used alongside local storage!
+      toggleGiscusIfUsed(alternate, darkModeDefault);
+    });
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark" aria-label="Website">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Matrizen mit Python</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Navigation umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-globe" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-globe" role="img" aria-label="Sprache wählen / Choose language">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-globe">    
+        <li>
+    <a class="dropdown-item active" aria-current="true" href="../../../de/Qmd-Files/Kapitel_4/kernoperationen_rang.html">
+ <span class="dropdown-text">Deutsch</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../en/Qmd-Files/Kapitel_4/kernoperationen_rang.html">
+ <span class="dropdown-text">English</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <button type="button" role="switch" aria-checked="false" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Dunkelmodus umschalten" aria-label="Dunkelmodus umschalten"><i class="bi"></i></button>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Lesemodus umschalten">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+            <div id="quarto-search" class="" title="Suchen"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" aria-label="Symbolleiste">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="Pfad"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../Qmd-Files/Kapitel_4/index.html">4. Kernoperationen der Linearen Algebra</a></li><li class="breadcrumb-item"><a href="../../Qmd-Files/Kapitel_4/kernoperationen_rang.html">4.1. Matrix-Rang</a></li></ol></nav>
+        <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" aria-label="Bereich">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">0. Übersichtsseite</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../Qmd-Files/Kapitel_1/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-1-label">1. Vektoren - Die Bausteine</span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-controls="quarto-sidebar-section-1" aria-expanded="false" aria-label="Abschnitt umschalten: 1. Vektoren - Die Bausteine">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-1" aria-labelledby="quarto-sidebar-section-1-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_1/vektor_grundlagen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">1.1. Grundlagen</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_1/vektor_operationen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">1.2. Vektor-Operationen</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_1/vektor_skalarprodukt.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">1.3. Skalarprodukt</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_1/vektor_laenge.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">1.4. Länge (Norm)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_1/vektor_winkel.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">1.5. Winkel zwischen Vektoren</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_1/vektor_repraesentation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">1.6. Vektoren als Datenrepräsentation</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../Qmd-Files/Kapitel_2/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-2-label">2. Matrizen in Python definieren</span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-controls="quarto-sidebar-section-2" aria-expanded="false" aria-label="Abschnitt umschalten: 2. Matrizen in Python definieren">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-2" aria-labelledby="quarto-sidebar-section-2-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_2/matrizen_grundlagen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">2.1. Grundlagen</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_2/matrizen_attribute.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">2.2. Matrix-Attribute</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_2/matrizen_spezielle.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">2.3. Spezielle Matrizen</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_2/matrizen_zugriff.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">2.4. Zugriff auf Elemente</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../Qmd-Files/Kapitel_3/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-3-label">3. Grundlegende Matrix-Operationen</span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-controls="quarto-sidebar-section-3" aria-expanded="false" aria-label="Abschnitt umschalten: 3. Grundlegende Matrix-Operationen">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-3" aria-labelledby="quarto-sidebar-section-3-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_3/matrizen_elementweise_addition_subtraktion_skalar.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">3.1. Elementweise Addition, Subtraktion und Skalarmultiplikation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_3/matrizen_transponieren.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">3.2. Transponieren</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_3/matrizen_vektor_multiplikation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">3.3. Matrix-Vektor-Multiplikation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_3/matrizen_multiplikation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">3.4. Matrizen-Multiplikation</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../Qmd-Files/Kapitel_4/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-4-label">4. Kernoperationen der Linearen Algebra</span></a>
+            <button type="button" class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-controls="quarto-sidebar-section-4" aria-expanded="true" aria-label="Abschnitt umschalten: 4. Kernoperationen der Linearen Algebra">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-4" aria-labelledby="quarto-sidebar-section-4-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_4/kernoperationen_rang.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">4.1. Matrix-Rang</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_4/kernoperationen_determinante.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">4.2. Determinante</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_4/kernoperationen_inverse.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">4.3. Inverse</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../Qmd-Files/Kapitel_5/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-5-label">5. Anwendung 1 - Geometrische Transformationen</span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-controls="quarto-sidebar-section-5" aria-expanded="false" aria-label="Abschnitt umschalten: 5. Anwendung 1 - Geometrische Transformationen">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-5" aria-labelledby="quarto-sidebar-section-5-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_5/anwendung_geometrie_transformationen_konzept.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">5.1. Konzept geometrischer Transformationen</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_5/anwendung_geometrie_transformationen_berechnen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">5.2. Geometrische Transformationen berechnen</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_5/anwendung_geometrie_visualisierung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">5.3. Visualisierung geometrischer Transformationen</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../Qmd-Files/Kapitel_6/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-6-label">6. Anwendung 2 - Lineare Gleichungssysteme</span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-controls="quarto-sidebar-section-6" aria-expanded="false" aria-label="Abschnitt umschalten: 6. Anwendung 2 - Lineare Gleichungssysteme">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-6" aria-labelledby="quarto-sidebar-section-6-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_6/anwendung_lgs_grundlagen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">6.1. Problemstellung</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_6/anwendung_lgs_loesungsmethoden.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">6.2. Lösungsmethoden</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../Qmd-Files/Kapitel_7/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-7-label">7. Eigenwerte und Eigenvektoren</span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-controls="quarto-sidebar-section-7" aria-expanded="false" aria-label="Abschnitt umschalten: 7. Eigenwerte und Eigenvektoren">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-7" aria-labelledby="quarto-sidebar-section-7-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_7/eigenwerte_konzept.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">7.1. Konzept: Was sind Eigenwerte &amp; -vektoren?</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_7/eigenwerte_berechnung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">7.2. Berechnung in Python</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_7/eigenwerte_visualisierung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">7.3. Visualisierung &amp; Anwendungsfälle</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_8/cheatsheet.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">8. Überblick über die Inhalte</span></a>
+  </div>
+</li>
+    </ul>
+    <label class="sidebar-alle-ausklappen"><input type="checkbox"><span class="auf">▼ Alle ausklappen</span><span class="zu">▲ Alle einklappen</span></label>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active">
+    <h2 id="toc-title">Auf dieser Seite</h2>
+   
+  <ul>
+  <li><a href="#definition" id="toc-definition" class="nav-link active" data-scroll-target="#definition">4.1.1. Definition</a></li>
+  <li><a href="#rang-in-numpy-berechnen" id="toc-rang-in-numpy-berechnen" class="nav-link" data-scroll-target="#rang-in-numpy-berechnen">4.1.2. Rang in NumPy berechnen</a></li>
+  <li><a href="#übung" id="toc-übung" class="nav-link" data-scroll-target="#übung">4.1.3. Übung</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content" tabindex="-1">
+
+<script>window.__aiFeedbackPolicies = {"layers":[],"pageLayers":[]};</script>
+<script>window.__aiFeedbackConfig = {"baseUrl":"","mode":"copy","model":""};</script>
+<script>window.__mathExerciseConfig = {"lang":"de","stopAfter":20};</script>
+<script>window.__pyExerciseConfig = {"feedback":false,"lang":"de","stopAfter":20,"submission":false,"submissionKey":"py-exercise"};</script>
+<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.46.0/min/vs/loader.js"></script>
+<script type="module" id="qpyodide-monaco-editor-init">
+
+  // Configure the Monaco Editor's loader
+  require.config({
+    paths: {
+      'vs': CTMAssets.url('monaco-editor', 'min/vs')
+    }
+  });
+</script>
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="Pfad"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../Qmd-Files/Kapitel_4/index.html">4. Kernoperationen der Linearen Algebra</a></li><li class="breadcrumb-item"><a href="../../Qmd-Files/Kapitel_4/kernoperationen_rang.html">4.1. Matrix-Rang</a></li></ol></nav>
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">4.1. Rang einer Matrix</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!--ctm-save-generated--><div class="ctm-save-bar" role="region" aria-label="Gespeicherte Antworten" hidden=""><p class="ctm-save-notice">Ihre Antworten werden nur in diesem Browser gespeichert.</p><div class="ctm-save-actions"><button type="button" data-ctm-save-toggle="">Auf diesem Gerät nicht speichern</button>
+<button type="button" data-ctm-export="">Meine Antworten exportieren</button>
+<button type="button" data-ctm-clear-page="">Antworten auf dieser Seite löschen</button>
+<button type="button" data-ctm-clear-course="">Alle Antworten in diesem Kurs löschen</button></div><span class="ctm-save-status" role="status" aria-live="polite"></span></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Hinweis</span>Zellen der Reihe nach ausführen
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Die Code-Zellen dieser Seite bauen aufeinander auf: Importe, Variablen und Funktionen aus einer Zelle gelten auch in allen späteren Zellen und werden dort nicht wiederholt. Führe die Zellen deshalb von oben nach unten aus. Meldet Python einen <code>NameError</code>, hast du meist eine frühere Zelle noch nicht ausgeführt.</p>
+</div>
+</div>
+<section id="definition" class="level2">
+<h2 class="anchored" data-anchor-id="definition">4.1.1. Definition</h2>
+<p>Der <strong>Rang</strong> einer Matrix <span class="math inline">\(A\)</span>, geschrieben <span class="math inline">\(\operatorname{rang}(A)\)</span> (manchmal auch <span class="math inline">\(\operatorname{rg}(A)\)</span>), ist die maximale Anzahl <strong>linear unabhängiger</strong> Spaltenvektoren (oder Zeilenvektoren) der Matrix.</p>
+<p>Dabei heißen Vektoren <span class="math inline">\(\vec{v}_1, \dots, \vec{v}_k\)</span> <strong>linear unabhängig</strong>, wenn die Gleichung <span class="math display">\[ a_1 \vec{v}_1 + a_2 \vec{v}_2 + \dots + a_k \vec{v}_k = \vec{0} \]</span> nur für <span class="math inline">\(a_1 = a_2 = \dots = a_k = 0\)</span> erfüllt ist. Anschaulich: Keiner der Vektoren lässt sich aus den übrigen durch Vervielfachen und Addieren zusammensetzen. Andernfalls heißen sie <strong>linear abhängig</strong>.</p>
+<p>Die maximale Anzahl linear unabhängiger Spalten heißt genauer <strong>Spaltenrang</strong>, die maximale Anzahl linear unabhängiger Zeilen <strong>Zeilenrang</strong>. Dass man in der Definition Spalten oder Zeilen nehmen darf, liegt an folgendem Satz. Für jede Matrix gilt: <span class="math display">\[ \text{Zeilenrang} = \text{Spaltenrang} = \text{Rang der Matrix} \]</span></p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Hinweis</span>Warum gilt das?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Sei <span class="math inline">\(A\)</span> eine <span class="math inline">\(m \times n\)</span>-Matrix mit Spaltenrang <span class="math inline">\(r\)</span>.</p>
+<ol type="1">
+<li>Wähle <span class="math inline">\(r\)</span> linear unabhängige Spalten von <span class="math inline">\(A\)</span> und schreibe sie nebeneinander in eine <span class="math inline">\(m \times r\)</span>-Matrix <span class="math inline">\(C\)</span>. Weil <span class="math inline">\(r\)</span> die <em>maximale</em> Anzahl ist, lässt sich jede Spalte von <span class="math inline">\(A\)</span> aus den Spalten von <span class="math inline">\(C\)</span> durch Vervielfachen und Addieren bilden.</li>
+<li>Schreibe die dafür nötigen Faktoren der <span class="math inline">\(j\)</span>-ten Spalte von <span class="math inline">\(A\)</span> in die <span class="math inline">\(j\)</span>-te Spalte einer <span class="math inline">\(r \times n\)</span>-Matrix <span class="math inline">\(R\)</span>. Nach der Definition der <a href="../../Qmd-Files/Kapitel_3/matrizen_multiplikation.html">Matrizenmultiplikation</a> heißt das genau <span class="math display">\[ A = C \cdot R. \]</span></li>
+<li>Lies dasselbe Produkt nun zeilenweise: Die <span class="math inline">\(i\)</span>-te Zeile von <span class="math inline">\(A\)</span> ist die Summe der <span class="math inline">\(r\)</span> Zeilen von <span class="math inline">\(R\)</span>, jeweils vervielfacht mit den Einträgen der <span class="math inline">\(i\)</span>-ten Zeile von <span class="math inline">\(C\)</span>. Jede Zeile von <span class="math inline">\(A\)</span> lässt sich also aus nur <span class="math inline">\(r\)</span> Vektoren bilden. Mehr als <span class="math inline">\(r\)</span> linear unabhängige Zeilen kann <span class="math inline">\(A\)</span> deshalb nicht haben: <span class="math display">\[ \text{Zeilenrang}(A) \le r = \text{Spaltenrang}(A). \]</span></li>
+<li>Dieselbe Überlegung gilt für die transponierte Matrix <span class="math inline">\(A^T\)</span>. Deren Spalten sind die Zeilen von <span class="math inline">\(A\)</span> und deren Zeilen die Spalten von <span class="math inline">\(A\)</span>, also folgt <span class="math inline">\(\text{Spaltenrang}(A) \le \text{Zeilenrang}(A)\)</span>.</li>
+</ol>
+<p>Beide Ungleichungen zusammen ergeben die Gleichheit. Als Folgerung ändert sich der Rang beim Transponieren nicht: <span class="math inline">\(\operatorname{rang}(A^T) = \operatorname{rang}(A)\)</span>.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Wichtig</span>Kurzer Exkurs Dimension des Zeilen-/Spaltenraums
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Oft taucht im Kopf eines Studierenden beim Begriff <strong>Rang</strong> einer Matrix der Begriff <strong>Dimension</strong> auf. Hier eine kurze Einordnung: Mit der Dimension ist in diesem Fall keineswegs das <span class="math inline">\(m\)</span> oder das <span class="math inline">\(n\)</span> einer <span class="math inline">\(m \times n\)</span>-Matrix gemeint. Vielmehr ist damit die Dimension des Zeilenraums beziehungsweise des Spaltenraums gemeint.<br>
+Der <strong>Spaltenraum</strong> von <span class="math inline">\(A\)</span> ist die Menge aller Vektoren, die sich aus den Spalten von <span class="math inline">\(A\)</span> durch Vervielfachen und Addieren bilden lassen, der <strong>Zeilenraum</strong> entsprechend aus den Zeilen. Die <strong>Dimension</strong> <span class="math inline">\(\dim\)</span> eines solchen Raumes ist die Anzahl der Vektoren in einer Basis, also in einer kleinstmöglichen Auswahl linear unabhängiger Vektoren, aus denen sich alle Vektoren des Raumes bilden lassen. Da der <strong>Rang</strong> die maximale Anzahl linear unabhängiger Spalten (bzw. Zeilen) angibt, ist er genau diese Dimension: <span class="math display">\[\operatorname{rang}(A) = \dim(\text{Zeilenraum}(A)) = \dim(\text{Spaltenraum}(A))\]</span> Der Spaltenraum heißt auch <strong>Bild</strong> von <span class="math inline">\(A\)</span>, denn er besteht genau aus den Vektoren <span class="math inline">\(A \cdot \vec{x}\)</span>. Deshalb schreibt man auch <span class="math inline">\(\operatorname{rang}(A) = \dim(\operatorname{Bild}(A))\)</span>.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="rang-in-numpy-berechnen" class="level2">
+<h2 class="anchored" data-anchor-id="rang-in-numpy-berechnen">4.1.2. Rang in NumPy berechnen</h2>
+<p>Einer der großen Vorteile von Python ist, dass wir hier Verfahren wie den Gauß-Algorithmus nicht per Hand bestimmen müssen. So gibt es auch für den Rang eine passende <code>numpy</code>-Funktion. <code>np.linalg.matrix_rank()</code>.</p>
+<p>Ein Beispiel: Die zweite Matrix hat eine Zeile, die die Summe der anderen beiden ist, deshalb ist ihr Rang kleiner als 3.</p>
+<div id="qpyodide-insertion-location-1"></div>
+<noscript>Bitte JavaScript aktivieren, um die interaktiven Code-Zellen dieser Seite zu nutzen.</noscript>
+</section>
+<section id="übung" class="level2">
+<h2 class="anchored" data-anchor-id="übung">4.1.3. Übung</h2>
+<p>Schau dir zuerst die Zeilen genau an. Für kleine Matrizen kannst du den Rang oft ohne Rechnung sehen, wenn eine Zeile ein Vielfaches oder eine Summe anderer Zeilen ist:</p>
+<div class="math-exercise-cell" data-similar="false" data-similar-guidance="[]" data-generation-policy="[]" data-similar-data="" id="math-exercise-1" data-label="rang-hand" data-mode="equivalent" data-reject="" data-vars="" data-tolerance="" data-decplaces="" data-sigfigs="" data-form="" data-checker="&quot;&quot;" data-givens="&quot;&quot;" data-packages="[]" data-response="" data-embed-response="false" data-partial-credit="true" data-form-credit="0.5" data-field-labels="[]" data-vecdir="col" data-feedback-policy="{&quot;exercise&quot;:&quot;rang-hand&quot;,&quot;name&quot;:&quot;&quot;}" data-variant-boards="[]" data-variant-board-title="" data-context-mode="auto" data-context-refs="auto" data-context="&quot;4.1.3. Übung\nSchau dir zuerst die Zeilen genau an. Für kleine Matrizen kannst du den Rang oft ohne Rechnung sehen, wenn eine Zeile ein Vielfaches oder eine Summe anderer Zeilen ist:&quot;" data-context-text="&quot;&quot;" data-ctm-runtime-id="ctm-block-2" data-ctm-save="true" data-ctm-id="rang-hand" data-ctm-component="math-exercise" data-ctm-source="9fad6b518253e066" data-fields="[&quot;math-exercise-1-f1&quot;,&quot;math-exercise-1-f2&quot;,&quot;math-exercise-1-f3&quot;]" data-structural-field-labels="[&quot;&quot;,&quot;&quot;,&quot;&quot;]">
+<div class="math-exercise-caption math-exercise-toggle" data-math-exercise-source="Rang ablesen" role="button" tabindex="0" aria-expanded="false"><span class="math-chevron" aria-hidden="true"></span>Rang ablesen</div>
+
+<div class="math-exercise-body" aria-hidden="true">
+<div id="rang-hand-question" class="math-exercise-question ai-feedback-context" data-math-exercise-source="\(\operatorname{rang}\begin{pmatrix} 1 &amp;amp; 2 \\ 2 &amp;amp; 4 \end{pmatrix} =\) <input type=&quot;text&quot; id=&quot;math-exercise-1-f1&quot; data-vars=&quot;&quot; autocomplete=&quot;off&quot; autocorrect=&quot;off&quot; spellcheck=&quot;false&quot; class=&quot;math-input math-input-small&quot;><br>
+<br>
+\(\operatorname{rang}\begin{pmatrix} 1 &amp;amp; 0 &amp;amp; 0 \\ 0 &amp;amp; 1 &amp;amp; 0 \\ 0 &amp;amp; 0 &amp;amp; 1 \end{pmatrix} =\) <input type=&quot;text&quot; id=&quot;math-exercise-1-f2&quot; data-vars=&quot;&quot; autocomplete=&quot;off&quot; autocorrect=&quot;off&quot; spellcheck=&quot;false&quot; class=&quot;math-input math-input-small&quot;><br>
+<br>
+\(\operatorname{rang}\begin{pmatrix} 1 &amp;amp; 2 &amp;amp; 3 \\ 2 &amp;amp; 4 &amp;amp; 6 \\ 1 &amp;amp; 1 &amp;amp; 1 \end{pmatrix} =\) <input type=&quot;text&quot; id=&quot;math-exercise-1-f3&quot; data-vars=&quot;&quot; autocomplete=&quot;off&quot; autocorrect=&quot;off&quot; spellcheck=&quot;false&quot; class=&quot;math-input math-input-small&quot;>">\(\operatorname{rang}\begin{pmatrix} 1 &amp; 2 \\ 2 &amp; 4 \end{pmatrix} =\) <input type="text" id="math-exercise-1-f1" data-answer="1" data-vars="" autocomplete="off" autocorrect="off" spellcheck="false" class="math-input math-input-small"><br>
+<br>
+\(\operatorname{rang}\begin{pmatrix} 1 &amp; 0 &amp; 0 \\ 0 &amp; 1 &amp; 0 \\ 0 &amp; 0 &amp; 1 \end{pmatrix} =\) <input type="text" id="math-exercise-1-f2" data-answer="3" data-vars="" autocomplete="off" autocorrect="off" spellcheck="false" class="math-input math-input-small"><br>
+<br>
+\(\operatorname{rang}\begin{pmatrix} 1 &amp; 2 &amp; 3 \\ 2 &amp; 4 &amp; 6 \\ 1 &amp; 1 &amp; 1 \end{pmatrix} =\) <input type="text" id="math-exercise-1-f3" data-answer="2" data-vars="" autocomplete="off" autocorrect="off" spellcheck="false" class="math-input math-input-small"></div>
+
+<div class="math-exercise-controls">
+  <button type="button" class="btn btn-primary math-check-btn">✓&nbsp;Überprüfen</button>
+  <button type="button" class="btn btn-light math-legend-btn">ⓘ&nbsp;Eingabe-Hilfe</button>
+  <div class="btn-group">
+    <button type="button" class="btn btn-light math-feedback-btn">💬&nbsp;Feedback</button>
+    <button type="button" class="btn btn-light math-reconfig-btn" title="KI-Konfiguration ändern">⚙</button>
+  </div>
+</div>
+<div class="math-legend-panel" style="display:none;"></div>
+<div class="math-feedback-area"></div>
+</div>
+</div>
+<p><strong>Aufgabe:</strong> Eine Matrix hat <strong>vollen Rang</strong>, wenn ihr Rang gleich der kleineren ihrer beiden Dimensionen ist. Schreibe eine Funktion <code>hat_vollen_rang(M)</code>, die <code>True</code> oder <code>False</code> zurückgibt. Versteckte Tests prüfen automatisch, ob deine Lösung stimmt.</p>
+<p><strong>Befehle, die du brauchst:</strong> <code>np.linalg.matrix_rank()</code>, das Attribut <code>.shape</code>, <code>min()</code>, der Vergleich <code>==</code>, <code>return</code>.</p>
+<div class="py-exercise-cell" id="py-exercise-1" data-ctm-component="py-exercise" data-ctm-id="rang-uebung" data-ctm-runtime-id="ctm-block-3" data-ctm-source="53178a2c3e72d291" data-ctm-save="true">
+  <noscript>
+    Bitte JavaScript aktivieren, um die interaktive Aufgabe zu laden.
+  </noscript>
+</div>
+<script>
+(window.__pyExercises = window.__pyExercises || []).push({"caption":"hat_vollen_rang implementieren","feedbackLanguage":"de","forbiddenImports":[],"forbiddenKeywords":[],"id":1,"label":"rang-uebung","learnerLevel":"","save":true,"showTestHints":false,"source":"53178a2c3e72d291","starter":"import numpy as np\n\ndef hat_vollen_rang(M):\n    # Dein Code hier\n    pass","storeId":"rang-uebung","tests":"A = np.array([[1, 0, 1], [2, 1, 1], [1, 1, 2]])\nB = np.array([[1, 0, 1], [2, 1, 1], [3, 1, 2]])\nC = np.array([[1, 2, 3], [4, 5, 6]])\nassert hat_vollen_rang(A) == True, \"A hat Rang 3, also vollen Rang\"\nassert hat_vollen_rang(B) == False, \"B hat nur Rang 2 (3. Zeile = 1. Zeile + 2. Zeile)\"\nassert hat_vollen_rang(C) == True, \"C (2x3) hat Rang 2 = min(2, 3), also vollen Rang\""});
+</script>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tipp</span>Tipp
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Der Rang kann höchstens so groß sein wie die kleinere der beiden Dimensionen: <code>min(M.shape)</code>. Vergleiche <code>np.linalg.matrix_rank(M)</code> damit.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Vorsicht</span>Lösung
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" data-ai-feedback-context="4.1.3. Übung
+Schau dir zuerst die Zeilen genau an. Für kleine Matrizen kannst du den Rang oft ohne Rechnung sehen, wenn eine Zeile ein Vielfaches oder eine Summe anderer Zeilen ist:
+Aufgabe: Eine Matrix hat vollen Rang, wenn ihr Rang gleich der kleineren ihrer beiden Dimensionen ist. Schreibe eine Funktion hat_vollen_rang(M), die True oder False zurückgibt. Versteckte Tests prüfen automatisch, ob deine Lösung stimmt.
+Befehle, die du brauchst: np.linalg.matrix_rank(), das Attribut .shape, min(), der Vergleich ==, return.
+Lösung"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> hat_vollen_rang(M):</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.linalg.matrix_rank(M) <span class="op">==</span> <span class="bu">min</span>(M.shape)</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Warum hat <code>B</code> nur Rang 2? Die dritte Zeile ist die Summe der ersten beiden und liefert keine neue Information.</p>
+</div>
+</div>
+</div>
+<p>Der Rang ist eine wichtige Eigenschaft, die eng mit der Lösbarkeit von linearen Gleichungssystemen und der Invertierbarkeit von Matrizen zusammenhängt, wie wir in den nächsten Abschnitten zur <a href="../../Qmd-Files/Kapitel_4/kernoperationen_determinante.html">Determinante</a> und <a href="../../Qmd-Files/Kapitel_4/kernoperationen_inverse.html">Inversen</a> sehen werden.</p>
+
+
+<!-- -->
+
+<!--ctm-save-generated--><script type="application/json" id="ctm-store-manifest">{"exercises":[{"component":"math-exercise","id":"rang-hand","order":2,"runtimeId":"ctm-block-2","save":true,"source":"9fad6b518253e066"},{"component":"pyodide-interaktiv","id":"cell:6730f45db1b86654","order":3,"runtimeId":"ctm-runtime-3","save":false,"source":"6730f45db1b86654"},{"component":"py-exercise","id":"rang-uebung","order":3,"runtimeId":"ctm-block-3","save":true,"source":"53178a2c3e72d291"},{"component":"pyodide-interaktiv","id":"extra:cell:6730f45db1b86654","order":4,"runtimeId":"ctm-runtime-4","save":true,"source":"d3165623f8c50f1f"}],"export":true,"messages":{"answered":"Beantwortet, noch nicht bewertet","answersStorage":"Antworten \u0026 Speicherung","clearFailed":"Der Browserspeicher konnte nicht gelöscht oder aktualisiert werden. Entfernen Sie die Kursdaten in den Browsereinstellungen.","confirmClearCourse":"Alle gespeicherten Antworten in diesem Kurs löschen?","confirmClearPage":"Alle gespeicherten Antworten auf dieser Seite löschen?","confirmNewVariant":"Die ausgefüllten Antworten durch eine neue Variante ersetzen?","confirmSaveOff":"Alle gespeicherten Antworten dieses Kurses werden gelöscht und die Speicherung beendet.","copyAll":"Alles kopieren","correct":"✓ richtig","downloadHTML":".html herunterladen","downloadMarkdown":".md herunterladen","exercise":"Aufgabe","exportClose":"Schließen","exportTitle":"Meine Antworten exportieren","lastResult":"Letztes Ergebnis","locale":"de","notSaving":"Antworten werden nicht gespeichert","outdated":"Veraltet","partial":"½ teilweise","progressTitle":"Fortschritt auf dieser Seite","recordTooLarge":"Diese Antwort ist zum Speichern zu groß. Kopieren Sie sie, bevor Sie die Seite verlassen.","saveOff":"Auf diesem Gerät nicht speichern","saveOn":"Wieder speichern","savedLocal":"In diesem Browser gespeichert","savingDisabled":"Speichern ist für diese Seite ausgeschaltet.","savingLocal":"Speichern in diesem Browser","savingNotice":"Ihre Antworten werden nur in diesem Browser gespeichert.","savingOffNotice":"Speichern ist auf diesem Gerät für diesen Kurs ausgeschaltet.","settings":"Einstellungen","showSaved":"Gespeicherte Antwort anzeigen","sourceChanged":"Die Aufgabe wurde seit Ihrer Antwort geändert.","statusCorrect":"richtig","statusInvalid":"ungültig","statusPartial":"teilweise richtig","statusWrong":"falsch","storageUnavailable":"Speichern ist nicht verfügbar. Ihre Antworten bleiben nur im Arbeitsspeicher dieser Seite.","total":"{score} von {count}","unattempted":"– nicht versucht","variantChanged":"Diese Variante wurde geändert.","variantWithdrawn":"Diese Variante wurde zurückgezogen.","wrong":"✗ falsch"},"progress":false,"quizzes":[],"save":true,"v":1}</script>
+<!--ctm-layout-generated--><span id="ctm-layout-ready" hidden=""></span>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const toggle = window.document.createElement('button');
+      toggle.type = "button";
+      toggle.setAttribute("role", "switch");
+      toggle.setAttribute("aria-checked", "false");
+      toggle.classList.add('top-right');
+      toggle.classList.add('quarto-color-scheme-toggle');
+      toggle.setAttribute("aria-label", "Dunkelmodus umschalten");
+      toggle.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      toggle.appendChild(i);
+      // Put the toggle in a landmark of its own, so that landmark navigation
+      // can reach it.
+      //
+      // The container is always a fresh direct child of body, and the toggle is
+      // never moved into page furniture that the theme or the author controls.
+      // The toggle is positioned against the page, so any ancestor that
+      // establishes a containing block captures it: a positioned element or a
+      // grid for position: absolute, and transform, filter, will-change or
+      // contain for position: fixed. A direct child of body has none of these
+      // to inherit, and the shift when one appears is silent and visual.
+      //
+      // ARIA says a document should have at most one banner, and axe reports a
+      // duplicate whether or not the banners carry distinct labels. So use a
+      // header when the page has no banner yet, and a named region otherwise.
+      //
+      // A header is a banner wherever it sits, unless it is inside sectioning
+      // content, so this cannot just look at the children of body: a custom
+      // page layout wraps the title block header in a plain div. An explicit
+      // role="banner" always counts.
+      const sectioning = 'article, aside, main, nav, section, [role="article"], [role="complementary"], [role="main"], [role="navigation"], [role="region"]';
+      const hasBanner = Array.from(
+        window.document.querySelectorAll('header:not([role]), [role="banner"]')
+      ).some(function(el) {
+        return el.hasAttribute("role") || el.closest(sectioning) === null;
+      });
+      const container = window.document.createElement(hasBanner ? "div" : "header");
+      if (hasBanner) {
+        container.setAttribute("role", "region");
+        container.setAttribute("aria-label", "Dunkelmodus umschalten");
+      }
+      container.classList.add('quarto-color-scheme-toggle-container');
+      container.appendChild(toggle);
+      window.document.body.appendChild(container);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Kopiert");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Kopiert");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const cellDetails = window.document.querySelectorAll(".cell details.code-fold");
+        for (let i=0; i<cellDetails.length; i++) {
+          const details = cellDetails[i];
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell div.sourceCode.cell-code");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          // Each band is positioned against its own containing block, which is
+          // not the offsetParent of the lines, so place it from client rects.
+          const placeBand = (band, firstEl, lastEl, codeBlock) => {
+            const container = band.offsetParent;
+            if (container === null) {
+              return;
+            }
+            const containerRect = container.getBoundingClientRect();
+            // Reveal.js scales slides with a transform, so convert client
+            // pixels back to the CSS pixels of the container.
+            const scale = containerRect.height / container.offsetHeight || 1;
+            const firstRect = firstEl.getBoundingClientRect();
+            const lastRect = lastEl.getBoundingClientRect();
+            const top = (firstRect.top - containerRect.top) / scale - container.clientTop + container.scrollTop;
+            const height = (lastRect.bottom - firstRect.top) / scale;
+            band.style.top = top - 2 + "px";
+            band.style.height = height + 4 + "px";
+            if (codeBlock) {
+              // Without the copy button wrapper, the containing block is wider
+              // than the code block, so span the code block explicitly.
+              const blockRect = codeBlock.getBoundingClientRect();
+              band.style.left = (blockRect.left - containerRect.left) / scale - container.clientLeft + container.scrollLeft + "px";
+              band.style.width = blockRect.width / scale + "px";
+            }
+          };
+          if (lineIds.length > 0) {
+            const el = window.document.getElementById(lineIds[0]);
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const parent = el.parentElement.parentElement;
+            // cook up a div (if necessary) and position it
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            placeBand(div, el, lastEl, parent.closest("div.sourceCode") || parent);
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            placeBand(gutterDiv, el, lastEl);
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Scrollbarer Code","output":"Scrollbare Ausgabe"};
+  </script>
+<nav class="page-navigation" aria-label="Seite">
+  <div class="nav-page nav-page-previous">
+      <a href="../../Qmd-Files/Kapitel_4/index.html" class="pagination-link" aria-label="4. Kernoperationen der Linearen Algebra">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">4. Kernoperationen der Linearen Algebra</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../Qmd-Files/Kapitel_4/kernoperationen_determinante.html" class="pagination-link" aria-label="4.2. Determinante">
+        <span class="nav-page-text">4.2. Determinante</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Quellcode</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" data-shortcodes="false" data-ai-feedback-context="4.1.3. Übung
+Schau dir zuerst die Zeilen genau an. Für kleine Matrizen kannst du den Rang oft ohne Rechnung sehen, wenn eine Zeile ein Vielfaches oder eine Summe anderer Zeilen ist:
+Aufgabe: Eine Matrix hat vollen Rang, wenn ihr Rang gleich der kleineren ihrer beiden Dimensionen ist. Schreibe eine Funktion hat_vollen_rang(M), die True oder False zurückgibt. Versteckte Tests prüfen automatisch, ob deine Lösung stimmt.
+Befehle, die du brauchst: np.linalg.matrix_rank(), das Attribut .shape, min(), der Vergleich ==, return.
+Der Rang ist eine wichtige Eigenschaft, die eng mit der Lösbarkeit von linearen Gleichungssystemen und der Invertierbarkeit von Matrizen zusammenhängt, wie wir in den nächsten Abschnitten zur Determinante und Inversen sehen werden."><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "4.1. Rang einer Matrix"</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="an">title-en:</span><span class="co"> "4.1. Rank of a Matrix"</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span><span class="co"> html</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="an">filters:</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">  - ctm-assessment</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="an">engine:</span><span class="co"> markdown</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>:::: {.content-visible when-profile="deutsch"}</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Zellen der Reihe nach ausführen"}</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>Die Code-Zellen dieser Seite bauen aufeinander auf: Importe, Variablen und Funktionen aus einer Zelle gelten auch in allen späteren Zellen und werden dort nicht wiederholt. Führe die Zellen deshalb von oben nach unten aus. Meldet Python einen <span class="in">`NameError`</span>, hast du meist eine frühere Zelle noch nicht ausgeführt.</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="fu">## 4.1.1. Definition</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>Der **Rang** einer Matrix $A$, geschrieben $\operatorname{rang}(A)$ (manchmal auch $\operatorname{rg}(A)$), ist die maximale Anzahl **linear unabhängiger** Spaltenvektoren (oder Zeilenvektoren) der Matrix.</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>Dabei heißen Vektoren $\vec{v}_1, \dots, \vec{v}_k$ **linear unabhängig**, wenn die Gleichung</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>$$ a_1 \vec{v}_1 + a_2 \vec{v}_2 + \dots + a_k \vec{v}_k = \vec{0} $$</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>nur für $a_1 = a_2 = \dots = a_k = 0$ erfüllt ist. Anschaulich: Keiner der Vektoren lässt sich aus den übrigen durch Vervielfachen und Addieren zusammensetzen. Andernfalls heißen sie **linear abhängig**.</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>Die maximale Anzahl linear unabhängiger Spalten heißt genauer **Spaltenrang**, die maximale Anzahl linear unabhängiger Zeilen **Zeilenrang**. Dass man in der Definition Spalten oder Zeilen nehmen darf, liegt an folgendem Satz. Für jede Matrix gilt:</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>$$ \text{Zeilenrang} = \text{Spaltenrang} = \text{Rang der Matrix} $$</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>:::{.callout-note title="Warum gilt das?" collapse="true"}</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>Sei $A$ eine $m \times n$-Matrix mit Spaltenrang $r$.</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Wähle $r$ linear unabhängige Spalten von $A$ und schreibe sie nebeneinander in eine $m \times r$-Matrix $C$. Weil $r$ die *maximale* Anzahl ist, lässt sich jede Spalte von $A$ aus den Spalten von $C$ durch Vervielfachen und Addieren bilden.</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Schreibe die dafür nötigen Faktoren der $j$-ten Spalte von $A$ in die $j$-te Spalte einer $r \times n$-Matrix $R$. Nach der Definition der <span class="co">[</span><span class="ot">Matrizenmultiplikation</span><span class="co">](../Kapitel_3/matrizen_multiplikation.qmd)</span> heißt das genau</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>$$ A = C \cdot R. $$</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Lies dasselbe Produkt nun zeilenweise: Die $i$-te Zeile von $A$ ist die Summe der $r$ Zeilen von $R$, jeweils vervielfacht mit den Einträgen der $i$-ten Zeile von $C$. Jede Zeile von $A$ lässt sich also aus nur $r$ Vektoren bilden. Mehr als $r$ linear unabhängige Zeilen kann $A$ deshalb nicht haben:</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>$$ \text{Zeilenrang}(A) \le r = \text{Spaltenrang}(A). $$</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Dieselbe Überlegung gilt für die transponierte Matrix $A^T$. Deren Spalten sind die Zeilen von $A$ und deren Zeilen die Spalten von $A$, also folgt $\text{Spaltenrang}(A) \le \text{Zeilenrang}(A)$.</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>Beide Ungleichungen zusammen ergeben die Gleichheit. Als Folgerung ändert sich der Rang beim Transponieren nicht: $\operatorname{rang}(A^T) = \operatorname{rang}(A)$.</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>:::{.callout-important title="Kurzer Exkurs Dimension des Zeilen-/Spaltenraums" collapse="true"}</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>Oft taucht im Kopf eines Studierenden beim Begriff **Rang** einer Matrix der Begriff **Dimension** auf.</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>Hier eine kurze Einordnung: Mit der Dimension ist in diesem Fall keineswegs das $m$ oder das $n$ einer $m \times n$-Matrix gemeint. Vielmehr ist damit die Dimension des Zeilenraums beziehungsweise des Spaltenraums gemeint.  </span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>Der **Spaltenraum** von $A$ ist die Menge aller Vektoren, die sich aus den Spalten von $A$ durch Vervielfachen und Addieren bilden lassen, der **Zeilenraum** entsprechend aus den Zeilen. Die **Dimension** $\dim$ eines solchen Raumes ist die Anzahl der Vektoren in einer Basis, also in einer kleinstmöglichen Auswahl linear unabhängiger Vektoren, aus denen sich alle Vektoren des Raumes bilden lassen. Da der **Rang** die maximale Anzahl linear unabhängiger Spalten (bzw. Zeilen) angibt, ist er genau diese Dimension:</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>$$\operatorname{rang}(A) = \dim(\text{Zeilenraum}(A)) = \dim(\text{Spaltenraum}(A))$$</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>Der Spaltenraum heißt auch **Bild** von $A$, denn er besteht genau aus den Vektoren $A \cdot \vec{x}$. Deshalb schreibt man auch $\operatorname{rang}(A) = \dim(\operatorname{Bild}(A))$.</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a><span class="fu">## 4.1.2. Rang in NumPy berechnen</span></span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>Einer der großen Vorteile von Python ist, dass wir hier Verfahren wie den Gauß-Algorithmus nicht per Hand bestimmen müssen. So gibt es auch für den Rang eine passende <span class="in">`numpy`</span>-Funktion.</span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a><span class="in">`np.linalg.matrix_rank()`</span>.</span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>Ein Beispiel: Die zweite Matrix hat eine Zeile, die die Summe der anderen beiden ist, deshalb ist ihr Rang kleiner als 3.</span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a><span class="in">```{pyodide-python}</span></span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a><span class="co">#| read-only: true</span></span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> np.array([[<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>],</span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>              [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>],</span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>              [<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>]])</span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>B <span class="op">=</span> np.array([[<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>],</span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>              [<span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>],</span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a>              [<span class="dv">5</span>, <span class="dv">7</span>, <span class="dv">9</span>]])   <span class="co"># 3. Zeile = 1. Zeile + 2. Zeile</span></span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Rang von A:"</span>, np.linalg.matrix_rank(A))</span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Rang von B:"</span>, np.linalg.matrix_rank(B))</span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a><span class="fu">## 4.1.3. Übung</span></span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>Schau dir zuerst die Zeilen genau an. Für kleine Matrizen kannst du den Rang oft ohne Rechnung sehen, wenn eine Zeile ein Vielfaches oder eine Summe anderer Zeilen ist:</span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a><span class="in">```{math-exercise}</span></span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a><span class="in">#| label: rang-hand</span></span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a><span class="in">#| caption: Rang ablesen</span></span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a><span class="in">#| partial-credit: true</span></span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a><span class="in">$\operatorname{rang}\begin{pmatrix} 1 &amp; 2 \\ 2 &amp; 4 \end{pmatrix} =$ _[1]</span></span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a><span class="in">$\operatorname{rang}\begin{pmatrix} 1 &amp; 0 &amp; 0 \\ 0 &amp; 1 &amp; 0 \\ 0 &amp; 0 &amp; 1 \end{pmatrix} =$ _[3]</span></span>
+<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a><span class="in">$\operatorname{rang}\begin{pmatrix} 1 &amp; 2 &amp; 3 \\ 2 &amp; 4 &amp; 6 \\ 1 &amp; 1 &amp; 1 \end{pmatrix} =$ _[2]</span></span>
+<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a>**Aufgabe:** Eine Matrix hat **vollen Rang**, wenn ihr Rang gleich der kleineren ihrer beiden Dimensionen ist. Schreibe eine Funktion <span class="in">`hat_vollen_rang(M)`</span>, die <span class="in">`True`</span> oder <span class="in">`False`</span> zurückgibt. Versteckte Tests prüfen automatisch, ob deine Lösung stimmt.</span>
+<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a>**Befehle, die du brauchst:** <span class="in">`np.linalg.matrix_rank()`</span>, das Attribut <span class="in">`.shape`</span>, <span class="in">`min()`</span>, der Vergleich <span class="in">`==`</span>, <span class="in">`return`</span>.</span>
+<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-90"><a href="#cb2-90" aria-hidden="true" tabindex="-1"></a><span class="in">```{py-exercise}</span></span>
+<span id="cb2-91"><a href="#cb2-91" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: rang-uebung</span></span>
+<span id="cb2-92"><a href="#cb2-92" aria-hidden="true" tabindex="-1"></a><span class="co">#| caption: hat_vollen_rang implementieren</span></span>
+<span id="cb2-93"><a href="#cb2-93" aria-hidden="true" tabindex="-1"></a><span class="co">#| show-test-hints: false</span></span>
+<span id="cb2-94"><a href="#cb2-94" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-95"><a href="#cb2-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-96"><a href="#cb2-96" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> hat_vollen_rang(M):</span>
+<span id="cb2-97"><a href="#cb2-97" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Dein Code hier</span></span>
+<span id="cb2-98"><a href="#cb2-98" aria-hidden="true" tabindex="-1"></a>    <span class="cf">pass</span></span>
+<span id="cb2-99"><a href="#cb2-99" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-100"><a href="#cb2-100" aria-hidden="true" tabindex="-1"></a><span class="co">## TESTS ##</span></span>
+<span id="cb2-101"><a href="#cb2-101" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> np.array([[<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>], [<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">1</span>], [<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>]])</span>
+<span id="cb2-102"><a href="#cb2-102" aria-hidden="true" tabindex="-1"></a>B <span class="op">=</span> np.array([[<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>], [<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">1</span>], [<span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">2</span>]])</span>
+<span id="cb2-103"><a href="#cb2-103" aria-hidden="true" tabindex="-1"></a>C <span class="op">=</span> np.array([[<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>], [<span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>]])</span>
+<span id="cb2-104"><a href="#cb2-104" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> hat_vollen_rang(A) <span class="op">==</span> <span class="va">True</span>, <span class="st">"A hat Rang 3, also vollen Rang"</span></span>
+<span id="cb2-105"><a href="#cb2-105" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> hat_vollen_rang(B) <span class="op">==</span> <span class="va">False</span>, <span class="st">"B hat nur Rang 2 (3. Zeile = 1. Zeile + 2. Zeile)"</span></span>
+<span id="cb2-106"><a href="#cb2-106" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> hat_vollen_rang(C) <span class="op">==</span> <span class="va">True</span>, <span class="st">"C (2x3) hat Rang 2 = min(2, 3), also vollen Rang"</span></span>
+<span id="cb2-107"><a href="#cb2-107" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb2-108"><a href="#cb2-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-109"><a href="#cb2-109" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip title="Tipp" collapse="true"}</span>
+<span id="cb2-110"><a href="#cb2-110" aria-hidden="true" tabindex="-1"></a>Der Rang kann höchstens so groß sein wie die kleinere der beiden Dimensionen: <span class="in">`min(M.shape)`</span>. Vergleiche <span class="in">`np.linalg.matrix_rank(M)`</span> damit.</span>
+<span id="cb2-111"><a href="#cb2-111" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb2-112"><a href="#cb2-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-113"><a href="#cb2-113" aria-hidden="true" tabindex="-1"></a>::: {.callout-caution title="Lösung" collapse="true"}</span>
+<span id="cb2-114"><a href="#cb2-114" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
+<span id="cb2-115"><a href="#cb2-115" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> hat_vollen_rang(M):</span>
+<span id="cb2-116"><a href="#cb2-116" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.linalg.matrix_rank(M) <span class="op">==</span> <span class="bu">min</span>(M.shape)</span>
+<span id="cb2-117"><a href="#cb2-117" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb2-118"><a href="#cb2-118" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-119"><a href="#cb2-119" aria-hidden="true" tabindex="-1"></a>Warum hat <span class="in">`B`</span> nur Rang 2? Die dritte Zeile ist die Summe der ersten beiden und liefert keine neue Information.</span>
+<span id="cb2-120"><a href="#cb2-120" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb2-121"><a href="#cb2-121" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-122"><a href="#cb2-122" aria-hidden="true" tabindex="-1"></a>Der Rang ist eine wichtige Eigenschaft, die eng mit der Lösbarkeit von linearen Gleichungssystemen und der Invertierbarkeit von Matrizen zusammenhängt, wie wir in den nächsten Abschnitten zur <span class="co">[</span><span class="ot">Determinante</span><span class="co">](kernoperationen_determinante.qmd)</span> und <span class="co">[</span><span class="ot">Inversen</span><span class="co">](kernoperationen_inverse.qmd)</span> sehen werden.</span>
+<span id="cb2-123"><a href="#cb2-123" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-124"><a href="#cb2-124" aria-hidden="true" tabindex="-1"></a>::::</span>
+<span id="cb2-125"><a href="#cb2-125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-126"><a href="#cb2-126" aria-hidden="true" tabindex="-1"></a>:::: {.content-visible when-profile="english"}</span>
+<span id="cb2-127"><a href="#cb2-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-128"><a href="#cb2-128" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Run the cells in order"}</span>
+<span id="cb2-129"><a href="#cb2-129" aria-hidden="true" tabindex="-1"></a>The code cells on this page build on each other: imports, variables and functions from one cell are also available in all later cells and are not repeated there. So run the cells from top to bottom. If Python reports a <span class="in">`NameError`</span>, you most likely have not run an earlier cell yet.</span>
+<span id="cb2-130"><a href="#cb2-130" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb2-131"><a href="#cb2-131" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-132"><a href="#cb2-132" aria-hidden="true" tabindex="-1"></a><span class="fu">## 4.1.1. Definition {#definition}</span></span>
+<span id="cb2-133"><a href="#cb2-133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-134"><a href="#cb2-134" aria-hidden="true" tabindex="-1"></a>The **rank** of a matrix $A$, written $\operatorname{rank}(A)$ (sometimes also $\operatorname{rk}(A)$), is the maximum number of **linearly independent** column vectors (or row vectors) of the matrix.</span>
+<span id="cb2-135"><a href="#cb2-135" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-136"><a href="#cb2-136" aria-hidden="true" tabindex="-1"></a>Vectors $\vec{v}_1, \dots, \vec{v}_k$ are called **linearly independent** if the equation</span>
+<span id="cb2-137"><a href="#cb2-137" aria-hidden="true" tabindex="-1"></a>$$ a_1 \vec{v}_1 + a_2 \vec{v}_2 + \dots + a_k \vec{v}_k = \vec{0} $$</span>
+<span id="cb2-138"><a href="#cb2-138" aria-hidden="true" tabindex="-1"></a>only holds for $a_1 = a_2 = \dots = a_k = 0$. Intuitively: none of the vectors can be built from the others by scaling and adding. Otherwise they are called **linearly dependent**.</span>
+<span id="cb2-139"><a href="#cb2-139" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-140"><a href="#cb2-140" aria-hidden="true" tabindex="-1"></a>More precisely, the maximum number of linearly independent columns is called the **column rank**, and the maximum number of linearly independent rows the **row rank**. That the definition may use columns or rows is due to the following theorem. For every matrix:</span>
+<span id="cb2-141"><a href="#cb2-141" aria-hidden="true" tabindex="-1"></a>$$ \text{row rank} = \text{column rank} = \text{rank of the matrix} $$</span>
+<span id="cb2-142"><a href="#cb2-142" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-143"><a href="#cb2-143" aria-hidden="true" tabindex="-1"></a>:::{.callout-note title="Why is this true?" collapse="true"}</span>
+<span id="cb2-144"><a href="#cb2-144" aria-hidden="true" tabindex="-1"></a>Let $A$ be an $m \times n$ matrix with column rank $r$.</span>
+<span id="cb2-145"><a href="#cb2-145" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-146"><a href="#cb2-146" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Choose $r$ linearly independent columns of $A$ and write them side by side into an $m \times r$ matrix $C$. Because $r$ is the *maximum* number, every column of $A$ can be built from the columns of $C$ by scaling and adding.</span>
+<span id="cb2-147"><a href="#cb2-147" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Write the factors needed for the $j$-th column of $A$ into the $j$-th column of an $r \times n$ matrix $R$. By the definition of <span class="co">[</span><span class="ot">matrix multiplication</span><span class="co">](../Kapitel_3/matrizen_multiplikation.qmd)</span> this means exactly</span>
+<span id="cb2-148"><a href="#cb2-148" aria-hidden="true" tabindex="-1"></a>$$ A = C \cdot R. $$</span>
+<span id="cb2-149"><a href="#cb2-149" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Now read the same product row by row: the $i$-th row of $A$ is the sum of the $r$ rows of $R$, each scaled by the entries of the $i$-th row of $C$. So every row of $A$ can be built from only $r$ vectors. Therefore $A$ cannot have more than $r$ linearly independent rows:</span>
+<span id="cb2-150"><a href="#cb2-150" aria-hidden="true" tabindex="-1"></a>$$ \text{row rank}(A) \le r = \text{column rank}(A). $$</span>
+<span id="cb2-151"><a href="#cb2-151" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>The same reasoning applies to the transposed matrix $A^T$. Its columns are the rows of $A$ and its rows are the columns of $A$, so $\text{column rank}(A) \le \text{row rank}(A)$ follows.</span>
+<span id="cb2-152"><a href="#cb2-152" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-153"><a href="#cb2-153" aria-hidden="true" tabindex="-1"></a>Both inequalities together give equality. As a consequence, the rank does not change under transposition: $\operatorname{rank}(A^T) = \operatorname{rank}(A)$.</span>
+<span id="cb2-154"><a href="#cb2-154" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb2-155"><a href="#cb2-155" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-156"><a href="#cb2-156" aria-hidden="true" tabindex="-1"></a>:::{.callout-important title="Short digression: dimension of the row/column space" collapse="true"}</span>
+<span id="cb2-157"><a href="#cb2-157" aria-hidden="true" tabindex="-1"></a>When students hear the term **rank** of a matrix, the term **dimension** often comes to mind.</span>
+<span id="cb2-158"><a href="#cb2-158" aria-hidden="true" tabindex="-1"></a>Here is a short classification: in this case, dimension does not mean the $m$ or the $n$ of an $m \times n$ matrix. Rather, it means the dimension of the row space or of the column space.  </span>
+<span id="cb2-159"><a href="#cb2-159" aria-hidden="true" tabindex="-1"></a>The **column space** of $A$ is the set of all vectors that can be built from the columns of $A$ by scaling and adding, the **row space** correspondingly from the rows. The **dimension** $\dim$ of such a space is the number of vectors in a basis, that is, in a smallest possible selection of linearly independent vectors from which all vectors of the space can be built. Since the **rank** gives the maximum number of linearly independent columns (or rows), it is exactly this dimension:</span>
+<span id="cb2-160"><a href="#cb2-160" aria-hidden="true" tabindex="-1"></a>$$\operatorname{rank}(A) = \dim(\text{row space}(A)) = \dim(\text{column space}(A))$$</span>
+<span id="cb2-161"><a href="#cb2-161" aria-hidden="true" tabindex="-1"></a>The column space is also called the **image** of $A$, because it consists exactly of the vectors $A \cdot \vec{x}$. That is why one also writes $\operatorname{rank}(A) = \dim(\operatorname{Im}(A))$.</span>
+<span id="cb2-162"><a href="#cb2-162" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb2-163"><a href="#cb2-163" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-164"><a href="#cb2-164" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-165"><a href="#cb2-165" aria-hidden="true" tabindex="-1"></a><span class="fu">## 4.1.2. Computing the rank in NumPy {#rang-in-numpy-berechnen}</span></span>
+<span id="cb2-166"><a href="#cb2-166" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-167"><a href="#cb2-167" aria-hidden="true" tabindex="-1"></a>One of the big advantages of Python is that we do not have to carry out procedures like Gaussian elimination by hand. So there is also a suitable <span class="in">`numpy`</span> function for the rank:</span>
+<span id="cb2-168"><a href="#cb2-168" aria-hidden="true" tabindex="-1"></a><span class="in">`np.linalg.matrix_rank()`</span>.</span>
+<span id="cb2-169"><a href="#cb2-169" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-170"><a href="#cb2-170" aria-hidden="true" tabindex="-1"></a>An example: the second matrix has a row that is the sum of the other two, so its rank is smaller than 3.</span>
+<span id="cb2-171"><a href="#cb2-171" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-172"><a href="#cb2-172" aria-hidden="true" tabindex="-1"></a><span class="in">```{pyodide-python}</span></span>
+<span id="cb2-173"><a href="#cb2-173" aria-hidden="true" tabindex="-1"></a><span class="co">#| read-only: true</span></span>
+<span id="cb2-174"><a href="#cb2-174" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-175"><a href="#cb2-175" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-176"><a href="#cb2-176" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> np.array([[<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>],</span>
+<span id="cb2-177"><a href="#cb2-177" aria-hidden="true" tabindex="-1"></a>              [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>],</span>
+<span id="cb2-178"><a href="#cb2-178" aria-hidden="true" tabindex="-1"></a>              [<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>]])</span>
+<span id="cb2-179"><a href="#cb2-179" aria-hidden="true" tabindex="-1"></a>B <span class="op">=</span> np.array([[<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>],</span>
+<span id="cb2-180"><a href="#cb2-180" aria-hidden="true" tabindex="-1"></a>              [<span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>],</span>
+<span id="cb2-181"><a href="#cb2-181" aria-hidden="true" tabindex="-1"></a>              [<span class="dv">5</span>, <span class="dv">7</span>, <span class="dv">9</span>]])   <span class="co"># 3rd row = 1st row + 2nd row</span></span>
+<span id="cb2-182"><a href="#cb2-182" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-183"><a href="#cb2-183" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Rank of A:"</span>, np.linalg.matrix_rank(A))</span>
+<span id="cb2-184"><a href="#cb2-184" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Rank of B:"</span>, np.linalg.matrix_rank(B))</span>
+<span id="cb2-185"><a href="#cb2-185" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb2-186"><a href="#cb2-186" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-187"><a href="#cb2-187" aria-hidden="true" tabindex="-1"></a><span class="fu">## 4.1.3. Exercise {#übung}</span></span>
+<span id="cb2-188"><a href="#cb2-188" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-189"><a href="#cb2-189" aria-hidden="true" tabindex="-1"></a>First take a close look at the rows. For small matrices you can often see the rank without calculating, when one row is a multiple or a sum of other rows:</span>
+<span id="cb2-190"><a href="#cb2-190" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-191"><a href="#cb2-191" aria-hidden="true" tabindex="-1"></a><span class="in">```{math-exercise}</span></span>
+<span id="cb2-192"><a href="#cb2-192" aria-hidden="true" tabindex="-1"></a><span class="in">#| label: rang-hand-en</span></span>
+<span id="cb2-193"><a href="#cb2-193" aria-hidden="true" tabindex="-1"></a><span class="in">#| caption: Reading off the rank</span></span>
+<span id="cb2-194"><a href="#cb2-194" aria-hidden="true" tabindex="-1"></a><span class="in">#| partial-credit: true</span></span>
+<span id="cb2-195"><a href="#cb2-195" aria-hidden="true" tabindex="-1"></a><span class="in">$\operatorname{rank}\begin{pmatrix} 1 &amp; 2 \\ 2 &amp; 4 \end{pmatrix} =$ _[1]</span></span>
+<span id="cb2-196"><a href="#cb2-196" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-197"><a href="#cb2-197" aria-hidden="true" tabindex="-1"></a><span class="in">$\operatorname{rank}\begin{pmatrix} 1 &amp; 0 &amp; 0 \\ 0 &amp; 1 &amp; 0 \\ 0 &amp; 0 &amp; 1 \end{pmatrix} =$ _[3]</span></span>
+<span id="cb2-198"><a href="#cb2-198" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-199"><a href="#cb2-199" aria-hidden="true" tabindex="-1"></a><span class="in">$\operatorname{rank}\begin{pmatrix} 1 &amp; 2 &amp; 3 \\ 2 &amp; 4 &amp; 6 \\ 1 &amp; 1 &amp; 1 \end{pmatrix} =$ _[2]</span></span>
+<span id="cb2-200"><a href="#cb2-200" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb2-201"><a href="#cb2-201" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-202"><a href="#cb2-202" aria-hidden="true" tabindex="-1"></a>**Exercise:** A matrix has **full rank** if its rank equals the smaller of its two dimensions. Write a function <span class="in">`has_full_rank(M)`</span> that returns <span class="in">`True`</span> or <span class="in">`False`</span>. Hidden tests check your solution automatically.</span>
+<span id="cb2-203"><a href="#cb2-203" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-204"><a href="#cb2-204" aria-hidden="true" tabindex="-1"></a>**Commands you need:** <span class="in">`np.linalg.matrix_rank()`</span>, the attribute <span class="in">`.shape`</span>, <span class="in">`min()`</span>, the comparison <span class="in">`==`</span>, <span class="in">`return`</span>.</span>
+<span id="cb2-205"><a href="#cb2-205" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-206"><a href="#cb2-206" aria-hidden="true" tabindex="-1"></a><span class="in">```{py-exercise}</span></span>
+<span id="cb2-207"><a href="#cb2-207" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: rang-uebung-en</span></span>
+<span id="cb2-208"><a href="#cb2-208" aria-hidden="true" tabindex="-1"></a><span class="co">#| caption: Implement has_full_rank</span></span>
+<span id="cb2-209"><a href="#cb2-209" aria-hidden="true" tabindex="-1"></a><span class="co">#| show-test-hints: false</span></span>
+<span id="cb2-210"><a href="#cb2-210" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-211"><a href="#cb2-211" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-212"><a href="#cb2-212" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> has_full_rank(M):</span>
+<span id="cb2-213"><a href="#cb2-213" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Your code here</span></span>
+<span id="cb2-214"><a href="#cb2-214" aria-hidden="true" tabindex="-1"></a>    <span class="cf">pass</span></span>
+<span id="cb2-215"><a href="#cb2-215" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-216"><a href="#cb2-216" aria-hidden="true" tabindex="-1"></a><span class="co">## TESTS ##</span></span>
+<span id="cb2-217"><a href="#cb2-217" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> np.array([[<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>], [<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">1</span>], [<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>]])</span>
+<span id="cb2-218"><a href="#cb2-218" aria-hidden="true" tabindex="-1"></a>B <span class="op">=</span> np.array([[<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>], [<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">1</span>], [<span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">2</span>]])</span>
+<span id="cb2-219"><a href="#cb2-219" aria-hidden="true" tabindex="-1"></a>C <span class="op">=</span> np.array([[<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>], [<span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>]])</span>
+<span id="cb2-220"><a href="#cb2-220" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> has_full_rank(A) <span class="op">==</span> <span class="va">True</span>, <span class="st">"A has rank 3, so full rank"</span></span>
+<span id="cb2-221"><a href="#cb2-221" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> has_full_rank(B) <span class="op">==</span> <span class="va">False</span>, <span class="st">"B only has rank 2 (3rd row = 1st row + 2nd row)"</span></span>
+<span id="cb2-222"><a href="#cb2-222" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> has_full_rank(C) <span class="op">==</span> <span class="va">True</span>, <span class="st">"C (2x3) has rank 2 = min(2, 3), so full rank"</span></span>
+<span id="cb2-223"><a href="#cb2-223" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb2-224"><a href="#cb2-224" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-225"><a href="#cb2-225" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip title="Hint" collapse="true"}</span>
+<span id="cb2-226"><a href="#cb2-226" aria-hidden="true" tabindex="-1"></a>The rank can be at most as large as the smaller of the two dimensions: <span class="in">`min(M.shape)`</span>. Compare <span class="in">`np.linalg.matrix_rank(M)`</span> with it.</span>
+<span id="cb2-227"><a href="#cb2-227" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb2-228"><a href="#cb2-228" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-229"><a href="#cb2-229" aria-hidden="true" tabindex="-1"></a>::: {.callout-caution title="Solution" collapse="true"}</span>
+<span id="cb2-230"><a href="#cb2-230" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
+<span id="cb2-231"><a href="#cb2-231" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> has_full_rank(M):</span>
+<span id="cb2-232"><a href="#cb2-232" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.linalg.matrix_rank(M) <span class="op">==</span> <span class="bu">min</span>(M.shape)</span>
+<span id="cb2-233"><a href="#cb2-233" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb2-234"><a href="#cb2-234" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-235"><a href="#cb2-235" aria-hidden="true" tabindex="-1"></a>Why does <span class="in">`B`</span> only have rank 2? The third row is the sum of the first two and provides no new information.</span>
+<span id="cb2-236"><a href="#cb2-236" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb2-237"><a href="#cb2-237" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-238"><a href="#cb2-238" aria-hidden="true" tabindex="-1"></a>The rank is an important property that is closely related to the solvability of systems of linear equations and to the invertibility of matrices, as we will see in the next sections on the <span class="co">[</span><span class="ot">determinant</span><span class="co">](kernoperationen_determinante.qmd)</span> and the <span class="co">[</span><span class="ot">inverse</span><span class="co">](kernoperationen_inverse.qmd)</span>.</span>
+<span id="cb2-239"><a href="#cb2-239" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-240"><a href="#cb2-240" aria-hidden="true" tabindex="-1"></a>::::</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+
+<script src="../../site_libs/quarto-contrib/ctm-matrix-input-0.9.0/ctm-matrix-input.js"></script>
+<script src="../../site_libs/quarto-contrib/math-exercise-0.11.0/math-store.js"></script>
+<script src="../../site_libs/quarto-contrib/math-exercise-0.11.0/math-exercise.js"></script>
+<script src="../../site_libs/quarto-contrib/math-exercise-0.11.0/math-similar.js"></script>
+<script src="../../site_libs/quarto-contrib/py-exercise-0.5.0/py-exercise.js"></script>
+<script src="../../site_libs/quarto-contrib/pyodide-interaktiv-1.10.0/qpyodide-cell-classes.js" type="module"></script>
+<script src="../../site_libs/quarto-contrib/pyodide-interaktiv-1.10.0/qpyodide-cell-initialization.js" type="module"></script>
+</body></html>

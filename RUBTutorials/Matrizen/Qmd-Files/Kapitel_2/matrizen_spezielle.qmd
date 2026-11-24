@@ -1,0 +1,350 @@
+---
+title: '2.3. Spezielle Matrizen'
+title-en: '2.3. Special Matrices'
+format: html
+filters:
+  - ctm-assessment
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+::: {.callout-note title="Zellen der Reihe nach ausführen"}
+Die Code-Zellen dieser Seite bauen aufeinander auf: Importe, Variablen und Funktionen aus einer Zelle gelten auch in allen späteren Zellen und werden dort nicht wiederholt. Führe die Zellen deshalb von oben nach unten aus. Meldet Python einen `NameError`, hast du meist eine frühere Zelle noch nicht ausgeführt.
+:::
+
+In der linearen Algebra und ihren Anwendungen treten bestimmte Arten von Matrizen so häufig auf, dass sie eigene Namen erhalten haben. `NumPy` bietet einfache und effiziente Funktionen, **um diese speziellen Matrizen direkt zu erstellen**, ohne sie manuell Element für Element aufbauen zu müssen.
+Es ist natürlich dennoch möglich, sie Element für Element aufzubauen, es ist nur langwieriger.
+
+In diesem Abschnitt betrachten wir, wie die folgenden Matrizen generiert werden können:
+
+*   Nullmatrizen
+*   Einsmatrizen
+*   Einheitsmatrizen
+*   Diagonalmatrizen
+*   Zufallsmatrizen
+
+## 2.3.1. Nullmatrix
+
+Eine Nullmatrix ist eine Matrix, bei der alle Elemente den Wert Null haben. Sie ist **das neutrale Element der Matrizenaddition**. Mehr dazu im nächsten Kapitel [3. Grundlegende Matrix-Operationen](../Kapitel_3/index.qmd)
+
+```{pyodide-python}
+import numpy as np
+
+# Erstellt eine 3x4 Nullmatrix
+null_matrix = np.zeros((3, 4))
+print("3x4 Nullmatrix:\n", null_matrix)
+```
+
+## 2.3.2. Einsmatrix
+
+Eine Einsmatrix ist eine Matrix, bei der jedes Element den Wert Eins hat. Sie ist nützlich für verschiedene Initialisierungs- oder Maskierungsoperationen.
+
+```{pyodide-python}
+# Erstellt eine 2x3 Einsmatrix
+eins_matrix = np.ones((2, 3))
+print("2x3 Einsmatrix:\n", eins_matrix)
+```
+
+### 2.3.2.1. Aufgabe: Nullmatrix oder Einsmatrix erzeugen
+
+Sowohl `np.zeros()` als auch `np.ones()` nehmen als Argument ein Tupel `(zeilen, spalten)` entgegen.
+
+Schreibe eine Funktion `erzeuge_matrix(zeilen, spalten, art)`, die für `art == "n"` eine Nullmatrix und sonst (`"e"`) eine Einsmatrix der passenden Größe zurückgibt. Versteckte Tests prüfen automatisch, ob deine Lösung stimmt.
+
+**Befehle, die du brauchst:** `def`, `return`, `if` / `else`, `np.zeros()`, `np.ones()`.
+
+```{py-exercise}
+#| label: spezielle-matrix-erzeugen
+#| caption: erzeuge_matrix implementieren
+#| show-test-hints: false
+import numpy as np
+
+def erzeuge_matrix(zeilen, spalten, art):
+    # Dein Code hier
+    pass
+
+## TESTS ##
+n = erzeuge_matrix(2, 3, "n")
+assert n.shape == (2, 3), "Die Nullmatrix hat nicht die Form (2, 3)"
+assert (n == 0).all(), "Die Nullmatrix darf nur Nullen enthalten"
+e = erzeuge_matrix(3, 2, "e")
+assert e.shape == (3, 2), "Die Einsmatrix hat nicht die Form (3, 2)"
+assert (e == 1).all(), "Die Einsmatrix darf nur Einsen enthalten"
+```
+
+::: {.callout-tip title="Tipp" collapse="true"}
+Entscheide mit `if art == "n":`, welche der beiden Funktionen du mit dem Tupel `(zeilen, spalten)` aufrufst, und gib das Ergebnis mit `return` zurück.
+:::
+
+::: {.callout-caution title="Lösung" collapse="true"}
+```python
+import numpy as np
+
+def erzeuge_matrix(zeilen, spalten, art):
+    if art == "n":
+        return np.zeros((zeilen, spalten))
+    else:
+        return np.ones((zeilen, spalten))
+```
+:::
+
+## 2.3.3. Einheitsmatrix
+
+Die Einheitsmatrix (oder Identitätsmatrix) ist eine quadratische Matrix mit Einsen auf der Hauptdiagonalen und Nullen an allen anderen Positionen. Wir bezeichnen sie mit $E$, oder mit $E_n$, wenn die Größe $n \times n$ betont werden soll. In englischsprachigen Texten heißt sie meist $I$ (von *identity*), daher auch die Namen der NumPy-Funktionen unten. Sie ist **das neutrale Element der Matrizenmultiplikation** dazu mehr im nächsten Kapitel [3. Grundlegende Matrix-Operationen](../Kapitel_3/index.qmd).
+In NumPy gibt es zwei gängige Wege, sie zu erstellen, die sich in ihrer Flexibilität unterscheiden.
+
+### 2.3.3.1. Mit `np.identity()` (Der einfache Weg)
+
+Die Funktion `np.identity(n)` ist der direkteste Weg. Sie erzeugt immer eine **quadratische** `n x n` Einheitsmatrix. Der Name der Funktion zeigt bereits: Sie kann nur das **neutrale Element der Matrixmultiplikation** erstellen.
+
+```{pyodide-python}
+# Erstellt eine 3x3 Einheitsmatrix
+identitaets_matrix = np.identity(3)
+print("3x3 Einheitsmatrix mit np.identity():\n", identitaets_matrix)
+```
+
+### 2.3.3.2. Mit `np.eye()` (Der flexible Weg)
+
+Die Funktion `np.eye(N, M, k)` ist allgemeiner. Sie kann nicht nur quadratische Matrizen erstellen, sondern auch die Position der Diagonalen verschieben.
+
+*   `N`: Anzahl der Zeilen.
+*   `M` (optional): Anzahl der Spalten. Wenn nicht angegeben, ist `M=N`.
+*   `k` (optional): Index der Diagonalen. `k=0` ist die Hauptdiagonale (Standard), `k>0` ist darüber, `k<0` ist darunter.
+
+```{pyodide-python}
+# Erstellt eine 4x4 Einheitsmatrix (wie np.identity(4))
+einheits_matrix_eye = np.eye(4)
+print("4x4 Einheitsmatrix mit np.eye():\n", einheits_matrix_eye)
+
+print() # Leerzeile
+
+# Erstellt eine nicht-quadratische 3x5 Matrix mit Einsen auf der Hauptdiagonalen
+nicht_quadratisch = np.eye(3, 5)
+print("3x5 Matrix mit np.eye():\n", nicht_quadratisch)
+
+print() # Leerzeile
+
+# Erstellt eine 4x4 Matrix mit Einsen auf der oberen Nebendiagonalen (k=1)
+obere_diagonale = np.eye(4, k=1)
+print("4x4 Matrix mit Diagonale bei k=1:\n", obere_diagonale)
+```
+
+### 2.3.3.3. Kurzcheck
+
+```{math-exercise}
+#| label: matrizen-spezielle-check-1
+#| caption: Einheitsmatrix von Hand
+Wie viele Einsen stehen auf der Hauptdiagonalen einer $6 \times 6$-Einheitsmatrix? _[6]
+```
+
+## 2.3.4. Diagonalmatrix
+
+Eine Diagonalmatrix ist eine quadratische Matrix, bei der nur die Elemente auf der Hauptdiagonalen von Null verschieden sein können. NumPy kann eine solche Matrix sehr einfach aus einer Liste von Werten erstellen.
+
+```{pyodide-python}
+# Erstellt eine Diagonalmatrix, deren Diagonalelemente 1, 5, und -3 sind
+diagonal_matrix = np.diag([1, 5, -3])
+print("Diagonalmatrix:\n", diagonal_matrix)
+```
+
+####  2.3.4.1. Skalarmatrix
+
+Ein Spezialfall einer Diagonalmatrix ist eine **Skalarmatrix**. Das ist eine Diagonalmatrix, deren Werte alle gleich sind.
+Eine Skalarmatrix lässt sich leicht wie folgt erstellen:
+
+```{pyodide-python}
+x= 7 # kann eine beliebige Zahl sein
+skalarmatrix = np.eye(3) * x
+print(f"Skalarmatrix mit dem Wert {x}:\n", skalarmatrix)
+```
+
+## 2.3.5. Zufallsmatrizen
+
+Häufig ist es sinnvoll, zum Beispiel um Algorithmen zu testen, Matrizen mit zufälligen Werten zu generieren. Auch das kann Mithilfe von `numpy` leicht gemacht werden, wie folgender Code-Block zeigt.
+
+```{pyodide-python}
+# 3x4 Matrix mit zufälligen Fließkommazahlen zwischen 0 und 1
+zufall_float = np.random.rand(3, 4)
+print("Zufallsmatrix (Floats 0-1):\n", zufall_float)
+
+print() # Leerzeile
+
+# 2x5 Matrix mit zufälligen Ganzzahlen zwischen 10 (inklusiv) und 20 (exklusiv)
+zufall_int = np.random.randint(10, 20, size=(2, 5))
+print("Zufallsmatrix (Integers 10-19):\n", zufall_int)
+```
+
+Nachdem du nun weißt, wie man verschiedene Matrizen erstellt, lernst du im nächsten Abschnitt, wie du auf einzelne Elemente, Zeilen und Spalten [zugreifen](matrizen_zugriff.qmd) kannst.
+
+::::
+
+:::: {.content-visible when-profile="english"}
+::: {.callout-note title="Run the cells in order"}
+The code cells on this page build on each other: imports, variables and functions from one cell are also available in all later cells and are not repeated there. So run the cells from top to bottom. If Python reports a `NameError`, you most likely have not run an earlier cell yet.
+:::
+
+In linear algebra and its applications, certain types of matrices occur so frequently that they have been given their own names. `NumPy` provides simple and efficient functions **to create these special matrices directly**, without having to build them element by element by hand.
+It is of course still possible to build them element by element, it just takes longer.
+
+In this section, we look at how the following matrices can be generated:
+
+*   Zero matrices
+*   Ones matrices
+*   Identity matrices
+*   Diagonal matrices
+*   Random matrices
+
+## 2.3.1. Zero Matrix {#nullmatrix}
+
+A zero matrix is a matrix in which every element has the value zero. It is **the neutral element of matrix addition**. More on this in the next chapter, [3. Basic Matrix Operations](../Kapitel_3/index.qmd)
+
+```{pyodide-python}
+import numpy as np
+
+# Creates a 3x4 zero matrix
+zero_matrix = np.zeros((3, 4))
+print("3x4 zero matrix:\n", zero_matrix)
+```
+
+## 2.3.2. Ones Matrix {#einsmatrix}
+
+A ones matrix is a matrix in which every element has the value one. It is useful for various initialization or masking operations.
+
+```{pyodide-python}
+# Creates a 2x3 ones matrix
+ones_matrix = np.ones((2, 3))
+print("2x3 ones matrix:\n", ones_matrix)
+```
+
+### 2.3.2.1. Exercise: Create a Zero or Ones Matrix
+
+Both `np.zeros()` and `np.ones()` take a tuple `(rows, columns)` as their argument.
+
+Write a function `create_matrix(rows, cols, kind)` that returns a zero matrix for `kind == "z"` and otherwise (`"o"`) a ones matrix of the matching size. Hidden tests check your solution automatically.
+
+**Commands you need:** `def`, `return`, `if` / `else`, `np.zeros()`, `np.ones()`.
+
+```{py-exercise}
+#| label: special-create-matrix
+#| caption: Implement create_matrix
+#| show-test-hints: false
+import numpy as np
+
+def create_matrix(rows, cols, kind):
+    # Your code here
+    pass
+
+## TESTS ##
+z = create_matrix(2, 3, "z")
+assert z.shape == (2, 3), "The zero matrix does not have shape (2, 3)"
+assert (z == 0).all(), "The zero matrix must contain only zeros"
+o = create_matrix(3, 2, "o")
+assert o.shape == (3, 2), "The ones matrix does not have shape (3, 2)"
+assert (o == 1).all(), "The ones matrix must contain only ones"
+```
+
+::: {.callout-tip title="Hint" collapse="true"}
+Decide with `if kind == "z":` which of the two functions you call with the tuple `(rows, cols)`, and return the result with `return`.
+:::
+
+::: {.callout-caution title="Solution" collapse="true"}
+```python
+import numpy as np
+
+def create_matrix(rows, cols, kind):
+    if kind == "z":
+        return np.zeros((rows, cols))
+    else:
+        return np.ones((rows, cols))
+```
+:::
+
+## 2.3.3. Identity Matrix {#einheitsmatrix}
+
+The identity matrix is a square matrix with ones on the main diagonal and zeros in every other position. We denote it by $I$ (from *identity*, hence the names of the NumPy functions below), or by $I_n$ when the size $n \times n$ matters. German texts usually write $E$. It is **the neutral element of matrix multiplication**, more on that in the next chapter, [3. Basic Matrix Operations](../Kapitel_3/index.qmd).
+NumPy offers two common ways to create it, which differ in their flexibility.
+
+### 2.3.3.1. With `np.identity()` (The simple way)
+
+The function `np.identity(n)` is the most direct way. It always creates a **square** `n x n` identity matrix. The function's name already tells you: it can only create the **neutral element of matrix multiplication**.
+
+```{pyodide-python}
+# Creates a 3x3 identity matrix
+identity_matrix = np.identity(3)
+print("3x3 identity matrix with np.identity():\n", identity_matrix)
+```
+
+### 2.3.3.2. With `np.eye()` (The flexible way)
+
+The function `np.eye(N, M, k)` is more general. It can create not only square matrices, but can also shift the position of the diagonal.
+
+*   `N`: number of rows.
+*   `M` (optional): number of columns. If not given, `M=N`.
+*   `k` (optional): index of the diagonal. `k=0` is the main diagonal (default), `k>0` is above it, `k<0` is below it.
+
+```{pyodide-python}
+# Creates a 4x4 identity matrix (like np.identity(4))
+identity_matrix_eye = np.eye(4)
+print("4x4 identity matrix with np.eye():\n", identity_matrix_eye)
+
+print() # blank line
+
+# Creates a non-square 3x5 matrix with ones on the main diagonal
+non_square = np.eye(3, 5)
+print("3x5 matrix with np.eye():\n", non_square)
+
+print() # blank line
+
+# Creates a 4x4 matrix with ones on the upper off-diagonal (k=1)
+upper_diagonal = np.eye(4, k=1)
+print("4x4 matrix with diagonal at k=1:\n", upper_diagonal)
+```
+
+### 2.3.3.3. Quick Check
+
+```{math-exercise}
+#| label: matrizen-spezielle-check-1-en
+#| caption: Identity matrix by hand
+How many ones are on the main diagonal of a $6 \times 6$ identity matrix? _[6]
+```
+
+## 2.3.4. Diagonal Matrix {#diagonalmatrix}
+
+A diagonal matrix is a square matrix in which only the elements on the main diagonal may be non-zero. NumPy can create such a matrix very easily from a list of values.
+
+```{pyodide-python}
+# Creates a diagonal matrix whose diagonal elements are 1, 5, and -3
+diagonal_matrix = np.diag([1, 5, -3])
+print("Diagonal matrix:\n", diagonal_matrix)
+```
+
+#### 2.3.4.1. Scalar Matrix
+
+A special case of a diagonal matrix is a **scalar matrix**. This is a diagonal matrix whose values are all equal.
+A scalar matrix can easily be created as follows:
+
+```{pyodide-python}
+x= 7 # can be any number
+scalar_matrix = np.eye(3) * x
+print(f"Scalar matrix with value {x}:\n", scalar_matrix)
+```
+
+## 2.3.5. Random Matrices {#zufallsmatrizen}
+
+It is often useful, for example to test algorithms, to generate matrices with random values. This too can be done easily with `numpy`, as the following code block shows.
+
+```{pyodide-python}
+# 3x4 matrix with random floating-point numbers between 0 and 1
+random_float = np.random.rand(3, 4)
+print("Random matrix (floats 0-1):\n", random_float)
+
+print() # blank line
+
+# 2x5 matrix with random integers between 10 (inclusive) and 20 (exclusive)
+random_int = np.random.randint(10, 20, size=(2, 5))
+print("Random matrix (integers 10-19):\n", random_int)
+```
+
+Now that you know how to create various matrices, in the next section you'll learn how to [access](matrizen_zugriff.qmd) individual elements, rows, and columns.
+
+::::

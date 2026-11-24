@@ -1,0 +1,1599 @@
+---
+title: "1.5 Kennzahlen: Streuung, Schiefe & Wölbung"
+title-en: "1.5 Measures: Spread, Skewness & Kurtosis"
+execute:
+  eval: false
+  echo: true
+  warning: false
+filters:
+  - ctm-assessment
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+```{python}
+#| include: true
+#| echo: false
+#| eval: true
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib
+import pandas as pd
+from scipy import stats
+
+matplotlib.rcParams['figure.dpi'] = 110
+matplotlib.rcParams['font.size'] = 11
+
+try:
+    from palmerpenguins import load_penguins
+    penguins = load_penguins()
+except Exception:
+    url = "https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"
+    penguins = pd.read_csv(url)
+```
+
+## Lernziele {.unnumbered}
+
+Am Ende dieses Unterkapitels kannst du:
+
+- verschiedene Streuungsmaße (Spannweite, IQR, Varianz, Standardabweichung) berechnen und interpretieren.
+- erklären, was der Unterschied zwischen der korrigierten und unkorrigierten Varianz ist.
+- Häufigkeitsverteilungen auf Schiefe und Wölbung untersuchen.
+- geeignete Python-Funktionen für alle behandelten Kennzahlen anwenden.
+
+---
+
+## Einführung
+
+In Kapitel 1.4 haben wir Lagemaße kennengelernt, die beschreiben, wo sich die Mitte einer Stichprobe befindet. Zwei Stichproben können aber denselben Mittelwert haben und trotzdem völlig unterschiedlich aussehen:
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Drei Verteilungen mit nahezu gleichem arithmetischen Mittel (≈ 7) und ähnlicher Standardabweichung (≈ 2), aber sehr unterschiedlicher Form."
+np.random.seed(1000)
+x1 = np.random.exponential(2, 300) + 5      # rechtsschief
+x2 = np.random.normal(7, 2, 300)            # symmetrisch, normalverteilt
+x3 = np.concatenate([np.random.normal(7, 1, 200), np.random.normal(7, 3.5, 100)])  # leptokurtisch
+
+fig, axes = plt.subplots(1, 3, figsize=(11, 3.5), sharey=True)
+data_list = [
+    (x1, '#0a9396', '#005f73', f'(a) Rechtsschief\n$\\bar{{x}}={x1.mean():.1f}$, $s={x1.std(ddof=1):.1f}$'),
+    (x2, '#ae2012', '#9b2226', f'(b) Symmetrisch\n$\\bar{{x}}={x2.mean():.1f}$, $s={x2.std(ddof=1):.1f}$'),
+    (x3, '#ca6702', '#9c4f00', f'(c) Spitz (leptokurtisch)\n$\\bar{{x}}={x3.mean():.1f}$, $s={x3.std(ddof=1):.1f}$'),
+]
+for ax, (x, fc, lc, title) in zip(axes, data_list):
+    ax.hist(x, bins=15, color=fc, edgecolor='white', alpha=0.8, density=True)
+    xr = np.linspace(x.min(), x.max(), 300)
+    kde = stats.gaussian_kde(x, bw_method=0.5)
+    ax.plot(xr, kde(xr), color=lc, lw=2)
+    ax.set_title(title, fontsize=10)
+    ax.set_xlabel('Wert'); ax.set_xlim(-1, 16)
+axes[0].set_ylabel('Dichte')
+plt.tight_layout(); plt.show()
+```
+
+Nur mit Lagemaßen können wir diese Unterschiede **nicht** erfassen. Wir brauchen zusätzlich Maße für:
+
+- **Streuung**: Wie weit liegen die Werte auseinander?
+- **Schiefe**: Ist die Verteilung symmetrisch?
+- **Wölbung**: Ist die Verteilung spitz oder flach?
+
+---
+
+## Streuungsmaße
+
+### Spannweite und Interquartilsabstand {.unnumbered}
+
+Die einfachsten Streuungsmaße kennen wir bereits aus dem Boxplot (Kapitel 1.4):
+
+::: {#def-spannweite}
+### Spannweite
+
+<br>
+
+Die **Spannweite** einer geordneten Stichprobe $x_{(1)} \le \cdots \le x_{(n)}$ ist der Abstand zwischen dem größten und kleinsten Wert:
+
+$$\tilde{q}_0 = x_{(n)} - x_{(1)} = \text{Maximum} - \text{Minimum}$$
+:::
+
+::: {#def-iqr}
+### Interquartilsabstand (IQR)
+
+<br>
+
+Der **Interquartilsabstand** (engl. *interquartile range*, IQR) ist der Abstand zwischen dem dritten und ersten Quartil. Dabei sind $Q_1 = \tilde{x}_{0{,}25}$ und $Q_3 = \tilde{x}_{0{,}75}$ das untere und obere Quartil aus [Kapitel 1.4](kennzahlen_lage.qmd):
+
+$$\text{IQR} = Q_3 - Q_1 = \tilde{x}_{0{,}75} - \tilde{x}_{0{,}25}$$
+
+Er gibt an, wie breit der Bereich ist, in dem die mittleren 50 % der Daten liegen.
+:::
+
+::: {#exm-spannweite-groesse}
+### Körpergröße bei 12 Personen
+
+<br>
+
+Sortierte Stichprobe: 158,0 – 161,5 – 164,0 – 167,5 – 170,5 – 174,5 – 177,5 – 179,5 – 181,0 – 183,0 – 186,5 – 192,0
+
+Aus den Berechnungen in Kapitel 1.4:
+
+- Spannweite: $192{,}0 - 158{,}0 = 34{,}0$ cm
+- IQR: $Q_3 - Q_1 = 182{,}0 - 165{,}75 = 16{,}25$ cm
+
+Die mittleren 50 % der Beobachtungen liegen also maximal 16,25 cm auseinander.
+:::
+
+::: {.callout-caution}
+#### Spannweite ist anfällig für Ausreißer
+
+Ein einziger extremer Wert (z.B. ein Messfehler) kann die Spannweite extrem vergrößern, selbst wenn alle anderen Werte eng beieinander liegen. Der IQR ist deutlich robuster, da er nur die mittleren 50 % der Daten berücksichtigt.
+:::
+
+---
+
+### Varianz und Standardabweichung {.unnumbered}
+
+Die wichtigsten Streuungsmaße in der Statistik sind die **empirische Varianz** und die **empirische Standardabweichung**. Sie messen die durchschnittliche quadratische Abweichung der Beobachtungen vom arithmetischen Mittel.
+
+::: {#def-varianz}
+### Empirische Varianz und Standardabweichung
+
+<br>
+
+Sei $(x_1, \dots, x_n)$ eine Stichprobe eines kardinal skalierten Merkmals mit arithmetischem Mittel $\bar{x}$.
+
+**Unkorrigierte Varianz** (Vorfaktor $\frac{1}{n}$):
+$$\tilde{s}^2 = \dfrac{1}{n} \sum_{i=1}^n (x_i - \bar{x})^2$$
+
+**Korrigierte Varianz** (Vorfaktor $\frac{1}{n-1}$):
+$$s^2 = \dfrac{1}{n-1} \sum_{i=1}^n (x_i - \bar{x})^2$$
+
+Die **Standardabweichung** ist die Wurzel der Varianz: $s = \sqrt{s^2}$ bzw. $\tilde{s} = \sqrt{\tilde{s}^2}$.
+:::
+
+::: {.callout-tip}
+#### Warum zwei Versionen?
+
+Der Unterschied ist nur der Vorfaktor: $s^2 = \frac{n}{n-1} \cdot \tilde{s}^2$.
+
+- Die **korrigierte** Version ($\frac{1}{n-1}$) ist in der Statistik die Standardversion – pandas und die meisten Statistikprogramme verwenden sie standardmäßig (NumPy nicht, siehe unten). Sie schätzt die Varianz der Grundgesamtheit **erwartungstreu**, also im Mittel ohne systematischen Fehler (Näheres in Kapitel 2: Schätztheorie).
+- Die **unkorrigierte** Version ($\frac{1}{n}$) ist die eigentliche „mittlere quadratische Abweichung".
+- Bei großen Stichproben ist der Unterschied vernachlässigbar: $\frac{n}{n-1} \approx 1$ für großes $n$.
+:::
+
+::: {#exm-varianz-groesse}
+### Berechnung der Varianz – Körpergröße bei 12 Personen
+
+<br>
+
+Stichprobe: 170,5 – 183,0 – 174,5 – 158,0 – 167,5 – 179,5 – 192,0 – 177,5 – 186,5 – 161,5 – 181,0 – 164,0
+
+Bekannt: $\bar{x} = 174{,}625$ cm
+
+Für jeden Wert berechnen wir $(x_i - \bar{x})^2$:
+
+| $i$ | $x_i$ | $x_i - \bar{x}$ | $(x_i - \bar{x})^2$ |
+|:----|------:|----------------:|--------------------:|
+| 1  | 170,5 | −4,125 | 17,016 |
+| 2  | 183,0 | +8,375 | 70,141 |
+| 3  | 174,5 | −0,125 | 0,016 |
+| 4  | 158,0 | −16,625 | 276,391 |
+| 5  | 167,5 | −7,125 | 50,766 |
+| 6  | 179,5 | +4,875 | 23,766 |
+| 7  | 192,0 | +17,375 | 301,891 |
+| 8  | 177,5 | +2,875 | 8,266 |
+| 9  | 186,5 | +11,875 | 141,016 |
+| 10 | 161,5 | −13,125 | 172,266 |
+| 11 | 181,0 | +6,375 | 40,641 |
+| 12 | 164,0 | −10,625 | 112,891 |
+| **$\sum$** | **2095,5** | **0** | **1215,06** |
+
+: {.striped .hover}
+
+Die Summe der Abweichungen ist wie erwartet 0 (Kontrollrechnung!).
+
+$$s^2 = \dfrac{1215{,}06}{12-1} \approx 110{,}46 \text{ cm}^2 \qquad s \approx 10{,}51 \text{ cm}$$
+
+$$\tilde{s}^2 = \dfrac{1215{,}06}{12} \approx 101{,}26 \text{ cm}^2 \qquad \tilde{s} \approx 10{,}06 \text{ cm}$$
+:::
+
+Probiere es an einer kleinen Stichprobe aus: $3,\ 5,\ 7,\ 9$. Berechne Spannweite, Interquartilsabstand und beide Varianzen (als Bruch wie `20/3` oder als Dezimalzahl):
+
+```{math-exercise}
+#| label: streuung-hand
+#| caption: Streuungsmaße von Hand
+#| mode: numeric
+#| tolerance: 1%
+#| partial-credit: true
+#| field-labels: Spannweite, IQR, s², s̃²
+Spannweite $=$ _[6], $\text{IQR} =$ _[4], $s^2 =$ _[20/3], $\tilde{s}^2 =$ _[5]
+```
+
+::: {.callout-tip collapse="true" title="Lösungsweg"}
+- Spannweite: $9 - 3 = 6$
+- $n = 4$: $n \cdot 0{,}25 = 1$ und $n \cdot 0{,}75 = 3$ sind ganzzahlig, also $Q_1 = (3 + 5)/2 = 4$, $Q_3 = (7 + 9)/2 = 8$, $\text{IQR} = 4$
+- $\bar{x} = 6$, Abweichungen $-3, -1, 1, 3$, Quadrate $9, 1, 1, 9$, Summe $20$
+- $s^2 = 20/3 \approx 6{,}67$ und $\tilde{s}^2 = 20/4 = 5$
+:::
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Abweichungen der zwölf Körpergrößen vom Mittelwert. Je weiter ein Wert vom Mittelwert entfernt liegt, desto größer ist sein Beitrag zur Varianz – und zwar quadratisch: doppelter Abstand, vierfacher Beitrag."
+groesse = np.array([170.5, 183.0, 174.5, 158.0, 167.5, 179.5,
+                    192.0, 177.5, 186.5, 161.5, 181.0, 164.0])
+xbar = groesse.mean()
+
+fig, ax = plt.subplots(figsize=(9, 3.5))
+y_pos = np.zeros(len(groesse))
+ax.scatter(groesse, y_pos, color='#005f73', s=50, zorder=5)
+ax.axvline(xbar, color='#ae2012', lw=2, label=f'Mittelwert $\\bar{{x}} = {xbar:.1f}$')
+
+for xi in groesse:
+    abw = xi - xbar
+    col = '#0a9396' if abw > 0 else '#ca6702'
+    ax.annotate('', xy=(xi, 0), xytext=(xbar, 0),
+                arrowprops=dict(arrowstyle='-', color=col, lw=1.5,
+                                connectionstyle='arc3,rad=0.3'))
+
+ax.set_yticks([])
+ax.set_xlabel('Körpergröße (cm)')
+ax.legend()
+ax.set_title('Abweichungen vom Mittelwert (türkis: positiv, orange: negativ)')
+plt.tight_layout(); plt.show()
+```
+
+::: {.callout-rechnen}
+#### Rechenhinweis: Effiziente Berechnung
+
+Um die Varianz zu berechnen, geht man Schritt für Schritt vor:
+
+1. $\bar{x}$ berechnen
+2. Für jeden Wert $x_i$ die Abweichung $(x_i - \bar{x})$ berechnen
+3. Die Abweichungen quadrieren: $(x_i - \bar{x})^2$
+4. Summe bilden: $\sum (x_i - \bar{x})^2$
+5. Durch $n-1$ (korrigiert) oder $n$ (unkorrigiert) teilen
+
+**Kontrolle:** $\sum (x_i - \bar{x}) = 0$ muss immer gelten!
+:::
+
+### Interpretation der Standardabweichung {.unnumbered}
+
+Die Varianz ist in **quadratischen Einheiten** (z.B. cm²) – sie ist schwer direkt zu interpretieren. Die Standardabweichung hingegen hat **dieselbe Einheit wie die Daten** (z.B. cm) und lässt sich gut interpretieren:
+
+> Die Standardabweichung gibt die typische Abweichung eines einzelnen Werts vom Mittelwert an.
+
+Wenn die Daten annähernd **glockenförmig** (normalverteilt) verteilt sind, gilt die **68-95-Regel**:
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "68-95-Regel: Bei normalverteilten Daten liegen ca. 68 % der Werte innerhalb von ±1s und ca. 95 % innerhalb von ±2s um den Mittelwert."
+np.random.seed(42)
+x = np.random.normal(0, 1, 5000)
+xr = np.linspace(-4, 4, 400)
+kde = stats.gaussian_kde(x)
+
+fig, ax = plt.subplots(figsize=(8, 3.5))
+ax.plot(xr, kde(xr), '#005f73', lw=2)
+
+# Schattierte Bereiche
+ax.fill_between(xr, kde(xr), where=(np.abs(xr) <= 1), alpha=0.5, color='#0a9396', label='±1s: ca. 68 %')
+ax.fill_between(xr, kde(xr), where=((np.abs(xr) > 1) & (np.abs(xr) <= 2)), alpha=0.4, color='#94d2bd', label='±2s: ca. 95 %')
+
+ax.axvline(-1, color='#0a9396', ls='--', lw=1)
+ax.axvline(1, color='#0a9396', ls='--', lw=1)
+ax.axvline(-2, color='#94d2bd', ls='--', lw=1)
+ax.axvline(2, color='#94d2bd', ls='--', lw=1)
+ax.axvline(0, color='#ae2012', lw=2, label='Mittelwert $\\bar{x}$')
+
+ax.set_xticks([-2, -1, 0, 1, 2])
+ax.set_xticklabels(['$\\bar{x}-2s$', '$\\bar{x}-s$', '$\\bar{x}$', '$\\bar{x}+s$', '$\\bar{x}+2s$'])
+ax.set_ylabel('Dichte'); ax.legend(loc='upper right')
+plt.tight_layout(); plt.show()
+```
+
+:::: {#exr-varianz-pinguine}
+### Pinguine: Varianz und Standardabweichung
+
+<br>
+
+Berechne die korrigierte Varianz $s^2$ und die zugehörige Standardabweichung $s$ der Flossenlänge (`flipper_length_mm`) getrennt nach Insel (`island`). Speichere sie in `var_insel` und `std_insel`. Auf welcher Insel ist die Flossenlänge am gleichmäßigsten? Speichere den Namen dieser Insel als Text in `insel_min`.
+
+**Befehle, die du brauchst:** `penguins.groupby('island')` (nach Insel gruppieren), `.var()` und `.std()` (in pandas beide mit $1/(n-1)$)
+
+**Überprüfen** testet `var_insel`, `std_insel` und `insel_min`.
+
+```{py-exercise}
+#| label: varianz-insel
+#| caption: Varianz und Standardabweichung nach Insel
+#| show-test-hints: false
+import pandas as pd
+from pyodide.http import open_url
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+
+var_insel = None   # Dein Code hier
+std_insel = None   # Dein Code hier
+insel_min = None   # Dein Code hier
+print(var_insel)
+print(std_insel)
+print(insel_min)
+
+## TESTS ##
+assert var_insel is not None, "var_insel ist noch leer."
+assert var_insel is not None and hasattr(var_insel, '__len__') and len(var_insel) == 3, "var_insel sollte genau einen Wert je Insel enthalten (3 Inseln)."
+assert var_insel is None or not hasattr(var_insel, '__len__') or len(var_insel) != 3 or abs(float(var_insel['Dream']) - 55.906) > 0.05, "Das ist die Varianz mit 1/n. Gesucht ist die korrigierte Varianz mit 1/(n-1)."
+assert var_insel is not None and hasattr(var_insel, '__len__') and len(var_insel) == 3 and abs(float(var_insel['Dream']) - 56.361) < 0.05 and abs(float(var_insel['Biscoe']) - 200.004) < 0.05, "var_insel stimmt nicht: Für Dream sind etwa 56,36 mm² erwartet."
+assert std_insel is not None, "std_insel ist noch leer."
+assert std_insel is not None and hasattr(std_insel, '__len__') and len(std_insel) == 3 and abs(float(std_insel['Dream']) - 7.507) < 0.01 and abs(float(std_insel['Biscoe']) - 14.142) < 0.01, "std_insel stimmt nicht: Für Dream sind etwa 7,51 mm erwartet."
+assert insel_min == 'Torgersen', "insel_min stimmt nicht. Gesucht ist die Insel mit der kleinsten Streuung, als Text in Anführungszeichen."
+```
+
+::: {.callout-tip title="Tipp 1" collapse="true"}
+Wie beim Mittelwert nach Art: `penguins.groupby('island')['flipper_length_mm']`, dann `.var()` bzw. `.std()`.
+:::
+
+::: {.callout-tip title="Tipp 2" collapse="true"}
+„Am gleichmäßigsten“ heißt: die kleinste Streuung. Lies die Insel aus der Ausgabe ab und trage sie ein, zum Beispiel `insel_min = 'Dream'`. Mit `std_insel.idxmin()` geht es auch ohne Ablesen.
+:::
+
+::: {.callout-caution title="Lösung" collapse="true"}
+```python
+var_insel = penguins.groupby('island')['flipper_length_mm'].var()
+std_insel = penguins.groupby('island')['flipper_length_mm'].std()
+insel_min = std_insel.idxmin()
+```
+
+Auf Torgersen streut die Flossenlänge am wenigsten ($s \approx 6{,}2$ mm), auf Biscoe am stärksten ($s \approx 14{,}1$ mm). Auf Torgersen lebt nur eine Art (Adelie), auf Biscoe leben Adelie und die deutlich größeren Gentoo.
+:::
+::::
+
+::: {.callout-python}
+#### Python: Varianz und Standardabweichung
+
+```python
+# Korrigierte Varianz (n-1) – Standard in pandas
+df['spalte'].var()
+
+# Korrigierte Standardabweichung (n-1)
+df['spalte'].std()
+
+# Mit NumPy – ACHTUNG: Standardmäßig unkorrigiert (n)!
+import numpy as np
+np.var(daten)       # unkorrigiert
+np.var(daten, ddof=1)  # korrigiert (wie pandas)
+np.std(daten, ddof=1)  # korrigierte Standardabweichung
+
+# Vollständige Zusammenfassung inkl. std
+df['spalte'].describe()
+```
+:::
+
+---
+
+## Schiefe
+
+Lagemaße und Streuungsmaße allein reichen nicht aus, um eine Verteilung vollständig zu beschreiben. Zwei Verteilungen können denselben Mittelwert und dieselbe Standardabweichung haben, aber unterschiedlich **schief** sein.
+
+### Symmetrie und Asymmetrie {.unnumbered}
+
+Eine Häufigkeitsverteilung heißt **symmetrisch**, wenn sie um ihren Mittelwert gespiegelt werden kann – d.h. die linke und rechte Seite des Histogramms sehen gleich aus.
+
+Ist eine Verteilung **nicht symmetrisch**, sprechen wir von einer **schiefen** Verteilung:
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Linkschiefe (links), symmetrische (Mitte) und rechtsschiefe (rechts) Verteilungen mit jeweils eingezeichnetem Mittelwert (rot) und Median (blau)."
+#| layout-ncol: 3
+np.random.seed(42)
+x_sym = np.random.normal(7, 2, 500)
+x_right = np.random.exponential(2, 500) + 5      # rechtsschief
+x_left = -(np.random.exponential(2, 500)) + 10   # linksschief
+
+daten = [
+    (x_left, 'Linksschief\n(rechtssteil)', '#ca6702', '#9c4f00'),
+    (x_sym,  'Symmetrisch', '#ae2012', '#9b2226'),
+    (x_right,'Rechtsschief\n(linkssteil)', '#0a9396', '#005f73'),
+]
+
+for x, titel, fc, lc in daten:
+    fig, ax = plt.subplots(figsize=(4, 3.2))
+    ax.hist(x, bins=20, color=fc, edgecolor='white', alpha=0.8, density=True)
+    xr = np.linspace(x.min()-0.5, x.max()+0.5, 300)
+    kde = stats.gaussian_kde(x, bw_method=0.4)
+    ax.plot(xr, kde(xr), color=lc, lw=2)
+    ax.axvline(x.mean(), color='#ae2012', lw=2, linestyle='--', label=f'Mittelwert')
+    ax.axvline(np.median(x), color='#005f73', lw=2, linestyle='-', label=f'Median')
+    ax.set_title(titel)
+    ax.set_xlabel('Wert'); ax.set_ylabel('Dichte')
+    ax.legend(fontsize=8)
+    plt.tight_layout(); plt.show()
+```
+
+::: {.callout-tip}
+#### Schiefe erkennen: Mittelwert vs. Median
+
+In der Tabelle ist $\bar{x}$ das arithmetische Mittel und $\tilde{x}_{0{,}5}$ der Median (beide aus [Kapitel 1.4](kennzahlen_lage.qmd)).
+
+| Verteilung | Beziehung | Typisches Beispiel |
+|------------|-----------|-------------------|
+| **Linksschief** (rechtssteil) | $\bar{x} < \tilde{x}_{0{,}5}$ | Prüfungsnoten, die die meisten gut bestehen |
+| **Symmetrisch** | $\bar{x} \approx \tilde{x}_{0{,}5}$ | Körpergröße, Messabweichungen |
+| **Rechtsschief** (linkssteil) | $\bar{x} > \tilde{x}_{0{,}5}$ | Einkommen, Wartezeiten, Preise |
+
+Rechtsschiefe Verteilungen erkennt man oft an einem langen „Schweif" nach rechts.
+:::
+
+### Momentenkoeffizient der Schiefe {.unnumbered}
+
+Um die Schiefe numerisch zu messen, verwenden wir den **Momentenkoeffizienten der Schiefe** $sk$:
+
+::: {#def-schiefe}
+### Momentenkoeffizient der Schiefe
+
+<br>
+
+$$sk = \dfrac{1}{n} \sum_{i=1}^n \left(\dfrac{x_i - \bar{x}}{s}\right)^3$$
+
+- $sk > 0$: rechtsschiefe Verteilung
+- $sk = 0$: symmetrische Verteilung
+- $sk < 0$: linksschiefe Verteilung
+:::
+
+::: {.callout-rechnen}
+#### Intuition hinter der Formel
+
+Die Abweichungen $(x_i - \bar{x})$ werden durch $s$ **standardisiert** (einheitenlos gemacht) und dann **hoch 3** genommen. Da bei positiver Abweichung das Vorzeichen erhalten bleibt (positiv hoch 3 = positiv) und bei negativer Abweichung das Vorzeichen erhalten bleibt (negativ hoch 3 = negativ), zeigt das Vorzeichen von $sk$ die Richtung der Schiefe an.
+:::
+
+::: {#exm-schiefe-groesse}
+### Körpergröße bei 12 Personen
+
+<br>
+
+Bekannt: $\bar{x} = 174{,}625$ cm, $s = 10{,}51$ cm
+
+Mit der Tabelle aus dem Varianz-Beispiel ergibt sich: $\sum \left(\frac{x_i - \bar{x}}{s}\right)^3 \approx -0{,}50$
+
+$$sk = \dfrac{-0{,}50}{12} \approx -0{,}042$$
+
+Der Wert ist sehr nahe an 0 → die Verteilung ist annähernd symmetrisch.
+:::
+
+Bevor du Python einsetzt, probiere den Kern der Formel an einer kleinen Stichprobe von Hand aus. Für $2,\ 3,\ 4,\ 15$ gilt $\bar{x} = 6$. Berechne die Abweichungen $x_i - \bar{x}$, nimm sie hoch 3 und addiere sie:
+
+```{math-exercise}
+#| label: schiefe-hand
+#| caption: Vorzeichen der Schiefe von Hand
+#| mode: numeric
+#| tolerance: 1%
+#| field-labels: Summe der dritten Potenzen
+$\sum_{i=1}^{4} (x_i - \bar{x})^3 =$ _[630]
+```
+
+::: {.callout-tip collapse="true" title="Lösungsweg"}
+Abweichungen: $-4,\ -3,\ -2,\ 9$. Dritte Potenzen: $-64,\ -27,\ -8,\ 729$. Summe: $630$.
+Die Summe ist **positiv**, also ist $sk > 0$: Die Stichprobe ist rechtsschief. Das passt zum großen Wert 15 am rechten Rand, der das Vorzeichen bestimmt.
+:::
+
+:::: {#exr-schiefe-pinguine}
+### Pinguine: Schiefe des Körpergewichts
+
+<br>
+
+Berechne den Momentenkoeffizienten der Schiefe für das Körpergewicht (`body_mass_g`) der Pinguine und speichere ihn in `sk`. Ist die Verteilung rechts- oder linksschief? Speichere die Antwort als `'rechts'` oder `'links'` in `richtung`. Vergleiche Mittelwert und Median als Plausibilitätsprüfung.
+
+**Befehle, die du brauchst:** `stats.skew(...)` aus `scipy` (Schiefe), `.mean()`, `.median()`
+
+**Überprüfen** testet `sk` und `richtung`.
+
+```{py-exercise}
+#| label: schiefe-gewicht
+#| caption: Schiefe des Körpergewichts
+#| show-test-hints: false
+import pandas as pd
+from pyodide.http import open_url
+from scipy import stats
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+masse = penguins['body_mass_g'].dropna()
+
+sk = None         # Dein Code hier
+richtung = None   # Dein Code hier
+print(sk, richtung)
+
+## TESTS ##
+assert sk is not None, "sk ist noch leer."
+assert sk is not None and abs(float(sk) - 0.468) < 0.01, "sk stimmt nicht. Gesucht ist stats.skew(masse)."
+assert richtung is not None, "richtung ist noch leer."
+assert richtung == 'rechts', "richtung stimmt nicht. Erwartet ist 'rechts' oder 'links'. Das Vorzeichen von sk entscheidet."
+```
+
+::: {.callout-tip title="Tipp" collapse="true"}
+`stats.skew(masse)` liefert die Schiefe. Ist sie positiv, ist die Verteilung rechtsschief, und der Mittelwert liegt dann über dem Median.
+:::
+
+::: {.callout-caution title="Lösung" collapse="true"}
+```python
+sk = stats.skew(masse)
+richtung = 'rechts'
+print(masse.mean(), masse.median())
+```
+
+Die Schiefe ist mit etwa 0,47 positiv, die Verteilung also rechtsschief. Dazu passt, dass der Mittelwert (4202 g) über dem Median (4050 g) liegt.
+:::
+::::
+
+::: {.callout-python}
+#### Python: Schiefe berechnen
+
+```python
+from scipy import stats
+
+# Momentenkoeffizient der Schiefe (mit s̃ statt s, siehe unten)
+stats.skew(daten)
+
+# pandas rechnet eine bias-korrigierte Variante (weicht bei kleinem n etwas ab)
+df['spalte'].skew()
+```
+:::
+
+::: {.callout-caution collapse="true"}
+#### Warum Python für die 12 Personen etwas anderes liefert
+
+`stats.skew` setzt in die Formel die **unkorrigierte** Standardabweichung $\tilde{s}$ ein, unsere Definition die korrigierte $s$. Für die 12 Körpergrößen gibt `stats.skew` deshalb $-0{,}048$ statt $-0{,}042$. Bei der Wölbung ist der Unterschied größer, weil $s$ in der 4. Potenz steht: $1{,}95$ statt $1{,}64$.
+
+Bei großen Stichproben spielt das kaum eine Rolle: Für das Körpergewicht der 342 Pinguine liefern beide Formeln $sk \approx 0{,}47$ und $w \approx 2{,}27$ bzw. $2{,}26$. Merke: Bei kleinen Stichproben immer angeben, **welche** Formel verwendet wurde.
+:::
+
+---
+
+## Wölbung
+
+Die **Wölbung** (auch **Kurtosis**) beschreibt die **Steilheit** einer unimodalen, symmetrischen Verteilung. Eine hohe Wölbung bedeutet: Die Werte häufen sich stark in der Mitte – mit einem schmalen, spitzen Gipfel und langen, schweren Rändern (Ausreißern).
+
+::: {#def-woelbung}
+### Momentenkoeffizient der Wölbung
+
+<br>
+
+$$w = \dfrac{1}{n} \sum_{i=1}^n \left(\dfrac{x_i - \bar{x}}{s}\right)^4$$
+
+Der Vergleichswert ist die **Normalverteilung** mit $w = 3$. Daher berechnet man häufig den **Exzess** (Überschuss):
+
+$$ex = w - 3$$
+
+- $ex > 0$: spitz (leptokurtisch)
+- $ex = 0$: normal (mesokurtisch)
+- $ex < 0$: flach (platykurtisch)
+:::
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Platykurtisch (flach, blau), mesokurtisch (normal, rot) und leptokurtisch (spitz, orange) – alle symmetrisch und mit gleichem Mittelwert."
+np.random.seed(42)
+x_meso = np.random.normal(0, 1, 500)
+x_platy = np.random.uniform(-2.5, 2.5, 500)
+x_lepto = np.random.laplace(0, 0.7, 500)
+
+fig, ax = plt.subplots(figsize=(8, 3.5))
+xr = np.linspace(-4, 4, 300)
+for x, lc, fc, label in [
+    (x_platy, '#005f73', '#0a9396', f'Platykurtisch (flach), ex ≈ {stats.kurtosis(x_platy):.1f}'),
+    (x_meso,  '#9b2226', '#ae2012', f'Mesokurtisch (normal), ex ≈ {stats.kurtosis(x_meso):.1f}'),
+    (x_lepto, '#9c4f00', '#ca6702', f'Leptokurtisch (spitz), ex ≈ {stats.kurtosis(x_lepto):.1f}'),
+]:
+    kde = stats.gaussian_kde(x, bw_method=0.4)
+    ax.plot(xr, kde(xr), color=lc, lw=2, label=label)
+ax.set_xlabel('Wert'); ax.set_ylabel('Dichte')
+ax.legend()
+plt.tight_layout(); plt.show()
+```
+
+::: {#exm-woelbung-groesse}
+### Körpergröße bei 12 Personen
+
+<br>
+
+Analoges Vorgehen wie bei der Schiefe, aber mit der 4. Potenz. Es ergibt sich: $\sum \left(\frac{x_i - \bar{x}}{s}\right)^4 \approx 19{,}67$
+
+$$w = \dfrac{19{,}67}{12} \approx 1{,}64 \qquad ex = 1{,}64 - 3 = -1{,}36$$
+
+Ein negativer Exzess – die Verteilung ist flacher (platykurtisch) als eine Normalverteilung.
+:::
+
+:::: {#exr-woelbung-pinguine}
+### Pinguine: Wölbung der Flossenlänge
+
+<br>
+
+Berechne die Wölbung $w$ und den Exzess $ex = w - 3$ der Flossenlänge (`flipper_length_mm`) und speichere sie in `woelbung` und `exzess`. Ist die Verteilung spitzer oder flacher als eine Normalverteilung?
+
+**Befehle, die du brauchst:** `stats.kurtosis(...)` aus `scipy`. Achtung: Die Funktion liefert den **Exzess**, nicht die Wölbung.
+
+**Überprüfen** testet `exzess` und `woelbung`.
+
+```{py-exercise}
+#| label: woelbung-flossen
+#| caption: Wölbung der Flossenlänge
+#| show-test-hints: false
+import pandas as pd
+from pyodide.http import open_url
+from scipy import stats
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+flossen = penguins['flipper_length_mm'].dropna()
+
+exzess = None     # Dein Code hier
+woelbung = None   # Dein Code hier
+print(woelbung, exzess)
+
+## TESTS ##
+assert exzess is not None, "exzess ist noch leer."
+assert exzess is not None and abs(float(exzess) - (-0.987)) < 0.03, "exzess stimmt nicht. Gesucht ist stats.kurtosis(flossen)."
+assert woelbung is not None, "woelbung ist noch leer."
+assert woelbung is None or abs(float(woelbung) - (-0.987)) > 0.03, "Das ist der Exzess. Die Wölbung ist um 3 größer: w = ex + 3."
+assert woelbung is not None and abs(float(woelbung) - 2.013) < 0.03, "woelbung stimmt nicht. Es gilt w = ex + 3."
+```
+
+::: {.callout-tip title="Tipp" collapse="true"}
+Berechne zuerst den Exzess mit `stats.kurtosis(flossen)`. Die Wölbung ergibt sich daraus durch Umstellen von $ex = w - 3$.
+:::
+
+::: {.callout-caution title="Lösung" collapse="true"}
+```python
+exzess = stats.kurtosis(flossen)
+woelbung = exzess + 3
+```
+
+Der Exzess ist mit etwa $-0{,}99$ negativ (Wölbung $w \approx 2{,}01 < 3$). Die Verteilung ist also flacher als eine Normalverteilung (platykurtisch). Das liegt daran, dass sie zwei Gipfel hat: einen für Adelie und Chinstrap, einen für die größeren Gentoo.
+:::
+::::
+
+::: {.callout-python}
+#### Python: Wölbung berechnen
+
+```python
+from scipy import stats
+
+# ACHTUNG: scipy.stats.kurtosis() gibt den EXZESS (= w - 3) zurück, nicht w!
+exzess = stats.kurtosis(daten)   # ex = w - 3
+woelbung = exzess + 3            # w
+
+# pandas .kurt() gibt ebenfalls den Exzess (bias-korrigierte Variante)
+df['spalte'].kurt()
+```
+:::
+
+:::: {.theorem .exercise}
+#### Aufgabe: Streuungsmaße der Schnabellänge
+
+Streuungsmaße zeigen, wie stark die Werte um die Mitte streuen. Berechne verschiedene Streuungsmaße für die Schnabellänge und interpretiere sie.
+
+**Aufgabe:**
+
+1. Berechne Spannweite, Interquartilsabstand (IQR) und Standardabweichung der Schnabellänge (`bill_length_mm`) und speichere sie in `spannweite`, `iqr` und `std`.
+2. Warum ist der IQR kleiner als die Spannweite? Was sagt das über die Verteilung aus?
+3. Berechne die Standardabweichung je Pinguinart und speichere sie in `std_art`. Bei welcher Art streut die Schnabellänge am stärksten?
+
+**Überprüfen** testet `spannweite`, `iqr`, `std` und `std_art`.
+
+```{py-exercise}
+#| label: streuung-schnabel
+#| caption: Streuungsmaße der Schnabellänge
+#| show-test-hints: false
+import pandas as pd
+from pyodide.http import open_url
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+bill = penguins['bill_length_mm'].dropna()
+
+spannweite = None   # Dein Code hier
+iqr = None          # Dein Code hier
+std = None          # Dein Code hier
+std_art = None      # Dein Code hier
+print(spannweite, iqr, std)
+print(std_art)
+
+## TESTS ##
+assert spannweite is not None and abs(float(spannweite) - 27.5) < 0.01, "spannweite stimmt nicht. Tipp: bill.max() - bill.min()"
+assert iqr is not None and abs(float(iqr) - 9.275) < 0.01, "iqr stimmt nicht. Tipp: bill.quantile(0.75) - bill.quantile(0.25)"
+assert std is not None and abs(float(std) - 5.4596) < 0.002, "std stimmt nicht. Gesucht ist die korrigierte Standardabweichung (n − 1): bill.std(). Achtung, np.std rechnet ohne ddof=1 unkorrigiert."
+assert std_art is not None and hasattr(std_art, 'index') and len(std_art) == 3, "std_art sollte genau einen Wert je Art enthalten (3 Arten). Tipp: groupby('species')."
+assert std_art is not None and hasattr(std_art, 'index') and 'Chinstrap' in std_art.index and abs(float(std_art['Chinstrap']) - 3.34) < 0.01, "std_art stimmt nicht: Für Chinstrap erwartet ist etwa 3,34 mm."
+```
+
+::: {.callout-tip title="Tipp 1" collapse="true"}
+Spannweite = `bill.max() - bill.min()`, IQR = `bill.quantile(0.75) - bill.quantile(0.25)`, Standardabweichung = `bill.std()`. Die fehlenden Werte sind in `bill` schon mit `.dropna()` entfernt.
+:::
+
+::: {.callout-tip title="Tipp 2" collapse="true"}
+`penguins.groupby('species')['bill_length_mm'].std()` gibt die Standardabweichung je Art. Mit `describe()` bekommst du auf einen Blick alle wichtigen Kennzahlen inklusive Quartile.
+:::
+
+::: {.callout-caution title="Minimale Lösung" collapse="true"}
+```python
+spannweite = bill.max() - bill.min()
+iqr = bill.quantile(0.75) - bill.quantile(0.25)
+std = bill.std()
+std_art = penguins.groupby('species')['bill_length_mm'].std()
+```
+
+Spannweite 27,5 mm, IQR 9,3 mm, Standardabweichung 5,5 mm. Innerhalb jeder Art ist die Standardabweichung nur etwa 2,7 bis 3,3 mm: Ein großer Teil der Gesamtstreuung kommt daher, dass die Arten unterschiedlich lange Schnäbel haben.
+:::
+::::
+
+---
+
+## Zusammenfassung
+
+::: {.callout-tip}
+#### Alle Kennzahlen im Überblick
+
+| Maßzahl | Formel / Begriff | Python |
+|---------|-----------------|--------|
+| **Spannweite** | $x_{(n)} - x_{(1)}$ | `max() - min()` |
+| **IQR** | $Q_3 - Q_1$ | `.quantile(0.75) - .quantile(0.25)` |
+| **Varianz** (korrig.) | $\frac{1}{n-1}\sum(x_i-\bar{x})^2$ | `.var()` |
+| **Standardabweichung** | $\sqrt{s^2}$ | `.std()` |
+| **Schiefe** $sk$ | $\frac{1}{n}\sum\left(\frac{x_i-\bar{x}}{s}\right)^3$ | `stats.skew()` |
+| **Wölbung** $w$ | $\frac{1}{n}\sum\left(\frac{x_i-\bar{x}}{s}\right)^4$ | `stats.kurtosis() + 3` |
+| **Exzess** $ex$ | $w - 3$ | `stats.kurtosis()` |
+
+Mit `df['spalte'].describe()` erhält man auf einen Blick: $n$, Mittelwert, Standardabweichung, Minimum, $Q_1$, Median, $Q_3$, Maximum.
+:::
+
+---
+
+## Wissenstest
+
+```{quizdown}
+---
+locale: de
+primaryColor: '#0a9396'
+shuffleQuestions: false
+shuffleAnswers: true
+---
+
+### Was misst die Standardabweichung?
+
+1. [ ] Den Abstand zwischen Minimum und Maximum
+1. [x] Die typische Abweichung der Beobachtungen vom Mittelwert
+    > Genau! Die Standardabweichung hat dieselbe Einheit wie die Daten und gibt an, wie weit die Werte durchschnittlich vom Mittelwert abweichen.
+1. [ ] Den Median der quadratischen Abweichungen
+1. [ ] Den Abstand zwischen Q1 und Q3
+
+### Eine Stichprobe hat Varianz $s^2 = 25$ cm². Wie groß ist die Standardabweichung?
+
+1. [ ] 25 cm
+1. [ ] 625 cm
+1. [x] 5 cm
+    > Richtig! $s = \sqrt{s^2} = \sqrt{25} = 5$ cm.
+1. [ ] 12,5 cm
+
+### Welches der folgenden Streuungsmaße ist am robustesten gegenüber Ausreißern?
+
+1. [ ] Spannweite
+1. [ ] Varianz
+1. [x] Interquartilsabstand (IQR)
+    > Korrekt! Der IQR basiert nur auf den mittleren 50 % der Daten und wird von extremen Werten kaum beeinflusst.
+1. [ ] Standardabweichung
+
+### Du siehst: Mittelwert = 45.000 €, Median = 32.000 €. Was schließt du?
+
+1. [ ] Die Daten sind linksschief
+1. [x] Die Daten sind rechtsschief – wenige hohe Gehälter ziehen den Mittelwert nach oben
+    > Richtig! Bei rechtsschiefen Verteilungen gilt $\bar{x} > \tilde{x}_{0{,}5}$. Typisch für Gehälter.
+1. [ ] Mittelwert und Median sollten immer gleich sein
+1. [ ] Die Daten sind symmetrisch
+
+### Was sagt ein negativer Momentenkoeffizient der Schiefe ($sk < 0$)?
+
+1. [ ] Die Verteilung ist rechtsschief
+1. [ ] Die Verteilung ist symmetrisch
+1. [x] Die Verteilung ist linksschief – die meisten Werte liegen rechts, mit einem langen Schweif nach links
+    > Richtig! Bei Linksschiefe gilt $sk < 0$ und $\bar{x} < \tilde{x}_{0{,}5}$.
+1. [ ] Die Varianz ist negativ – das kann nicht sein
+
+### Was bedeutet ein Exzess $ex > 0$?
+
+1. [x] Die Verteilung ist leptokurtisch – spitzer als eine Normalverteilung
+    > Richtig! Positiver Exzess = leptokurtisch (griech. leptos = schlank/spitz). Die Werte häufen sich stark in der Mitte.
+1. [ ] Die Verteilung ist platykurtisch – flacher als eine Normalverteilung
+1. [ ] Die Verteilung ist rechtsschief
+1. [ ] Die Wölbung ist kleiner als 3
+
+### Die Funktion `stats.kurtosis()` aus scipy gibt welchen Wert zurück?
+
+1. [ ] Den Wölbungskoeffizienten $w$
+1. [ ] Den Wölbungskoeffizienten $w$ minus 1
+1. [x] Den Exzess $ex = w - 3$ (Vergleich zur Normalverteilung)
+    > Wichtig zu wissen! `scipy.stats.kurtosis()` gibt standardmäßig den Exzess (Überschuss gegenüber der Normalverteilung) zurück. Um $w$ zu erhalten, muss man 3 addieren.
+1. [ ] Den Momentenkoeffizienten der Schiefe
+```
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+## Learning objectives {#lernziele .unnumbered}
+
+By the end of this subchapter you can:
+
+- compute and interpret different measures of spread (range, IQR, variance, standard deviation).
+- explain the difference between the corrected and the uncorrected variance.
+- examine frequency distributions for skewness and kurtosis.
+- apply suitable Python functions for all measures covered.
+
+---
+
+## Introduction {#einführung}
+
+In chapter 1.4 we learned about measures of location, which describe where the centre of a sample lies. But two samples can have the same mean and still look completely different:
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Three distributions with almost the same arithmetic mean (≈ 7) and a similar standard deviation (≈ 2), but very different shapes."
+np.random.seed(1000)
+x1 = np.random.exponential(2, 300) + 5      # right-skewed
+x2 = np.random.normal(7, 2, 300)            # symmetric, normally distributed
+x3 = np.concatenate([np.random.normal(7, 1, 200), np.random.normal(7, 3.5, 100)])  # leptokurtic
+
+fig, axes = plt.subplots(1, 3, figsize=(11, 3.5), sharey=True)
+data_list = [
+    (x1, '#0a9396', '#005f73', f'(a) Right-skewed\n$\\bar{{x}}={x1.mean():.1f}$, $s={x1.std(ddof=1):.1f}$'),
+    (x2, '#ae2012', '#9b2226', f'(b) Symmetric\n$\\bar{{x}}={x2.mean():.1f}$, $s={x2.std(ddof=1):.1f}$'),
+    (x3, '#ca6702', '#9c4f00', f'(c) Peaked (leptokurtic)\n$\\bar{{x}}={x3.mean():.1f}$, $s={x3.std(ddof=1):.1f}$'),
+]
+for ax, (x, fc, lc, title) in zip(axes, data_list):
+    ax.hist(x, bins=15, color=fc, edgecolor='white', alpha=0.8, density=True)
+    xr = np.linspace(x.min(), x.max(), 300)
+    kde = stats.gaussian_kde(x, bw_method=0.5)
+    ax.plot(xr, kde(xr), color=lc, lw=2)
+    ax.set_title(title, fontsize=10)
+    ax.set_xlabel('Value'); ax.set_xlim(-1, 16)
+axes[0].set_ylabel('Density')
+plt.tight_layout(); plt.show()
+```
+
+Measures of location alone **cannot** capture these differences. We also need measures for:
+
+- **Spread**: How far apart are the values?
+- **Skewness**: Is the distribution symmetric?
+- **Kurtosis**: Is the distribution peaked or flat?
+
+---
+
+## Measures of spread {#streuungsmaße}
+
+### Range and interquartile range {#spannweite-und-interquartilsabstand .unnumbered}
+
+We already know the simplest measures of spread from the box plot (chapter 1.4):
+
+::: {#def-spannweite}
+### Range
+
+<br>
+
+The **range** of an ordered sample $x_{(1)} \le \cdots \le x_{(n)}$ is the distance between the largest and the smallest value:
+
+$$\tilde{q}_0 = x_{(n)} - x_{(1)} = \text{maximum} - \text{minimum}$$
+:::
+
+::: {#def-iqr}
+### Interquartile range (IQR)
+
+<br>
+
+The **interquartile range** (IQR) is the distance between the third and the first quartile. Here $Q_1 = \tilde{x}_{0.25}$ and $Q_3 = \tilde{x}_{0.75}$ are the lower and upper quartile from [Section 1.4](kennzahlen_lage.qmd):
+
+$$\text{IQR} = Q_3 - Q_1 = \tilde{x}_{0.75} - \tilde{x}_{0.25}$$
+
+It tells you how wide the range is that contains the middle 50 % of the data.
+:::
+
+::: {#exm-spannweite-groesse}
+### Body height of 12 people
+
+<br>
+
+Sorted sample: 158.0 – 161.5 – 164.0 – 167.5 – 170.5 – 174.5 – 177.5 – 179.5 – 181.0 – 183.0 – 186.5 – 192.0
+
+From the calculations in chapter 1.4:
+
+- Range: $192.0 - 158.0 = 34.0$ cm
+- IQR: $Q_3 - Q_1 = 182.0 - 165.75 = 16.25$ cm
+
+So the middle 50 % of the observations are at most 16.25 cm apart.
+:::
+
+::: {.callout-caution}
+#### The range is sensitive to outliers
+
+A single extreme value (e.g. a measurement error) can make the range extremely large, even if all other values are close together. The IQR is much more robust because it only considers the middle 50 % of the data.
+:::
+
+---
+
+### Variance and standard deviation {#varianz-und-standardabweichung .unnumbered}
+
+The most important measures of spread in statistics are the **empirical variance** and the **empirical standard deviation**. They measure the average squared deviation of the observations from the arithmetic mean.
+
+::: {#def-varianz}
+### Empirical variance and standard deviation
+
+<br>
+
+Let $(x_1, \dots, x_n)$ be a sample of a metric variable with arithmetic mean $\bar{x}$.
+
+**Uncorrected variance** (factor $\frac{1}{n}$):
+$$\tilde{s}^2 = \dfrac{1}{n} \sum_{i=1}^n (x_i - \bar{x})^2$$
+
+**Corrected variance** (factor $\frac{1}{n-1}$):
+$$s^2 = \dfrac{1}{n-1} \sum_{i=1}^n (x_i - \bar{x})^2$$
+
+The **standard deviation** is the square root of the variance: $s = \sqrt{s^2}$ or $\tilde{s} = \sqrt{\tilde{s}^2}$.
+:::
+
+::: {.callout-tip}
+#### Why two versions?
+
+The only difference is the factor: $s^2 = \frac{n}{n-1} \cdot \tilde{s}^2$.
+
+- The **corrected** version ($\frac{1}{n-1}$) is the standard version in statistics – pandas and most statistics software use it by default (NumPy does not, see below). It estimates the variance of the population **without bias**, i.e. without a systematic error on average (more in chapter 2: estimation theory).
+- The **uncorrected** version ($\frac{1}{n}$) is the actual "mean squared deviation".
+- For large samples the difference is negligible: $\frac{n}{n-1} \approx 1$ for large $n$.
+:::
+
+::: {#exm-varianz-groesse}
+### Computing the variance – body height of 12 people
+
+<br>
+
+Sample: 170.5 – 183.0 – 174.5 – 158.0 – 167.5 – 179.5 – 192.0 – 177.5 – 186.5 – 161.5 – 181.0 – 164.0
+
+Known: $\bar{x} = 174.625$ cm
+
+For each value we compute $(x_i - \bar{x})^2$:
+
+| $i$ | $x_i$ | $x_i - \bar{x}$ | $(x_i - \bar{x})^2$ |
+|:----|------:|----------------:|--------------------:|
+| 1  | 170.5 | −4.125 | 17.016 |
+| 2  | 183.0 | +8.375 | 70.141 |
+| 3  | 174.5 | −0.125 | 0.016 |
+| 4  | 158.0 | −16.625 | 276.391 |
+| 5  | 167.5 | −7.125 | 50.766 |
+| 6  | 179.5 | +4.875 | 23.766 |
+| 7  | 192.0 | +17.375 | 301.891 |
+| 8  | 177.5 | +2.875 | 8.266 |
+| 9  | 186.5 | +11.875 | 141.016 |
+| 10 | 161.5 | −13.125 | 172.266 |
+| 11 | 181.0 | +6.375 | 40.641 |
+| 12 | 164.0 | −10.625 | 112.891 |
+| **$\sum$** | **2095.5** | **0** | **1215.06** |
+
+: {.striped .hover}
+
+As expected, the sum of the deviations is 0 (check!).
+
+$$s^2 = \dfrac{1215.06}{12-1} \approx 110.46 \text{ cm}^2 \qquad s \approx 10.51 \text{ cm}$$
+
+$$\tilde{s}^2 = \dfrac{1215.06}{12} \approx 101.26 \text{ cm}^2 \qquad \tilde{s} \approx 10.06 \text{ cm}$$
+:::
+
+Try it on a small sample: $3,\ 5,\ 7,\ 9$. Compute the range, the interquartile range and both variances (as a fraction like `20/3` or as a decimal):
+
+```{math-exercise}
+#| label: streuung-hand-en
+#| caption: Measures of spread by hand
+#| mode: numeric
+#| tolerance: 1%
+#| partial-credit: true
+#| field-labels: Range, IQR, s², s̃²
+Range $=$ _[6], $\text{IQR} =$ _[4], $s^2 =$ _[20/3], $\tilde{s}^2 =$ _[5]
+```
+
+::: {.callout-tip collapse="true" title="Solution steps"}
+- Range: $9 - 3 = 6$
+- $n = 4$: $n \cdot 0.25 = 1$ and $n \cdot 0.75 = 3$ are whole numbers, so $Q_1 = (3 + 5)/2 = 4$, $Q_3 = (7 + 9)/2 = 8$, $\text{IQR} = 4$
+- $\bar{x} = 6$, deviations $-3, -1, 1, 3$, squares $9, 1, 1, 9$, sum $20$
+- $s^2 = 20/3 \approx 6.67$ and $\tilde{s}^2 = 20/4 = 5$
+:::
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Deviations of the twelve body heights from the mean. The further a value lies from the mean, the larger its contribution to the variance – and quadratically so: twice the distance, four times the contribution."
+heights = np.array([170.5, 183.0, 174.5, 158.0, 167.5, 179.5,
+                    192.0, 177.5, 186.5, 161.5, 181.0, 164.0])
+xbar = heights.mean()
+
+fig, ax = plt.subplots(figsize=(9, 3.5))
+y_pos = np.zeros(len(heights))
+ax.scatter(heights, y_pos, color='#005f73', s=50, zorder=5)
+ax.axvline(xbar, color='#ae2012', lw=2, label=f'Mean $\\bar{{x}} = {xbar:.1f}$')
+
+for xi in heights:
+    dev = xi - xbar
+    col = '#0a9396' if dev > 0 else '#ca6702'
+    ax.annotate('', xy=(xi, 0), xytext=(xbar, 0),
+                arrowprops=dict(arrowstyle='-', color=col, lw=1.5,
+                                connectionstyle='arc3,rad=0.3'))
+
+ax.set_yticks([])
+ax.set_xlabel('Body height (cm)')
+ax.legend()
+ax.set_title('Deviations from the mean (teal: positive, orange: negative)')
+plt.tight_layout(); plt.show()
+```
+
+::: {.callout-rechnen}
+#### Calculation note: efficient computation
+
+To compute the variance, proceed step by step:
+
+1. Compute $\bar{x}$
+2. For each value $x_i$ compute the deviation $(x_i - \bar{x})$
+3. Square the deviations: $(x_i - \bar{x})^2$
+4. Add them up: $\sum (x_i - \bar{x})^2$
+5. Divide by $n-1$ (corrected) or $n$ (uncorrected)
+
+**Check:** $\sum (x_i - \bar{x}) = 0$ must always hold!
+:::
+
+### Interpreting the standard deviation {#interpretation-der-standardabweichung .unnumbered}
+
+The variance is in **squared units** (e.g. cm²) – it is hard to interpret directly. The standard deviation, however, has **the same unit as the data** (e.g. cm) and is easy to interpret:
+
+> The standard deviation gives the typical deviation of a single value from the mean.
+
+If the data are roughly **bell-shaped** (normally distributed), the **68-95 rule** applies:
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "68-95 rule: for normally distributed data about 68 % of the values lie within ±1s and about 95 % within ±2s of the mean."
+np.random.seed(42)
+x = np.random.normal(0, 1, 5000)
+xr = np.linspace(-4, 4, 400)
+kde = stats.gaussian_kde(x)
+
+fig, ax = plt.subplots(figsize=(8, 3.5))
+ax.plot(xr, kde(xr), '#005f73', lw=2)
+
+# Shaded areas
+ax.fill_between(xr, kde(xr), where=(np.abs(xr) <= 1), alpha=0.5, color='#0a9396', label='±1s: approx. 68 %')
+ax.fill_between(xr, kde(xr), where=((np.abs(xr) > 1) & (np.abs(xr) <= 2)), alpha=0.4, color='#94d2bd', label='±2s: approx. 95 %')
+
+ax.axvline(-1, color='#0a9396', ls='--', lw=1)
+ax.axvline(1, color='#0a9396', ls='--', lw=1)
+ax.axvline(-2, color='#94d2bd', ls='--', lw=1)
+ax.axvline(2, color='#94d2bd', ls='--', lw=1)
+ax.axvline(0, color='#ae2012', lw=2, label='Mean $\\bar{x}$')
+
+ax.set_xticks([-2, -1, 0, 1, 2])
+ax.set_xticklabels(['$\\bar{x}-2s$', '$\\bar{x}-s$', '$\\bar{x}$', '$\\bar{x}+s$', '$\\bar{x}+2s$'])
+ax.set_ylabel('Density'); ax.legend(loc='upper right')
+plt.tight_layout(); plt.show()
+```
+
+:::: {#exr-varianz-pinguine}
+### Penguins: variance and standard deviation
+
+<br>
+
+Compute the corrected variance $s^2$ and the corresponding standard deviation $s$ of the flipper length (`flipper_length_mm`) separately for each island (`island`). Store them in `var_island` and `std_island`. On which island is the flipper length most uniform? Store the name of that island as text in `island_min`.
+
+**Commands you need:** `penguins.groupby('island')` (group by island), `.var()` and `.std()` (in pandas both with $1/(n-1)$)
+
+**Check** tests `var_island`, `std_island` and `island_min`.
+
+```{py-exercise}
+#| label: varianz-insel-en
+#| caption: Variance and standard deviation by island
+#| show-test-hints: false
+import pandas as pd
+from pyodide.http import open_url
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+
+var_island = None   # Your code here
+std_island = None   # Your code here
+island_min = None   # Your code here
+print(var_island)
+print(std_island)
+print(island_min)
+
+## TESTS ##
+assert var_island is not None, "var_island is still empty."
+assert var_island is not None and hasattr(var_island, '__len__') and len(var_island) == 3, "var_island should contain exactly one value per island (3 islands)."
+assert var_island is None or not hasattr(var_island, '__len__') or len(var_island) != 3 or abs(float(var_island['Dream']) - 55.906) > 0.05, "That is the variance with 1/n. The corrected variance with 1/(n-1) is expected."
+assert var_island is not None and hasattr(var_island, '__len__') and len(var_island) == 3 and abs(float(var_island['Dream']) - 56.361) < 0.05 and abs(float(var_island['Biscoe']) - 200.004) < 0.05, "var_island is wrong: about 56.36 mm² is expected for Dream."
+assert std_island is not None, "std_island is still empty."
+assert std_island is not None and hasattr(std_island, '__len__') and len(std_island) == 3 and abs(float(std_island['Dream']) - 7.507) < 0.01 and abs(float(std_island['Biscoe']) - 14.142) < 0.01, "std_island is wrong: about 7.51 mm is expected for Dream."
+assert island_min == 'Torgersen', "island_min is wrong. The island with the smallest spread is expected, as text in quotes."
+```
+
+::: {.callout-tip title="Hint 1" collapse="true"}
+As with the mean per species: `penguins.groupby('island')['flipper_length_mm']`, then `.var()` or `.std()`.
+:::
+
+::: {.callout-tip title="Hint 2" collapse="true"}
+“Most uniform” means: the smallest spread. Read the island off the output and enter it, for example `island_min = 'Dream'`. With `std_island.idxmin()` it also works without reading it off.
+:::
+
+::: {.callout-caution title="Solution" collapse="true"}
+```python
+var_island = penguins.groupby('island')['flipper_length_mm'].var()
+std_island = penguins.groupby('island')['flipper_length_mm'].std()
+island_min = std_island.idxmin()
+```
+
+The flipper length varies least on Torgersen ($s \approx 6.2$ mm) and most on Biscoe ($s \approx 14.1$ mm). Only one species (Adelie) lives on Torgersen, whereas Biscoe is home to Adelie and the much larger Gentoo.
+:::
+::::
+
+::: {.callout-python}
+#### Python: variance and standard deviation
+
+```python
+# Corrected variance (n-1) – default in pandas
+df['column'].var()
+
+# Corrected standard deviation (n-1)
+df['column'].std()
+
+# With NumPy – CAUTION: uncorrected (n) by default!
+import numpy as np
+np.var(data)           # uncorrected
+np.var(data, ddof=1)   # corrected (like pandas)
+np.std(data, ddof=1)   # corrected standard deviation
+
+# Full summary including std
+df['column'].describe()
+```
+:::
+
+---
+
+## Skewness {#schiefe}
+
+Measures of location and spread alone are not enough to describe a distribution completely. Two distributions can have the same mean and the same standard deviation but be **skewed** differently.
+
+### Symmetry and asymmetry {#symmetrie-und-asymmetrie .unnumbered}
+
+A frequency distribution is called **symmetric** if it can be mirrored about its mean – i.e. the left and right sides of the histogram look the same.
+
+If a distribution is **not symmetric**, we call it **skewed**:
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Left-skewed (left), symmetric (middle) and right-skewed (right) distributions, each with the mean (red) and median (blue) marked."
+#| layout-ncol: 3
+np.random.seed(42)
+x_sym = np.random.normal(7, 2, 500)
+x_right = np.random.exponential(2, 500) + 5      # right-skewed
+x_left = -(np.random.exponential(2, 500)) + 10   # left-skewed
+
+data = [
+    (x_left, 'Left-skewed\n(steep on the right)', '#ca6702', '#9c4f00'),
+    (x_sym,  'Symmetric', '#ae2012', '#9b2226'),
+    (x_right,'Right-skewed\n(steep on the left)', '#0a9396', '#005f73'),
+]
+
+for x, title, fc, lc in data:
+    fig, ax = plt.subplots(figsize=(4, 3.2))
+    ax.hist(x, bins=20, color=fc, edgecolor='white', alpha=0.8, density=True)
+    xr = np.linspace(x.min()-0.5, x.max()+0.5, 300)
+    kde = stats.gaussian_kde(x, bw_method=0.4)
+    ax.plot(xr, kde(xr), color=lc, lw=2)
+    ax.axvline(x.mean(), color='#ae2012', lw=2, linestyle='--', label='Mean')
+    ax.axvline(np.median(x), color='#005f73', lw=2, linestyle='-', label='Median')
+    ax.set_title(title)
+    ax.set_xlabel('Value'); ax.set_ylabel('Density')
+    ax.legend(fontsize=8)
+    plt.tight_layout(); plt.show()
+```
+
+::: {.callout-tip}
+#### Recognizing skewness: mean vs. median
+
+In the table, $\bar{x}$ is the arithmetic mean and $\tilde{x}_{0.5}$ the median (both from [Section 1.4](kennzahlen_lage.qmd)).
+
+| Distribution | Relation | Typical example |
+|------------|-----------|-------------------|
+| **Left-skewed** (steep on the right) | $\bar{x} < \tilde{x}_{0.5}$ | exam grades when most students pass well |
+| **Symmetric** | $\bar{x} \approx \tilde{x}_{0.5}$ | body height, measurement errors |
+| **Right-skewed** (steep on the left) | $\bar{x} > \tilde{x}_{0.5}$ | income, waiting times, prices |
+
+Right-skewed distributions can often be recognized by a long "tail" to the right.
+:::
+
+### Moment coefficient of skewness {#momentenkoeffizient-der-schiefe .unnumbered}
+
+To measure skewness numerically, we use the **moment coefficient of skewness** $sk$:
+
+::: {#def-schiefe}
+### Moment coefficient of skewness
+
+<br>
+
+$$sk = \dfrac{1}{n} \sum_{i=1}^n \left(\dfrac{x_i - \bar{x}}{s}\right)^3$$
+
+- $sk > 0$: right-skewed distribution
+- $sk = 0$: symmetric distribution
+- $sk < 0$: left-skewed distribution
+:::
+
+::: {.callout-rechnen}
+#### Intuition behind the formula
+
+The deviations $(x_i - \bar{x})$ are **standardized** by $s$ (made unit-free) and then raised to the **power of 3**. Since a positive deviation keeps its sign (positive cubed = positive) and a negative deviation keeps its sign as well (negative cubed = negative), the sign of $sk$ shows the direction of the skewness.
+:::
+
+::: {#exm-schiefe-groesse}
+### Body height of 12 people
+
+<br>
+
+Known: $\bar{x} = 174.625$ cm, $s = 10.51$ cm
+
+Using the table from the variance example we get: $\sum \left(\frac{x_i - \bar{x}}{s}\right)^3 \approx -0.50$
+
+$$sk = \dfrac{-0.50}{12} \approx -0.042$$
+
+The value is very close to 0 → the distribution is approximately symmetric.
+:::
+
+Before you use Python, try the core of the formula by hand on a small sample. For $2,\ 3,\ 4,\ 15$ we have $\bar{x} = 6$. Compute the deviations $x_i - \bar{x}$, raise them to the power 3 and add them up:
+
+```{math-exercise}
+#| label: schiefe-hand-en
+#| caption: Sign of the skewness by hand
+#| mode: numeric
+#| tolerance: 1%
+#| field-labels: Sum of the cubes
+$\sum_{i=1}^{4} (x_i - \bar{x})^3 =$ _[630]
+```
+
+::: {.callout-tip collapse="true" title="Solution path"}
+Deviations: $-4,\ -3,\ -2,\ 9$. Cubes: $-64,\ -27,\ -8,\ 729$. Sum: $630$.
+The sum is **positive**, so $sk > 0$: the sample is right-skewed. This fits the large value 15 at the right edge, which determines the sign.
+:::
+
+:::: {#exr-schiefe-pinguine}
+### Penguins: skewness of body mass
+
+<br>
+
+Compute the moment coefficient of skewness for the body mass (`body_mass_g`) of the penguins and store it in `sk`. Is the distribution right- or left-skewed? Store the answer as `'right'` or `'left'` in `direction`. Compare the mean and median as a plausibility check.
+
+**Commands you need:** `stats.skew(...)` from `scipy` (skewness), `.mean()`, `.median()`
+
+**Check** tests `sk` and `direction`.
+
+```{py-exercise}
+#| label: schiefe-gewicht-en
+#| caption: Skewness of the body mass
+#| show-test-hints: false
+import pandas as pd
+from pyodide.http import open_url
+from scipy import stats
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+mass = penguins['body_mass_g'].dropna()
+
+sk = None          # Your code here
+direction = None   # Your code here
+print(sk, direction)
+
+## TESTS ##
+assert sk is not None, "sk is still empty."
+assert sk is not None and abs(float(sk) - 0.468) < 0.01, "sk is wrong. stats.skew(mass) is expected."
+assert direction is not None, "direction is still empty."
+assert direction == 'right', "direction is wrong. 'right' or 'left' is expected. The sign of sk decides."
+```
+
+::: {.callout-tip title="Hint" collapse="true"}
+`stats.skew(mass)` returns the skewness. If it is positive, the distribution is right-skewed, and the mean then lies above the median.
+:::
+
+::: {.callout-caution title="Solution" collapse="true"}
+```python
+sk = stats.skew(mass)
+direction = 'right'
+print(mass.mean(), mass.median())
+```
+
+At about 0.47 the skewness is positive, so the distribution is right-skewed. This fits the fact that the mean (4202 g) lies above the median (4050 g).
+:::
+::::
+
+::: {.callout-python}
+#### Python: computing skewness
+
+```python
+from scipy import stats
+
+# Moment coefficient of skewness (with s̃ instead of s, see below)
+stats.skew(data)
+
+# pandas computes a bias-corrected variant (differs slightly for small n)
+df['column'].skew()
+```
+:::
+
+::: {.callout-caution collapse="true"}
+#### Why Python gives a slightly different result for the 12 people
+
+`stats.skew` puts the **uncorrected** standard deviation $\tilde{s}$ into the formula, our definition the corrected $s$. For the 12 body heights `stats.skew` therefore gives $-0.048$ instead of $-0.042$. For the kurtosis the difference is larger because $s$ appears to the 4th power: $1.95$ instead of $1.64$.
+
+For large samples this hardly matters: for the body mass of the 342 penguins both formulas give $sk \approx 0.47$ and $w \approx 2.27$ or $2.26$. Remember: for small samples always state **which** formula you used.
+:::
+
+---
+
+## Kurtosis {#wölbung}
+
+**Kurtosis** describes the **peakedness** of a unimodal, symmetric distribution. High kurtosis means: the values cluster strongly in the middle – with a narrow, sharp peak and long, heavy tails (outliers).
+
+::: {#def-woelbung}
+### Moment coefficient of kurtosis
+
+<br>
+
+$$w = \dfrac{1}{n} \sum_{i=1}^n \left(\dfrac{x_i - \bar{x}}{s}\right)^4$$
+
+The reference is the **normal distribution** with $w = 3$. That is why one often computes the **excess kurtosis**:
+
+$$ex = w - 3$$
+
+- $ex > 0$: peaked (leptokurtic)
+- $ex = 0$: normal (mesokurtic)
+- $ex < 0$: flat (platykurtic)
+:::
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Platykurtic (flat, blue), mesokurtic (normal, red) and leptokurtic (peaked, orange) – all symmetric and with the same mean."
+np.random.seed(42)
+x_meso = np.random.normal(0, 1, 500)
+x_platy = np.random.uniform(-2.5, 2.5, 500)
+x_lepto = np.random.laplace(0, 0.7, 500)
+
+fig, ax = plt.subplots(figsize=(8, 3.5))
+xr = np.linspace(-4, 4, 300)
+for x, lc, fc, label in [
+    (x_platy, '#005f73', '#0a9396', f'Platykurtic (flat), ex ≈ {stats.kurtosis(x_platy):.1f}'),
+    (x_meso,  '#9b2226', '#ae2012', f'Mesokurtic (normal), ex ≈ {stats.kurtosis(x_meso):.1f}'),
+    (x_lepto, '#9c4f00', '#ca6702', f'Leptokurtic (peaked), ex ≈ {stats.kurtosis(x_lepto):.1f}'),
+]:
+    kde = stats.gaussian_kde(x, bw_method=0.4)
+    ax.plot(xr, kde(xr), color=lc, lw=2, label=label)
+ax.set_xlabel('Value'); ax.set_ylabel('Density')
+ax.legend()
+plt.tight_layout(); plt.show()
+```
+
+::: {#exm-woelbung-groesse}
+### Body height of 12 people
+
+<br>
+
+Same procedure as for skewness, but with the 4th power. We get: $\sum \left(\frac{x_i - \bar{x}}{s}\right)^4 \approx 19.67$
+
+$$w = \dfrac{19.67}{12} \approx 1.64 \qquad ex = 1.64 - 3 = -1.36$$
+
+A negative excess – the distribution is flatter (platykurtic) than a normal distribution.
+:::
+
+:::: {#exr-woelbung-pinguine}
+### Penguins: kurtosis of flipper length
+
+<br>
+
+Compute the kurtosis $w$ and the excess kurtosis $ex = w - 3$ of the flipper length (`flipper_length_mm`) and store them in `kurt` and `excess`. Is the distribution more peaked or flatter than a normal distribution?
+
+**Commands you need:** `stats.kurtosis(...)` from `scipy`. Caution: the function returns the **excess**, not the kurtosis.
+
+**Check** tests `excess` and `kurt`.
+
+```{py-exercise}
+#| label: woelbung-flossen-en
+#| caption: Kurtosis of the flipper length
+#| show-test-hints: false
+import pandas as pd
+from pyodide.http import open_url
+from scipy import stats
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+flippers = penguins['flipper_length_mm'].dropna()
+
+excess = None   # Your code here
+kurt = None     # Your code here
+print(kurt, excess)
+
+## TESTS ##
+assert excess is not None, "excess is still empty."
+assert excess is not None and abs(float(excess) - (-0.987)) < 0.03, "excess is wrong. stats.kurtosis(flippers) is expected."
+assert kurt is not None, "kurt is still empty."
+assert kurt is None or abs(float(kurt) - (-0.987)) > 0.03, "That is the excess. The kurtosis is larger by 3: w = ex + 3."
+assert kurt is not None and abs(float(kurt) - 2.013) < 0.03, "kurt is wrong. It holds that w = ex + 3."
+```
+
+::: {.callout-tip title="Hint" collapse="true"}
+First compute the excess with `stats.kurtosis(flippers)`. The kurtosis follows by rearranging $ex = w - 3$.
+:::
+
+::: {.callout-caution title="Solution" collapse="true"}
+```python
+excess = stats.kurtosis(flippers)
+kurt = excess + 3
+```
+
+At about $-0.99$ the excess is negative (kurtosis $w \approx 2.01 < 3$). The distribution is therefore flatter than a normal distribution (platykurtic). The reason is that it has two peaks: one for Adelie and Chinstrap, one for the larger Gentoo.
+:::
+::::
+
+::: {.callout-python}
+#### Python: computing kurtosis
+
+```python
+from scipy import stats
+
+# CAUTION: scipy.stats.kurtosis() returns the EXCESS (= w - 3), not w!
+excess = stats.kurtosis(data)   # ex = w - 3
+kurt = excess + 3               # w
+
+# pandas .kurt() also returns the excess (bias-corrected variant)
+df['column'].kurt()
+```
+:::
+
+:::: {.theorem .exercise}
+#### Exercise: Measures of spread of the bill length
+
+Measures of spread show how strongly the values scatter around the centre. Compute different measures of spread for the bill length and interpret them.
+
+**Task:**
+
+1. Compute the range, the interquartile range (IQR) and the standard deviation of the bill length (`bill_length_mm`) and store them in `value_range`, `iqr` and `std`.
+2. Why is the IQR smaller than the range? What does that tell you about the distribution?
+3. Compute the standard deviation per species and store it in `std_by_species`. For which species does the bill length vary most?
+
+**Check** tests `value_range`, `iqr`, `std` and `std_by_species`.
+
+```{py-exercise}
+#| label: streuung-schnabel-en
+#| caption: Measures of spread of the bill length
+#| show-test-hints: false
+import pandas as pd
+from pyodide.http import open_url
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+bill = penguins['bill_length_mm'].dropna()
+
+value_range = None      # Your code here
+iqr = None              # Your code here
+std = None              # Your code here
+std_by_species = None   # Your code here
+print(value_range, iqr, std)
+print(std_by_species)
+
+## TESTS ##
+assert value_range is not None and abs(float(value_range) - 27.5) < 0.01, "value_range is wrong. Hint: bill.max() - bill.min()"
+assert iqr is not None and abs(float(iqr) - 9.275) < 0.01, "iqr is wrong. Hint: bill.quantile(0.75) - bill.quantile(0.25)"
+assert std is not None and abs(float(std) - 5.4596) < 0.002, "std is wrong. You need the corrected standard deviation (n − 1): bill.std(). Careful: np.std without ddof=1 is uncorrected."
+assert std_by_species is not None and hasattr(std_by_species, 'index') and len(std_by_species) == 3, "std_by_species should contain exactly one value per species (3 species). Hint: groupby('species')."
+assert std_by_species is not None and hasattr(std_by_species, 'index') and 'Chinstrap' in std_by_species.index and abs(float(std_by_species['Chinstrap']) - 3.34) < 0.01, "std_by_species is wrong: for Chinstrap about 3.34 mm is expected."
+```
+
+::: {.callout-tip title="Hint 1" collapse="true"}
+Range = `bill.max() - bill.min()`, IQR = `bill.quantile(0.75) - bill.quantile(0.25)`, standard deviation = `bill.std()`. The missing values have already been removed from `bill` with `.dropna()`.
+:::
+
+::: {.callout-tip title="Hint 2" collapse="true"}
+`penguins.groupby('species')['bill_length_mm'].std()` gives the standard deviation per species. With `describe()` you get all important measures including the quartiles at a glance.
+:::
+
+::: {.callout-caution title="Minimal solution" collapse="true"}
+```python
+value_range = bill.max() - bill.min()
+iqr = bill.quantile(0.75) - bill.quantile(0.25)
+std = bill.std()
+std_by_species = penguins.groupby('species')['bill_length_mm'].std()
+```
+
+Range 27.5 mm, IQR 9.3 mm, standard deviation 5.5 mm. Within each species the standard deviation is only about 2.7 to 3.3 mm: a large part of the total spread comes from the species having bills of different lengths.
+:::
+::::
+
+---
+
+## Summary {#zusammenfassung}
+
+::: {.callout-tip}
+#### All measures at a glance
+
+| Measure | Formula / term | Python |
+|---------|-----------------|--------|
+| **Range** | $x_{(n)} - x_{(1)}$ | `max() - min()` |
+| **IQR** | $Q_3 - Q_1$ | `.quantile(0.75) - .quantile(0.25)` |
+| **Variance** (corr.) | $\frac{1}{n-1}\sum(x_i-\bar{x})^2$ | `.var()` |
+| **Standard deviation** | $\sqrt{s^2}$ | `.std()` |
+| **Skewness** $sk$ | $\frac{1}{n}\sum\left(\frac{x_i-\bar{x}}{s}\right)^3$ | `stats.skew()` |
+| **Kurtosis** $w$ | $\frac{1}{n}\sum\left(\frac{x_i-\bar{x}}{s}\right)^4$ | `stats.kurtosis() + 3` |
+| **Excess** $ex$ | $w - 3$ | `stats.kurtosis()` |
+
+With `df['column'].describe()` you get at a glance: $n$, mean, standard deviation, minimum, $Q_1$, median, $Q_3$, maximum.
+:::
+
+---
+
+## Knowledge test {#wissenstest}
+
+```{quizdown}
+---
+primaryColor: '#0a9396'
+shuffleQuestions: false
+shuffleAnswers: true
+locale: en
+---
+
+### What does the standard deviation measure?
+
+1. [ ] The distance between minimum and maximum
+1. [x] The typical deviation of the observations from the mean
+    > Exactly! The standard deviation has the same unit as the data and tells you how far the values deviate from the mean on average.
+1. [ ] The median of the squared deviations
+1. [ ] The distance between Q1 and Q3
+
+### A sample has variance $s^2 = 25$ cm². What is the standard deviation?
+
+1. [ ] 25 cm
+1. [ ] 625 cm
+1. [x] 5 cm
+    > Correct! $s = \sqrt{s^2} = \sqrt{25} = 5$ cm.
+1. [ ] 12.5 cm
+
+### Which of the following measures of spread is the most robust against outliers?
+
+1. [ ] Range
+1. [ ] Variance
+1. [x] Interquartile range (IQR)
+    > Correct! The IQR is based only on the middle 50 % of the data and is hardly affected by extreme values.
+1. [ ] Standard deviation
+
+### You see: mean = €45,000, median = €32,000. What do you conclude?
+
+1. [ ] The data are left-skewed
+1. [x] The data are right-skewed – a few high salaries pull the mean up
+    > Correct! For right-skewed distributions $\bar{x} > \tilde{x}_{0.5}$. Typical for salaries.
+1. [ ] Mean and median should always be equal
+1. [ ] The data are symmetric
+
+### What does a negative moment coefficient of skewness ($sk < 0$) mean?
+
+1. [ ] The distribution is right-skewed
+1. [ ] The distribution is symmetric
+1. [x] The distribution is left-skewed – most values lie on the right, with a long tail to the left
+    > Correct! For left-skewed data $sk < 0$ and $\bar{x} < \tilde{x}_{0.5}$.
+1. [ ] The variance is negative – that is impossible
+
+### What does an excess kurtosis $ex > 0$ mean?
+
+1. [x] The distribution is leptokurtic – more peaked than a normal distribution
+    > Correct! Positive excess = leptokurtic (Greek leptos = slender/thin). The values cluster strongly in the middle.
+1. [ ] The distribution is platykurtic – flatter than a normal distribution
+1. [ ] The distribution is right-skewed
+1. [ ] The kurtosis is less than 3
+
+### What does the function `stats.kurtosis()` from scipy return?
+
+1. [ ] The kurtosis coefficient $w$
+1. [ ] The kurtosis coefficient $w$ minus 1
+1. [x] The excess kurtosis $ex = w - 3$ (compared to the normal distribution)
+    > Important to know! `scipy.stats.kurtosis()` returns the excess (compared to the normal distribution) by default. To get $w$ you have to add 3.
+1. [ ] The moment coefficient of skewness
+```
+
+::::

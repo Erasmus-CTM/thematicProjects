@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>404 – Seite nicht gefunden / Page Not Found</title>
+<style>
+  body { font-family: system-ui, sans-serif; text-align: center; padding: 3rem 1rem; }
+  a { display: inline-block; margin-top: 1rem; padding: .5rem 1rem; border-radius: .375rem;
+      background: #0d6efd; color: #fff; text-decoration: none; }
+</style>
+</head>
+<body>
+<h1>🚧 🔍</h1>
+<p><strong>Diese Seite gibt es nicht, oder der Link hat nicht funktioniert.</strong></p>
+<p><strong>This page does not exist, or the link did not work.</strong></p>
+<a id="home-btn" href="/">← Zurück zum Tutorial / Back to the Tutorial</a>
+<script>
+  (function () {
+    var root = "/";
+    if (location.hostname.endsWith("github.io")) {
+      var seg = location.pathname.split("/").filter(Boolean)[0];
+      if (seg) root = "/" + seg + "/";
+    }
+    document.getElementById("home-btn").href = root;
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Weiterleitung / Redirect</title>
+<script>
+  var sprache = (navigator.language || "de").slice(0, 2).toLowerCase();
+  window.location.replace(sprache === "de" ? "de/" : "en/");
+</script>
+<noscript><meta http-equiv="refresh" content="0; url=de/"></noscript>
+</head>
+<body>
+<p><a href="de/">Deutsch</a> · <a href="en/">English</a></p>
+</body>
+</html>

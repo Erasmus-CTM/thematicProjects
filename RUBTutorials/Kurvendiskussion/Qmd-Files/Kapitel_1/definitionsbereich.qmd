@@ -1,0 +1,586 @@
+---
+title: "Definitionsbereich bestimmen"
+title-en: "Determining the Domain"
+format: html
+filters:
+  - ctm-assessment
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+# Gebrochen-rationale Funktionen
+
+## Definitionslücke im Nenner bestimmen
+
+Bei gebrochen-rationalen Funktionen (Funktionen, die als Bruch zweier Polynome dargestellt werden) ist die Division durch Null nicht definiert. Der Nenner darf also nicht Null werden.
+
+Nun gilt es, einen Algorithmus zu schreiben, welcher die Stellen berechnet, an denen der Nenner Null werden kann.
+
+```{pyodide-python}
+#| read-only: true
+import sympy
+#Definiere X als Variable(Symbol) für Python
+x= sympy.symbols('x')
+
+#Bsp:
+nenner=x-1
+
+problemstellen=sympy.solve(nenner,x)
+
+print("Die Problemstelle ist bei x=", problemstellen[0])
+
+#sympy.solve() löst die Gleichung nenner=0 nach x auf
+#Problemstellen[0] nutzt den ersten Eintrag der Liste an Nullstellen, die durch sympy.solve bestimmt wird.
+
+
+```
+
+Bevor du programmierst, zur Kontrolle einmal von Hand: Gib alle Definitionslücken an, durch Komma getrennt. Die Reihenfolge ist egal.
+
+```{math-exercise}
+#| label: definitionsbereich-luecken-hand
+#| caption: Definitionslücken von Hand
+#| mode: set
+Für welche $x$ ist $f(x)=\dfrac{x+1}{x^2-9}$ nicht definiert? $x \in \{$ __[3, -3] $\}$
+```
+
+### Aufgabe zu den gebrochen-rationalen Funktionen
+
+Ergänze die Funktion `definitionsluecken(nenner)`: Sie bekommt einen Nenner (z. B. `x**2 - 9`) und gibt die **reellen** Definitionslücken als aufsteigend sortierte Liste zurück.
+
+_Tipp: Eine Nullstelle `s` ist reell, wenn `s.is_real` gilt. Mit einer `for`-Schleife und `append` baust du dir die Liste der reellen Stellen auf, siehe „Listen“ in den [Python Grundlagen](../grundlagen.qmd)._
+
+```{py-exercise}
+#| label: definitionsbereich-bruch-funktion
+#| caption: definitionsluecken schreiben
+#| show-test-hints: false
+import sympy
+x = sympy.symbols('x')
+
+def definitionsluecken(nenner):
+    alle_nullstellen = sympy.solve(nenner, x)
+    luecken = []
+    for s in alle_nullstellen:
+        # Dein Code hier: Hänge s an luecken an, falls s reell ist
+        pass
+    return sorted(luecken)
+
+## TESTS ##
+assert definitionsluecken(x - 1) == [1], "Der Nenner x-1 ist bei x = 1 null"
+assert definitionsluecken(x**2 - 9) == [-3, 3], "Der Nenner x**2-9 ist bei -3 und 3 null"
+assert definitionsluecken(x**2 + 1) == [], "x**2+1 hat nur komplexe Nullstellen, also keine reellen Definitionslücken"
+assert definitionsluecken((x - 2)*(x + 5)) == [-5, 2], "Die Liste muss aufsteigend sortiert sein"
+```
+
+## Nenner aus einer Funktion auslesen
+
+Jetzt wissen wir also, wie wir bei einem bekannten Nenner bestimmen können, wann dieser Null wird.
+Den Nenner direkt anzugeben ist aber zweifelsfrei nicht unbedingt sinnvoll.
+
+Daher betrachten wir jetzt, wie aus einer gegebenen Funktion der Nenner bestimmt werden kann.
+
+In einem weiteren Schritt kann später die Eingabe durch die das Programm nutzenden Person im Terminal eingegeben werden und diese Ausgabe wird dann verarbeitet (ein möglicher Nenner ausgelesen und der Definitionsbereich bestimmt).
+
+**Beispiel:** 
+$$
+f(x)= \frac{1}{x-2}
+$$
+
+Es geht nun erst einmal darum, eine Funktion zu schreiben, welche bei diesem  Beispiel den Nenner erkennt.
+
+
+```{pyodide-python}
+#| read-only: true
+import sympy
+
+x = sympy.symbols('x')
+
+funktion_string = "1/(x-2)" #definiert unsere Funktion als Python-Variable
+f = sympy.sympify(funktion_string) #wandelt unsere Funktion in ein Sympy-Objekt um, welches wir dann als Variable f weiterbenutzen
+
+nenner = sympy.fraction(f)[1] #Da Sympy nun die Funktion als Objekt erkennt, kann Zähler/Nenner differenziert werden. [0] ist Zähler [1] der Nenner.
+
+print(f"Der Nenner der Funktion ist: {nenner}")
+
+```
+
+### Funktion eingeben lassen und daraus den Definitionsbereich bestimmen
+
+Ideal wäre es, wenn nun ein Nutzer die Funktion eingeben würde und unser Programm aus dem Input direkt den Definitionsbereich bestimmen würde.
+Genau dafür gibt es in Python den Befehl `input()`: Das Programm hält an, unter dem Code-Block erscheint ein Eingabefeld, und was du dort eintippst (bestätigt mit Enter), bekommt das Programm als Text zurück. `sympy.sympify()` macht aus diesem Text dann wieder eine Funktion.
+Führe den Block aus und gib zum Beispiel `x**2/(x-4)` ein.
+
+::: {.callout-note title="Falls input() nicht funktioniert" collapse="true"}
+`input()` braucht eine besondere Sicherheitseinstellung des Browsers, die die Seite beim ersten Laden selbst einschaltet. Steht unter dem Block ein Hinweis, dass `input()` nicht verfügbar ist, lade die Seite einmal neu. Klappt es dann immer noch nicht (manche Browser-Einstellungen verhindern das), ersetze die `input(...)`-Zeile durch deine Funktion als Text, zum Beispiel `funktion_eingabe = "x**2/(x-4)"`.
+:::
+
+
+```{pyodide-python}
+#| read-only: true
+import sympy
+
+print("Hallo! Dieses Programm kann dir den  Definitionsbereich einer Funktion ausgeben.")
+
+x = sympy.symbols('x')
+
+funktion_eingabe = input("Gib deine Funktion ein, z. B. x**2/(x-4): ") #Das Programm wartet hier auf deine Eingabe.
+
+ 
+try: #Versuche Eingabe als Sympy Ausdruck zu interpretieren und Nullstelle zu bestimmen
+    f = sympy.sympify(funktion_eingabe)
+    
+    zaehler , nenner = sympy.fraction(f) 
+
+    alle_problemstellen = sympy.solve(nenner, x)
+    # Da auch komplexe Lösungen existieren könnten, wir uns aber nur mit reellen beschäftigen wollen:
+    reelle_problemstellen = [s for s in alle_problemstellen if s.is_real]
+
+    print(f"Der Nenner der Funktion ist: {nenner}")
+
+    if not reelle_problemstellen:
+        print("Der Nenner hat keine reellen Nullstellen.")
+        print("Definitionsbereich: D = ℝ (alle reellen Zahlen)")
+    else:
+        # Formatierung der Problemstellen für die Ausgabe
+        stellen_str_luecken = ", ".join(map(str, reelle_problemstellen)) 
+
+#map ist hierbei eine Funktion die genutzt wird um alle reelle Problemstellen in einen String umzuschreiben.
+#", ".join setzt die einzelnen Problemstellen dann zu einem Text zusammen, mit Komma dazwischen.
+
+        print(f"Definitionslücke(n) bei x = {stellen_str_luecken}")
+
+        # Formatierung für den Definitionsbereich
+        if len(reelle_problemstellen) == 1:
+            print(f"Definitionsbereich: D = ℝ \\ {{{reelle_problemstellen[0]}}}")
+        else:
+            stellen_str_domain = ", ".join(map(str, sorted(reelle_problemstellen))) # sorted sortiert die Ausgaben
+            print(f"Definitionsbereich: D = ℝ \\ {{{stellen_str_domain}}}")
+
+except (SyntaxError, TypeError, sympy.SympifyError) as e: # Falls es einen Error gab in der Funktionserkennung wird dieser Error ausgegeben
+    print(f"Fehler bei der Verarbeitung der Funktion: {e}. Bitte überprüfe deine Eingabe.")
+``` 
+
+### Aufgabe zum Definitionsbereich bestimmen lassen  
+
+Teste die gegebene Funktion für unterschiedliche Funktionen auch für solche, die vielleicht keine Definitionslücken haben und auch keine Brüche i.A. überprüfe die Ausgabe, passt sie zu dem, was du haben willst?  
+Teste vielleicht das Ganze auch mal mit einer Funktion mit Wurzel, wie reagiert das Programm, hast du vielleicht schon eine Idee, wie du das Problem angehen willst, bevor du in den nächsten Abschnitt gehst?
+
+Kleine Erinnerung: _Falls du das Ganze selber umschreiben willst und nicht nur ausführen willst: Mit **+ Codeblock** kannst du unter jedem Block einen eigenen, leeren Block anhängen._
+
+#  Funktionen mit Wurzeln
+
+In diesem Abschnitt wird davon ausgegangen, dass der obige Abschnitt bearbeitet worden ist, falls Code zu komplex wirkt, findest Du im obigen Teil vermutlich die Erklärung.
+
+## Definitionslücke in der Wurzel bestimmen
+
+Funktionen mit Quadratwurzel im Speziellen (und allgemein Wurzeln mit geradem Wurzelexponent), haben Definitionslücken, wenn unterhalb der Wurzel eine negative Zahl steht. Diese Definitionslücken gibt es nicht in den komplexen Zahlen, aber in den häufig (vor allem in der Schule) verwendeten reellen Zahlen.
+
+Betrachten wir also wie in den gebrochen-rationalen Funktionen zunächst, wie können wir von einem passenden Term auslesen, für welche Bereiche dieser negativ ist.
+
+```{pyodide-python}
+#| read-only: true
+import sympy
+
+x = sympy.symbols('x')
+
+radikand = x - 2
+print(f"Betrachten wir den Radikanden: {radikand}")
+
+bedingung_ungleichung = sympy.solve_univariate_inequality(radikand >= 0, x, relational=True)
+bedingung_intervall = sympy.solve_univariate_inequality(radikand >= 0, x, relational=False)
+#relational=True gibt die Lösungsmenge als Ungleichung aus, relational=False als Intervall. Der Standardwert ist relational=True (falls relational nicht angegeben wird)
+
+print(f"Die Bedingung lautet: {radikand} >= 0")
+print(f"Das gilt für alle x, die folgende Ungleichung erfüllen: {bedingung_ungleichung}")
+
+print(f"Bzw. für alle x in dem folgenden Intervall: {bedingung_intervall}")
+
+
+``` 
+
+Auch hier eine kurze Kontrolle von Hand:
+
+```{math-exercise}
+#| label: definitionsbereich-wurzel-hand
+#| caption: Bedingung unter der Wurzel
+Für welche $x$ ist $g(x)=\sqrt{6-2x}$ definiert? Für alle $x \le$ _[3]
+```
+
+### Aufgabe zur Bestimmung negativer Werte
+
+Ergänze die Funktion `wurzel_bereich(radikand)`: Sie bekommt den Term unter der Wurzel (z. B. `x - 2`) und gibt das **Intervall** zurück, in dem er $\ge 0$ ist. Du brauchst dafür nur die Funktion aus dem Beispiel oben.
+
+```{py-exercise}
+#| label: definitionsbereich-wurzel-funktion
+#| caption: wurzel_bereich schreiben
+#| show-test-hints: false
+import sympy
+x = sympy.symbols('x')
+
+def wurzel_bereich(radikand):
+    # Dein Code hier: Löse radikand >= 0 mit sympy.solve_univariate_inequality
+    # (mit relational=False bekommst du ein Intervall) und gib das Ergebnis zurück
+    pass
+
+## TESTS ##
+assert wurzel_bereich(x - 2) == sympy.Interval(2, sympy.oo), "x-2 >= 0 gilt für x >= 2"
+assert wurzel_bereich(6 - 2*x) == sympy.Interval(-sympy.oo, 3), "6-2x >= 0 gilt für x <= 3"
+```
+
+## Radikanden aus einer Funktion auslesen
+
+Das Ganze funktioniert sehr ähnlich wie beim Auslesen des Nenners, zuerst muss aus einer Funktion ein `Sympy`-Objekt gemacht werden. Aus `Sympy` kann Python dann den Radikanden auslesen indem das richtige Argument abgefragt wird.
+
+```{pyodide-python}
+#| read-only: true
+import sympy
+
+x = sympy.symbols('x')
+
+funktion_string_wurzel = "sqrt(x-2)" #Beispielfunktion
+g = sympy.sympify(funktion_string_wurzel) 
+
+print(f"Die Funktion lautet: {g}")
+
+# Du kannst alle Argumente der Funktion mit  g.args ausgeben 
+# Probiere aus welches Argument immer dein Radikand ist.
+print(f"Die Argumente der Funktion g sind: {g.args}") 
+
+
+``` 
+
+### Aufgabe zur Bestimmung negativer Werte im Radikanden
+
+Ergänze die Funktion `wurzel_definitionsbereich(g)`: Sie bekommt eine ganze Wurzelfunktion (z. B. `sympy.sqrt(x - 2)`), liest den Radikanden selbst aus und gibt das Intervall zurück, in dem $g$ definiert ist. Zwei Schritte, die du schon kennst: Radikand auslesen (`g.args`), dann die Ungleichung lösen.
+
+```{py-exercise}
+#| label: definitionsbereich-radikand-auslesen-funktion
+#| caption: wurzel_definitionsbereich schreiben
+#| show-test-hints: false
+import sympy
+x = sympy.symbols('x')
+
+def wurzel_definitionsbereich(g):
+    radikand = g.args[0]   # das erste Argument einer Wurzel ist der Radikand
+    # Dein Code hier: Löse radikand >= 0 und gib das Intervall zurück
+    pass
+
+## TESTS ##
+assert wurzel_definitionsbereich(sympy.sqrt(x - 2)) == sympy.Interval(2, sympy.oo), "sqrt(x-2) ist für x >= 2 definiert"
+assert wurzel_definitionsbereich(sympy.sqrt(6 - 2*x)) == sympy.Interval(-sympy.oo, 3), "sqrt(6-2x) ist für x <= 3 definiert"
+```
+
+# Abschlussaufgabe
+
+*Freiwilliger **Bonus** für alle, die noch mehr wollen. Hier gibt es keine automatische Prüfung, nur die Kontrolle am Ende.*
+
+Versuche nun ein Programm zu schreiben, welches beide Möglichkeiten der Untersuchung kombiniert.
+Also ein Programm, welches falls eine Definitionslücke, existiert diese angibt, unabhängig davon, ob diese aus einem nicht-durch-Null-teilen-Problem, oder aus negative-Zahlen-unter-der-Wurzel-Problem, verursacht wurde.
+
+```{pyodide-python}
+#| label: definitionsbereich-abschluss
+import sympy
+
+```
+
+Wenn dein Programm fertig ist, teste es mit $f(x)=\dfrac{\sqrt{x+1}}{x-2}$. Was muss herauskommen? Trage es hier ein und prüfe damit dein Programm:
+
+```{math-exercise}
+#| label: definitionsbereich-abschluss-kontrolle
+#| caption: Kontrolle für die Abschlussaufgabe
+#| field-labels: untere Grenze, Lücke
+#| partial-credit: true
+$f$ ist definiert für alle $x \ge$ _[-1], außer für $x =$ _[2].
+```
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+# Rational functions
+
+## Finding gaps caused by the denominator
+
+For rational functions (functions that can be written as a fraction of two polynomials), division by zero is not defined. So the denominator must not become zero.
+
+Our task is now to write an algorithm that calculates the points at which the denominator can become zero.
+
+```{pyodide-python}
+#| read-only: true
+import sympy
+#Define x as a variable (symbol) for Python
+x= sympy.symbols('x')
+
+#Example:
+denominator=x-1
+
+problem_points=sympy.solve(denominator,x)
+
+print("The problem point is at x=", problem_points[0])
+
+#sympy.solve() solves the equation denominator=0 for x
+#problem_points[0] uses the first entry of the list of zeros determined by sympy.solve.
+
+
+```
+
+Before you start programming, a quick check by hand: enter all gaps in the domain, separated by commas. The order does not matter.
+
+```{math-exercise}
+#| label: definitionsbereich-luecken-hand-en
+#| caption: Domain gaps by hand
+#| mode: set
+For which $x$ is $f(x)=\dfrac{x+1}{x^2-9}$ not defined? $x \in \{$ __[3, -3] $\}$
+```
+
+### Exercise on rational functions
+
+Complete the function `domain_gaps(denominator)`: it receives a denominator (e.g. `x**2 - 9`) and returns the **real** gaps in the domain as an ascending sorted list.
+
+_Tip: A zero `s` is real if `s.is_real` holds. With a `for` loop and `append` you build the list of real points, see "Lists" in the [Python Basics](../grundlagen.qmd)._
+
+```{py-exercise}
+#| label: definitionsbereich-bruch-funktion-en
+#| caption: Write domain_gaps
+#| show-test-hints: false
+import sympy
+x = sympy.symbols('x')
+
+def domain_gaps(denominator):
+    all_zeros = sympy.solve(denominator, x)
+    gaps = []
+    for s in all_zeros:
+        # Your code here: append s to gaps if s is real
+        pass
+    return sorted(gaps)
+
+## TESTS ##
+assert domain_gaps(x - 1) == [1], "The denominator x-1 is zero at x = 1"
+assert domain_gaps(x**2 - 9) == [-3, 3], "The denominator x**2-9 is zero at -3 and 3"
+assert domain_gaps(x**2 + 1) == [], "x**2+1 has only complex zeros, so no real gaps in the domain"
+assert domain_gaps((x - 2)*(x + 5)) == [-5, 2], "The list must be sorted in ascending order"
+```
+
+## Reading the denominator from a function
+
+So now we know how to find out when a known denominator becomes zero.
+But having to type in the denominator directly is certainly not very practical.
+
+So let's look at how the denominator can be determined from a given function.
+
+In a further step, the function can later be entered by the person using the program, and this input is then processed (a possible denominator is extracted and the domain is determined).
+
+**Example:** 
+$$
+f(x)= \frac{1}{x-2}
+$$
+
+First of all, we want to write a function that recognizes the denominator in this example.
+
+
+```{pyodide-python}
+#| read-only: true
+import sympy
+
+x = sympy.symbols('x')
+
+function_string = "1/(x-2)" #defines our function as a Python variable
+f = sympy.sympify(function_string) #turns our function into a SymPy object, which we keep using as the variable f
+
+denominator = sympy.fraction(f)[1] #Since SymPy now recognizes the function as an object, numerator and denominator can be told apart. [0] is the numerator, [1] the denominator.
+
+print(f"The denominator of the function is: {denominator}")
+
+```
+
+### Letting the user enter the function and determining the domain from it
+
+Ideally, a user would type in the function and our program would determine the domain directly from that input.
+Python has the command `input()` for exactly this: the program pauses, an input field appears below the code block, and whatever you type there (confirmed with Enter) is returned to the program as text. `sympy.sympify()` then turns this text back into a function.
+Run the block and enter, for example, `x**2/(x-4)`.
+
+::: {.callout-note title="If input() does not work" collapse="true"}
+`input()` needs a special browser security setting, which the page switches on by itself when it is first loaded. If a note below the block says that `input()` is not available, reload the page once. If it still does not work (some browser settings prevent it), replace the `input(...)` line with your function as text, for example `function_input = "x**2/(x-4)"`.
+:::
+
+
+```{pyodide-python}
+#| read-only: true
+import sympy
+
+print("Hello! This program can tell you the domain of a function.")
+
+x = sympy.symbols('x')
+
+function_input = input("Enter your function, e.g. x**2/(x-4): ") #The program waits here for your input.
+
+ 
+try: #Try to interpret the input as a SymPy expression and find the zeros of the denominator
+    f = sympy.sympify(function_input)
+    
+    numerator , denominator = sympy.fraction(f) 
+
+    all_problem_points = sympy.solve(denominator, x)
+    # Complex solutions could exist too, but we only want the real ones:
+    real_problem_points = [s for s in all_problem_points if s.is_real]
+
+    print(f"The denominator of the function is: {denominator}")
+
+    if not real_problem_points:
+        print("The denominator has no real zeros.")
+        print("Domain: D = ℝ (all real numbers)")
+    else:
+        # Formatting the problem points for the output
+        gaps_str = ", ".join(map(str, real_problem_points)) 
+
+#map is a function used here to turn every real problem point into a string.
+#", ".join then outputs the individual problem points separated by commas.
+
+        print(f"Gap(s) in the domain at x = {gaps_str}")
+
+        # Formatting for the domain
+        if len(real_problem_points) == 1:
+            print(f"Domain: D = ℝ \\ {{{real_problem_points[0]}}}")
+        else:
+            domain_str = ", ".join(map(str, sorted(real_problem_points))) # sorted sorts the output
+            print(f"Domain: D = ℝ \\ {{{domain_str}}}")
+
+except (SyntaxError, TypeError, sympy.SympifyError) as e: # If there was an error while recognizing the function, it is printed
+    print(f"Error while processing the function: {e}. Please check your input.")
+``` 
+
+### Exercise: letting Python determine the domain  
+
+Test the given program with different functions, including ones that may have no gaps in the domain and no fractions at all. Check the output: is it what you want?  
+Maybe also try a function with a root. How does the program react? Do you already have an idea how to tackle this problem before moving on to the next section?
+
+A small reminder: _If you want to rewrite things yourself rather than just run them: with **+ Code block** you can append an empty block of your own below any block._
+
+# Functions with roots
+
+This section assumes that you have worked through the section above; if some code seems too complex, you will probably find the explanation there.
+
+## Finding gaps caused by a root
+
+Functions with a square root in particular (and roots with an even index in general) have gaps in their domain where the number under the root is negative. These gaps do not exist in the complex numbers, but they do in the real numbers that are commonly used (especially at school).
+
+So, just like with rational functions, let's first look at how we can read off from a suitable term for which values it is negative.
+
+```{pyodide-python}
+#| read-only: true
+import sympy
+
+x = sympy.symbols('x')
+
+radicand = x - 2
+print(f"Let's look at the radicand: {radicand}")
+
+condition_inequality = sympy.solve_univariate_inequality(radicand >= 0, x, relational=True)
+condition_interval = sympy.solve_univariate_inequality(radicand >= 0, x, relational=False)
+#relational=True returns the solution set as an inequality, relational=False as an interval. The default is relational=True (if relational is not given)
+
+print(f"The condition is: {radicand} >= 0")
+print(f"This holds for all x that satisfy the following inequality: {condition_inequality}")
+
+print(f"Or for all x in the following interval: {condition_interval}")
+
+
+``` 
+
+A quick check by hand here as well:
+
+```{math-exercise}
+#| label: definitionsbereich-wurzel-hand-en
+#| caption: Condition under the root
+For which $x$ is $g(x)=\sqrt{6-2x}$ defined? For all $x \le$ _[3]
+```
+
+### Exercise on finding negative values
+
+Complete the function `root_domain(radicand)`: it receives the term under the root (e.g. `x - 2`) and returns the **interval** on which it is $\ge 0$. You only need the function from the example above.
+
+```{py-exercise}
+#| label: definitionsbereich-wurzel-funktion-en
+#| caption: Write root_domain
+#| show-test-hints: false
+import sympy
+x = sympy.symbols('x')
+
+def root_domain(radicand):
+    # Your code here: solve radicand >= 0 with sympy.solve_univariate_inequality
+    # (relational=False gives an interval) and return the result
+    pass
+
+## TESTS ##
+assert root_domain(x - 2) == sympy.Interval(2, sympy.oo), "x-2 >= 0 holds for x >= 2"
+assert root_domain(6 - 2*x) == sympy.Interval(-sympy.oo, 3), "6-2x >= 0 holds for x <= 3"
+```
+
+## Reading the radicand from a function
+
+This works very much like reading the denominator: first, a function has to be turned into a `SymPy` object. From `SymPy`, Python can then read the radicand by requesting the right argument.
+
+```{pyodide-python}
+#| read-only: true
+import sympy
+
+x = sympy.symbols('x')
+
+function_string_root = "sqrt(x-2)" #example function
+g = sympy.sympify(function_string_root) 
+
+print(f"The function is: {g}")
+
+# You can print all arguments of the function with g.args 
+# Try out which argument is always your radicand.
+print(f"The arguments of the function g are: {g.args}") 
+
+
+``` 
+
+### Exercise on finding negative values in the radicand
+
+Complete the function `root_function_domain(g)`: it receives a whole root function (e.g. `sympy.sqrt(x - 2)`), reads out the radicand itself and returns the interval on which $g$ is defined. Two steps you already know: read out the radicand (`g.args`), then solve the inequality.
+
+```{py-exercise}
+#| label: definitionsbereich-radikand-auslesen-funktion-en
+#| caption: Write root_function_domain
+#| show-test-hints: false
+import sympy
+x = sympy.symbols('x')
+
+def root_function_domain(g):
+    radicand = g.args[0]   # the first argument of a root is the radicand
+    # Your code here: solve radicand >= 0 and return the interval
+    pass
+
+## TESTS ##
+assert root_function_domain(sympy.sqrt(x - 2)) == sympy.Interval(2, sympy.oo), "sqrt(x-2) is defined for x >= 2"
+assert root_function_domain(sympy.sqrt(6 - 2*x)) == sympy.Interval(-sympy.oo, 3), "sqrt(6-2x) is defined for x <= 3"
+```
+
+# Final exercise
+
+*Optional **bonus** for anyone who wants more. There is no automatic check here, only the final comparison.*
+
+Now try to write a program that combines both kinds of analysis.
+That is, a program that reports a gap in the domain if one exists, regardless of whether it is caused by a division-by-zero problem or by a negative-number-under-the-root problem.
+
+```{pyodide-python}
+#| label: definitionsbereich-abschluss-en
+import sympy
+
+```
+
+When your program is finished, test it with $f(x)=\dfrac{\sqrt{x+1}}{x-2}$. What must the result be? Enter it here to check your program:
+
+```{math-exercise}
+#| label: definitionsbereich-abschluss-kontrolle-en
+#| caption: Check for the final exercise
+#| field-labels: lower bound, gap
+#| partial-credit: true
+$f$ is defined for all $x \ge$ _[-1], except for $x =$ _[2].
+```
+
+::::

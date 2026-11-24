@@ -1,0 +1,111 @@
+project:
+  output-dir: docs/en
+
+lang: en
+
+website:
+  title: "Matrices with Python"
+  reader-mode: true
+  navbar: 
+    search: true
+    right:
+      - icon: github
+        #href: "Insert GitHub Repository link here" 
+      - icon: globe
+        aria-label: "Sprache wählen / Choose language"
+        menu:
+          - text: "Deutsch"
+            href: "#sprache-de"
+          - text: "English"
+            href: "#sprache-en"
+  sidebar:
+    collapse-level: 1
+    style: "floating"
+    contents:
+      - text: "0. Overview"
+        href: Qmd-Files/index.qmd
+      - section: "1. Vectors - The Building Blocks"
+        href: Qmd-Files/Kapitel_1/index.qmd
+        contents:
+          - text: "1.1. Basics"
+            href: Qmd-Files/Kapitel_1/vektor_grundlagen.qmd
+          - text: "1.2. Vector Operations"
+            href: Qmd-Files/Kapitel_1/vektor_operationen.qmd
+          - text: "1.3. Dot Product"
+            href: Qmd-Files/Kapitel_1/vektor_skalarprodukt.qmd
+          - text: "1.4. Length (Norm)"
+            href: Qmd-Files/Kapitel_1/vektor_laenge.qmd
+          - text: "1.5. Angle between Vectors"
+            href: Qmd-Files/Kapitel_1/vektor_winkel.qmd
+          - text: "1.6. Vectors as Data Representation"
+            href: Qmd-Files/Kapitel_1/vektor_repraesentation.qmd
+      - section: "2. Defining Matrices in Python"
+        href: Qmd-Files/Kapitel_2/index.qmd
+        contents:
+          - text: "2.1. Basics"
+            href: Qmd-Files/Kapitel_2/matrizen_grundlagen.qmd
+          - text: "2.2. Matrix Attributes"
+            href: Qmd-Files/Kapitel_2/matrizen_attribute.qmd
+          - text: "2.3. Special Matrices"
+            href: Qmd-Files/Kapitel_2/matrizen_spezielle.qmd
+          - text: "2.4. Accessing Elements"
+            href: Qmd-Files/Kapitel_2/matrizen_zugriff.qmd
+      - section: "3. Basic Matrix Operations"
+        href: Qmd-Files/Kapitel_3/index.qmd
+        contents:
+          - text: "3.1. Element-wise Addition, Subtraction and Scalar Multiplication"
+            href: Qmd-Files/Kapitel_3/matrizen_elementweise_addition_subtraktion_skalar.qmd
+          - text: "3.2. Transposition"
+            href: Qmd-Files/Kapitel_3/matrizen_transponieren.qmd
+          - text: "3.3. Matrix-Vector Multiplication"
+            href: Qmd-Files/Kapitel_3/matrizen_vektor_multiplikation.qmd
+          - text: "3.4. Matrix Multiplication"
+            href: Qmd-Files/Kapitel_3/matrizen_multiplikation.qmd
+      - section: "4. Core Operations of Linear Algebra"
+        href: Qmd-Files/Kapitel_4/index.qmd
+        contents:
+          - text: "4.1. Matrix Rank"
+            href: Qmd-Files/Kapitel_4/kernoperationen_rang.qmd
+          - text: "4.2. Determinant"
+            href: Qmd-Files/Kapitel_4/kernoperationen_determinante.qmd
+          - text: "4.3. Inverse"
+            href: Qmd-Files/Kapitel_4/kernoperationen_inverse.qmd
+      - section: "5. Application 1 - Geometric Transformations"
+        href: Qmd-Files/Kapitel_5/index.qmd
+        contents:
+          - text: "5.1. Concept of Geometric Transformations"
+            href: Qmd-Files/Kapitel_5/anwendung_geometrie_transformationen_konzept.qmd
+          - text: "5.2. Calculating Geometric Transformations"
+            href: Qmd-Files/Kapitel_5/anwendung_geometrie_transformationen_berechnen.qmd
+          - text: "5.3. Visualizing Geometric Transformations"
+            href: Qmd-Files/Kapitel_5/anwendung_geometrie_visualisierung.qmd            
+      - section: "6. Application 2 - Systems of Linear Equations"
+        href: Qmd-Files/Kapitel_6/index.qmd
+        contents:
+          - text: "6.1. Problem Statement"
+            href: Qmd-Files/Kapitel_6/anwendung_lgs_grundlagen.qmd
+          - text: "6.2. Solution Methods"
+            href: Qmd-Files/Kapitel_6/anwendung_lgs_loesungsmethoden.qmd
+      - section: "7. Eigenvalues and Eigenvectors"
+        href: Qmd-Files/Kapitel_7/index.qmd
+        contents:
+          - text: "7.1. Concept: What are Eigenvalues & -vectors?"
+            href: Qmd-Files/Kapitel_7/eigenwerte_konzept.qmd
+          - text: "7.2. Calculation in Python"
+            href: Qmd-Files/Kapitel_7/eigenwerte_berechnung.qmd
+          - text: "7.3. Visualization & Use Cases"
+            href: Qmd-Files/Kapitel_7/eigenwerte_visualisierung.qmd
+      - text: "8. Overview of the Contents"
+        href: Qmd-Files/Kapitel_8/cheatsheet.qmd
+
+format:
+  html:
+    theme:
+      light: [morph, Theme/morph_custom.scss]
+      dark: [slate, Theme/slate_custom.scss]
+    respect-user-color-scheme: true
+    toc: true
+    code-tools: true
+include-in-header:
+      - text: |
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">

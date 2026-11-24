@@ -1,0 +1,282 @@
+---
+title: "6. Anwendung Lineare Gleichungssysteme"
+title-en: "6. Application: Systems of Linear Equations"
+format: html
+filters:
+    - quizdown
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+In diesem Kapitel geht es darum, einen weiteren typischen Anwendungsfall von Python in der Mathematik vorzustellen. Beim Lösen linearer Gleichungssysteme von Hand passieren leicht Fehler, deshalb lohnt es sich, dafür einen Algorithmus zu nutzen.
+
+# Kapitelübersicht
+
+- **[6.1. Grundlagen linearer Gleichungssysteme](anwendung_lgs_grundlagen.qmd)**
+  - [6.1.1. Was sind LGS eigentlich?](anwendung_lgs_grundlagen.qmd#was-sind-lgs-eigentlich)
+  - [6.1.2. Der Rang entscheidet über das Ergebnis](anwendung_lgs_grundlagen.qmd#der-rang-entscheidet-über-das-ergebnis)
+  - [6.1.3. Klassische Lösungswege](anwendung_lgs_grundlagen.qmd#klassische-lösungswege)
+  - [6.1.4. Warum wir Python brauchen](anwendung_lgs_grundlagen.qmd#warum-wir-python-brauchen)
+  - [6.1.5. Mini-Aufgabe: Matrix-Blick](anwendung_lgs_grundlagen.qmd#mini-aufgabe-matrix-blick)
+
+- **[6.2. Lösungsmethoden](anwendung_lgs_loesungsmethoden.qmd)**
+  - [6.2.1. Überblick über die Lösungsmethoden](anwendung_lgs_loesungsmethoden.qmd#überblick-über-die-lösungsmethoden)
+  - [6.2.2. Implementierung der Lösungsmethoden](anwendung_lgs_loesungsmethoden.qmd#implementierung-der-lösungsmethoden)
+  - [6.2.3. Übungsaufgabe: Jetzt bist du dran!](anwendung_lgs_loesungsmethoden.qmd#übungsaufgabe-jetzt-bist-du-dran)
+
+
+# Vorwissen-Quiz
+
+Bevor du jetzt mit dem Kapitel **Anwendung Lineare Gleichungssysteme** startest, kannst du mit dem folgenden Quiz testen, wie gut die bisherigen Inhalte hängen geblieben sind.
+
+```quizdown
+---
+locale: de
+shuffleQuestions: true
+nQuestions: 10
+---
+
+# Transformationen: Wenn du eine Matrix $M$ mit einem Vektor $v$ multiplizierst ($M \cdot v$), wie kannst du das geometrisch interpretieren?
+1. [ ] Der Vektor wird einfach nur länger.
+1. [x] Der Vektor wird transformiert (z.B. gedreht, gestreckt oder gespiegelt).
+1. [ ] Es entsteht eine Zahl (Skalarprodukt).
+1. [ ] Der Vektor wird in eine Matrix umgewandelt.
+
+> Eine Matrix fungiert hier als eine Art "Funktion" oder "Maschine", die einen Input-Vektor nimmt und ihn auf einen neuen Output-Vektor abbildet.
+
+# Geometrie der Determinante: Was bedeutet es geometrisch, wenn eine $2 \times 2$ Transformationsmatrix eine Determinante von `2.0` hat?
+1. [ ] Die Transformation verdoppelt alle Winkel.
+1. [ ] Die Transformation verschiebt alles um 2 Einheiten.
+1. [x] Die Transformation verdoppelt den Flächeninhalt von Figuren.
+1. [ ] Die Transformation halbiert die Fläche.
+
+> Die Determinante ist ein Skalierungsfaktor für Flächen (in 2D) oder Volumen (in 3D).
+
+# Reihenfolge von Transformationen: Du möchtest einen Vektor $v$ erst mit Matrix $A$ rotieren und danach mit Matrix $B$ skalieren. Wie lautet die Rechnung?
+1. [ ] $v \cdot A \cdot B$
+1. [ ] $A \cdot B \cdot v$
+1. [x] $B \cdot (A \cdot v)$ (bzw. $B \cdot A \cdot v$)
+1. [ ] $A \cdot (B \cdot v)$
+
+> Matrizen "fressen" Vektoren von rechts nach links. Die Transformation, die näher am Vektor steht ($A$), passiert zuerst.
+
+# Code-Puzzle: Bringe die Zeilen in die richtige Reihenfolge, um einen Vektor `v` mit einer Rotationsmatrix `R` zu transformieren!
+1. `v = np.array([1, 0])`
+2. `R = np.array([[0, -1], [1, 0]])` (90 Grad Rotation)
+3. `v_neu = R @ v`
+4. `print(v_neu)`
+
+> Erst die Objekte (Vektor und Matrix) definieren, dann die Matrix auf den Vektor anwenden (Matrixmultiplikation).
+
+# Inverse Transformation: Wenn eine Matrix $M$ eine Rotation um 30 Grad beschreibt, was macht dann die Inverse $M^{-1}$?
+1. [ ] Sie rotiert um weitere 30 Grad.
+1. [ ] Sie setzt alles auf Null.
+1. [x] Sie rotiert um 30 Grad zurück (in die Gegenrichtung).
+1. [ ] Sie spiegelt den Vektor.
+
+> Die Inverse macht genau das rückgängig, was die Originalmatrix angerichtet hat.
+
+# Visualisierung: Welche `matplotlib`-Funktion eignet sich am besten, um Vektoren als Pfeile darzustellen?
+1. [ ] `plt.plot()`
+1. [ ] `plt.scatter()`
+1. [x] `plt.quiver()`
+1. [ ] `plt.bar()`
+
+> `plot` zieht Linien, `scatter` macht Punkte. Für Vektoren (Richtung + Länge) gibt es eine Spezialfunktion (Englisch für "Köcher").
+
+# Verständnisfrage: Eine Matrix ist "singulär" (Determinante 0). Was bedeutet das für die Transformation?
+- [x] Die Transformation "verliert" Dimensionen (z.B. Fläche wird zur Linie oder zum Punkt).
+- [ ] Die Transformation ist umkehrbar.
+- [x] Es gibt keine Inverse Matrix.
+- [ ] Die Transformation vergrößert die Fläche unendlich.
+
+> Wenn eine Fläche zu einer Linie "plattgedrückt" wird, kann man diesen Schritt nicht mehr eindeutig rückgängig machen (Information ist verloren).
+
+# Python-Refresher: Was macht `np.radians(180)`?
+1. [ ] Berechnet den Radius eines Kreises.
+1. [x] Wandelt 180 Grad in Bogenmaß um ($\pi$).
+1. [ ] Wandelt Bogenmaß in Grad um.
+1. [ ] Zeichnet einen Kreis.
+
+> NumPy-Trigonometrie-Funktionen (wie `sin`, `cos`) erwarten fast immer Bogenmaß, nicht Grad!
+
+# Code-Verständnis: Was passiert hier?
+~~~python
+S = np.array([
+  [2, 0],
+  [0, 2]
+])
+v = np.array([1, 2])
+print(S @ v)
+~~~
+1. [ ] `[1, 2]`
+1. [ ] `[3, 4]`
+1. [x] `[2, 4]`
+1. [ ] Error
+
+> Das ist eine Skalierungsmatrix. Auf der Diagonalen steht der Faktor 2. Alles wird verdoppelt.
+
+# Koordinatenursprung: Wohin wird der Nullvektor $(0,0)$ durch eine lineare Transformation (Matrixmultiplikation) abgebildet?
+1. [ ] Irgendwohin, hängt von der Matrix ab.
+1. [x] Immer auf den Nullvektor $(0,0)$.
+1. [ ] Auf $(1,1)$.
+1. [ ] Das ist nicht definiert.
+
+> Egal wie du den Raum drehst oder streckst: Der Mittelpunkt (Ursprung) bleibt, wo er ist. ($M \cdot 0 = 0$).
+
+# Refresher (Kapitel 3): Was passiert, wenn die Dimensionen bei `M @ v` nicht passen (z.B. 3x3 Matrix mal 2D-Vektor)?
+1. [ ] NumPy füllt fehlende Werte mit 0 auf.
+1. [ ] NumPy schneidet die Matrix ab.
+1. [x] NumPy wirft einen `ValueError` (shapes not aligned).
+1. [ ] Es wird das Skalarprodukt berechnet.
+
+> Transformationen funktionieren nur, wenn der Vektor so viele Dimensionen hat, wie die Matrix "Eingänge" (Spalten) hat.
+
+# Code-Puzzle: Wie erstellst du eine Einheitsmatrix, die als "neutrale Transformation" (macht nichts) dient?
+1. `dim = 3`
+2. `I = np.eye(dim)`
+3. `v = np.array([1, 2, 3])`
+4. `print(I @ v)` (Ergebnis ist wieder v)
+
+> Die Einheitsmatrix ist das "Mal Eins" der Matrizenwelt.
+```
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+This chapter presents another typical use case of Python in mathematics. When solving systems of linear equations by hand, mistakes happen easily, which is why it is worth using an algorithm for it.
+
+# Chapter overview
+
+- **[6.1. Basics of systems of linear equations](anwendung_lgs_grundlagen.qmd)**
+  - [6.1.1. What are systems of linear equations?](anwendung_lgs_grundlagen.qmd#was-sind-lgs-eigentlich)
+  - [6.1.2. The rank decides the outcome](anwendung_lgs_grundlagen.qmd#der-rang-entscheidet-über-das-ergebnis)
+  - [6.1.3. Classical solution methods](anwendung_lgs_grundlagen.qmd#klassische-lösungswege)
+  - [6.1.4. Why we need Python](anwendung_lgs_grundlagen.qmd#warum-wir-python-brauchen)
+  - [6.1.5. Mini task: seeing the matrix](anwendung_lgs_grundlagen.qmd#mini-aufgabe-matrix-blick)
+
+- **[6.2. Solution methods](anwendung_lgs_loesungsmethoden.qmd)**
+  - [6.2.1. Overview of the solution methods](anwendung_lgs_loesungsmethoden.qmd#überblick-über-die-lösungsmethoden)
+  - [6.2.2. Implementing the solution methods](anwendung_lgs_loesungsmethoden.qmd#implementierung-der-lösungsmethoden)
+  - [6.2.3. Exercise: now it's your turn!](anwendung_lgs_loesungsmethoden.qmd#übungsaufgabe-jetzt-bist-du-dran)
+
+
+# Prior knowledge quiz
+
+Before you start the chapter **Application: Systems of Linear Equations**, you can use the following quiz to test how well the previous contents have stuck.
+
+```quizdown
+---
+locale: en
+shuffleQuestions: true
+nQuestions: 10
+---
+
+# Transformations: If you multiply a matrix $M$ by a vector $v$ ($M \cdot v$), how can you interpret this geometrically?
+1. [ ] The vector simply gets longer.
+1. [x] The vector is transformed (e.g. rotated, stretched or reflected).
+1. [ ] The result is a number (dot product).
+1. [ ] The vector is converted into a matrix.
+
+> Here a matrix acts as a kind of "function" or "machine" that takes an input vector and maps it to a new output vector.
+
+# Geometry of the determinant: What does it mean geometrically if a $2 \times 2$ transformation matrix has a determinant of `2.0`?
+1. [ ] The transformation doubles all angles.
+1. [ ] The transformation shifts everything by 2 units.
+1. [x] The transformation doubles the area of shapes.
+1. [ ] The transformation halves the area.
+
+> The determinant is a scaling factor for areas (in 2D) or volumes (in 3D).
+
+# Order of transformations: You want to first rotate a vector $v$ with matrix $A$ and then scale it with matrix $B$. What is the computation?
+1. [ ] $v \cdot A \cdot B$
+1. [ ] $A \cdot B \cdot v$
+1. [x] $B \cdot (A \cdot v)$ (or $B \cdot A \cdot v$)
+1. [ ] $A \cdot (B \cdot v)$
+
+> Matrices "eat" vectors from right to left. The transformation that is closer to the vector ($A$) happens first.
+
+# Code puzzle: Put the lines in the right order to transform a vector `v` with a rotation matrix `R`!
+1. `v = np.array([1, 0])`
+2. `R = np.array([[0, -1], [1, 0]])` (90 degree rotation)
+3. `v_new = R @ v`
+4. `print(v_new)`
+
+> First define the objects (vector and matrix), then apply the matrix to the vector (matrix multiplication).
+
+# Inverse transformation: If a matrix $M$ describes a rotation by 30 degrees, what does the inverse $M^{-1}$ do?
+1. [ ] It rotates by another 30 degrees.
+1. [ ] It sets everything to zero.
+1. [x] It rotates back by 30 degrees (in the opposite direction).
+1. [ ] It reflects the vector.
+
+> The inverse undoes exactly what the original matrix did.
+
+# Visualization: Which `matplotlib` function is best suited for drawing vectors as arrows?
+1. [ ] `plt.plot()`
+1. [ ] `plt.scatter()`
+1. [x] `plt.quiver()`
+1. [ ] `plt.bar()`
+
+> `plot` draws lines, `scatter` draws points. For vectors (direction + length) there is a special function (a quiver is a container for arrows).
+
+# Understanding: A matrix is "singular" (determinant 0). What does this mean for the transformation?
+- [x] The transformation "loses" dimensions (e.g. an area becomes a line or a point).
+- [ ] The transformation is invertible.
+- [x] There is no inverse matrix.
+- [ ] The transformation makes the area infinitely large.
+
+> If an area is "squashed" into a line, this step can no longer be undone uniquely (information is lost).
+
+# Python refresher: What does `np.radians(180)` do?
+1. [ ] Computes the radius of a circle.
+1. [x] Converts 180 degrees to radians ($\pi$).
+1. [ ] Converts radians to degrees.
+1. [ ] Draws a circle.
+
+> NumPy's trigonometric functions (like `sin`, `cos`) almost always expect radians, not degrees!
+
+# Code comprehension: What happens here?
+~~~python
+S = np.array([
+  [2, 0],
+  [0, 2]
+])
+v = np.array([1, 2])
+print(S @ v)
+~~~
+1. [ ] `[1, 2]`
+1. [ ] `[3, 4]`
+1. [x] `[2, 4]`
+1. [ ] Error
+
+> This is a scaling matrix. The factor 2 is on the diagonal. Everything is doubled.
+
+# Origin: Where is the zero vector $(0,0)$ mapped by a linear transformation (matrix multiplication)?
+1. [ ] Anywhere, it depends on the matrix.
+1. [x] Always to the zero vector $(0,0)$.
+1. [ ] To $(1,1)$.
+1. [ ] That is not defined.
+
+> No matter how you rotate or stretch space: the center (origin) stays where it is ($M \cdot 0 = 0$).
+
+# Refresher (chapter 3): What happens if the dimensions in `M @ v` do not match (e.g. 3x3 matrix times 2D vector)?
+1. [ ] NumPy fills missing values with 0.
+1. [ ] NumPy cuts off the matrix.
+1. [x] NumPy raises a `ValueError` (shapes not aligned).
+1. [ ] The dot product is computed.
+
+> Transformations only work if the vector has as many dimensions as the matrix has "inputs" (columns).
+
+# Code puzzle: How do you create an identity matrix that serves as a "neutral transformation" (does nothing)?
+1. `dim = 3`
+2. `I = np.eye(dim)`
+3. `v = np.array([1, 2, 3])`
+4. `print(I @ v)` (the result is v again)
+
+> The identity matrix is the "times one" of the matrix world.
+```
+
+::::

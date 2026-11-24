@@ -1,0 +1,6 @@
+# Start page per language (choosing the level): only WHICH pages are rendered.
+# Labels are in _quarto-<language>.yml,
+# the output folder docs/<lang>/ is set by build.py.
+project:
+  render:
+    - "index.qmd"

@@ -1,0 +1,281 @@
+---
+title: "Graphen zeichnen"
+title-en: "Drawing Graphs"
+format: html
+filters:
+  - ctm-assessment
+  - quizdown
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+**Kapitelübersicht**
+
+In diesem Kapitel beschäftigen wir uns mit der graphischen Darstellung von Funktionen. Das Ganze wird in zwei Kapitel unterteilt: 
+
+*   **[Graphen erstellen](graphen.qmd)**  
+    * Im ersten Abschnitt soll es um die Grundlagen der graphischen Darstellung mit Hilfe von Python gehen.  
+    Was für Bibliotheken werden benötigt, was sind die Grundbefehle, die für das Erstellen eines Graphen wichtig sind.
+
+---
+
+*   **[Graphen beschriften](graphen_beschriften.qmd)**  
+    * Dieser Abschnitt soll das Ende des Tutorials darstellen, da in diesem Abschnitt behandelt wird wie, mithilfe der Ganzen anderen Kapitel, Funktionen im Graphen dargestellt werden können und dazu besondere Punkte der Funktion im Graphen markiert, Asymptoten eingezeichnet werden und so weiter.
+
+---
+
+# Quiz: Monotonie, Krümmung & Wendepunkte
+
+```quizdown
+---
+locale: de
+---
+
+# Welche Bedingungen müssen erfüllt sein, damit an einer Stelle $x_0$ sicher ein Hochpunkt (lokales Maximum) vorliegt? 
+- [x] $f'(x_0) = 0$ 
+- [x] $f''(x_0) < 0$ 
+- [ ] $f''(x_0) > 0$
+- [ ] $f'(x_0) > 0$
+
+> Hinweis: Es gibt die "Notwendige Bedingung" und die "Hinreichende Bedingung". Bei einem Hochpunkt ist die Steigung Null und die Kurve ist rechtsgekrümmt (sieht aus wie ein Berg).
+
+# Mit welchem Python-Befehl bildest du die zweite Ableitung $f''(x)$?
+1. [x] `f_double_prime = sympy.diff(f, x, 2)`
+1. [ ] `f_double_prime = sympy.diff(f, x)`
+1. [ ] `f_double_prime = sympy.derive(f, x, 2)`
+1. [ ] `f_double_prime = sympy.solve(f, x, 2)`
+
+> Hinweis: Das dritte Argument bei `diff` gibt die Ordnung der Ableitung an.
+
+# Bringe die Schritte einer Kurvendiskussion zur Bestimmung von Extrempunkten in die richtige Reihenfolge.
+1. f_prime = sympy.diff(f, x)
+2. kritische_stellen = sympy.solve(f_prime, x)
+3. werte = [sympy.diff(f_prime, x).subs(x, s) for s in kritische_stellen]
+
+# Was bedeutet es mathematisch, wenn $f''(x) > 0$ in einem Intervall ist?
+1. [x] Der Graph ist linksgekrümmt (konvex).
+1. [ ] Der Graph ist rechtsgekrümmt (konkav).
+1. [ ] Der Graph fällt streng monoton.
+1. [ ] Es liegt ein Wendepunkt vor.
+
+> Hinweis: Stell dir vor, du fährst mit dem Fahrrad von links nach rechts über den Graphen. Bei $f''(x) > 0$ fährst du eine Linkskurve.
+
+# Was gilt für einen Wendepunkt? 
+- [x] Die Krümmung ändert sich (von links nach rechts oder umgekehrt).
+- [x] Die zweite Ableitung ist Null ($f''(x_0) = 0$).
+- [ ] Die dritte Ableitung ist zwingend ungleich Null ($f'''(x_0) \neq 0$).
+- [ ] Die Steigung ist zwingend Null ($f'(x_0) = 0$).
+
+> Hinweis: Ein Wendepunkt muss keine waagerechte Tangente haben (Sattelpunkt), aber die Krümmung muss 0 sein. $f'''(x_0) \neq 0$ reicht als Nachweis, ist aber nicht nötig: $f(x) = x^5$ hat bei $0$ einen Wendepunkt mit $f'''(0) = 0$.
+
+# Was berechnet dieser Code?
+~~~python
+if f_prime.subs(x, wert) > 0:
+    print("Steigend")
+~~~
+1. [x] Ob die Funktion an der Stelle `wert` streng monoton steigt.
+1. [ ] Ob ein Hochpunkt vorliegt.
+1. [ ] Ob die Funktion positiv ist.
+
+> Hinweis: Wir schauen uns das Vorzeichen der ersten Ableitung an.
+
+# Welche Aussagen zu Sattelpunkten sind wahr? 
+- [x] Es sind Wendepunkte mit waagerechter Tangente.
+- [x] Es gilt $f'(x_0) = 0 \land f''(x_0) = 0 \land f'''(x_0) \neq 0$.
+- [ ] Es sind Extrempunkte.
+- [ ] Die Funktion wechselt dort das Vorzeichen.
+> Hinweis: Ein Terrassenpunkt, an dem es kurz flach wird, es dann aber in die gleiche Richtung weitergeht.
+
+# Bringe die Python-Befehle zur Bestimmung von Wendepunkten in die Reihenfolge.
+1. f_double_prime = sympy.diff(f, x, 2)
+2. kandidaten = sympy.solve(f_double_prime, x)
+3. test = sympy.diff(f_double_prime, x).subs(x, kandidaten[0])
+4. if test != 0: print("Wendepunkt!")
+
+# Was passiert, wenn $f'(x_0) = 0$ und auch $f''(x_0) = 0$ ist?
+1. [x] Wir können noch keine Aussage treffen (Sattelpunkt oder flaches Extremum) und müssen höher ableiten.
+1. [ ] Es ist sicher ein Sattelpunkt.
+1. [ ] Es ist sicher ein Extrempunkt.
+
+> Hinweis: Das Kriterium der 2. Ableitung versagt hier.
+
+# Welche Python-Bibliotheken oder Module hast du in den letzten Kapiteln genutzt? 
+- [x] `sympy`
+- [x] `matplotlib` 
+- [ ] `pandas`
+- [ ] `pygame`
+
+# Wenn eine Funktion im Intervall $I$ streng monoton fällt, welches Vorzeichen hat $f'(x)$ dort?
+1. [x] Minus ($< 0$)
+1. [ ] Plus ($> 0$)
+1. [ ] Null
+
+> Hinweis: Negative Steigung bedeutet Fallen.
+
+# (Wiederholung) Wie findest du heraus, ob eine Funktion eine waagerechte Asymptote hat?
+1. [x] Grenzwertbetrachtung mit `sympy.limit(f, x, sympy.oo)`.
+1. [ ] Nullstellen berechnen mit `solve`.
+1. [ ] Ableitung gleich Null setzen.
+
+# Was ist der Unterschied zwischen `sympy.solve` und `sympy.solveset`? 
+- [x] `solveset` ist neuer und mathematisch präziser (gibt Mengen zurück).
+- [x] `solve` gibt oft einfache Listen zurück (gut für Weiterverarbeitung).
+- [ ] `solve` kann keine Ableitungen lösen.
+
+> Hinweis: In den Tutorials haben wir meist `solve` für einfache Listen genutzt, aber `solveset` kennen wir von den Nullstellen.
+
+# Du hast eine Liste von Nullstellen `st = [-2, 2]`. Wie prüfst du das Monotonieverhalten *dazwischen*?
+1. [x] Ich wähle einen Testwert (z.B. 0), setze ihn in $f'(x)$ ein und prüfe das Vorzeichen.
+1. [ ] Ich setze -2 und 2 in $f(x)$ ein.
+1. [ ] Das kann man nicht prüfen.
+
+> Hinweis: Zwischen zwei Nullstellen der Ableitung ändert sich das Vorzeichen der Steigung nicht.
+
+# Welcher Befehl sortiert eine Liste von gefundenen Extremstellen aufsteigend?
+1. [x] `liste.sort()`
+1. [ ] `liste.order()`
+1. [ ] `sympy.sort(liste)`
+1. [ ] `liste.arrange()`
+
+> Hinweis: Ein Standard-Python-Befehl für Listen.
+
+```
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+**Chapter overview**
+
+In this chapter, we deal with displaying functions graphically. It is divided into two sections: 
+
+*   **[Creating graphs](graphen.qmd)**  
+    * The first section is about the basics of graphical representation with Python.  
+    Which libraries are needed, and which basic commands are important for creating a graph?
+
+---
+
+*   **[Labeling graphs](graphen_beschriften.qmd)**  
+    * This section is meant to be the end of the tutorial, since it covers how, with the help of all the other chapters, functions can be displayed in a graph and how special points of the function can be marked, asymptotes drawn in, and so on.
+
+---
+
+# Quiz: monotonicity, concavity & inflection points
+
+```quizdown
+---
+locale: en
+---
+
+# Which conditions must be met for there to definitely be a maximum (local maximum) at $x_0$? 
+- [x] $f'(x_0) = 0$ 
+- [x] $f''(x_0) < 0$ 
+- [ ] $f''(x_0) > 0$
+- [ ] $f'(x_0) > 0$
+
+> Hint: There is the "necessary condition" and the "sufficient condition". At a maximum, the slope is zero and the curve is concave down (it looks like a mountain).
+
+# Which Python command gives you the second derivative $f''(x)$?
+1. [x] `f_double_prime = sympy.diff(f, x, 2)`
+1. [ ] `f_double_prime = sympy.diff(f, x)`
+1. [ ] `f_double_prime = sympy.derive(f, x, 2)`
+1. [ ] `f_double_prime = sympy.solve(f, x, 2)`
+
+> Hint: The third argument of `diff` gives the order of the derivative.
+
+# Put the steps of a curve sketching analysis for finding extrema in the right order.
+1. f_prime = sympy.diff(f, x)
+2. critical_points = sympy.solve(f_prime, x)
+3. values = [sympy.diff(f_prime, x).subs(x, s) for s in critical_points]
+
+# What does it mean mathematically if $f''(x) > 0$ on an interval?
+1. [x] The graph is concave up (convex).
+1. [ ] The graph is concave down (concave).
+1. [ ] The graph is strictly decreasing.
+1. [ ] There is an inflection point.
+
+> Hint: Imagine riding a bike from left to right along the graph. For $f''(x) > 0$ you are taking a left turn.
+
+# What holds for an inflection point? 
+- [x] The concavity changes (from left to right or vice versa).
+- [x] The second derivative is zero ($f''(x_0) = 0$).
+- [ ] The third derivative is necessarily non-zero ($f'''(x_0) \neq 0$).
+- [ ] The slope is necessarily zero ($f'(x_0) = 0$).
+
+> Hint: An inflection point does not have to have a horizontal tangent (saddle point), but the concavity has to be 0. $f'''(x_0) \neq 0$ is enough as proof, but it is not necessary: $f(x) = x^5$ has an inflection point at $0$ with $f'''(0) = 0$.
+
+# What does this code calculate?
+~~~python
+if f_prime.subs(x, value) > 0:
+    print("Increasing")
+~~~
+1. [x] Whether the function is strictly increasing at the point `value`.
+1. [ ] Whether there is a maximum.
+1. [ ] Whether the function is positive.
+
+> Hint: We look at the sign of the first derivative.
+
+# Which statements about saddle points are true? 
+- [x] They are inflection points with a horizontal tangent.
+- [x] $f'(x_0) = 0 \land f''(x_0) = 0 \land f'''(x_0) \neq 0$ holds.
+- [ ] They are extrema.
+- [ ] The function changes sign there.
+> Hint: A terrace point where it briefly becomes flat, but then continues in the same direction.
+
+# Put the Python commands for finding inflection points in order.
+1. f_double_prime = sympy.diff(f, x, 2)
+2. candidates = sympy.solve(f_double_prime, x)
+3. test = sympy.diff(f_double_prime, x).subs(x, candidates[0])
+4. if test != 0: print("Inflection point!")
+
+# What happens if both $f'(x_0) = 0$ and $f''(x_0) = 0$?
+1. [x] We cannot draw a conclusion yet (saddle point or flat extremum) and have to look at higher derivatives.
+1. [ ] It is definitely a saddle point.
+1. [ ] It is definitely an extremum.
+
+> Hint: The second-derivative test fails here.
+
+# Which Python libraries or modules did you use in the last chapters? 
+- [x] `sympy`
+- [x] `matplotlib` 
+- [ ] `pandas`
+- [ ] `pygame`
+
+# If a function is strictly decreasing on the interval $I$, what sign does $f'(x)$ have there?
+1. [x] Minus ($< 0$)
+1. [ ] Plus ($> 0$)
+1. [ ] Zero
+
+> Hint: A negative slope means decreasing.
+
+# (Review) How do you find out whether a function has a horizontal asymptote?
+1. [x] By looking at the limit with `sympy.limit(f, x, sympy.oo)`.
+1. [ ] By computing the zeros with `solve`.
+1. [ ] By setting the derivative equal to zero.
+
+# What is the difference between `sympy.solve` and `sympy.solveset`? 
+- [x] `solveset` is newer and mathematically more precise (returns sets).
+- [x] `solve` often returns simple lists (good for further processing).
+- [ ] `solve` cannot solve derivatives.
+
+> Hint: In the tutorials we mostly used `solve` for simple lists, but we know `solveset` from the chapter on zeros.
+
+# You have a list of zeros `z = [-2, 2]`. How do you check the monotonicity *between* them?
+1. [x] I choose a test value (e.g. 0), plug it into $f'(x)$ and check the sign.
+1. [ ] I plug -2 and 2 into $f(x)$.
+1. [ ] That cannot be checked.
+
+> Hint: Between two zeros of the derivative, the sign of the slope does not change.
+
+# Which command sorts a list of found extrema in ascending order?
+1. [x] `my_list.sort()`
+1. [ ] `my_list.order()`
+1. [ ] `sympy.sort(my_list)`
+1. [ ] `my_list.arrange()`
+
+> Hint: A standard Python command for lists.
+
+```
+
+::::

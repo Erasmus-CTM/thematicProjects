@@ -1,0 +1,248 @@
+---
+title: '2.2. Matrix-Attribute'
+title-en: '2.2. Matrix Attributes'
+format: html
+filters:
+  - ctm-assessment
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+::: {.callout-note title="Zellen der Reihe nach ausführen"}
+Die Code-Zellen dieser Seite bauen aufeinander auf: Importe, Variablen und Funktionen aus einer Zelle gelten auch in allen späteren Zellen und werden dort nicht wiederholt. Führe die Zellen deshalb von oben nach unten aus. Meldet Python einen `NameError`, hast du meist eine frühere Zelle noch nicht ausgeführt.
+:::
+
+Nachdem wir im [vorherigen Abschnitt](matrizen_grundlagen.qmd) gelernt haben, was eine Matrix genau ist und wie man eine Matrix in Python mit NumPy erstellt, wollen wir uns in diesem Abschnitt nun ansehen, wie wir ihre grundlegenden Eigenschaften – oder **Attribute** – abfragen können. Diese Attribute sind extrem nützlich, um die Struktur unserer Daten zu verstehen und sicherzustellen, dass unsere Matrizen für mathematische Operationen kompatibel sind.
+
+In NumPy greifen wir auf diese Attribute direkt über das Matrix-Objekt mit der Punkt-Notation zu (z.B. `meine_matrix.shape`).
+
+## 2.2.1. Dimension, Form und Größe prüfen
+
+Die drei wichtigsten Attribute zur Beschreibung der Struktur einer Matrix sind ihre Dimension (`ndim`), ihre Form (`shape`) und ihre Gesamtgröße (`size`).
+
+-   `.ndim`: Gibt die Anzahl der Dimensionen (oder Achsen) des Arrays an. Für eine Matrix im klassischen Sinne (also eine 2D-Anordnung von Zeilen und Spalten) ist dieser Wert immer `2`.
+-   `.shape`: Gibt ein Tupel zurück, das die Anzahl der Elemente in jeder Dimension enthält. Für eine $m \times n$-Matrix ist dies `(m, n)`.
+-   `.size`: Gibt die Gesamtzahl der Elemente in der Matrix an, also $m \cdot n$.
+
+Schauen wir uns das an einem Beispiel an. Wir verwenden die `studierenden_matrix` aus der letzten Übung:
+
+::: {.callout-tip title="Hinweis: f-Strings in Python" collapse="true"}
+Im Folgenden verwenden wir sogenannte **f-Strings** für die `print()`-Ausgaben. Ein f-String wird durch ein `f` vor dem öffnenden Anführungszeichen eingeleitet (zum Beispiel `f"Hallo"`).
+
+Der große Vorteil ist, dass man Variablen und Ausdrücke direkt in den Text einbetten kann, indem man sie in geschweifte Klammern `{}` setzt. Das macht den Code oft deutlich lesbarer.
+:::
+
+```{pyodide-python}
+import numpy as np
+
+studierenden_matrix = np.array([
+  [15, 165, 2],
+  [16, 172, 1],
+  [15, 168, 3]
+])
+
+# Attribute abfragen und ausgeben
+print(f"Matrix:\n{studierenden_matrix}\n")
+print(f"Anzahl der Dimensionen (ndim): {studierenden_matrix.ndim}")
+print(f"Form der Matrix (shape): {studierenden_matrix.shape}")
+print(f"Gesamtzahl der Elemente (size): {studierenden_matrix.size}")
+```
+
+Wie erwartet, hat unsere $3 \times 3$-Matrix 2 Dimensionen, die Form `(3, 3)` und insgesamt $3 \cdot 3 = 9$ Elemente.
+
+### 2.2.1.1. Kurzcheck
+
+```{math-exercise}
+#| label: matrizen-attribute-check-1
+#| caption: Größe aus der Form berechnen
+Eine Matrix hat die Form (shape) $(4, 7)$. Wie viele Elemente enthält sie insgesamt (`.size`)? _[28]
+```
+
+## 2.2.2. Den Datentyp prüfen (`.dtype`) {#den-datentyp-prüfen}
+
+Jedes Element in einem NumPy-Array hat einen bestimmten **Datentyp** (`dtype`). NumPy wählt bei der Erstellung des Arrays automatisch einen passenden Typ, zum Beispiel `int32`,`int64` für ganze Zahlen oder `float64` für Fließkommazahlen.
+
+Der Datentyp ist wichtig für die Speichereffizienz und die numerische Präzision.
+
+```{pyodide-python}
+# NumPy erkennt automatisch den Integer-Typ
+ganzzahl_matrix = np.array([
+    [1, 2],
+    [3, 4]
+])
+print(f"Datentyp der ganzzahl_matrix: {ganzzahl_matrix.dtype}")
+
+# Sobald eine Fließkommazahl enthalten ist, wird das gesamte Array zu float
+float_matrix = np.array([
+    [1.0, 2],
+    [3, 4]
+])
+print(f"Datentyp der float_matrix: {float_matrix.dtype}")
+```
+
+## 2.2.3. Übung: Attribute erforschen
+
+Jetzt bist du an der Reihe! Führe die folgenden Schritte aus:
+
+1.  Erstelle eine Matrix namens `umsatz_matrix`, die die wöchentlichen Umsätze (in Tausend Euro) von vier Produkten über drei Wochen darstellt. Die Daten sind:
+    -   Woche 1: 12.5, 30, 17.8, 25
+    -   Woche 2: 14, 28.2, 19, 24
+    -   Woche 3: 13, 31, 18.5, 26.2
+
+2.  Gib die Attribute `shape`, `size` und `ndim` der Matrix aus.
+3.  Überlege dir, welchen `dtype` die Matrix haben wird. Überprüfe deine Vermutung, indem du das Attribut ausgibst.
+
+**Befehle, die du brauchst:** `np.array()`, die Attribute `.shape`, `.size`, `.ndim` und `.dtype`, `print()`.
+
+```{pyodide-python}
+# Dein Code hier
+```
+
+::: {.callout-caution title="Lösung" collapse="true"}
+```{pyodide-python}
+# 1. Matrix erstellen
+umsatz_matrix = np.array([
+    [12.5, 30, 17.8, 25],
+    [14, 28.2, 19, 24],
+    [13, 31, 18.5, 26.2]
+])
+
+print("Umsatzmatrix:")
+print(umsatz_matrix)
+print("-" * 20) # erzeugt eine Trennlinie
+
+# 2. Attribute ausgeben
+print(f"Form (shape): {umsatz_matrix.shape}")
+print(f"Größe (size): {umsatz_matrix.size}")
+print(f"Dimensionen (ndim): {umsatz_matrix.ndim}")
+
+# 3. Datentyp überprüfen
+print(f"Datentyp (dtype): {umsatz_matrix.dtype}")
+```
+:::
+
+---
+
+Super! Du weißt jetzt, wie man die wichtigsten Kenngrößen einer Matrix abfragt. Im nächsten Abschnitt [Spezielle Matrizen](matrizen_spezielle.qmd) lernen wir, wie man nützliche Standardmatrizen wie Null- oder Einheitsmatrizen ganz einfach erstellen kann.
+
+::::
+
+:::: {.content-visible when-profile="english"}
+::: {.callout-note title="Run the cells in order"}
+The code cells on this page build on each other: imports, variables and functions from one cell are also available in all later cells and are not repeated there. So run the cells from top to bottom. If Python reports a `NameError`, you most likely have not run an earlier cell yet.
+:::
+
+Now that we've learned in the [previous section](matrizen_grundlagen.qmd) what exactly a matrix is and how to create one in Python with NumPy, let's take a look in this section at how we can query its basic properties — or **attributes**. These attributes are extremely useful for understanding the structure of our data and for making sure our matrices are compatible with mathematical operations.
+
+In NumPy, we access these attributes directly on the matrix object using dot notation (e.g. `my_matrix.shape`).
+
+## 2.2.1. Checking Dimension, Shape and Size {#dimension-form-und-größe-prüfen}
+
+The three most important attributes describing the structure of a matrix are its dimension (`ndim`), its shape (`shape`), and its total size (`size`).
+
+-   `.ndim`: Gives the number of dimensions (or axes) of the array. For a matrix in the classical sense (a 2D arrangement of rows and columns), this value is always `2`.
+-   `.shape`: Returns a tuple containing the number of elements along each dimension. For an $m \times n$ matrix, this is `(m, n)`.
+-   `.size`: Gives the total number of elements in the matrix, i.e. $m \cdot n$.
+
+Let's look at an example. We use the `studierenden_matrix` from the last exercise:
+
+::: {.callout-tip title="Note: f-Strings in Python" collapse="true"}
+In the following, we use so-called **f-strings** for `print()` output. An f-string is introduced by an `f` before the opening quotation mark (for example `f"Hello"`).
+
+The big advantage is that you can embed variables and expressions directly into the text by placing them in curly braces `{}`. This often makes the code much more readable.
+:::
+
+```{pyodide-python}
+import numpy as np
+
+studierenden_matrix = np.array([
+  [15, 165, 2],
+  [16, 172, 1],
+  [15, 168, 3]
+])
+
+# Query and print attributes
+print(f"Matrix:\n{studierenden_matrix}\n")
+print(f"Number of dimensions (ndim): {studierenden_matrix.ndim}")
+print(f"Shape of the matrix (shape): {studierenden_matrix.shape}")
+print(f"Total number of elements (size): {studierenden_matrix.size}")
+```
+
+As expected, our $3 \times 3$ matrix has 2 dimensions, the shape `(3, 3)`, and a total of $3 \cdot 3 = 9$ elements.
+
+### 2.2.1.1. Quick Check
+
+```{math-exercise}
+#| label: matrizen-attribute-check-1-en
+#| caption: Compute the size from the shape
+A matrix has the shape $(4, 7)$. How many elements does it contain in total (`.size`)? _[28]
+```
+
+## 2.2.2. Checking the Data Type (`.dtype`) {#den-datentyp-prüfen}
+
+Every element in a NumPy array has a specific **data type** (`dtype`). When creating the array, NumPy automatically chooses a suitable type, for example `int32`/`int64` for whole numbers or `float64` for floating-point numbers.
+
+The data type matters for memory efficiency and numerical precision.
+
+```{pyodide-python}
+# NumPy automatically detects the integer type
+integer_matrix = np.array([
+    [1, 2],
+    [3, 4]
+])
+print(f"Data type of integer_matrix: {integer_matrix.dtype}")
+
+# As soon as a floating-point number is included, the entire array becomes float
+float_matrix = np.array([
+    [1.0, 2],
+    [3, 4]
+])
+print(f"Data type of float_matrix: {float_matrix.dtype}")
+```
+
+## 2.2.3. Exercise: Exploring Attributes {#übung-attribute-erforschen}
+
+Now it's your turn! Complete the following steps:
+
+1.  Create a matrix named `umsatz_matrix` (revenue matrix) representing the weekly revenue (in thousands of euros) of four products over three weeks. The data is:
+    -   Week 1: 12.5, 30, 17.8, 25
+    -   Week 2: 14, 28.2, 19, 24
+    -   Week 3: 13, 31, 18.5, 26.2
+
+2.  Print the `shape`, `size` and `ndim` attributes of the matrix.
+3.  Think about what `dtype` the matrix will have. Check your guess by printing the attribute.
+
+**Commands you need:** `np.array()`, the attributes `.shape`, `.size`, `.ndim` and `.dtype`, `print()`.
+
+```{pyodide-python}
+# Your code here
+```
+
+::: {.callout-caution title="Solution" collapse="true"}
+```{pyodide-python}
+# 1. Create the matrix
+umsatz_matrix = np.array([
+    [12.5, 30, 17.8, 25],
+    [14, 28.2, 19, 24],
+    [13, 31, 18.5, 26.2]
+])
+
+print("Revenue matrix:")
+print(umsatz_matrix)
+print("-" * 20) # draws a separator line
+
+# 2. Print attributes
+print(f"Shape: {umsatz_matrix.shape}")
+print(f"Size: {umsatz_matrix.size}")
+print(f"Dimensions (ndim): {umsatz_matrix.ndim}")
+
+# 3. Check data type
+print(f"Data type (dtype): {umsatz_matrix.dtype}")
+```
+:::
+
+---
+
+Great! You now know how to query the most important characteristics of a matrix. In the next section, [Special Matrices](matrizen_spezielle.qmd), we'll learn how to easily create useful standard matrices such as zero or identity matrices.
+
+::::

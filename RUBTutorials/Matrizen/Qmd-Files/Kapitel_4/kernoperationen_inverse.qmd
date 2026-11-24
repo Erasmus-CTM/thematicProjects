@@ -1,0 +1,327 @@
+---
+title: "4.3. Inverse einer Matrix"
+title-en: "4.3. Inverse of a Matrix"
+format: html
+filters:
+  - ctm-assessment
+  - quizdown
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+::: {.callout-note title="Zellen der Reihe nach ausführen"}
+Die Code-Zellen dieser Seite bauen aufeinander auf: Importe, Variablen und Funktionen aus einer Zelle gelten auch in allen späteren Zellen und werden dort nicht wiederholt. Führe die Zellen deshalb von oben nach unten aus. Meldet Python einen `NameError`, hast du meist eine frühere Zelle noch nicht ausgeführt.
+:::
+
+Die Inverse ist die Umkehrfunktion einer Matrix. Wenn wir eine Operation mit einer Matrix durchführen, können wir sie mit ihrer Inversen wieder rückgängig machen.  
+$$ A \cdot A^{-1} = A^{-1} \cdot A = E $$
+
+## 4.3.1. Definition
+
+Die **Inverse** einer quadratischen Matrix $A$ ist eine Matrix $A^{-1}$, für die gilt:
+$$ A \cdot A^{-1} = A^{-1} \cdot A = E $$
+wobei $E$ die [Einheitsmatrix](../Kapitel_2/matrizen_spezielle.qmd#einheitsmatrix) ist. Die Einheitsmatrix ist das neutrale Element der Matrizenmultiplikation.
+
+Eine Matrix hat nur dann eine Inverse, wenn sie zwei Bedingungen erfüllt:
+
+1.  Sie muss **quadratisch** sein (gleiche Anzahl an Zeilen und Spalten).
+2.  Ihre **Determinante muss ungleich Null** sein (das heißt, sie muss den vollen Rang haben).  
+Matrizen, die diese Bedingung nicht erfüllen, werden als **singulär** bezeichnet.
+
+## 4.3.2. Inverse in NumPy berechnen
+
+NumPy stellt die Funktion `np.linalg.inv()` zur Verfügung, um die Inverse einer Matrix zu berechnen.
+
+Im folgenden Beispiel berechnen wir die Inverse von Matrix `A` und überprüfen, ob das Produkt `A @ A_inv` tatsächlich die Einheitsmatrix ergibt.
+
+<details>
+<summary> Für Codebeispiele hier drücken $\leftarrow$ </summary>
+
+```{pyodide-python}
+#| read-only: true
+import numpy as np
+
+# Eine invertierbare 2x2 Matrix
+A = np.array([[4, 7],
+              [2, 6]])
+
+# Berechne die Inverse
+A_inv = np.linalg.inv(A)
+
+# Überprüfe das Ergebnis
+# A @ A_inv sollte die Einheitsmatrix ergeben
+identitaet = A @ A_inv
+
+print(f"Matrix A:\n{A}")
+print(f"\nInverse von A (A^-1):\n{A_inv}")
+print(f"\nÜberprüfung (A @ A^-1):\n{identitaet}")
+```
+
+### 4.3.2.1. Was passiert bei einer singulären Matrix?
+Wenn wir versuchen, eine nicht-invertierbare Matrix (Determinante = 0) zu invertieren, gibt NumPy einen `LinAlgError` aus.
+
+```{pyodide-python}
+#| label: inverse-singulaer
+import numpy as np
+
+# Eine singuläre Matrix 
+B = np.array([[1, 2],
+              [2, 4]])
+
+try:
+    B_inv = np.linalg.inv(B)
+    print(B_inv)
+except np.linalg.LinAlgError as e:
+    print(f"Fehler beim Invertieren von B:\n{e}")
+```
+
+</details>
+
+## 4.3.3. Übung
+
+Für $2 \times 2$-Matrizen gibt es eine kurze Formel, mit der du die Inverse auch von Hand bestimmen kannst:
+$$
+\begin{pmatrix} a & b \\ c & d \end{pmatrix}^{-1} = \frac{1}{ad - bc}\begin{pmatrix} d & -b \\ -c & a \end{pmatrix}
+$$
+Diagonale tauschen, Nebendiagonale mit $-1$ multiplizieren, durch die Determinante teilen. Probiere es zuerst von Hand aus, die Einträge des Ergebnisses werden einzeln geprüft:
+
+```{math-exercise}
+#| label: inverse-hand
+#| caption: Inverse einer 2x2-Matrix
+#| partial-credit: true
+$\begin{pmatrix} 2 & 1 \\ 5 & 3 \end{pmatrix}^{-1} =$ mat[3,-1;-5,2]
+
+$\begin{pmatrix} 2 & 0 \\ 0 & 4 \end{pmatrix}^{-1} =$ mat[1/2,0;0,1/4]
+```
+
+**Aufgabe:** Schreibe eine Funktion `inverse_mit_probe(M)`, die die Inverse von `M` zurückgibt, wenn `M` invertierbar ist, und sonst `None`. Versteckte Tests prüfen automatisch, ob deine Lösung stimmt (unter anderem, ob `M @ Inverse` die Einheitsmatrix ergibt).
+
+**Befehle, die du brauchst:** `np.linalg.inv()`, `np.linalg.det()`, `np.isclose()`, `if`, `return`.
+
+```{py-exercise}
+#| label: inverse-uebung
+#| caption: inverse_mit_probe implementieren
+#| show-test-hints: false
+import numpy as np
+
+def inverse_mit_probe(M):
+    # Dein Code hier
+    pass
+
+## TESTS ##
+M = np.array([[1, 3, 3], [1, 4, 3], [1, 3, 4]])
+erg = inverse_mit_probe(M)
+assert erg is not None, "M ist invertierbar, die Funktion darf nicht None zurückgeben"
+assert np.allclose(M @ erg, np.eye(3)), "M @ Inverse ergibt nicht die Einheitsmatrix"
+S = np.array([[1, 2], [2, 4]])
+assert inverse_mit_probe(S) is None, "S ist singulär und hat keine Inverse (None erwartet)"
+```
+
+::: {.callout-tip title="Tipp" collapse="true"}
+Prüfe zuerst, ob die Determinante (fast) 0 ist, mit `np.isclose(np.linalg.det(M), 0)`. Wenn ja, gib `None` zurück, sonst `np.linalg.inv(M)`. Wegen der Rundungsfehler vergleicht der Test mit `np.allclose` statt mit `==`. Dasselbe Prinzip kennst du aus dem vorigen [Abschnitt](kernoperationen_determinante.qmd).
+:::
+
+::: {.callout-caution title="Lösung" collapse="true"}
+```python
+def inverse_mit_probe(M):
+    if np.isclose(np.linalg.det(M), 0):
+        return None
+    return np.linalg.inv(M)
+```
+:::
+
+Als nächstes betrachten wir, inwiefern Matrizen in Python auch der Anschaulichkeit dienen können. In Kapitel [5. Geometrische Transformationen](../Kapitel_5/index.qmd) soll es darum gehen, wie Drehungen und Spiegelungen, die durch Matrizen dargestellt werden können, durch Python visualisiert werden können.
+
+### Kurzes Quiz zu Kapitel 4
+
+```quizdown
+---
+locale: de
+---
+
+# Eine 3x3-Matrix hat Rang 2. Was folgt daraus?
+1. [ ] Sie ist invertierbar.
+1. [x] Ihre Determinante ist 0 und sie ist nicht invertierbar.
+1. [ ] Ihre Determinante ist 2.
+1. [ ] Sie hat genau zwei Nullzeilen.
+
+> Voller Rang (hier 3) ist gleichbedeutend mit Determinante ungleich 0 und Invertierbarkeit.
+
+# Warum prüfen wir `np.linalg.det(M)` mit `np.isclose(..., 0)` statt mit `== 0`?
+1. [ ] Weil die Determinante nie 0 sein kann.
+1. [x] Weil NumPy mit Fließkommazahlen rechnet und Rundungsfehler möglich sind.
+1. [ ] Weil `==` in Python für Matrizen nicht erlaubt ist.
+1. [ ] Weil die Determinante immer ein Bruch ist.
+
+> Eine eigentlich singuläre Matrix kann eine Determinante wie `1e-16` liefern.
+
+# Was ergibt `M @ np.linalg.inv(M)` für eine invertierbare Matrix `M` (bis auf Rundung)?
+1. [ ] Die Nullmatrix.
+1. [ ] Die Matrix `M` selbst.
+1. [x] Die Einheitsmatrix.
+1. [ ] Die transponierte Matrix.
+
+> Genau das ist die Definition der Inversen: $M \cdot M^{-1} = I$.
+```
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+::: {.callout-note title="Run the cells in order"}
+The code cells on this page build on each other: imports, variables and functions from one cell are also available in all later cells and are not repeated there. So run the cells from top to bottom. If Python reports a `NameError`, you most likely have not run an earlier cell yet.
+:::
+
+The inverse is the "reverse function" of a matrix. If we perform an operation with a matrix, we can undo it with its inverse.  
+$$ A \cdot A^{-1} = A^{-1} \cdot A = I $$
+
+## 4.3.1. Definition {#definition}
+
+The **inverse** of a square matrix $A$ is a matrix $A^{-1}$ for which:
+$$ A \cdot A^{-1} = A^{-1} \cdot A = I $$
+where $I$ is the [identity matrix](../Kapitel_2/matrizen_spezielle.qmd#einheitsmatrix). The identity matrix is the neutral element of matrix multiplication.
+
+A matrix only has an inverse if it meets two conditions:
+
+1.  It must be **square** (same number of rows and columns).
+2.  Its **determinant must be non-zero** (that is, it must have full rank).  
+Matrices that do not meet this condition are called **singular**.
+
+## 4.3.2. Computing the inverse in NumPy {#inverse-in-numpy-berechnen}
+
+NumPy provides the function `np.linalg.inv()` to compute the inverse of a matrix.
+
+In the following example, we compute the inverse of matrix `A` and check whether the product `A @ A_inv` really results in the identity matrix.
+
+<details>
+<summary> Click here for code examples $\leftarrow$ </summary>
+
+```{pyodide-python}
+#| read-only: true
+import numpy as np
+
+# An invertible 2x2 matrix
+A = np.array([[4, 7],
+              [2, 6]])
+
+# Compute the inverse
+A_inv = np.linalg.inv(A)
+
+# Check the result
+# A @ A_inv should give the identity matrix
+identity = A @ A_inv
+
+print(f"Matrix A:\n{A}")
+print(f"\nInverse of A (A^-1):\n{A_inv}")
+print(f"\nCheck (A @ A^-1):\n{identity}")
+```
+
+### 4.3.2.1. What happens with a singular matrix? {#was-passiert-bei-einer-singulären-matrix}
+If we try to invert a non-invertible matrix (determinant = 0), NumPy raises a `LinAlgError`.
+
+```{pyodide-python}
+#| label: inverse-singulaer-en
+import numpy as np
+
+# A singular matrix 
+B = np.array([[1, 2],
+              [2, 4]])
+
+try:
+    B_inv = np.linalg.inv(B)
+    print(B_inv)
+except np.linalg.LinAlgError as e:
+    print(f"Error while inverting B:\n{e}")
+```
+
+</details>
+
+## 4.3.3. Exercise {#übung}
+
+For $2 \times 2$ matrices there is a short formula with which you can also determine the inverse by hand:
+$$
+\begin{pmatrix} a & b \\ c & d \end{pmatrix}^{-1} = \frac{1}{ad - bc}\begin{pmatrix} d & -b \\ -c & a \end{pmatrix}
+$$
+Swap the diagonal, multiply the off-diagonal by $-1$, divide by the determinant. Try it by hand first; the entries of the result are checked individually:
+
+```{math-exercise}
+#| label: inverse-hand-en
+#| caption: Inverse of a 2x2 matrix
+#| partial-credit: true
+$\begin{pmatrix} 2 & 1 \\ 5 & 3 \end{pmatrix}^{-1} =$ mat[3,-1;-5,2]
+
+$\begin{pmatrix} 2 & 0 \\ 0 & 4 \end{pmatrix}^{-1} =$ mat[1/2,0;0,1/4]
+```
+
+**Exercise:** Write a function `inverse_with_check(M)` that returns the inverse of `M` if `M` is invertible and `None` otherwise. Hidden tests check your solution automatically (among other things whether `M @ inverse` gives the identity matrix).
+
+**Commands you need:** `np.linalg.inv()`, `np.linalg.det()`, `np.isclose()`, `if`, `return`.
+
+```{py-exercise}
+#| label: inverse-uebung-en
+#| caption: Implement inverse_with_check
+#| show-test-hints: false
+import numpy as np
+
+def inverse_with_check(M):
+    # Your code here
+    pass
+
+## TESTS ##
+M = np.array([[1, 3, 3], [1, 4, 3], [1, 3, 4]])
+res = inverse_with_check(M)
+assert res is not None, "M is invertible, the function must not return None"
+assert np.allclose(M @ res, np.eye(3)), "M @ inverse does not give the identity matrix"
+S = np.array([[1, 2], [2, 4]])
+assert inverse_with_check(S) is None, "S is singular and has no inverse (None expected)"
+```
+
+::: {.callout-tip title="Hint" collapse="true"}
+First check whether the determinant is (almost) 0 with `np.isclose(np.linalg.det(M), 0)`. If so, return `None`, otherwise `np.linalg.inv(M)`. Because of rounding errors the test compares with `np.allclose` instead of `==`. You know the same principle from the previous [section](kernoperationen_determinante.qmd).
+:::
+
+::: {.callout-caution title="Solution" collapse="true"}
+```python
+def inverse_with_check(M):
+    if np.isclose(np.linalg.det(M), 0):
+        return None
+    return np.linalg.inv(M)
+```
+:::
+
+Next, we look at how matrices in Python can also help with visualization. Chapter [5. Geometric transformations](../Kapitel_5/index.qmd) is about how rotations and reflections, which can be represented by matrices, can be visualized with Python.
+
+### Short Quiz on Chapter 4
+
+```quizdown
+---
+locale: en
+---
+
+# A 3x3 matrix has rank 2. What follows?
+1. [ ] It is invertible.
+1. [x] Its determinant is 0 and it is not invertible.
+1. [ ] Its determinant is 2.
+1. [ ] It has exactly two zero rows.
+
+> Full rank (here 3) is equivalent to a nonzero determinant and invertibility.
+
+# Why do we check `np.linalg.det(M)` with `np.isclose(..., 0)` instead of `== 0`?
+1. [ ] Because the determinant can never be 0.
+1. [x] Because NumPy computes with floating-point numbers and rounding errors are possible.
+1. [ ] Because `==` is not allowed for matrices in Python.
+1. [ ] Because the determinant is always a fraction.
+
+> A truly singular matrix can yield a determinant such as `1e-16`.
+
+# What does `M @ np.linalg.inv(M)` give for an invertible matrix `M` (up to rounding)?
+1. [ ] The zero matrix.
+1. [ ] The matrix `M` itself.
+1. [x] The identity matrix.
+1. [ ] The transposed matrix.
+
+> That is exactly the definition of the inverse: $M \cdot M^{-1} = I$.
+```
+
+::::

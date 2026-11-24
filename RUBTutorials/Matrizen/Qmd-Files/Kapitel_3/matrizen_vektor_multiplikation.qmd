@@ -1,0 +1,358 @@
+---
+title: "3.3. Matrix-Vektor-Multiplikation"
+subtitle: "Multiplikation von Matrizen und Vektoren"
+title-en: "3.3. Matrix-Vector Multiplication"
+subtitle-en: "Multiplying matrices and vectors"
+format: html
+mathjax: 
+    extensions: ["cancel.js"]
+filters:
+  - ctm-assessment
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+::: {.callout-note title="Zellen der Reihe nach ausführen"}
+Die Code-Zellen dieser Seite bauen aufeinander auf: Importe, Variablen und Funktionen aus einer Zelle gelten auch in allen späteren Zellen und werden dort nicht wiederholt. Führe die Zellen deshalb von oben nach unten aus. Meldet Python einen `NameError`, hast du meist eine frühere Zelle noch nicht ausgeführt.
+:::
+
+Die Matrix-Vektor-Multiplikation ist der einfachste Fall der Multiplikation mit Matrizen: Eine Matrix wird mit einem Vektor verknüpft. Im nächsten Abschnitt verallgemeinern wir das zur [Matrix-Multiplikation](matrizen_multiplikation.qmd).
+
+### 3.3.1. Die Dimensions-Regel
+
+Die Multiplikation ist nur definiert, wenn die Spaltenzahl der Matrix zur Länge des Vektors passt (beim Zeilenvektor von links: die Länge zur Zeilenzahl). Das Ergebnis ist dadurch wieder ein Vektor derselben Art (Spalten- oder Zeilenvektor) wie der Vektor, der multipliziert wurde. Seine Länge kann sich aber ändern: Bei Matrix $\cdot$ Spaltenvektor entspricht sie der Zeilenzahl $m$ der Matrix.
+
+Angenommen ***Matrix*** $\cdot$ **Spaltenvektor**:  
+
+$$
+(m \times \cancel{n}) \cdot (\cancel{n} \times 1) \rightarrow (m \times 1) = \text{Spaltenvektor}
+$$
+Alternativ: **Zeilenvektor** $\cdot$ **Matrix**:
+$$
+(1 \times \cancel{n}) \cdot (\cancel{n} \times p) \rightarrow (1 \times p) = \text{Zeilenvektor}
+$$
+**Beispielrechnung:**
+
+$$
+A \cdot v = \begin{pmatrix} \color{blue}{a_{11}} & \color{blue}{a_{12}} \\ \color{red}{a_{21}} & \color{red}{a_{22}} \end{pmatrix} \cdot \begin{pmatrix} \color{green}{v_1} \\ \color{green}{v_2} \end{pmatrix} = \begin{pmatrix} \color{blue}{a_{11}} \cdot \color{green}{v_1} + \color{blue}{a_{12}} \cdot \color{green}{v_2} \\ \color{red}{a_{21}} \cdot \color{green}{v_1} + \color{red}{a_{22}} \cdot \color{green}{v_2} \end{pmatrix}
+$$
+
+### 3.3.2. Matrix-Vektor-Multiplikation in NumPy
+
+In NumPy wird für die Matrix-Vektor-Multiplikation (genau wie für die Matrix-Multiplikation) der `@`-Operator verwendet.
+
+```{pyodide-python}
+#| read-only: true
+import numpy as np
+
+# Eine 2x3 Matrix
+A = np.array([[1, 2, 3],
+              [4, 5, 6]])
+
+# Ein Vektor mit 3 Elementen (muss zur Spaltenzahl von A passen)
+v = np.array([10, 20, 30])
+
+# Die Multiplikation
+result = A @ v
+
+print("Matrix A (2x3):\n", A)
+print("\nVektor v (3,):\n", v)
+print("\nErgebnis A @ v (2,):\n", result)
+print("\nShape des Ergebnisses:", result.shape)
+```
+
+Das Ergebnis `[140 320]` ist ein neuer Vektor mit 2 Elementen, was der Zeilenzahl der Matrix `A` entspricht.  
+
+:::{.callout-tip title="Warum dort nur (3,) statt (3,1) steht"}
+
+**Eine Kurzfassung**
+Der Unterschied zwischen `(3,)` und `(3, 1)` in `numpy`
+
+Ein Vektor, den du mit `np.array([1, 2, 3])` erstellst, ist ein **1D-Array**. Seine Shape ist `(3,)`. Er ist weder eine Zeile noch eine Spalte, sondern eine flache Liste.
+Ein echter **Spaltenvektor** ist hingegen ein **2D-Array** mit der Shape `(3, 1)`, den du mit `np.array([[1], [2], [3]])` erstellst.
+
+Bei der Operation `Matrix @ Vektor` ist `numpy` schlau: Es behandelt das 1D-Array automatisch wie einen Spaltenvektor, damit die Multiplikation klappt. Das ist eine praktische Abkürzung (eine Sonderregel des `@`-Operators, siehe unten).
+
+:::{.callout-note title="Ausführlicher + Was Broadcasting ist" collapse="true"}
+
+**1. Was genau bedeutet die Shape `(3,)`?**
+
+Das `.shape`-Attribut eines `numpy`-Arrays gibt immer ein **Tupel** zurück. Die Anzahl der Elemente in diesem Tupel verrät dir die Anzahl der Dimensionen des Arrays.
+
+*   **Ein 2D-Array (Matrix):** `A = np.array([[1, 2], [3, 4], [5, 6]])`
+    *   `A.shape` ist `(3, 2)`. Das ist ein Tupel mit **zwei Elementen**. Es sagt uns: Das Array hat **zwei Dimensionen** (3 Zeilen, 2 Spalten).
+*   **Ein 1D-Array (Vektor):** `v = np.array([10, 20, 30])`
+    *   `v.shape` ist `(3,)`. Das ist ein Tupel mit nur **einem Element**. Es sagt uns: Das Array hat nur **eine Dimension**, und diese hat die Länge 3.
+
+**2. Der praktische Unterschied: 1D-Array vs. 2D-Spaltenvektor**
+
+Für die meisten Berechnungen ist das 1D-Array `(n,)` am praktischsten. Wenn du aber mathematisch exakt sein willst, brauchst du ein 2D-Array:
+
+*   **1D-Array:** `v = np.array([10, 20, 30])` -> Shape `(3,)` -> Eine "flache" Liste.
+*   **2D-Spaltenvektor:** `v_col = np.array([[10], [20], [30]])` -> Shape `(3, 1)` -> Eine Matrix mit einer Spalte.
+*   **2D-Zeilenvektor:** `v_row = np.array([[10, 20, 30]])` -> Shape `(1, 3)` -> Eine Matrix mit einer Zeile.
+
+Den Unterschied machen die doppelten Klammern `[[]]`, die die zweite Dimension erzeugen.
+
+**3. Die Sonderregel von `@` für 1D-Arrays**
+
+Bei der Multiplikation `A @ v` (Matrix mit Shape `(m, n)` und Vektor mit Shape `(n,)`) weiß `numpy`, dass für die Multiplikation ein Partner mit Shape `(n, 1)` nötig wäre. Es behandelt den 1D-Vektor `v` also vorübergehend so, als wäre er ein Spaltenvektor, und entfernt die zusätzliche Dimension danach wieder. Das Ergebnis ist deshalb praktischerweise wieder ein einfacher 1D-Vektor mit Shape `(m,)`. Steht der 1D-Vektor links (`v @ A`), wird er entsprechend wie ein Zeilenvektor behandelt.
+
+**Fazit:** Du musst nicht ständig mit `reshape()` hantieren, nur um eine Matrix mit einem Vektor zu multiplizieren. `numpy` nimmt dir diese Arbeit ab und macht den Code kürzer und lesbarer.
+
+**4. Broadcasting**
+
+**Broadcasting** ist ein anderer Mechanismus, mit dem `numpy` Arrays mit unterschiedlichen Shapes kompatibel macht. Er greift bei allen elementweisen Operationen (`+`, `-`, `*`, `/`, etc.): Anstatt einen Fehler auszugeben, wenn die Shapes nicht identisch, aber kompatibel sind, "streckt" `numpy` das kleinere Array virtuell, damit die Rechnung aufgeht.
+
+Ein sehr häufiger Anwendungsfall ist die Addition eines Vektors zu jeder Zeile einer Matrix.
+
+Stell dir vor, du hast eine Matrix `A` (zum Beispiel mit Shape `(3, 2)`) und einen Vektor `v` (mit Shape `(2,)`). Du möchtest `v` zu jeder der drei Zeilen von `A` addieren. Statt einer Schleife kannst du einfach `A + v` schreiben.
+
+`numpy` "streckt" oder "sendet" (broadcastet) den Vektor `v` virtuell über alle Zeilen von `A` und führt dann die elementweise Addition durch.
+
+```{pyodide-python}
+#| read-only: true
+# Eine 3x2 Matrix
+A = np.array([[1, 2],
+              [3, 4],
+              [5, 6]])
+
+# Ein Vektor mit 2 Elementen (passt zur Spaltenzahl von A)
+v = np.array([10, 20])
+
+# Dank Broadcasting wird v zu jeder Zeile von A addiert
+result = A + v
+
+print("Matrix A (3x2):\n", A)
+print("\nVektor v (2,):", v)
+print("\nErgebnis A + v (3x2):\n", result)
+```
+
+:::
+
+:::
+
+### 3.3.3. Übung
+
+Rechne zuerst zwei Beispiele von Hand. Das Ergebnis ist jeweils ein Vektor, jede Komponente wird einzeln geprüft:
+
+```{math-exercise}
+#| label: matrix-vektor-hand
+#| caption: Matrix mal Vektor von Hand
+#| partial-credit: true
+$\begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix} \cdot \begin{pmatrix} 1 \\ -1 \end{pmatrix} =$ vec[-1,-1]
+
+$\begin{pmatrix} 2 & 0 & 1 \\ 1 & 3 & -1 \end{pmatrix} \cdot \begin{pmatrix} 1 \\ 2 \\ 3 \end{pmatrix} =$ vec[5,4]
+```
+
+**Aufgabe:** Schreibe eine Funktion `matrix_mal_vektor(B, w)`, die das Produkt der Matrix `B` mit dem Vektor `w` zurückgibt. Versteckte Tests prüfen automatisch, ob deine Lösung stimmt.
+
+**Befehle, die du brauchst:** der Operator `@`, `return`.
+
+```{py-exercise}
+#| label: matrix-vektor-uebung
+#| caption: matrix_mal_vektor implementieren
+#| show-test-hints: false
+import numpy as np
+
+def matrix_mal_vektor(B, w):
+    # Dein Code hier
+    pass
+
+## TESTS ##
+B = np.array([[5, 1], [0, 2], [3, -1]])
+w = np.array([2, 4])
+erg = matrix_mal_vektor(B, w)
+assert np.shape(erg) == (3,), "Das Ergebnis muss ein Vektor mit 3 Elementen sein (Zeilenzahl von B)"
+assert np.array_equal(erg, [14, 8, 2]), "Falsches Ergebnis für B @ w"
+assert np.array_equal(matrix_mal_vektor(np.eye(2), np.array([7, 9])), [7, 9]), "Die Einheitsmatrix darf den Vektor nicht verändern"
+```
+
+::: {.callout-tip title="Tipp" collapse="true"}
+*Gedankengang:* Die Matrix `B` ist `3x2`, der Vektor `w` hat 2 Elemente. Das Ergebnis muss also ein Vektor mit 3 Elementen sein. Mit dem `@`-Operator geht es in einer Zeile.
+:::
+
+::: {.callout-caution title="Lösung" collapse="true"}
+```python
+def matrix_mal_vektor(B, w):
+    return B @ w
+```
+:::
+
+Im nächsten Abschnitt verallgemeinern wir das: Statt eines Vektors multiplizieren wir eine Matrix mit einer ganzen Matrix, also mit mehreren Spalten auf einmal.
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+::: {.callout-note title="Run the cells in order"}
+The code cells on this page build on each other: imports, variables and functions from one cell are also available in all later cells and are not repeated there. So run the cells from top to bottom. If Python reports a `NameError`, you most likely have not run an earlier cell yet.
+:::
+
+Matrix-vector multiplication is the simplest case of multiplication with matrices: a matrix is combined with a vector. In the next section we generalize this to [matrix multiplication](matrizen_multiplikation.qmd).
+
+### 3.3.1. The dimension rule
+
+The multiplication is only defined if the number of columns of the matrix matches the length of the vector (for a row vector from the left: its length matches the number of rows). The result is therefore again a vector of the same kind (column or row vector) as the vector that was multiplied. Its length can change, though: for matrix $\cdot$ column vector it equals the number of rows $m$ of the matrix.
+
+Assume ***matrix*** $\cdot$ **column vector**:  
+
+$$
+(m \times \cancel{n}) \cdot (\cancel{n} \times 1) \rightarrow (m \times 1) = \text{column vector}
+$$
+Alternatively: **row vector** $\cdot$ **matrix**:
+$$
+(1 \times \cancel{n}) \cdot (\cancel{n} \times p) \rightarrow (1 \times p) = \text{row vector}
+$$
+**Example calculation:**
+
+$$
+A \cdot v = \begin{pmatrix} \color{blue}{a_{11}} & \color{blue}{a_{12}} \\ \color{red}{a_{21}} & \color{red}{a_{22}} \end{pmatrix} \cdot \begin{pmatrix} \color{green}{v_1} \\ \color{green}{v_2} \end{pmatrix} = \begin{pmatrix} \color{blue}{a_{11}} \cdot \color{green}{v_1} + \color{blue}{a_{12}} \cdot \color{green}{v_2} \\ \color{red}{a_{21}} \cdot \color{green}{v_1} + \color{red}{a_{22}} \cdot \color{green}{v_2} \end{pmatrix}
+$$
+
+### 3.3.2. Matrix-vector multiplication in NumPy
+
+In NumPy, the `@` operator is used for matrix-vector multiplication (just as for matrix multiplication).
+
+```{pyodide-python}
+#| read-only: true
+import numpy as np
+
+# A 2x3 matrix
+A = np.array([[1, 2, 3],
+              [4, 5, 6]])
+
+# A vector with 3 elements (must match the number of columns of A)
+v = np.array([10, 20, 30])
+
+# The multiplication
+result = A @ v
+
+print("Matrix A (2x3):\n", A)
+print("\nVector v (3,):\n", v)
+print("\nResult A @ v (2,):\n", result)
+print("\nShape of the result:", result.shape)
+```
+
+The result `[140 320]` is a new vector with 2 elements, which corresponds to the number of rows of the matrix `A`.  
+
+:::{.callout-tip title="Why it says only (3,) instead of (3,1)"}
+
+**A short version**
+The difference between `(3,)` and `(3, 1)` in `numpy`
+
+A vector that you create with `np.array([1, 2, 3])` is a **1D array**. Its shape is `(3,)`. It is neither a row nor a column but a flat list.
+A real **column vector**, on the other hand, is a **2D array** with the shape `(3, 1)`, which you create with `np.array([[1], [2], [3]])`.
+
+For the operation `matrix @ vector`, `numpy` is smart: it automatically treats the 1D array like a column vector so that the multiplication works. This is a handy shortcut (a special rule of the `@` operator, see below).
+
+:::{.callout-note title="In more detail + what broadcasting is" collapse="true"}
+
+**1. What exactly does the shape `(3,)` mean?**
+
+The `.shape` attribute of a `numpy` array always returns a **tuple**. The number of elements in this tuple tells you the number of dimensions of the array.
+
+*   **A 2D array (matrix):** `A = np.array([[1, 2], [3, 4], [5, 6]])`
+    *   `A.shape` is `(3, 2)`. That is a tuple with **two elements**. It tells us: the array has **two dimensions** (3 rows, 2 columns).
+*   **A 1D array (vector):** `v = np.array([10, 20, 30])`
+    *   `v.shape` is `(3,)`. That is a tuple with only **one element**. It tells us: the array has only **one dimension**, and it has length 3.
+
+**2. The practical difference: 1D array vs. 2D column vector**
+
+For most calculations, the 1D array `(n,)` is the most practical. But if you want to be mathematically exact, you need a 2D array:
+
+*   **1D array:** `v = np.array([10, 20, 30])` -> shape `(3,)` -> a "flat" list.
+*   **2D column vector:** `v_col = np.array([[10], [20], [30]])` -> shape `(3, 1)` -> a matrix with one column.
+*   **2D row vector:** `v_row = np.array([[10, 20, 30]])` -> shape `(1, 3)` -> a matrix with one row.
+
+The difference is made by the double brackets `[[]]`, which create the second dimension.
+
+**3. The special rule of `@` for 1D arrays**
+
+In the multiplication `A @ v` (matrix with shape `(m, n)` and vector with shape `(n,)`), `numpy` knows that a partner with shape `(n, 1)` would be needed. So it temporarily treats the 1D vector `v` as if it were a column vector and removes the extra dimension again afterwards. That is why the result is conveniently a simple 1D vector with shape `(m,)`. If the 1D vector is on the left (`v @ A`), it is treated like a row vector accordingly.
+
+**Conclusion:** You don't have to fiddle with `reshape()` all the time just to multiply a matrix by a vector. `numpy` does this work for you and makes the code shorter and more readable.
+
+**4. Broadcasting**
+
+**Broadcasting** is a different mechanism with which `numpy` makes arrays with different shapes compatible. It applies to all element-wise operations (`+`, `-`, `*`, `/`, etc.): instead of raising an error when the shapes are not identical but compatible, `numpy` virtually "stretches" the smaller array so that the calculation works out.
+
+A very common use case is adding a vector to every row of a matrix.
+
+Imagine you have a matrix `A` (for example with shape `(3, 2)`) and a vector `v` (with shape `(2,)`). You want to add `v` to each of the three rows of `A`. Instead of a loop, you can simply write `A + v`.
+
+`numpy` "stretches" or "broadcasts" the vector `v` virtually over all rows of `A` and then performs the element-wise addition.
+
+```{pyodide-python}
+#| read-only: true
+# A 3x2 matrix
+A = np.array([[1, 2],
+              [3, 4],
+              [5, 6]])
+
+# A vector with 2 elements (matches the number of columns of A)
+v = np.array([10, 20])
+
+# Thanks to broadcasting, v is added to each row of A
+result = A + v
+
+print("Matrix A (3x2):\n", A)
+print("\nVector v (2,):", v)
+print("\nResult A + v (3x2):\n", result)
+```
+
+:::
+
+:::
+
+### 3.3.3. Exercise
+
+Compute two examples by hand first. The result is a vector each time; each component is checked individually:
+
+```{math-exercise}
+#| label: matrix-vektor-hand-en
+#| caption: Matrix times vector by hand
+#| partial-credit: true
+$\begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix} \cdot \begin{pmatrix} 1 \\ -1 \end{pmatrix} =$ vec[-1,-1]
+
+$\begin{pmatrix} 2 & 0 & 1 \\ 1 & 3 & -1 \end{pmatrix} \cdot \begin{pmatrix} 1 \\ 2 \\ 3 \end{pmatrix} =$ vec[5,4]
+```
+
+**Exercise:** Write a function `matrix_times_vector(B, w)` that returns the product of the matrix `B` and the vector `w`. Hidden tests check your solution automatically.
+
+**Commands you need:** the operator `@`, `return`.
+
+```{py-exercise}
+#| label: matrix-vektor-uebung-en
+#| caption: Implement matrix_times_vector
+#| show-test-hints: false
+import numpy as np
+
+def matrix_times_vector(B, w):
+    # Your code here
+    pass
+
+## TESTS ##
+B = np.array([[5, 1], [0, 2], [3, -1]])
+w = np.array([2, 4])
+res = matrix_times_vector(B, w)
+assert np.shape(res) == (3,), "The result must be a vector with 3 elements (number of rows of B)"
+assert np.array_equal(res, [14, 8, 2]), "Wrong result for B @ w"
+assert np.array_equal(matrix_times_vector(np.eye(2), np.array([7, 9])), [7, 9]), "The identity matrix must not change the vector"
+```
+
+::: {.callout-tip title="Hint" collapse="true"}
+*Line of thought:* The matrix `B` is `3x2`, the vector `w` has 2 elements. So the result must be a vector with 3 elements. With the `@` operator it takes one line.
+:::
+
+::: {.callout-caution title="Solution" collapse="true"}
+```python
+def matrix_times_vector(B, w):
+    return B @ w
+```
+:::
+
+In the next section we generalize this: instead of a single vector, we multiply a matrix by a whole matrix, i.e. by several columns at once.
+
+::::

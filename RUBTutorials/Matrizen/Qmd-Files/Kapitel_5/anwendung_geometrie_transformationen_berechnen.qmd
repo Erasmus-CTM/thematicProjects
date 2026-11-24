@@ -1,0 +1,825 @@
+---
+title: 5.2. Berechnung geometrischer Transformationen mit Python
+title-en: "5.2. Computing Geometric Transformations with Python"
+format: html
+filters:
+  - ctm-assessment
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+# 5.2.1. Geometrische Veränderung mit Python berechnen
+
+::: {.callout-note title="Zellen der Reihe nach ausführen"}
+Die Code-Zellen dieser Seite bauen aufeinander auf: Importe, Variablen und Funktionen aus einer Zelle gelten auch in allen späteren Zellen und werden dort nicht wiederholt. Führe die Zellen deshalb von oben nach unten aus. Bei Reitern gilt dieselbe Reihenfolge von links nach rechts. Meldet Python einen `NameError`, hast du meist eine frühere Zelle noch nicht ausgeführt. Aufgaben mit **Überprüfen** laufen für sich allein: Dort gilt nur, was in der Zelle selbst steht.
+:::
+
+Es sollte nun mindestens grundlegend klar sein, welche Arten der Transformation im 2- oder 3- Dimensionalen möglich sind. In diesem Unterkapitel soll es darum gehen, die **rechnerische Automatisierung** dieser Transformationen mit Python anzugehen.
+
+:::{.panel-tabset}
+
+## Skalierung 2D
+```{pyodide-python}
+import numpy as np
+import matplotlib.pyplot as plt
+
+A = np.array([
+    [1, 1],
+    [3, 1],
+    [2, 3]
+])
+
+def skalierung_2d(matrix, s_2d_x, s_2d_y):
+    skalierungsmatrix = np.array([
+        [s_2d_x, 0],
+        [0, s_2d_y]
+    ])
+    return matrix @ skalierungsmatrix
+
+skalierte_matrix = skalierung_2d(A, 2, 0.5)
+print("Originale Punkte:\n", A)
+print("\nSkalierte Punkte:\n", skalierte_matrix)
+```
+<details>
+<summary> Kurze Code Erklärung </summary>
+
+* Zuerst wird eine Matrix wie gewohnt definiert, welche unsere Form darstellt durch die einzelnen Punktkoordinaten
+* Danach wird eine Funktion definiert, in der zuerst die passende Matrix ausgewählt werden kann, die man skalieren will (es kann ja mehr als eine definiert sein) und dann die Skalierung in Richtung X- und Y-Achse bestimmt wird.
+* Zuletzt wird die Funktion ausgeführt und ausgegeben.
+</details>
+
+## Verschiebung in 2D
+```{pyodide-python}
+def verschiebung_2d(matrix, v_x, v_y):
+    verschiebungsvektor = np.array([v_x, v_y])
+    return matrix + verschiebungsvektor
+
+verschobene_matrix = verschiebung_2d(A, 3, 5)
+print("Originale Punkte:\n", A)
+print("\nVerschobene Punkte:\n", verschobene_matrix)
+```
+<details>
+<summary> Kurze Code Erklärung </summary>
+
+*   Anders als bei den anderen Transformationen wird hier **keine Matrixmultiplikation**, sondern eine **Vektoraddition** verwendet.
+*   Die Funktion `verschiebung_2d` nimmt die Punkte und die Verschiebungswerte für x und y entgegen.
+*   Der Verschiebungsvektor wird zu jeder Zeile (also zu jedem Punkt) der Matrix `A` addiert. NumPy führt dies dank "Broadcasting" automatisch korrekt aus.
+</details>
+
+## Rotation in 2D
+```{pyodide-python}
+def rotation_2d(matrix, winkel_grad):
+    # Umrechnung von Grad in Radiant, da np.cos/sin Radiant erwarten
+    winkel_rad = np.radians(winkel_grad)
+    c, s = np.cos(winkel_rad), np.sin(winkel_rad)
+    rotationsmatrix = np.array([
+        [c, -s],
+        [s,  c]
+    ])
+    # Wichtig: Die Rotationsmatrix wird von links angewendet
+    return (rotationsmatrix @ matrix.T).T
+
+rotierte_matrix = rotation_2d(A, 90)
+print("Originale Punkte:\n", A)
+print("\nUm 90 Grad rotierte Punkte:\n", rotierte_matrix)
+```
+<details>
+<summary> Kurze Code Erklärung </summary>
+
+*   Die Funktion `rotation_2d` nimmt einen Winkel in Grad entgegen und rechnet ihn in Radiant um, da die trigonometrischen Funktionen in NumPy dies erwarten.
+*   Sie erstellt die 2D-Rotationsmatrix.
+*   **Wichtig:** Bei der Multiplikation muss die Transformationsmatrix von links an die Punktvektoren multipliziert werden ($P' = M \cdot P$). Da unsere Punkte als Zeilen in der Matrix `A` stehen, müssen wir `A` zuerst transponieren (`A.T`), die Multiplikation durchführen und das Ergebnis zurück transponieren (`.T`). Gleichwertig und kürzer ist `A @ M.T`.
+</details>
+
+## Spiegelung in 2D
+```{pyodide-python}
+def spiegelung_2d_y_achse(matrix):
+    spiegelungsmatrix = np.array([
+        [-1, 0],
+        [0, 1]
+    ])
+    return matrix @ spiegelungsmatrix
+
+gespiegelte_matrix = spiegelung_2d_y_achse(A)
+print("Originale Punkte:\n", A)
+print("\nAn der y-Achse gespiegelte Punkte:\n", gespiegelte_matrix)
+```
+<details>
+<summary> Kurze Code Erklärung </summary>
+
+*   Die Funktion `spiegelung_2d_y_achse` erstellt die entsprechende Spiegelungsmatrix.
+*   Diese wird von rechts an die Punktmatrix `A` multipliziert (`A @ M`), um die x-Koordinaten aller Punkte zu negieren.
+*   Eigentlich müsste es wie bei der Rotation `A @ M.T` heißen. Weil Spiegelungs- und Skalierungsmatrizen hier symmetrisch sind ($M^T = M$), ist das dasselbe wie `A @ M`. Bei einer Rotationsmatrix gilt das **nicht**: `A @ R` würde in die Gegenrichtung drehen.
+
+</details>
+
+:::
+
+
+## Übungsaufgaben zum Vertiefen
+
+Jetzt bist du an der Reihe! Die folgenden Aufgaben sollen dir helfen, die Konzepte nicht nur zu wiederholen, sondern wirklich zu verinnerlichen. Versuche, sie selbstständig zu lösen. Die Lösungen findest du am Ende dieser Seite in einem ausklappbaren Block. Die Aufgaben 1 bis 4 werden beim Klick auf **Überprüfen** automatisch getestet (Aufgabe 4 ist ein Bonus mit Lückencode).
+
+:::{.panel-tabset}
+
+
+## A 1: Von 2D zu 3D (Sk.&V.)
+
+Für diese Aufgabe brauchst du eine 3D-Matrix. Hier sei als Beispiel `A_3d` gegeben, die kann aber beliebig geändert werden.
+
+a) Schreibe eine Funktion `skalierung_3d(matrix, s_x, s_y, s_z)`, die eine 3D-Matrix skaliert. Teste sie mit den Faktoren `(2, 0.5, 1.5)`.
+b) Schreibe eine Funktion `verschiebung_3d(matrix, v_x, v_y, v_z)`, die eine 3D-Matrix verschiebt. Teste sie mit dem Vektor `(-1, 2, -3)`.
+
+**Befehle, die du brauchst:** `def` / `return`, `np.array()`, der Operator `@` (Skalierung) und `+` (Verschiebung).
+
+```{py-exercise}
+#| label: geometrie-a1
+#| caption: Skalierung und Verschiebung in 3D
+#| show-test-hints: false
+import numpy as np
+A_3d = np.array([
+    [1, 1, 1],
+    [3, 1, 2],
+    [2, 3, 1]
+])
+
+def skalierung_3d(matrix, s_x, s_y, s_z):
+    # Dein Code hier
+    pass
+
+def verschiebung_3d(matrix, v_x, v_y, v_z):
+    # Dein Code hier
+    pass
+
+## TESTS ##
+assert skalierung_3d(A_3d, 1, 1, 1) is not None, "skalierung_3d gibt noch nichts zurück (return vergessen?)"
+assert np.allclose(skalierung_3d(A_3d, 2, 0.5, 1.5), [[2, 0.5, 1.5], [6, 0.5, 3], [4, 1.5, 1.5]]), "Jede Spalte (x, y, z) wird mit dem zugehörigen Faktor multipliziert"
+assert verschiebung_3d(A_3d, 0, 0, 0) is not None, "verschiebung_3d gibt noch nichts zurück"
+assert np.allclose(verschiebung_3d(A_3d, -1, 2, -3), [[0, 3, -2], [2, 3, -1], [1, 5, -2]]), "Der Verschiebungsvektor wird zu jedem Punkt (jeder Zeile) addiert"
+```
+
+*(Tipp: Schau dir die 2D-Implementierungen und die 3D-Transformationsmatrizen vom Anfang der Seite an.)*
+
+## A 2: Kombinationen (2D)
+
+Ein Objekt soll zuerst um 45 Grad gedreht und *danach* um den Vektor $\begin{pmatrix} 5 \\ 2 \end{pmatrix}$ verschoben werden.
+
+a) Schreibe eine Python-Funktion `rotiere_dann_verschiebe(matrix, winkel_grad, v_x, v_y)`, die genau diese Abfolge von Transformationen auf eine 2D-Punktmatrix anwendet.
+b) Die Matrix `A` aus dem Reiter „Skalierung 2D“ ist in der Aufgabenzelle bereits angelegt. Probiere deine Funktion auch mit eigenen Werten aus (zum Beispiel mit `print(...)` unter der Funktion).
+c) **Bonus-Frage:** Macht es einen Unterschied, ob man zuerst rotiert und dann verschiebt, oder zuerst verschiebt und dann rotiert? Probiere es in der Zelle aus (schreibe dafür eine zweite Funktion mit vertauschter Reihenfolge) und begründe das Ergebnis.
+
+**Befehle, die du brauchst:** `def` / `return`, `np.radians()`, `np.cos()`, `np.sin()`, `np.array()`, der Operator `@`, `.T`, `+`.
+
+```{py-exercise}
+#| label: geometrie-a2
+#| caption: Erst rotieren, dann verschieben
+#| show-test-hints: false
+import numpy as np
+A = np.array([
+    [1, 1],
+    [3, 1],
+    [2, 3]
+])
+
+def rotiere_dann_verschiebe(matrix, winkel_grad, v_x, v_y):
+    # Dein Code hier
+    pass
+
+## TESTS ##
+assert rotiere_dann_verschiebe(A, 0, 0, 0) is not None, "rotiere_dann_verschiebe gibt noch nichts zurück (return vergessen?)"
+assert np.allclose(rotiere_dann_verschiebe(A, 0, 5, 2), A + np.array([5, 2])), "Ohne Drehung (0°) bleibt nur die Verschiebung"
+assert np.allclose(rotiere_dann_verschiebe(A, 90, 0, 0), [[-1, 1], [-1, 3], [-3, 2]]), "Bei 90° wird aus (x, y) der Punkt (-y, x)"
+assert np.allclose(rotiere_dann_verschiebe(A, 90, 5, 2), [[4, 3], [4, 5], [2, 4]]), "Erst drehen, danach (!) um (5, 2) verschieben"
+```
+
+
+## A 3: Von 2D zu 3D (R&Sp)
+
+Jetzt die anspruchsvolleren 3D-Transformationen.
+
+a) Schreibe eine Funktion `rotation_3d_z_achse(matrix, winkel_grad)`, die eine 3D-Matrix um die z-Achse dreht. Teste sie mit einem Winkel von 90 Grad auf `A_3d`.
+b) Schreibe eine Funktion `spiegelung_3d_yz_ebene(matrix)`, die eine 3D-Matrix an der y-z-Ebene spiegelt.
+
+**Befehle, die du brauchst:** `return`, `np.radians()`, `np.cos()`, `np.sin()`, `np.array()`, der Operator `@`, `.T`.
+
+```{py-exercise}
+#| label: geometrie-a3
+#| caption: Rotation und Spiegelung in 3D
+#| show-test-hints: false
+import numpy as np
+A_3d = np.array([
+    [1, 1, 1],
+    [3, 1, 2],
+    [2, 3, 1]
+])
+
+def rotation_3d_z_achse(matrix, winkel_grad):
+    # Dein Code hier
+    pass
+
+def spiegelung_3d_yz_ebene(matrix):
+    # Dein Code hier
+    pass
+
+print(rotation_3d_z_achse(A_3d, 90))
+print(spiegelung_3d_yz_ebene(A_3d))
+
+## TESTS ##
+assert rotation_3d_z_achse(A_3d, 90) is not None, "rotation_3d_z_achse gibt noch nichts zurück (return vergessen?)"
+assert np.allclose(rotation_3d_z_achse(A_3d, 90), [[-1, 1, 1], [-1, 3, 2], [-3, 2, 1]]), "Bei 90° wird aus (x, y, z) der Punkt (-y, x, z). Achte auf die Reihenfolge der Multiplikation."
+assert np.allclose(rotation_3d_z_achse(A_3d, 360), A_3d), "Eine Drehung um 360° sollte wieder die Ausgangspunkte ergeben"
+assert np.allclose(rotation_3d_z_achse(A_3d, 30)[:, 2], A_3d[:, 2]), "Bei einer Drehung um die z-Achse bleibt die z-Koordinate gleich"
+assert spiegelung_3d_yz_ebene(A_3d) is not None, "spiegelung_3d_yz_ebene gibt noch nichts zurück"
+assert np.allclose(spiegelung_3d_yz_ebene(A_3d), [[-1, 1, 1], [-3, 1, 2], [-2, 3, 1]]), "An der y-z-Ebene wird nur das Vorzeichen der x-Koordinate umgedreht"
+```
+
+*(Tipp: Achte bei der Rotation wieder auf die korrekte Multiplikationsreihenfolge, wie im 2D-Beispiel.)*
+
+## A 4: Rotation um bel. Punkt (Bonus)
+
+Die `rotation_2d`-Funktion dreht immer um den Ursprung (0,0). Wie kann man ein Objekt um seinen eigenen Mittelpunkt drehen?
+
+Der Trick besteht aus drei Schritten:
+
+1.  **Verschiebe** das Objekt so, dass sein Rotationszentrum im Ursprung liegt.
+2.  **Rotiere** das Objekt.
+3.  **Verschiebe** das Objekt wieder zurück an seine ursprüngliche Position.
+
+a) Der Mittelpunkt (Schwerpunkt) unseres Dreiecks `A` liegt bei $(2, \tfrac{5}{3}) \approx (2;\, 1{,}67)$. Schreibe eine Funktion, die `A` um 90 Grad um diesen Punkt dreht.
+
+**Befehle, die du brauchst:** `def` / `return`, `np.radians()`, `np.cos()`, `np.sin()`, `np.array()`, die Operatoren `-`, `@`, `+`, `.T`.
+
+```{py-exercise}
+#| label: geometrie-a4
+#| caption: Rotation um einen beliebigen Punkt (Bonus)
+#| show-test-hints: false
+import numpy as np
+A = np.array([
+    [1, 1],
+    [3, 1],
+    [2, 3]
+])
+mittelpunkt = A.mean(axis=0)  # Schwerpunkt = Mittelwert der Eckpunkte
+
+def rotiere_um_punkt(matrix, winkel_grad, rotations_punkt):
+    # 1. Verschiebe zum Ursprung
+    matrix_zum_ursprung = None  # TODO: rotations_punkt abziehen
+
+    # 2. Rotiere
+    winkel_rad = np.radians(winkel_grad)
+    c, s = np.cos(winkel_rad), np.sin(winkel_rad)
+    rotationsmatrix = np.array([[c, -s], [s, c]])
+    rotierte_matrix = None  # TODO: Rotationsmatrix auf die Punkte anwenden
+
+    # 3. Verschiebe zurück
+    return None  # TODO: rotations_punkt wieder addieren
+
+## TESTS ##
+punkte = np.array([[2, 0], [3, 0]])
+assert rotiere_um_punkt(punkte, 90, np.array([2, 0])) is not None, "rotiere_um_punkt gibt noch keine Matrix zurück"
+assert np.allclose(rotiere_um_punkt(punkte, 90, np.array([2, 0])), [[2, 0], [2, 1]]), "Der Punkt (3, 0) wird bei 90° um (2, 0) zu (2, 1), der Drehpunkt selbst bleibt fest"
+assert np.allclose(rotiere_um_punkt(A, 360, mittelpunkt), A), "Eine volle Drehung ergibt wieder die Ausgangspunkte"
+assert np.allclose(rotiere_um_punkt(A, 90, mittelpunkt).mean(axis=0), mittelpunkt), "Der Schwerpunkt bleibt bei der Drehung um sich selbst an Ort und Stelle"
+```
+
+:::
+
+:::{.callout-note title="Mögliche Lösungen zu den Übungsaufgaben" collapse="true"}
+
+#### Lösung zu Aufgabe 1
+
+```{pyodide-python}
+# a) Skalierung 3D
+A_3d = np.array([
+    [1, 1, 1],
+    [3, 1, 2],
+    [2, 3, 1]
+])
+
+def skalierung_3d(matrix, s_x, s_y, s_z):
+    skalierungsmatrix = np.array([
+        [s_x, 0, 0],
+        [0, s_y, 0],
+        [0, 0, s_z]
+    ])
+    return matrix @ skalierungsmatrix
+
+print("Skalierung 3D:\n", skalierung_3d(A_3d, 2, 0.5, 1.5))
+
+# b) Verschiebung 3D
+def verschiebung_3d(matrix, v_x, v_y, v_z):
+    verschiebungsvektor = np.array([v_x, v_y, v_z])
+    return matrix + verschiebungsvektor
+
+print("\nVerschiebung 3D:\n", verschiebung_3d(A_3d, -1, 2, -3))
+```
+
+#### Lösung zu Aufgabe 2
+
+```{pyodide-python}
+# a) und b)
+def rotiere_dann_verschiebe(matrix, winkel_grad, v_x, v_y):
+    # Schritt 1: Rotieren
+    winkel_rad = np.radians(winkel_grad)
+    c, s = np.cos(winkel_rad), np.sin(winkel_rad)
+    rotationsmatrix = np.array([[c, -s], [s, c]])
+    rotierte_matrix = (rotationsmatrix @ matrix.T).T
+    
+    # Schritt 2: Verschieben
+    verschiebungsvektor = np.array([v_x, v_y])
+    finale_matrix = rotierte_matrix + verschiebungsvektor
+    
+    return finale_matrix
+
+print("Rotiert und dann verschoben:\n", rotiere_dann_verschiebe(A, 45, 5, 2))
+
+# c) Bonus: Andere Reihenfolge
+def verschiebe_dann_rotiere(matrix, winkel_grad, v_x, v_y):
+    # Schritt 1: Verschieben
+    verschiebungsvektor = np.array([v_x, v_y])
+    verschobene_matrix = matrix + verschiebungsvektor
+
+    # Schritt 2: Rotieren
+    winkel_rad = np.radians(winkel_grad)
+    c, s = np.cos(winkel_rad), np.sin(winkel_rad)
+    rotationsmatrix = np.array([[c, -s], [s, c]])
+    finale_matrix = (rotationsmatrix @ verschobene_matrix.T).T
+    
+    return finale_matrix
+
+print("\nVerschoben und dann rotiert:\n", verschiebe_dann_rotiere(A, 45, 5, 2))
+# Das Ergebnis ist unterschiedlich! Die Reihenfolge ist nicht kommutativ.
+```
+
+#### Lösung zu Aufgabe 3
+
+Diese Lösung ist vollständig, du kannst sie so in die Zelle mit **Überprüfen** einsetzen.
+
+```{pyodide-python}
+import numpy as np
+A_3d = np.array([
+    [1, 1, 1],
+    [3, 1, 2],
+    [2, 3, 1]
+])
+
+# a) Rotation 3D um z-Achse
+def rotation_3d_z_achse(matrix, winkel_grad):
+    winkel_rad = np.radians(winkel_grad)
+    c, s = np.cos(winkel_rad), np.sin(winkel_rad)
+    rotationsmatrix = np.array([
+        [c, -s, 0],
+        [s,  c, 0],
+        [0,  0, 1]
+    ])
+    return (rotationsmatrix @ matrix.T).T
+
+print("Rotation 3D um z-Achse:\n", rotation_3d_z_achse(A_3d, 90))
+
+# b) Spiegelung an y-z-Ebene
+def spiegelung_3d_yz_ebene(matrix):
+    spiegelungsmatrix = np.array([
+        [-1, 0, 0],
+        [0, 1, 0],
+        [0, 0, 1]
+    ])
+    return matrix @ spiegelungsmatrix
+
+print("\nSpiegelung an y-z-Ebene:\n", spiegelung_3d_yz_ebene(A_3d))
+```
+
+#### Lösung zu Aufgabe 4
+
+```{pyodide-python}
+mittelpunkt = A.mean(axis=0)  # (2, 5/3)
+
+def rotiere_um_punkt(matrix, winkel_grad, rotations_punkt):
+    # 1. Verschiebe zum Ursprung
+    matrix_zum_ursprung = matrix - rotations_punkt
+    
+    # 2. Rotiere
+    winkel_rad = np.radians(winkel_grad)
+    c, s = np.cos(winkel_rad), np.sin(winkel_rad)
+    rotationsmatrix = np.array([[c, -s], [s, c]])
+    rotierte_matrix = (rotationsmatrix @ matrix_zum_ursprung.T).T
+    
+    # 3. Verschiebe zurück
+    finale_matrix = rotierte_matrix + rotations_punkt
+    
+    return finale_matrix
+
+print("Rotation um Mittelpunkt:\n", rotiere_um_punkt(A, 90, mittelpunkt))
+```
+
+:::
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+# 5.2.1. Computing geometric changes with Python {#geometrische-veränderung-mit-python-berechnen}
+
+::: {.callout-note title="Run the cells in order"}
+The code cells on this page build on each other: imports, variables and functions from one cell are also available in all later cells and are not repeated there. So run the cells from top to bottom. For tabs, the same order applies from left to right. If Python reports a `NameError`, you most likely have not run an earlier cell yet. Exercises with **Check** run on their own: only what is written in the cell itself counts there.
+:::
+
+By now it should be clear, at least in principle, which kinds of transformation are possible in 2 or 3 dimensions. This subchapter is about the **computational automation** of these transformations with Python.
+
+:::{.panel-tabset}
+
+## Scaling 2D
+```{pyodide-python}
+import numpy as np
+import matplotlib.pyplot as plt
+
+A = np.array([
+    [1, 1],
+    [3, 1],
+    [2, 3]
+])
+
+def scaling_2d(matrix, s_2d_x, s_2d_y):
+    scaling_matrix = np.array([
+        [s_2d_x, 0],
+        [0, s_2d_y]
+    ])
+    return matrix @ scaling_matrix
+
+scaled_matrix = scaling_2d(A, 2, 0.5)
+print("Original points:\n", A)
+print("\nScaled points:\n", scaled_matrix)
+```
+<details>
+<summary> Short code explanation </summary>
+
+* First, a matrix is defined as usual; it represents our shape through the individual point coordinates.
+* Then a function is defined in which you first pass the matrix you want to scale (there may be more than one defined) and then set the scaling in the x and y directions.
+* Finally, the function is called and the result is printed.
+</details>
+
+## Translation in 2D
+```{pyodide-python}
+def translation_2d(matrix, v_x, v_y):
+    translation_vector = np.array([v_x, v_y])
+    return matrix + translation_vector
+
+shifted_matrix = translation_2d(A, 3, 5)
+print("Original points:\n", A)
+print("\nShifted points:\n", shifted_matrix)
+```
+<details>
+<summary> Short code explanation </summary>
+
+*   Unlike the other transformations, **no matrix multiplication** is used here, but a **vector addition**.
+*   The function `translation_2d` takes the points and the translation values for x and y.
+*   The translation vector is added to every row (i.e. every point) of the matrix `A`. Thanks to "broadcasting", NumPy does this correctly and automatically.
+</details>
+
+## Rotation in 2D
+```{pyodide-python}
+def rotation_2d(matrix, angle_deg):
+    # Convert degrees to radians, since np.cos/sin expect radians
+    angle_rad = np.radians(angle_deg)
+    c, s = np.cos(angle_rad), np.sin(angle_rad)
+    rotation_matrix = np.array([
+        [c, -s],
+        [s,  c]
+    ])
+    # Important: the rotation matrix is applied from the left
+    return (rotation_matrix @ matrix.T).T
+
+rotated_matrix = rotation_2d(A, 90)
+print("Original points:\n", A)
+print("\nPoints rotated by 90 degrees:\n", rotated_matrix)
+```
+<details>
+<summary> Short code explanation </summary>
+
+*   The function `rotation_2d` takes an angle in degrees and converts it to radians, since the trigonometric functions in NumPy expect that.
+*   It creates the 2D rotation matrix.
+*   **Important:** In the multiplication, the transformation matrix must be multiplied onto the point vectors from the left ($P' = M \cdot P$). Since our points are the rows of the matrix `A`, we first have to transpose `A` (`A.T`), carry out the multiplication and transpose the result back (`.T`).
+</details>
+
+## Reflection in 2D
+```{pyodide-python}
+def reflection_2d_y_axis(matrix):
+    reflection_matrix = np.array([
+        [-1, 0],
+        [0, 1]
+    ])
+    return matrix @ reflection_matrix
+
+reflected_matrix = reflection_2d_y_axis(A)
+print("Original points:\n", A)
+print("\nPoints reflected across the y-axis:\n", reflected_matrix)
+```
+<details>
+<summary> Short code explanation </summary>
+
+*   The function `reflection_2d_y_axis` creates the corresponding reflection matrix.
+*   It is multiplied onto the point matrix `A` from the right (`A @ M`) to negate the x-coordinates of all points.
+*   Strictly speaking, as with the rotation, it would have to be `A @ M.T`. Because the reflection and scaling matrices here are symmetric ($M^T = M$), this is the same as `A @ M`. For a rotation matrix this does **not** hold: `A @ R` would rotate in the opposite direction.
+
+</details>
+
+:::
+
+
+## Exercises for deeper understanding {#übungsaufgaben-zum-vertiefen}
+
+Now it's your turn! The following exercises should help you not only to review the concepts but to really internalize them. Try to solve them on your own. You will find the solutions at the end of this page in a collapsible block. Exercises 1 to 4 are tested automatically when you click **Check** (exercise 4 is a bonus with gap code).
+
+:::{.panel-tabset}
+
+## E 1: From 2D to 3D (sc.&tr.)
+
+For this exercise you need a 3D matrix. `A_3d` is given here as an example, but you can change it as you like.
+
+a) Write a function `scaling_3d(matrix, s_x, s_y, s_z)` that scales a 3D matrix. Test it with the factors `(2, 0.5, 1.5)`.
+b) Write a function `translation_3d(matrix, v_x, v_y, v_z)` that shifts a 3D matrix. Test it with the vector `(-1, 2, -3)`.
+
+**Commands you need:** `def` / `return`, `np.array()`, the operator `@` (scaling) and `+` (translation).
+
+```{py-exercise}
+#| label: geometrie-a1-en
+#| caption: Scaling and translation in 3D
+#| show-test-hints: false
+import numpy as np
+A_3d = np.array([
+    [1, 1, 1],
+    [3, 1, 2],
+    [2, 3, 1]
+])
+
+def scaling_3d(matrix, s_x, s_y, s_z):
+    # Your code here
+    pass
+
+def translation_3d(matrix, v_x, v_y, v_z):
+    # Your code here
+    pass
+
+## TESTS ##
+assert scaling_3d(A_3d, 1, 1, 1) is not None, "scaling_3d does not return anything yet (forgot return?)"
+assert np.allclose(scaling_3d(A_3d, 2, 0.5, 1.5), [[2, 0.5, 1.5], [6, 0.5, 3], [4, 1.5, 1.5]]), "Each column (x, y, z) is multiplied by the matching factor"
+assert translation_3d(A_3d, 0, 0, 0) is not None, "translation_3d does not return anything yet"
+assert np.allclose(translation_3d(A_3d, -1, 2, -3), [[0, 3, -2], [2, 3, -1], [1, 5, -2]]), "The translation vector is added to every point (every row)"
+```
+
+*(Tip: look at the 2D implementations and the 3D transformation matrices at the beginning of the page.)*
+
+## E 2: Combinations (2D)
+
+An object is to be rotated by 45 degrees first and shifted by the vector $\begin{pmatrix} 5 \\ 2 \end{pmatrix}$ *afterwards*.
+
+a) Write a Python function `rotate_then_shift(matrix, angle_deg, v_x, v_y)` that applies exactly this sequence of transformations to a 2D point matrix.
+b) The matrix `A` from the "Scaling 2D" tab is already defined in the exercise cell. Also try your function with your own values (for example with `print(...)` below the function).
+c) **Bonus question:** Does it make a difference whether you rotate first and then shift, or shift first and then rotate? Try it in the cell (write a second function with the order swapped) and explain the result.
+
+**Commands you need:** `def` / `return`, `np.radians()`, `np.cos()`, `np.sin()`, `np.array()`, the operator `@`, `.T`, `+`.
+
+```{py-exercise}
+#| label: geometrie-a2-en
+#| caption: Rotate first, then shift
+#| show-test-hints: false
+import numpy as np
+A = np.array([
+    [1, 1],
+    [3, 1],
+    [2, 3]
+])
+
+def rotate_then_shift(matrix, angle_deg, v_x, v_y):
+    # Your code here
+    pass
+
+## TESTS ##
+assert rotate_then_shift(A, 0, 0, 0) is not None, "rotate_then_shift does not return anything yet (forgot return?)"
+assert np.allclose(rotate_then_shift(A, 0, 5, 2), A + np.array([5, 2])), "Without rotation (0°) only the shift remains"
+assert np.allclose(rotate_then_shift(A, 90, 0, 0), [[-1, 1], [-1, 3], [-3, 2]]), "At 90°, the point (x, y) becomes (-y, x)"
+assert np.allclose(rotate_then_shift(A, 90, 5, 2), [[4, 3], [4, 5], [2, 4]]), "Rotate first, then (!) shift by (5, 2)"
+```
+
+
+## E 3: From 2D to 3D (rot.&refl.)
+
+Now the more demanding 3D transformations.
+
+a) Write a function `rotation_3d_z_axis(matrix, angle_deg)` that rotates a 3D matrix about the z-axis. Test it with an angle of 90 degrees on `A_3d`.
+b) Write a function `reflection_3d_yz_plane(matrix)` that reflects a 3D matrix across the y-z plane.
+
+**Commands you need:** `return`, `np.radians()`, `np.cos()`, `np.sin()`, `np.array()`, the operator `@`, `.T`.
+
+```{py-exercise}
+#| label: geometrie-a3-en
+#| caption: Rotation and reflection in 3D
+#| show-test-hints: false
+import numpy as np
+A_3d = np.array([
+    [1, 1, 1],
+    [3, 1, 2],
+    [2, 3, 1]
+])
+
+def rotation_3d_z_axis(matrix, angle_deg):
+    # Your code here
+    pass
+
+def reflection_3d_yz_plane(matrix):
+    # Your code here
+    pass
+
+print(rotation_3d_z_axis(A_3d, 90))
+print(reflection_3d_yz_plane(A_3d))
+
+## TESTS ##
+assert rotation_3d_z_axis(A_3d, 90) is not None, "rotation_3d_z_axis does not return anything yet (forgot return?)"
+assert np.allclose(rotation_3d_z_axis(A_3d, 90), [[-1, 1, 1], [-1, 3, 2], [-3, 2, 1]]), "At 90°, the point (x, y, z) becomes (-y, x, z). Watch the order of the multiplication."
+assert np.allclose(rotation_3d_z_axis(A_3d, 360), A_3d), "A rotation by 360° should give the original points again"
+assert np.allclose(rotation_3d_z_axis(A_3d, 30)[:, 2], A_3d[:, 2]), "In a rotation about the z-axis, the z-coordinate stays the same"
+assert reflection_3d_yz_plane(A_3d) is not None, "reflection_3d_yz_plane does not return anything yet"
+assert np.allclose(reflection_3d_yz_plane(A_3d), [[-1, 1, 1], [-3, 1, 2], [-2, 3, 1]]), "Across the y-z plane only the sign of the x-coordinate is flipped"
+```
+
+*(Tip: for the rotation, again pay attention to the correct order of multiplication, as in the 2D example.)*
+
+## E 4: Rotation about any point (bonus)
+
+The `rotation_2d` function always rotates about the origin (0,0). How can you rotate an object about its own center?
+
+The trick consists of three steps:
+
+1.  **Shift** the object so that its center of rotation lies at the origin.
+2.  **Rotate** the object.
+3.  **Shift** the object back to its original position.
+
+a) The center (centroid) of our triangle `A` is at $(2, \tfrac{5}{3}) \approx (2, 1.67)$. Write a function that rotates `A` by 90 degrees about this point.
+
+**Commands you need:** `def` / `return`, `np.radians()`, `np.cos()`, `np.sin()`, `np.array()`, the operators `-`, `@`, `+`, `.T`.
+
+```{py-exercise}
+#| label: geometrie-a4-en
+#| caption: Rotation about any point (bonus)
+#| show-test-hints: false
+import numpy as np
+A = np.array([
+    [1, 1],
+    [3, 1],
+    [2, 3]
+])
+center = A.mean(axis=0)  # centroid = mean of the vertices
+
+def rotate_about_point(matrix, angle_deg, rotation_point):
+    # 1. Shift to the origin
+    matrix_at_origin = None  # TODO: subtract rotation_point
+
+    # 2. Rotate
+    angle_rad = np.radians(angle_deg)
+    c, s = np.cos(angle_rad), np.sin(angle_rad)
+    rotation_matrix = np.array([[c, -s], [s, c]])
+    rotated_matrix = None  # TODO: apply the rotation matrix to the points
+
+    # 3. Shift back
+    return None  # TODO: add rotation_point again
+
+## TESTS ##
+points = np.array([[2, 0], [3, 0]])
+assert rotate_about_point(points, 90, np.array([2, 0])) is not None, "rotate_about_point does not return a matrix yet"
+assert np.allclose(rotate_about_point(points, 90, np.array([2, 0])), [[2, 0], [2, 1]]), "The point (3, 0) becomes (2, 1) at 90° about (2, 0), the center itself stays fixed"
+assert np.allclose(rotate_about_point(A, 360, center), A), "A full rotation gives the original points again"
+assert np.allclose(rotate_about_point(A, 90, center).mean(axis=0), center), "The centroid stays in place when rotating about itself"
+```
+
+:::
+
+:::{.callout-note title="Possible solutions to the exercises" collapse="true"}
+
+#### Solution to exercise 1
+
+```{pyodide-python}
+# a) Scaling 3D
+A_3d = np.array([
+    [1, 1, 1],
+    [3, 1, 2],
+    [2, 3, 1]
+])
+
+def scaling_3d(matrix, s_x, s_y, s_z):
+    scaling_matrix = np.array([
+        [s_x, 0, 0],
+        [0, s_y, 0],
+        [0, 0, s_z]
+    ])
+    return matrix @ scaling_matrix
+
+print("Scaling 3D:\n", scaling_3d(A_3d, 2, 0.5, 1.5))
+
+# b) Translation 3D
+def translation_3d(matrix, v_x, v_y, v_z):
+    translation_vector = np.array([v_x, v_y, v_z])
+    return matrix + translation_vector
+
+print("\nTranslation 3D:\n", translation_3d(A_3d, -1, 2, -3))
+```
+
+#### Solution to exercise 2
+
+```{pyodide-python}
+# a) and b)
+def rotate_then_shift(matrix, angle_deg, v_x, v_y):
+    # Step 1: rotate
+    angle_rad = np.radians(angle_deg)
+    c, s = np.cos(angle_rad), np.sin(angle_rad)
+    rotation_matrix = np.array([[c, -s], [s, c]])
+    rotated_matrix = (rotation_matrix @ matrix.T).T
+    
+    # Step 2: shift
+    translation_vector = np.array([v_x, v_y])
+    final_matrix = rotated_matrix + translation_vector
+    
+    return final_matrix
+
+print("Rotated, then shifted:\n", rotate_then_shift(A, 45, 5, 2))
+
+# c) Bonus: the other order
+def shift_then_rotate(matrix, angle_deg, v_x, v_y):
+    # Step 1: shift
+    translation_vector = np.array([v_x, v_y])
+    shifted_matrix = matrix + translation_vector
+
+    # Step 2: rotate
+    angle_rad = np.radians(angle_deg)
+    c, s = np.cos(angle_rad), np.sin(angle_rad)
+    rotation_matrix = np.array([[c, -s], [s, c]])
+    final_matrix = (rotation_matrix @ shifted_matrix.T).T
+    
+    return final_matrix
+
+print("\nShifted, then rotated:\n", shift_then_rotate(A, 45, 5, 2))
+# The result is different! The order is not commutative.
+```
+
+#### Solution to exercise 3
+
+This solution is complete; you can paste it into the cell with **Check** as it is.
+
+```{pyodide-python}
+import numpy as np
+A_3d = np.array([
+    [1, 1, 1],
+    [3, 1, 2],
+    [2, 3, 1]
+])
+
+# a) Rotation 3D about the z-axis
+def rotation_3d_z_axis(matrix, angle_deg):
+    angle_rad = np.radians(angle_deg)
+    c, s = np.cos(angle_rad), np.sin(angle_rad)
+    rotation_matrix = np.array([
+        [c, -s, 0],
+        [s,  c, 0],
+        [0,  0, 1]
+    ])
+    return (rotation_matrix @ matrix.T).T
+
+print("Rotation 3D about the z-axis:\n", rotation_3d_z_axis(A_3d, 90))
+
+# b) Reflection across the y-z plane
+def reflection_3d_yz_plane(matrix):
+    reflection_matrix = np.array([
+        [-1, 0, 0],
+        [0, 1, 0],
+        [0, 0, 1]
+    ])
+    return matrix @ reflection_matrix
+
+print("\nReflection across the y-z plane:\n", reflection_3d_yz_plane(A_3d))
+```
+
+#### Solution to exercise 4
+
+```{pyodide-python}
+center = A.mean(axis=0)  # (2, 5/3)
+
+def rotate_about_point(matrix, angle_deg, rotation_point):
+    # 1. Shift to the origin
+    matrix_at_origin = matrix - rotation_point
+    
+    # 2. Rotate
+    angle_rad = np.radians(angle_deg)
+    c, s = np.cos(angle_rad), np.sin(angle_rad)
+    rotation_matrix = np.array([[c, -s], [s, c]])
+    rotated_matrix = (rotation_matrix @ matrix_at_origin.T).T
+    
+    # 3. Shift back
+    final_matrix = rotated_matrix + rotation_point
+    
+    return final_matrix
+
+print("Rotation about the center:\n", rotate_about_point(A, 90, center))
+```
+
+:::
+
+::::

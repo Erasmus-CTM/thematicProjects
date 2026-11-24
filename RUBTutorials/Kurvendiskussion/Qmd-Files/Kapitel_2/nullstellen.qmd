@@ -1,0 +1,188 @@
+---
+title: "Nullstellen bestimmen"
+title-en: "Finding Zeros"
+format: html
+filters:
+  - ctm-assessment
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+Auf dieser Seite sollst du lernen, wie du mit Python Nullstellen bestimmen kannst.
+
+# Was sind Nullstellen?
+
+Hoffentlich ist bekannt, was Nullstellen sind, aber für den theoretischen Fall, dass es nicht bekannt ist, hier eine kurze Erklärung.
+Die Nullstellen einer Funktion sind diejenigen $x$-Werte, für die $f(x) = 0$ gilt.
+Das heißt auch, dass der Graph an diesen Stellen die $x$-Achse schneidet oder (z.B. bei $f(x) = x^2$ an der Stelle $0$) berührt.
+
+Wie in anderen Kapiteln brauchen wir für das Berechnen mindestens eine Python-Bibliothek.
+In diesem Fall ist die genutzte erneut `sympy`.
+
+# Nullstellen i.A. bestimmen
+
+Im Grunde ist das Bestimmen von Nullstellen nichts anderes, als eine Funktion gleich $0$ zu setzen und zu betrachten, für welche Werte die Funktion $0$ annimmt.
+
+Hierfür nutzen wir eine bestimmte `sympy`-Funktion, nämlich `sympy.solveset()`, diese tut ebendies.
+
+```{pyodide-python}
+#| read-only: true
+import sympy
+
+x = sympy.symbols('x')
+
+f = x**3 - 2*x**2 - 5*x + 6
+
+nullstellen = sympy.solveset(f, x, domain=sympy.S.Reals)
+
+print(f"Die Nullstellen der Funktion sind: {nullstellen}")
+
+``` 
+
+In diesem Fall löst `sympy.solveset()` die Gleichung $x^3 - 2x^2 - 5x + 6=0$ nach $x$ auf. 
+Hierbei wird eine Menge an möglichen Lösungen generiert.
+
+## Nullstellen im Graphen nachsehen
+
+Ein Ergebnis aus dem Computer sollte man immer einmal kontrollieren. Das geht hier am schnellsten mit einem Graphen: Führe den folgenden Block aus und **zoome mit der Lupe aus der Werkzeugleiste** unter dem Plot an die Stellen heran, an denen der Graph die $x$-Achse schneidet. Passen die Stellen zu dem, was `solveset` berechnet hat?
+
+```{pyodide-python}
+#| label: nullstellen-graph
+import numpy as np
+import matplotlib.pyplot as plt
+
+x_werte = np.linspace(-3, 4, 400)
+y_werte = x_werte**3 - 2*x_werte**2 - 5*x_werte + 6
+
+plt.plot(x_werte, y_werte)
+plt.axhline(0, color="black", linewidth=0.8)  # x-Achse
+plt.grid(True)
+plt.title("f(x) = x³ - 2x² - 5x + 6")
+plt.show()
+```
+
+## Aufgabe zum Bestimmen von Nullstellen
+
+Erstelle mithilfe des oben gegebenen Codes einen Code, welcher die Nullstellen einer Funktion überprüft und dann eine Ausgabe erzeugt, welche den Nutzenden des Programms angibt, welche Nullstellen die angegebene Funktion hat.
+
+
+```{pyodide-python}
+#| label: nullstellen-aufgabe
+
+```
+
+_Kleiner Tipp: Du kannst die Liste der Nullstellen auch sortieren, damit sie nicht in der berechneten Reihenfolge, sondern in Zahlenstrahl-Reihenfolge erscheint._
+
+Teste dein Programm mit $g(x) = x^3 - x^2 - 6x$ und trage die Nullstellen hier ein (durch Komma getrennt, Reihenfolge egal):
+
+```{math-exercise}
+#| label: nullstellen-kontrolle
+#| caption: Nullstellen kontrollieren
+#| mode: set
+#| partial-credit: true
+Nullstellen von $g(x) = x^3 - x^2 - 6x$: $x \in \{$ __[0, 3, -2] $\}$
+```
+
+## Probleme beim Nullstellen bestimmen angehen
+
+Da dieses Tutorial nur einen kleinen Einblick in das Thema Python-Nutzung, anhand eines spezifischen Themas geben soll, werden hier unterschiedliche Probleme, die beim Bestimmen von Nullstellen entstehen können, nicht aufgegriffen.
+
+1.  **Nicht lösbar durch sympy.solveset**: Es gibt einige Funktionen, z.B. Funktionen die verkettet sind und trigonometrische Funktionen enthalten, welche nicht durch sympy.solveset gelöst werden können. Bei diesen Funktionen ist es meist jedoch möglich, eine Herangehensweise, die numerische Bestimmung der Nullstellen zu betrachten. 
+D.h. man kann dafür Algorithmen wie die Bisektion nutzen, um Nullstellen zu finden.
+
+2.  **Periodizität**: Bei periodischen Funktionen wie Sinus und Cosinus werden zwar theoretisch richtig alle Nullstellen bestimmt, dies ist jedoch nicht so gut zu lesen wie bei anderen Nullstellen.
+
+Diese Probleme sind jedoch lösbar, falls dir die Aufgaben bisher ein wenig zu einfach erschienen, versuche gerne diese Probleme in deinem Code mit zu beachten!
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+On this page, you will learn how to find zeros with Python.
+
+# What are zeros?
+
+Hopefully you know what zeros are, but just in case, here is a short explanation.
+The zeros (roots) of a function are those $x$-values for which $f(x) = 0$ holds.
+This also means that the graph crosses the $x$-axis at these points or (e.g. for $f(x) = x^2$ at $0$) touches it.
+
+As in other chapters, we need at least one Python library for the calculation.
+In this case, it is once again `sympy`.
+
+# Finding zeros in general
+
+Basically, finding zeros is nothing more than setting a function equal to $0$ and looking at the values for which the function becomes $0$.
+
+For this we use a specific `sympy` function, `sympy.solveset()`, which does exactly that.
+
+```{pyodide-python}
+#| read-only: true
+import sympy
+
+x = sympy.symbols('x')
+
+f = x**3 - 2*x**2 - 5*x + 6
+
+zeros = sympy.solveset(f, x, domain=sympy.S.Reals)
+
+print(f"The zeros of the function are: {zeros}")
+
+``` 
+
+In this case, `sympy.solveset()` solves the equation $x^3 - 2x^2 - 5x + 6=0$ for $x$. 
+The result is a set of possible solutions.
+
+## Checking the zeros in the graph
+
+You should always double-check a result from the computer. Here, the quickest way is a graph: run the following block and **use the magnifier from the toolbar** below the plot to zoom in on the places where the graph crosses the $x$-axis. Do they match what `solveset` calculated?
+
+```{pyodide-python}
+#| label: nullstellen-graph-en
+import numpy as np
+import matplotlib.pyplot as plt
+
+x_values = np.linspace(-3, 4, 400)
+y_values = x_values**3 - 2*x_values**2 - 5*x_values + 6
+
+plt.plot(x_values, y_values)
+plt.axhline(0, color="black", linewidth=0.8)  # x-axis
+plt.grid(True)
+plt.title("f(x) = x³ - 2x² - 5x + 6")
+plt.show()
+```
+
+## Exercise on finding zeros
+
+Using the code given above, write code that finds the zeros of a function and then produces output that tells the users of the program which zeros the given function has.
+
+
+```{pyodide-python}
+#| label: nullstellen-aufgabe-en
+
+``` 
+
+_A small tip: You can also sort the zeros so that they appear in number-line order instead of the order in which they were calculated._
+
+Test your program with $g(x) = x^3 - x^2 - 6x$ and enter the zeros here (separated by commas, any order):
+
+```{math-exercise}
+#| label: nullstellen-kontrolle-en
+#| caption: Checking the zeros
+#| mode: set
+#| partial-credit: true
+Zeros of $g(x) = x^3 - x^2 - 6x$: $x \in \{$ __[0, 3, -2] $\}$
+```
+
+## Dealing with problems when finding zeros
+
+Since this tutorial only aims to give a small insight into using Python based on one specific topic, various problems that can arise when finding zeros are not covered here.
+
+1.  **Not solvable by sympy.solveset**: There are some functions, e.g. composite functions containing trigonometric functions, that cannot be solved by sympy.solveset. For these functions, however, it is usually possible to determine the zeros numerically. 
+That means you can use algorithms such as bisection to find zeros.
+
+2.  **Periodicity**: For periodic functions such as sine and cosine, all zeros are determined correctly in theory, but the result is not as easy to read as for other zeros.
+
+These problems can be solved, though. If the exercises so far have seemed a bit too easy, feel free to try to handle these problems in your code!
+
+::::

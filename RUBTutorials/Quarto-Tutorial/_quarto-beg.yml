@@ -1,0 +1,7 @@
+# Level Beginner (Example Page): only WHICH pages are rendered.
+# Labels are in _quarto-<language>.yml,
+# the output folder docs/<lang>/beg/ is set by build.py.
+project:
+  render:
+    - "Qmd Files/Example Page/*.qmd"
+    - "!Qmd Files/Example Page/example_page.qmd"   # empty file, not a page

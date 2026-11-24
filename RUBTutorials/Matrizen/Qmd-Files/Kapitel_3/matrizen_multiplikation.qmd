@@ -1,0 +1,345 @@
+---
+title: "3.4. Matrizen-Multiplikation"
+subtitle: "Die 'echte' Multiplikation und ihre Regeln"
+title-en: "3.4. Matrix Multiplication"
+subtitle-en: "The 'real' multiplication and its rules"
+format: html
+mathjax: 
+    extensions: ["cancel.js"]
+filters:
+  - ctm-assessment
+  - quizdown
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+::: {.callout-note title="Zellen der Reihe nach ausführen"}
+Die Code-Zellen dieser Seite bauen aufeinander auf: Importe, Variablen und Funktionen aus einer Zelle gelten auch in allen späteren Zellen und werden dort nicht wiederholt. Führe die Zellen deshalb von oben nach unten aus. Meldet Python einen `NameError`, hast du meist eine frühere Zelle noch nicht ausgeführt.
+:::
+
+Nachdem wir die elementweisen Operationen, das Transponieren und die Matrix-Vektor-Multiplikation kennengelernt haben, kommen wir zu einer der wichtigsten, aber auch komplexesten Operationen: der **Matrizenmultiplikation**. Sie verallgemeinert die Matrix-Vektor-Multiplikation auf mehrere Spalten.
+
+::: {.callout-warning title="Wichtiger Unterschied: `*` vs. `@`"}
+In NumPy ist es entscheidend, zwischen zwei Arten der Multiplikation zu unterscheiden:
+
+*   Der `*`-Operator führt eine **elementweise** Multiplikation durch (Hadamard-Produkt), wie wir sie aus dem Vektor-Kapitel kennen. Die Matrizen müssen dafür die exakt gleiche Form haben.
+*   Der `@`-Operator (oder die Funktion `np.matmul()`) führt die **echte mathematische Matrizenmultiplikation** durch, die ihren eigenen Regeln folgt.
+:::
+
+### 3.4.1. Mathematische Regeln
+
+Die Matrizen-Multiplikation $C = A \cdot B$ ist nur unter einer bestimmten Bedingung definiert:
+
+**Die Anzahl der Spalten der ersten Matrix ($A$) muss mit der Anzahl der Zeilen der zweiten Matrix ($B$) übereinstimmen.**
+
+Wenn $A$ eine $m \times n$-Matrix und $B$ eine $n \times p$-Matrix ist, dann ist das Ergebnis $C$ eine $m \times p$-Matrix.
+
+$$
+\underbrace{A}_{m \times n} \cdot \underbrace{B}_{n \times p} = \underbrace{C}_{m \times p}
+$$
+
+Die inneren Dimensionen ($n$) müssen also übereinstimmen. Man kann sich zur Veranschaulichung vorstellen, dass sie sich "wegkürzen" und die äußeren Dimensionen ($m$ und $p$) die Form der Ergebnismatrix bestimmen:
+$$
+(m \times \cancel{n}) \cdot (\cancel{n} \times p) \rightarrow (m \times p)
+$$
+
+Jedes Element $c_{ij}$ der Ergebnismatrix $C$ wird berechnet, indem das Skalarprodukt der $i$-ten Zeile von $A$ mit der $j$-ten Spalte von $B$ gebildet wird.
+
+$$
+c_{ij} = \sum_{k=1}^{n} a_{ik} \cdot b_{kj}
+$$
+
+::: {.callout-warning title="Wichtig: Nicht-Kommutativ"}
+Ein wichtiges Merkmal ist, dass die Matrizen-Multiplikation **nicht kommutativ** ist. Das bedeutet, in der Regel ist $A \cdot B \neq B \cdot A$.
+:::
+
+Probier das selbst von Hand aus. Rechne beide Produkte aus, jedes Feld wird einzeln geprüft:
+
+$$
+P = \begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}, \qquad Q = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}
+$$
+
+```{math-exercise}
+#| label: multiplikation-hand
+#| caption: Zwei Produkte, zwei Ergebnisse
+#| partial-credit: true
+$P \cdot Q =$ mat[2,1;4,3]
+
+$Q \cdot P =$ mat[3,4;1,2]
+```
+
+Fällt dir etwas auf? $Q$ vertauscht bei $P \cdot Q$ die **Spalten** von $P$, bei $Q \cdot P$ die **Zeilen**.
+
+```{math-exercise}
+#| label: multiplikation-form
+#| caption: Welche Form hat das Ergebnis?
+#| field-labels: Zeilen, Spalten
+#| partial-credit: true
+$A$ ist eine $2 \times 3$-Matrix, $B$ eine $3 \times 4$-Matrix. Dann ist $A \cdot B$ eine _[2] $\times$ _[4]-Matrix.
+```
+
+### 3.4.2. Matrizen-Multiplikation in NumPy
+
+In NumPy verwenden wir den `@`-Operator, um diese Multiplikation durchzuführen.
+
+```{pyodide-python}
+#| read-only: true
+import numpy as np
+
+A = np.array([[1, 2, 3],
+              [4, 5, 6]]) # Eine 2x3 Matrix
+
+B = np.array([[7, 8],
+              [9, 10],
+              [11, 12]]) # Eine 3x2 Matrix
+
+# Die inneren Dimensionen (3 und 3) stimmen überein, die Multiplikation ist möglich.
+# Das Ergebnis wird eine 2x2 Matrix sein.
+C = A @ B
+
+print("Matrix A (2x3):\n", A)
+print("\nMatrix B (3x2):\n", B)
+print("\nErgebnis A @ B (2x2):\n", C)
+```
+
+### 3.4.3. Übung
+
+**Aufgabe:** Schreibe eine Funktion `produkt(M1, M2)`, die das Matrizenprodukt `M1 @ M2` zurückgibt. Passen die Dimensionen nicht zusammen (Spaltenzahl von `M1` ungleich Zeilenzahl von `M2`), soll sie `None` zurückgeben. Versteckte Tests prüfen automatisch, ob deine Lösung stimmt.
+
+**Befehle, die du brauchst:** das Attribut `.shape`, der Operator `@` (oder `np.matmul()`), `if`, `return`.
+
+```{py-exercise}
+#| label: multiplikation-uebung
+#| caption: produkt implementieren
+#| show-test-hints: false
+import numpy as np
+
+def produkt(M1, M2):
+    # Dein Code hier
+    pass
+
+## TESTS ##
+M1 = np.array([[2, 0], [1, 3]])
+M2 = np.array([[5, 1, 4], [2, 0, 1]])
+erg = produkt(M1, M2)
+assert erg is not None, "Hier passen die Dimensionen zusammen (2x2 mal 2x3)"
+assert np.shape(erg) == (2, 3), "Das Ergebnis hat nicht die Form (2, 3)"
+assert np.array_equal(erg, [[10, 2, 8], [11, 1, 7]]), "Falsches Ergebnis für M1 @ M2"
+assert produkt(M2, M1) is None, "M2 (2x3) mal M1 (2x2) ist nicht definiert und soll None ergeben"
+```
+
+::: {.callout-tip title="Tipp" collapse="true"}
+`M1` ist eine 2x2-Matrix und `M2` eine 2x3-Matrix. Die inneren Dimensionen (2 und 2) stimmen überein, also ist die Multiplikation möglich und das Ergebnis eine 2x3-Matrix. Prüfe vor dem Multiplizieren mit `M1.shape[1] == M2.shape[0]`, ob es überhaupt geht.
+:::
+
+::: {.callout-caution title="Lösung" collapse="true"}
+```python
+def produkt(M1, M2):
+    if M1.shape[1] != M2.shape[0]:
+        return None
+    return M1 @ M2
+```
+:::
+
+Danach folgen die [Kernoperationen](../Kapitel_4/index.qmd) der Linearen Algebra (wie Invertieren, Determinante bestimmen...).
+
+### Kurzes Quiz
+
+```quizdown
+---
+locale: de
+---
+
+# Was berechnet `A * B` bei zwei NumPy-Matrizen gleicher Form?
+1. [ ] Das Matrizenprodukt.
+1. [x] Das elementweise Produkt (Hadamard-Produkt).
+1. [ ] Das Skalarprodukt der ersten Zeilen.
+1. [ ] Einen Fehler.
+
+> `*` rechnet elementweise, für das Matrizenprodukt brauchst du `@`.
+
+# `A` ist eine 3x4-Matrix, `B` eine 4x2-Matrix. Welche Form hat `A @ B`?
+1. [ ] 4x4
+1. [ ] 3x4
+1. [x] 3x2
+1. [ ] Das Produkt ist nicht definiert.
+
+> Die inneren Dimensionen (4 und 4) kürzen sich weg, die äußeren (3 und 2) bleiben.
+
+# `A` ist 2x3, `B` ist 2x3. Was passiert bei `A @ B`?
+1. [ ] Das Ergebnis ist eine 2x3-Matrix.
+1. [x] NumPy meldet einen Fehler, weil die inneren Dimensionen (3 und 2) nicht passen.
+1. [ ] Das Ergebnis ist eine 3x3-Matrix.
+1. [ ] Das Ergebnis ist eine Zahl.
+
+> Spaltenzahl der ersten (3) und Zeilenzahl der zweiten Matrix (2) müssen übereinstimmen.
+```
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+::: {.callout-note title="Run the cells in order"}
+The code cells on this page build on each other: imports, variables and functions from one cell are also available in all later cells and are not repeated there. So run the cells from top to bottom. If Python reports a `NameError`, you most likely have not run an earlier cell yet.
+:::
+
+After getting to know element-wise operations, transposing and matrix-vector multiplication, we come to one of the most important but also most complex operations: **matrix multiplication**. It generalizes matrix-vector multiplication to several columns.
+
+::: {.callout-warning title="Important difference: `*` vs. `@`"}
+In NumPy, it is crucial to distinguish between two kinds of multiplication:
+
+*   The `*` operator performs an **element-wise** multiplication (Hadamard product), as we know it from the vector chapter. The matrices must have exactly the same shape for this.
+*   The `@` operator (or the function `np.matmul()`) performs the **real mathematical matrix multiplication**, which follows its own rules.
+:::
+
+### 3.4.1. Mathematical rules
+
+The matrix product $C = A \cdot B$ is only defined under a certain condition:
+
+**The number of columns of the first matrix ($A$) must match the number of rows of the second matrix ($B$).**
+
+If $A$ is an $m \times n$ matrix and $B$ an $n \times p$ matrix, then the result $C$ is an $m \times p$ matrix.
+
+$$
+\underbrace{A}_{m \times n} \cdot \underbrace{B}_{n \times p} = \underbrace{C}_{m \times p}
+$$
+
+So the inner dimensions ($n$) must match. To visualize this, you can imagine that they "cancel out" and the outer dimensions ($m$ and $p$) determine the shape of the resulting matrix:
+$$
+(m \times \cancel{n}) \cdot (\cancel{n} \times p) \rightarrow (m \times p)
+$$
+
+Each element $c_{ij}$ of the resulting matrix $C$ is computed by taking the dot product of the $i$-th row of $A$ with the $j$-th column of $B$.
+
+$$
+c_{ij} = \sum_{k=1}^{n} a_{ik} \cdot b_{kj}
+$$
+
+::: {.callout-warning title="Important: not commutative"}
+An important property is that matrix multiplication is **not commutative**. This means that in general $A \cdot B \neq B \cdot A$.
+:::
+
+Try it yourself by hand. Compute both products; each field is checked individually:
+
+$$
+P = \begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}, \qquad Q = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}
+$$
+
+```{math-exercise}
+#| label: multiplikation-hand-en
+#| caption: Two products, two results
+#| partial-credit: true
+$P \cdot Q =$ mat[2,1;4,3]
+
+$Q \cdot P =$ mat[3,4;1,2]
+```
+
+Do you notice something? In $P \cdot Q$, $Q$ swaps the **columns** of $P$; in $Q \cdot P$ it swaps the **rows**.
+
+```{math-exercise}
+#| label: multiplikation-form-en
+#| caption: What shape does the result have?
+#| field-labels: rows, columns
+#| partial-credit: true
+$A$ is a $2 \times 3$ matrix, $B$ a $3 \times 4$ matrix. Then $A \cdot B$ is a _[2] $\times$ _[4] matrix.
+```
+
+### 3.4.2. Matrix multiplication in NumPy
+
+In NumPy, we use the `@` operator to perform this multiplication.
+
+```{pyodide-python}
+#| read-only: true
+import numpy as np
+
+A = np.array([[1, 2, 3],
+              [4, 5, 6]]) # a 2x3 matrix
+
+B = np.array([[7, 8],
+              [9, 10],
+              [11, 12]]) # a 3x2 matrix
+
+# The inner dimensions (3 and 3) match, so the multiplication is possible.
+# The result will be a 2x2 matrix.
+C = A @ B
+
+print("Matrix A (2x3):\n", A)
+print("\nMatrix B (3x2):\n", B)
+print("\nResult A @ B (2x2):\n", C)
+```
+
+### 3.4.3. Exercise
+
+**Exercise:** Write a function `product(M1, M2)` that returns the matrix product `M1 @ M2`. If the dimensions do not fit (number of columns of `M1` not equal to number of rows of `M2`), it should return `None`. Hidden tests check your solution automatically.
+
+**Commands you need:** the attribute `.shape`, the operator `@` (or `np.matmul()`), `if`, `return`.
+
+```{py-exercise}
+#| label: multiplikation-uebung-en
+#| caption: Implement product
+#| show-test-hints: false
+import numpy as np
+
+def product(M1, M2):
+    # Your code here
+    pass
+
+## TESTS ##
+M1 = np.array([[2, 0], [1, 3]])
+M2 = np.array([[5, 1, 4], [2, 0, 1]])
+res = product(M1, M2)
+assert res is not None, "The dimensions fit here (2x2 times 2x3)"
+assert np.shape(res) == (2, 3), "The result does not have shape (2, 3)"
+assert np.array_equal(res, [[10, 2, 8], [11, 1, 7]]), "Wrong result for M1 @ M2"
+assert product(M2, M1) is None, "M2 (2x3) times M1 (2x2) is not defined and should give None"
+```
+
+::: {.callout-tip title="Hint" collapse="true"}
+`M1` is a 2x2 matrix and `M2` is a 2x3 matrix. The inner dimensions (2 and 2) match, so the multiplication is possible and the result is a 2x3 matrix. Before multiplying, check with `M1.shape[1] == M2.shape[0]` whether it works at all.
+:::
+
+::: {.callout-caution title="Solution" collapse="true"}
+```python
+def product(M1, M2):
+    if M1.shape[1] != M2.shape[0]:
+        return None
+    return M1 @ M2
+```
+:::
+
+After that come the [core operations](../Kapitel_4/index.qmd) of linear algebra (such as inverting, computing determinants...).
+
+### Short Quiz
+
+```quizdown
+---
+locale: en
+---
+
+# What does `A * B` compute for two NumPy matrices of the same shape?
+1. [ ] The matrix product.
+1. [x] The element-wise product (Hadamard product).
+1. [ ] The dot product of the first rows.
+1. [ ] An error.
+
+> `*` works element by element; for the matrix product you need `@`.
+
+# `A` is a 3x4 matrix, `B` is a 4x2 matrix. What shape does `A @ B` have?
+1. [ ] 4x4
+1. [ ] 3x4
+1. [x] 3x2
+1. [ ] The product is not defined.
+
+> The inner dimensions (4 and 4) cancel, the outer ones (3 and 2) remain.
+
+# `A` is 2x3, `B` is 2x3. What happens with `A @ B`?
+1. [ ] The result is a 2x3 matrix.
+1. [x] NumPy raises an error because the inner dimensions (3 and 2) do not match.
+1. [ ] The result is a 3x3 matrix.
+1. [ ] The result is a number.
+
+> The number of columns of the first (3) and the number of rows of the second matrix (2) must match.
+```
+
+::::

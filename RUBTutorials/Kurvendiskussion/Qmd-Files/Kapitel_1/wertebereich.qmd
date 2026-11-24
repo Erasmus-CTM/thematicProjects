@@ -1,0 +1,226 @@
+---
+title: "Wertebereich untersuchen"
+title-en: "Examining the Range"
+format: html
+filters:
+  - ctm-assessment
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+# Der Wertebereich
+
+Der Wertebereich (oder die Wertemenge) einer Funktion $f$ ist die Menge aller möglichen Ausgabewerte $f(x)$, die entstehen, wenn man alle erlaubten Eingabewerte $x$ aus dem Definitionsbereich einsetzt.
+
+Dieser Abschnitt ist ein recht komplexer, da die Existenz von Extrempunkten, beziehungsweise das Verhalten im Unendlichen, oder das Existieren von Asymptoten hierfür relevant ist, wird geraten, diesen Abschnitt erst nach den Kapiteln **[Globalverhalten und Asymptoten](../Kapitel_3/index.qmd)**, sowie **[Extrempunkte/Sattelpunkte](../Kapitel_4/extrempunkte.qmd)** zu betrachten.
+
+::: {.callout-warning title="Erst nach Kapitel 3 und 4 bearbeiten"}
+Dieser Abschnitt setzt Wissen aus **[Globalverhalten und Asymptoten](../Kapitel_3/index.qmd)** und **[Extrempunkte](../Kapitel_4/extrempunkte.qmd)** voraus. Überspringe ihn jetzt und komm danach hierher zurück.
+:::
+
+# Wie bestimmt man den Wertebereich?
+
+Um den Wertebereich zu bestimmen, müssen wir verschiedene Eigenschaften der Funktion analysieren, die in anderen Kapiteln behandelt wurden:
+
+*   **Globale Extrema:** Ein globales Maximum oder Minimum begrenzt den Wertebereich. Die Untersuchung von Extrema wird im Kapitel **[Extrempunkte/Sattelpunkte](../Kapitel_4/extrempunkte.qmd)** behandelt.
+*   **Verhalten im Unendlichen:** Horizontale Asymptoten zeigen, welchen Werten sich die Funktion annähert. Dies ist entscheidend, um zu sehen, ob der Wertebereich nach oben oder unten beschränkt ist. Mehr dazu unter **[Horizontale Asymptoten](../Kapitel_3/asymptoten.qmd#horizontale-asymptoten)**.
+*   **Definitionslücken:** An Polstellen (vertikalen Asymptoten) strebt die Funktion oft gegen $\pm\infty$, was den Wertebereich auf $(-\infty, \infty)$ erweitern kann. Siehe **[Vertikale Asymptoten](../Kapitel_3/asymptoten.qmd#vertikale-asymptoten)**.
+*   **Ränder des Definitionsbereichs:** Bei Funktionen wie $\sqrt{x}$ beginnt der Wertebereich am Funktionswert des Randpunktes (hier $x=0$). Die Bestimmung des Definitionsbereichs ist in **[Definitionsbereich bestimmen](definitionsbereich.qmd)** erklärt.
+
+## Python-Implementierung: Wertebereich bestimmen
+
+Wie gerade gesehen ist das Bestimmen des Wertebereichs durch sehr viele Faktoren recht schwierig.  
+
+1.  Es muss bestimmt werden, ob es [Definitionslücken](definitionsbereich.qmd#gebrochen-rationale-funktionen) gibt.
+2.  Dann muss untersucht werden: Ist die Funktion linear oder nicht-linear?
+3.  Falls linear, hat sie eine Steigung? 
+4.  Falls nicht linear, hat sie ein [globales Minimum, Maximum](../Kapitel_4/extrempunkte.qmd#globale-extrema)?
+5.  Gibt es eine horizontale [Asymptote](../Kapitel_3/asymptoten.qmd#horizontale-asymptoten)?
+6.  Falls eine solche existiert, nähert sich die Funktion ihr im [Globalverhalten](../Kapitel_3/globalverhalten.qmd) an. Oft ist sie dann eine Grenze des Wertebereichs, die nicht erreicht wird (sie kann aber auch überschritten werden).  
+
+`sympy` hat dankenswerterweise ein Untermodul `sympy.calculus.util` welches die Funktion `function_range` beinhaltet.  
+Die Funktion berechnet genau das, was im Namen steckt, die Range der Funktion, also alle Werte, die die Funktion annehmen kann, auf gut Deutsch den **Wertebereich der Funktion**.
+
+```{pyodide-python}
+#| label: wertebereich-aufgabe
+# Gib hier Deinen Code ein.
+```
+
+::: {.callout-note title="Tipp 1" collapse="true"}
+* Wie schon oben erklärt, geht es mehr oder minder nur darum die Funktion `function_range` anzuwenden.
+* Diese Funktion befindet sich aber in einem Untermodul von `sympy`
+* Das heißt, es reicht nicht von sympy zu importieren, es muss auch das Untermodul `sympy.calculus.util` importiert werden.
+* Wenn das importiert ist, sollte der Rest des Programms relativ leicht zu schreiben sein (davon ausgehend, dass dieses Kapitel wie empfohlen als vorletztes gemacht wird.)
+:::
+
+::: {.callout-note title="Tipp 2" collapse="true"}
+* Das Modul kann wie folgt importiert werden:
+```{pyodide-python}
+import sympy
+from sympy.calculus.util import function_range
+```
+
+* Wichtig ist, dass `function_range` jetzt genutzt werden kann, ohne ein `sympy.` davor, oder gar einem `sympy.calculus.util.` davor!
+* Denke daran, eine Ausgabe zu formulieren, in der der bestimmte Wertebereich ausgegeben wird. 
+:::
+
+::: {.callout-note title="Eine mögliche Minimallösung" collapse="true"}
+```{pyodide-python}
+import sympy
+from sympy.calculus.util import function_range # Korrekter Import
+
+def bestimme_wertebereich(funktion_str):
+    x = sympy.symbols('x') 
+    print(f"Untersuchung der Funktion: f(x) = {funktion_str}")    
+    try:
+        f = sympy.sympify(funktion_str)         
+        wertebereich = function_range(f, x, sympy.S.Reals)        
+        print(f"Der berechnete Wertebereich ist: {wertebereich}")
+    except (sympy.SympifyError, TypeError, ValueError) as e:
+        print(f"Fehler bei Berechnung: {e}")
+    print("-" * 50)
+
+# Test Funktionen
+# 1. Eine nach oben geöffnete Parabel (hat ein globales Minimum)
+bestimme_wertebereich("x**2 + 4")
+# 2. Eine gebrochen-rationale Funktion mit horizontaler Asymptote
+bestimme_wertebereich("1 / (x**2 + 1)")
+# 3. Eine trigonometrische Funktion mit beschränktem Wertebereich
+bestimme_wertebereich("sin(x)")
+# 4. Eine Funktion, deren Wertebereich alle reellen Zahlen umfasst
+bestimme_wertebereich("x**3")
+```
+
+:::
+
+## Wertebereich von Hand kontrollieren
+
+Überlege bei den folgenden Funktionen zuerst selbst, welche Werte sie annehmen können, und kontrolliere dich danach mit deinem Programm.
+
+```{math-exercise}
+#| label: wertebereich-parabel
+#| caption: Wertebereich einer Parabel
+Die Funktion $f(x)=x^2+4$ hat den Wertebereich $W=[$_[4]$;\ \infty)$.
+```
+
+```{math-exercise}
+#| label: wertebereich-bruch
+#| caption: Wertebereich einer gebrochen-rationalen Funktion
+#| field-labels: untere Grenze, obere Grenze
+#| partial-credit: true
+Die Funktion $g(x)=\dfrac{1}{x^2+1}$ nimmt jeden Wert zwischen _[0] (wird nie erreicht) und _[1] (wird bei $x=0$ erreicht) an.
+```
+
+Wenn du wie empfohlen die Kapitel 2 bis 4 schon bearbeitet hast, ist damit die grundlegende Kurvendiskussion abgeschlossen! Im Kapitel **[Graphen zeichnen](../Kapitel_5/index.qmd)** lernst du dann, wie du all diese Erkenntnisse nutzen kannst, um eine aussagekräftige Visualisierung deiner Funktion zu erstellen.
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+# The range
+
+The range (or image) of a function $f$ is the set of all possible output values $f(x)$ that you get when you plug in all allowed input values $x$ from the domain.
+
+This section is a rather complex one, since the existence of extrema, the behavior at infinity and the existence of asymptotes all matter here. We therefore recommend looking at this section only after the chapters **[End Behavior and Asymptotes](../Kapitel_3/index.qmd)** and **[Extrema/Saddle Points](../Kapitel_4/extrempunkte.qmd)**.
+
+::: {.callout-warning title="Do this after chapters 3 and 4"}
+This section assumes knowledge from **[End Behavior and Asymptotes](../Kapitel_3/index.qmd)** and **[Extrema](../Kapitel_4/extrempunkte.qmd)**. Skip it for now and come back after those chapters.
+:::
+
+# How do you determine the range?
+
+To determine the range, we have to analyze several properties of the function that were covered in other chapters:
+
+*   **Global extrema:** A global maximum or minimum bounds the range. Extrema are covered in the chapter **[Extrema/Saddle Points](../Kapitel_4/extrempunkte.qmd)**.
+*   **Behavior at infinity:** Horizontal asymptotes show which values the function approaches. This is crucial to see whether the range is bounded above or below. More on this under **[Horizontal asymptotes](../Kapitel_3/asymptoten.qmd#horizontal-asymptotes)**.
+*   **Gaps in the domain:** At poles (vertical asymptotes), the function often tends to $\pm\infty$, which can extend the range to $(-\infty, \infty)$. See **[Vertical asymptotes](../Kapitel_3/asymptoten.qmd#vertical-asymptotes)**.
+*   **Boundaries of the domain:** For functions like $\sqrt{x}$, the range starts at the function value of the boundary point (here $x=0$). How to determine the domain is explained in **[Determining the Domain](definitionsbereich.qmd)**.
+
+## Python implementation: determining the range
+
+As we have just seen, determining the range is quite difficult because so many factors are involved.  
+
+1.  We have to determine whether there are [gaps in the domain](definitionsbereich.qmd#rational-functions).
+2.  Then we have to examine: is the function linear or non-linear?
+3.  If it is linear, does it have a slope? 
+4.  If it is non-linear, does it have a [global minimum or maximum](../Kapitel_4/extrempunkte.qmd#global-extrema)?
+5.  Is there a horizontal [asymptote](../Kapitel_3/asymptoten.qmd#horizontal-asymptotes)?
+6.  If there is one, the function approaches it in its [end behavior](../Kapitel_3/globalverhalten.qmd). It is then often a bound of the range that is not reached (but it can also be crossed).  
+
+Thankfully, `sympy` has a submodule `sympy.calculus.util` which contains the function `function_range`.  
+The function calculates exactly what its name says: the range of the function, i.e. all values the function can take.
+
+```{pyodide-python}
+#| label: wertebereich-aufgabe-en
+# Enter your code here.
+```
+
+::: {.callout-note title="Tip 1" collapse="true"}
+* As explained above, the main thing is to apply the function `function_range`.
+* However, this function is located in a submodule of `sympy`.
+* This means it is not enough to import sympy; the submodule `sympy.calculus.util` has to be imported as well.
+* Once it is imported, the rest of the program should be relatively easy to write (assuming you do this chapter second to last, as recommended).
+:::
+
+::: {.callout-note title="Tip 2" collapse="true"}
+* The module can be imported like this:
+```{pyodide-python}
+import sympy
+from sympy.calculus.util import function_range
+```
+
+* Importantly, `function_range` can now be used without a `sympy.` or even a `sympy.calculus.util.` in front of it!
+* Remember to write an output that prints the range you determined. 
+:::
+
+::: {.callout-note title="A possible minimal solution" collapse="true"}
+```{pyodide-python}
+import sympy
+from sympy.calculus.util import function_range # correct import
+
+def determine_range(function_str):
+    x = sympy.symbols('x') 
+    print(f"Examining the function: f(x) = {function_str}")    
+    try:
+        f = sympy.sympify(function_str)         
+        value_range = function_range(f, x, sympy.S.Reals)        
+        print(f"The calculated range is: {value_range}")
+    except (sympy.SympifyError, TypeError, ValueError) as e:
+        print(f"Error during calculation: {e}")
+    print("-" * 50)
+
+# Test functions
+# 1. A parabola opening upwards (has a global minimum)
+determine_range("x**2 + 4")
+# 2. A rational function with a horizontal asymptote
+determine_range("1 / (x**2 + 1)")
+# 3. A trigonometric function with a bounded range
+determine_range("sin(x)")
+# 4. A function whose range contains all real numbers
+determine_range("x**3")
+```
+
+:::
+
+## Checking the range by hand
+
+For the following functions, first think about which values they can take, and then check yourself with your program.
+
+```{math-exercise}
+#| label: wertebereich-parabel-en
+#| caption: Range of a parabola
+The function $f(x)=x^2+4$ has the range $W=[$_[4]$;\ \infty)$.
+```
+
+```{math-exercise}
+#| label: wertebereich-bruch-en
+#| caption: Range of a rational function
+#| field-labels: lower bound, upper bound
+#| partial-credit: true
+The function $g(x)=\dfrac{1}{x^2+1}$ takes every value between _[0] (never reached) and _[1] (reached at $x=0$).
+```
+
+If you have already worked through chapters 2 to 4 as recommended, this completes the basic curve sketching! In the chapter **[Drawing Graphs](../Kapitel_5/index.qmd)** you will then learn how to use all these findings to create a meaningful visualization of your function.
+
+::::

@@ -1,0 +1,202 @@
+---
+title: "Wendepunkte bestimmen"
+title-en: "Finding Inflection Points"
+format: html
+filters:
+  - ctm-assessment
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+# Wendepunkt
+
+Als **Wendepunkt** wird ein Punkt einer Funktion bezeichnet, an dem sich das Krümmungsverhalten der Funktion ändert.
+Das heißt, ähnlich wie bei den **Extremwerten** und dem **Monotonieverhalten** verhält es sich auch bei den **Wendepunkten** und dem **Krümmungsverhalten**.
+
+Falls du also noch nicht den Abschnitt **[Krümmungsverhalten](kruemmungsverhalten.qmd)** bearbeitet hast, kannst du das über den Link nachholen. Wissen aus dem Abschnitt wird hier vorausgesetzt.
+
+Als kleine Erinnerung an den anderen Abschnitt:
+```{pyodide-python}
+#| read-only: true
+import sympy
+x = sympy.symbols('x')
+f = x**4 - 4*x**3 + 2
+
+print(f"Die Funktion ist: f(x) = {f}")
+f_prime = sympy.diff(f, x)
+print(f"f'(x) = {f_prime}")
+f_double_prime = sympy.diff(f_prime, x)
+print(f"f''(x) = {f_double_prime}")
+
+potentielle_wendepunkte = sympy.solve(f_double_prime, x)
+potentielle_wendepunkte.sort() 
+print(f"Die Nullstellen der zweiten Ableitung sind: {potentielle_wendepunkte}")
+```
+
+**Kurz überlegt:** Wendepunkte findest du über die zweite Ableitung. Einmal von Hand:
+
+```{math-exercise}
+#| label: wendepunkte-vorcheck
+#| caption: Vorab-Check – Wendestelle von Hand
+#| vars: x
+#| field-labels: g''(x), Wendestelle
+#| partial-credit: true
+Für $g(x)=x^3-3x^2$ gilt $g''(x)=$ __[6*x-6]. Die Krümmung wechselt bei $x=$ _[1].
+```
+
+## Aufgabe: Wendepunkte bestimmen
+
+Der Code oben bestimmt bisher noch keine Wendepunkte, sondern bietet nur eine sehr gute Grundlage dafür.  
+Nutze dein Wissen aus den vergangenen Abschnitten, um einen Code zu erarbeiten, der die Wendepunkte einer Funktion bestimmt.
+
+```{pyodide-python}
+#| label: wendepunkte-aufgabe
+# Gib hier deinen Code an
+```
+
+Was muss dein Programm für die Funktion oben finden?
+
+```{math-exercise}
+#| label: wendepunkte-kontrolle
+#| caption: Kontrolle – Wendepunkte
+#| field-labels: W1 x, W1 y, W2 x, W2 y
+#| partial-credit: true
+$f(x) = x^4 - 4x^3 + 2$ hat die Wendepunkte $W_1($_[0]$\,|\,$_[2]$)$ und $W_2($_[2]$\,|\,$_[-14]$)$.
+```
+
+Fällt dir an $W_1$ etwas auf? Dort ist auch $f'(0) = 0$: Die Tangente ist waagerecht. Ein Wendepunkt mit waagerechter Tangente ist genau ein **[Sattelpunkt](extrempunkte.qmd#sattelpunkte)**.
+
+Mach aus deinem Code eine Funktion `wendestellen(funktion_f)`, die die **sortierte Liste der $x$-Werte** aller Wendepunkte zurückgibt. Versteckte Tests prüfen sie:
+
+```{py-exercise}
+#| label: wendepunkte-wendestellen
+#| caption: wendestellen(funktion_f) schreiben
+#| show-test-hints: false
+import sympy
+x = sympy.symbols('x')
+
+def wendestellen(funktion_f):
+    # Dein Code hier
+    pass
+
+print(wendestellen(x**3))
+
+## TESTS ##
+assert wendestellen(x**3) == [0], "x**3 hat bei x=0 einen Wendepunkt"
+assert wendestellen(x**4 - 4*x**3 + 2) == [0, 2], "x**4 - 4*x**3 + 2 hat Wendestellen bei 0 und 2 (sortiert!)"
+assert wendestellen(x**3 - 3*x**2) == [1], "x**3 - 3*x**2 hat bei x=1 einen Wendepunkt"
+assert wendestellen(x**4) == [], "x**4 hat keinen Wendepunkt: f''(0)=0, aber die Krümmung wechselt nicht"
+```
+
+_Zum Weiterdenken: Prüfst du mit $f'''(x)\neq 0$? Dann schau dir $f(x)=x^5$ an. Bei $x=0$ ist $f'''(0)=0$, trotzdem wechselt die Krümmung. Mit dem Vorzeichenwechsel von $f''$ findest du diesen Wendepunkt._
+
+## Bonusaufgabe 
+
+Wenn dir alle Aufgaben bisher zu einfach waren, kannst du im folgenden ein Programm schreiben, welches alle Abschnitte des Kapitels miteinander verbindet.
+
+```{pyodide-python}
+#| label: wendepunkte-bonus
+# Gib hier deinen Code an
+```
+
+Wenn du damit fertig bist ist dieses Kapitel abgeschlossen.
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+# Inflection point
+
+An **inflection point** is a point of a function at which the concavity of the function changes.
+In other words, **inflection points** relate to **concavity** in much the same way as **extrema** relate to **monotonicity**.
+
+So if you have not yet worked through the section **[Concavity](kruemmungsverhalten.qmd)**, you can catch up via the link. Knowledge from that section is assumed here.
+
+As a small reminder of the other section:
+```{pyodide-python}
+#| read-only: true
+import sympy
+x = sympy.symbols('x')
+f = x**4 - 4*x**3 + 2
+
+print(f"The function is: f(x) = {f}")
+f_prime = sympy.diff(f, x)
+print(f"f'(x) = {f_prime}")
+f_double_prime = sympy.diff(f_prime, x)
+print(f"f''(x) = {f_double_prime}")
+
+potential_inflection_points = sympy.solve(f_double_prime, x)
+potential_inflection_points.sort() 
+print(f"The zeros of the second derivative are: {potential_inflection_points}")
+```
+
+**Quick check:** You find inflection points via the second derivative. Once by hand:
+
+```{math-exercise}
+#| label: wendepunkte-vorcheck-en
+#| caption: Pre-check – inflection point by hand
+#| vars: x
+#| field-labels: g''(x), inflection point
+#| partial-credit: true
+For $g(x)=x^3-3x^2$ we have $g''(x)=$ __[6*x-6]. The concavity changes at $x=$ _[1].
+```
+
+## Exercise: finding inflection points
+
+The code above does not determine any inflection points yet, but it offers a very good basis for doing so.  
+Use your knowledge from the previous sections to write code that determines the inflection points of a function.
+
+```{pyodide-python}
+#| label: wendepunkte-aufgabe-en
+# Enter your code here 
+```
+
+What must your program find for the function above?
+
+```{math-exercise}
+#| label: wendepunkte-kontrolle-en
+#| caption: Check – inflection points
+#| field-labels: W1 x, W1 y, W2 x, W2 y
+#| partial-credit: true
+$f(x) = x^4 - 4x^3 + 2$ has the inflection points $W_1($_[0]$\,|\,$_[2]$)$ and $W_2($_[2]$\,|\,$_[-14]$)$.
+```
+
+Do you notice something about $W_1$? There, $f'(0) = 0$ as well: the tangent is horizontal. An inflection point with a horizontal tangent is exactly a **[saddle point](extrempunkte.qmd#saddle-points)**.
+
+Turn your code into a function `inflection_points(function_f)` that returns the **sorted list of the $x$-values** of all inflection points. Hidden tests check it:
+
+```{py-exercise}
+#| label: wendepunkte-wendestellen-en
+#| caption: Write inflection_points(function_f)
+#| show-test-hints: false
+import sympy
+x = sympy.symbols('x')
+
+def inflection_points(function_f):
+    # Your code here
+    pass
+
+print(inflection_points(x**3))
+
+## TESTS ##
+assert inflection_points(x**3) == [0], "x**3 has an inflection point at x=0"
+assert inflection_points(x**4 - 4*x**3 + 2) == [0, 2], "x**4 - 4*x**3 + 2 has inflection points at 0 and 2 (sorted!)"
+assert inflection_points(x**3 - 3*x**2) == [1], "x**3 - 3*x**2 has an inflection point at x=1"
+assert inflection_points(x**4) == [], "x**4 has no inflection point: f''(0)=0, but the concavity does not change"
+```
+
+_Food for thought: do you check with $f'''(x)\neq 0$? Then look at $f(x)=x^5$. At $x=0$, $f'''(0)=0$, and yet the concavity changes. With the sign change of $f''$ you will find this inflection point._
+
+## Bonus exercise 
+
+If all the exercises so far were too easy for you, you can write a program below that combines all sections of this chapter.
+
+```{pyodide-python}
+#| label: wendepunkte-bonus-en
+# Enter your code here
+```
+
+Once you are done with that, this chapter is complete.
+
+::::

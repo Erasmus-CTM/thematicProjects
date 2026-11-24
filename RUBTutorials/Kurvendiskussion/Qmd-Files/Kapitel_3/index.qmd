@@ -1,0 +1,199 @@
+---
+title: "Globalverhalten und Asymptoten"
+title-en: "End Behavior and Asymptotes"
+format: html
+filters:
+  - ctm-assessment
+  - quizdown
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+**Kapitelübersicht**
+
+Dieses Kapitel hat zwei Abschnitte, welche sich mit den folgenden Themen beschäftigen: 
+
+*   **[Globalverhalten](globalverhalten.qmd)**
+    * Dieser Abschnitt beschäftigt sich mit dem Verhalten von Funktionen im Unendlichen. Das heißt, es wird betrachtet, wie sich die Funktionswerte ändern, wenn man $\infty$, beziehungsweise $-\infty$ einsetzt. Das wird im Allgemeinen das **Globalverhalten** der Funktion genannt.
+
+---
+
+*   **[Asymptoten](asymptoten.qmd)**  
+    * Dieser Abschnitt befasst sich mit dem Begriff der **Asymptoten**.  
+    Es gibt horizontale und vertikale Asymptoten.   
+    Vertikale Asymptoten bilden sich zum Beispiel um Definitionslücken, wie eine Stelle an der durch Null geteilt werden würde.  
+    Horizontale Asymptoten bilden sich hingegen zum Beispiel bei Brüchen, wie $\frac{1}{x}$.
+    Einer vertikalen Asymptote kommt der Graph beliebig nahe, ohne sie zu erreichen (die Funktion ist dort nicht definiert). Eine horizontale Asymptote beschreibt das Verhalten im Unendlichen, sie kann vom Graphen aber durchaus geschnitten werden.
+
+---
+
+
+# Quiz: Symmetrie & Achsenschnittpunkte
+
+```quizdown
+---
+locale: de
+---
+
+# Welche mathematische Bedingung muss gelten, damit eine Funktion achsensymmetrisch zur y-Achse ist?
+1. [x] $f(x) = f(-x)$
+1. [ ] $f(-x) = -f(x)$
+1. [ ] $f(x) = -f(x)$
+1. [ ] $f(0) = 0$
+> Hinweis: Wenn du für $x$ den negativen Wert einsetzt, muss wieder der ursprüngliche Funktionswert herauskommen (Spiegelung an der y-Achse).
+
+# Mit welchem Python-Befehl setzt du in `sympy` für die Variable `x` den Wert `-x` ein (Substitution)?
+1. [x] `f.subs(x, -x)`
+1. [ ] `f.replace(x, -x)`
+1. [ ] `f.set(x, -x)`
+1. [ ] `f(-x)`
+> Hinweis: Der Befehl kommt vom englischen Wort "substitute" (ersetzen).
+
+# Bringe die Schritte für einen Symmetrie-Test in Python in die richtige Reihenfolge.
+1. f_minus_x = f.subs(x, -x)
+2. differenz = f - f_minus_x
+3. if sympy.simplify(differenz) == 0:
+4.     print("Achsensymmetrisch")
+> Hinweis: Erst ersetzen, dann vergleichen (Differenz bilden), dann prüfen/vereinfachen, dann ausgeben.
+
+# Um den Schnittpunkt mit der y-Achse (Y-Achsenabschnitt) zu berechnen, was musst du tun?
+1. [x] Ich setze $x = 0$ und berechne $f(0)$.
+1. [ ] Ich setze $f(x) = 0$ und löse nach $x$ auf.
+1. [ ] Ich setze $x = 1$.
+> Hinweis: Die y-Achse verläuft genau dort, wo die x-Koordinate Null ist.
+
+# Welcher Python-Code berechnet den y-Achsenabschnitt korrekt?
+1. [x] `y_wert = f.subs(x, 0)`
+1. [ ] `y_wert = sympy.solve(f, 0)`
+1. [ ] `y_wert = f(0)`
+> Hinweis: Wir wollen einen konkreten Wert für $x$ einsetzen (substituieren).
+
+# Was berechnen wir, wenn wir `sympy.solveset(f, x, domain=sympy.S.Reals)` nutzen?
+1. [x] Die Nullstellen (Schnittpunkte mit der x-Achse).
+1. [ ] Den y-Achsenabschnitt.
+1. [ ] Die Extrempunkte.
+1. [ ] Die Symmetrie.
+> Hinweis: `solve` sucht Lösungen für eine Gleichung (standardmäßig $f(x)=0$).
+
+# Eine Funktion ist punktsymmetrisch zum Ursprung. Was gilt?
+1. [x] $f(-x) = -f(x)$
+1. [ ] $f(x) = f(-x)$
+1. [ ] $f(x) > 0$
+> Hinweis: Wenn du das Vorzeichen von $x$ umdrehst, muss sich auch das Vorzeichen des Ergebnisses umdrehen (doppelte Spiegelung).
+
+# Warum nutzen wir `sympy.simplify(...)` beim Symmetrietest?
+1. [x] Weil Python sonst manchmal nicht erkennt, dass zwei Terme mathematisch gleich sind (z. B. $x(x+1)$ vs $x^2+x$).
+1. [ ] Um die Ableitung zu bilden.
+1. [ ] Um die Funktion zu plotten.
+> Hinweis: Computer vergleichen oft nur Zeichenketten; `simplify` rechnet den Term mathematisch so weit wie möglich herunter.
+
+# Was bedeutet es, wenn `sympy.solveset` als Ergebnis `EmptySet()` zurückgibt?
+1. [x] Die Funktion hat keine Nullstellen (schneidet die x-Achse nicht).
+1. [ ] Es ist ein Fehler im Code aufgetreten.
+1. [ ] Die Funktion ist überall 0.
+> Hinweis: Ein "leeres Set" ist eine Menge ohne Inhalt – also wurden keine Lösungen gefunden.
+
+# Welchen Punkt hat JEDE Funktion der Form $f(x) = ax^3 + bx$ (Polynom mit nur ungeraden Exponenten) sicher im Graphen?
+1. [x] Den Ursprung $(0|0)$.
+1. [ ] Den Punkt $(1|1)$.
+1. [ ] Keinen Schnittpunkt mit den Achsen.
+> Hinweis: Wenn alle Exponenten ungerade sind, fehlt das absolute Glied (die Zahl ohne x). Was passiert dann bei $x=0$?
+```
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+**Chapter overview**
+
+This chapter has two sections dealing with the following topics: 
+
+*   **[End behavior](globalverhalten.qmd)**
+    * This section deals with the behavior of functions at infinity. That is, we look at how the function values change when you plug in $\infty$ or $-\infty$. This is generally called the **end behavior** of the function.
+
+---
+
+*   **[Asymptotes](asymptoten.qmd)**  
+    * This section deals with the concept of **asymptotes**.  
+    There are horizontal and vertical asymptotes.   
+    Vertical asymptotes form, for example, around gaps in the domain, such as a point where you would divide by zero.  
+    Horizontal asymptotes, on the other hand, form for example with fractions such as $\frac{1}{x}$.
+    The graph gets arbitrarily close to a vertical asymptote without reaching it (the function is not defined there). A horizontal asymptote describes the behavior at infinity, but the graph may well cross it.
+
+---
+
+
+# Quiz: Symmetry & intercepts
+
+```quizdown
+---
+locale: en
+---
+
+# Which mathematical condition must hold for a function to be symmetric about the y-axis?
+1. [x] $f(x) = f(-x)$
+1. [ ] $f(-x) = -f(x)$
+1. [ ] $f(x) = -f(x)$
+1. [ ] $f(0) = 0$
+> Hint: If you plug in the negative value for $x$, you must get the original function value back (reflection in the y-axis).
+
+# Which Python command replaces the variable `x` with `-x` in `sympy` (substitution)?
+1. [x] `f.subs(x, -x)`
+1. [ ] `f.replace(x, -x)`
+1. [ ] `f.set(x, -x)`
+1. [ ] `f(-x)`
+> Hint: The command comes from the word "substitute".
+
+# Put the steps of a symmetry test in Python into the right order.
+1. f_minus_x = f.subs(x, -x)
+2. difference = f - f_minus_x
+3. if sympy.simplify(difference) == 0:
+4.     print("Symmetric about the y-axis")
+> Hint: First substitute, then compare (take the difference), then check/simplify, then output.
+
+# What do you have to do to calculate the intersection with the y-axis (y-intercept)?
+1. [x] I set $x = 0$ and calculate $f(0)$.
+1. [ ] I set $f(x) = 0$ and solve for $x$.
+1. [ ] I set $x = 1$.
+> Hint: The y-axis runs exactly where the x-coordinate is zero.
+
+# Which Python code calculates the y-intercept correctly?
+1. [x] `y_value = f.subs(x, 0)`
+1. [ ] `y_value = sympy.solve(f, 0)`
+1. [ ] `y_value = f(0)`
+> Hint: We want to plug in (substitute) a concrete value for $x$.
+
+# What do we calculate when we use `sympy.solveset(f, x, domain=sympy.S.Reals)`?
+1. [x] The zeros (intersections with the x-axis).
+1. [ ] The y-intercept.
+1. [ ] The extrema.
+1. [ ] The symmetry.
+> Hint: `solve` looks for solutions of an equation (by default $f(x)=0$).
+
+# A function is point-symmetric about the origin. What holds?
+1. [x] $f(-x) = -f(x)$
+1. [ ] $f(x) = f(-x)$
+1. [ ] $f(x) > 0$
+> Hint: If you flip the sign of $x$, the sign of the result must flip too (double reflection).
+
+# Why do we use `sympy.simplify(...)` in the symmetry test?
+1. [x] Because otherwise Python sometimes does not recognize that two terms are mathematically equal (e.g. $x(x+1)$ vs $x^2+x$).
+1. [ ] To take the derivative.
+1. [ ] To plot the function.
+> Hint: Computers often just compare strings; `simplify` reduces the term mathematically as far as possible.
+
+# What does it mean if `sympy.solveset` returns `EmptySet()`?
+1. [x] The function has no zeros (does not cross the x-axis).
+1. [ ] An error occurred in the code.
+1. [ ] The function is 0 everywhere.
+> Hint: An "empty set" is a set without content, so no solutions were found.
+
+# Which point is guaranteed to lie on the graph of EVERY function of the form $f(x) = ax^3 + bx$ (polynomial with only odd exponents)?
+1. [x] The origin $(0|0)$.
+1. [ ] The point $(1|1)$.
+1. [ ] No intersection with the axes.
+> Hint: If all exponents are odd, there is no constant term (the number without x). What happens at $x=0$?
+```
+
+::::

@@ -1,0 +1,180 @@
+---
+title: "3.2. Matrizen transponieren"
+subtitle: "Zeilen und Spalten im Handumdrehen vertauschen"
+title-en: "3.2. Transposing Matrices"
+subtitle-en: "Swapping rows and columns in no time"
+format: html
+filters:
+  - ctm-assessment
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+::: {.callout-note title="Zellen der Reihe nach ausführen"}
+Die Code-Zellen dieser Seite bauen aufeinander auf: Importe, Variablen und Funktionen aus einer Zelle gelten auch in allen späteren Zellen und werden dort nicht wiederholt. Führe die Zellen deshalb von oben nach unten aus. Meldet Python einen `NameError`, hast du meist eine frühere Zelle noch nicht ausgeführt.
+:::
+
+Nach den elementweisen Operationen kommen wir zu einer weiteren fundamentalen Operation: dem **Transponieren**. Dabei werden die Zeilen und Spalten einer Matrix einfach vertauscht.
+
+### 3.2.1. Was bedeutet Transponieren?
+
+Das Transponieren einer Matrix $A$ "spiegelt" die Elemente an ihrer Hauptdiagonalen. Die erste Zeile wird zur ersten Spalte, die zweite Zeile zur zweiten Spalte und so weiter. Die transponierte Matrix wird als $A^T$ geschrieben.
+
+Wenn $A$ eine $m \times n$-Matrix ist, dann ist ihre Transponierte $A^T$ eine $n \times m$-Matrix.
+
+$$
+A = \begin{pmatrix} a_{11} & a_{12} \\ a_{21} & a_{22} \\ a_{31} & a_{32} \end{pmatrix} \quad \implies \quad A^T = \begin{pmatrix} a_{11} & a_{21} & a_{31} \\ a_{12} & a_{22} & a_{32} \end{pmatrix}
+$$
+
+### 3.2.2. Transponieren in NumPy
+
+NumPy macht das Transponieren extrem einfach. Es gibt zwei übliche Wege, die zum exakt gleichen Ergebnis führen:
+
+1.  **Das `.T`-Attribut**: Ein einfacher und sehr lesbarer Weg, die transponierte Matrix zu erhalten.
+2.  **Die `np.transpose()`-Funktion**: Eine Funktion, die das Gleiche tut.
+
+```{pyodide-python}
+#| read-only: true
+import numpy as np
+
+A = np.array([[1, 2, 3],
+              [4, 5, 6]])
+
+# Methode 1: Das .T Attribut
+A_transponiert_T = A.T
+
+print("Originalmatrix A (2x3):\n", A)
+print("\nTransponiert mit .T (3x2):\n", A_transponiert_T)
+```
+
+### 3.2.3. Übung
+
+Überlege zuerst von Hand: Wie sieht die transponierte Matrix aus? Achte auch darauf, dass sich die Form ändert.
+
+```{math-exercise}
+#| label: transponieren-hand
+#| caption: Transponieren von Hand
+$C = \begin{pmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \end{pmatrix} \quad\Rightarrow\quad C^T =$ mat[1,4;2,5;3,6]
+```
+
+
+Gegeben ist die folgende Matrix `B`. Transponiere sie und gib sowohl die Originalmatrix als auch das Ergebnis aus. Nutze hierbei die beiden unterschiedlichen Möglichkeiten, die zum Transponieren einer Matrix führen.
+
+**Befehle, die du brauchst:** das Attribut `.T`, die Funktion `np.transpose()`, `print()`.
+
+```{pyodide-python}
+#| label: transponieren-uebung
+B = np.array([[10, 20],
+              [30, 40],
+              [50, 60]])
+
+# Dein Code hier
+```
+
+::: {.callout-tip title="Lösung" collapse="true"}
+<details>
+<summary> Sicher, dass du nicht weiter kommst? </summary>
+
+```{pyodide-python}
+# Transponieren mit dem .T-Attribut
+B_T = B.T
+
+print("Originalmatrix B (3x2):\n", B)
+print("\nTransponierte Matrix B.T (2x3):\n", B_T)
+
+# Alternative mit der Funktion, die zum selben Ergebnis führt:
+print("\nTransponiert mit np.transpose():\n", np.transpose(B))
+```
+
+</details>
+:::
+
+Im nächsten Abschnitt geht es um die Multiplikation einer Matrix mit einem Vektor, die Grundlage der "echten" Matrizenmultiplikation.
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+::: {.callout-note title="Run the cells in order"}
+The code cells on this page build on each other: imports, variables and functions from one cell are also available in all later cells and are not repeated there. So run the cells from top to bottom. If Python reports a `NameError`, you most likely have not run an earlier cell yet.
+:::
+
+After the element-wise operations, we come to another fundamental operation: **transposing**. Here, the rows and columns of a matrix are simply swapped.
+
+### 3.2.1. What does transposing mean?
+
+Transposing a matrix $A$ "mirrors" the elements along its main diagonal. The first row becomes the first column, the second row the second column, and so on. The transposed matrix is written as $A^T$.
+
+If $A$ is an $m \times n$ matrix, then its transpose $A^T$ is an $n \times m$ matrix.
+
+$$
+A = \begin{pmatrix} a_{11} & a_{12} \\ a_{21} & a_{22} \\ a_{31} & a_{32} \end{pmatrix} \quad \implies \quad A^T = \begin{pmatrix} a_{11} & a_{21} & a_{31} \\ a_{12} & a_{22} & a_{32} \end{pmatrix}
+$$
+
+### 3.2.2. Transposing in NumPy
+
+NumPy makes transposing extremely easy. There are two common ways that lead to exactly the same result:
+
+1.  **The `.T` attribute**: A simple and very readable way to get the transposed matrix.
+2.  **The `np.transpose()` function**: A function that does the same.
+
+```{pyodide-python}
+#| read-only: true
+import numpy as np
+
+A = np.array([[1, 2, 3],
+              [4, 5, 6]])
+
+# Method 1: the .T attribute
+A_transposed_T = A.T
+
+print("Original matrix A (2x3):\n", A)
+print("\nTransposed with .T (3x2):\n", A_transposed_T)
+```
+
+### 3.2.3. Exercise
+
+First think by hand: what does the transposed matrix look like? Also notice that the shape changes.
+
+```{math-exercise}
+#| label: transponieren-hand-en
+#| caption: Transposing by hand
+$C = \begin{pmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \end{pmatrix} \quad\Rightarrow\quad C^T =$ mat[1,4;2,5;3,6]
+```
+
+
+The following matrix `B` is given. Transpose it and print both the original matrix and the result. Use both of the different ways of transposing a matrix.
+
+**Commands you need:** the attribute `.T`, the function `np.transpose()`, `print()`.
+
+```{pyodide-python}
+#| label: transponieren-uebung-en
+B = np.array([[10, 20],
+              [30, 40],
+              [50, 60]])
+
+# Your code here
+```
+
+::: {.callout-tip title="Solution" collapse="true"}
+<details>
+<summary> Sure you can't get any further? </summary>
+
+```{pyodide-python}
+# Transposing with the .T attribute
+B_T = B.T
+
+print("Original matrix B (3x2):\n", B)
+print("\nTransposed matrix B.T (2x3):\n", B_T)
+
+# Alternative with the function, which gives the same result:
+print("\nTransposed with np.transpose():\n", np.transpose(B))
+```
+
+</details>
+:::
+
+The next section is about multiplying a matrix by a vector, the basis of "real" matrix multiplication.
+
+::::

@@ -1,0 +1,293 @@
+---
+title: "5. Anwendung geometrischer Transformationen"
+title-en: "5. Application: Geometric Transformations"
+filters:
+    - quizdown
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+Nachdem nun viele Konzepte und Konstrukte rund um die Matrizenrechnung aufgefrischt worden sind, soll in diesem Kapitel gezeigt werden, dass es mit Hilfe von Python auch Möglichkeiten der Visualisierung von Rechnungen gibt.  
+Dazu gehört der erste Anwendungsfall von Matrizenrechnungen in diesem Tutorial. Bei diesem Anwendungsfall handelt es sich um geometrische Transformationen, diese lassen sich mit Python visualisieren.  
+Zuerst wird in diesem Kapitel gezeigt, wie geometrische Transformationen durch Matrizen dargestellt werden können. Danach wird gezeigt, wie diese Matrizen durch Python berechnet werden können und zuletzt wird gezeigt, wie diese Transformationen mithilfe von Pythons `matplotlib`-Bibliothek **visualisiert** werden können.
+
+# Kapitelübersicht:
+
+- **[5.1. Konzept geometrischer Transformationen](anwendung_geometrie_transformationen_konzept.qmd)**
+    - [5.1.1. Matrizendarstellung von geometrischen Veränderungen](anwendung_geometrie_transformationen_konzept.qmd#matrizendarstellung-von-geometrischen-veränderungen)
+- **[5.2. Berechnung geometrischer Transformationen](anwendung_geometrie_transformationen_berechnen.qmd)**
+    - [5.2.1. Geometrische Veränderung mit Python berechnen](anwendung_geometrie_transformationen_berechnen.qmd#geometrische-veränderung-mit-python-berechnen)
+- **[5.3. Visualisierung geometrischer Transformationen](anwendung_geometrie_visualisierung.qmd)**
+    - [5.3.1. Grundlegende Visualisierung: Vorher-Nachher-Vergleich](anwendung_geometrie_visualisierung.qmd#grundlegende-visualisierung-vorher-nachher-vergleich)
+
+
+Um möglichst viel aus diesem Tutorial mitzunehmen, lohnt es sich im Allgemeinen, nicht nur die Kapitel in der Reihenfolge durchzugehen, sondern auch die Abschnitte in der angegebenen Reihenfolge durchzugehen, da diese sich aufeinander beziehen.
+
+# Vorwissen-Quiz 
+
+Bevor du jetzt mit dem ersten Anwendungskapitel **Geometrische Transformationen** startest, kannst du mit dem folgenden Quiz testen, wie gut die bisherigen Inhalte hängen geblieben sind.
+
+```quizdown
+---
+locale: de
+shuffleQuestions: true
+nQuestions: 10
+---
+
+# Wann ist eine Matrix **invertierbar** (regulär)?
+1. [ ] Wenn sie quadratisch ist und nur positive Zahlen enthält.
+1. [ ] Wenn ihre Determinante gleich 0 ist.
+1. [x] Wenn ihre Determinante ungleich 0 ist.
+1. [ ] Wenn sie mehr Zeilen als Spalten hat.
+
+> Denk an die normale Division bei Zahlen: Durch welche Zahl darf man niemals teilen? Die Determinante spielt hier eine ähnliche Rolle für die Inverse.
+
+# Was berechnet `np.linalg.matrix_rank(A)`?
+1. [ ] Die Anzahl der Elemente in der Matrix.
+1. [x] Die Anzahl der linear unabhängigen Zeilen/Spalten.
+1. [ ] Den höchsten Wert in der Matrix.
+1. [ ] Die Dimension (z.B. 2D).
+
+> Es geht um den Informationsgehalt: Wie viele Zeilen sind "echt neu" und nicht nur Kopien oder Mischungen der anderen?
+
+# Bringe die Code-Zeilen in die richtige Reihenfolge, um die Determinante einer Matrix zu berechnen.
+1. `import numpy as np`
+2. `M = np.array([[2, 0], [0, 2]])`
+3. `det = np.linalg.det(M)`
+4. `print(det)`
+
+> Erst Import, dann Daten, dann die Funktion aus dem Submodul `linalg`.
+
+# Geometrisch gesehen: Was bedeutet es, wenn die Determinante einer $2 \times 2$ Matrix **0** ist?
+- [x] Die von den Vektoren aufgespannte Fläche ist 0 (die Vektoren liegen auf einer Linie).
+- [ ] Die Vektoren stehen senkrecht aufeinander.
+- [ ] Die Fläche ist unendlich groß.
+- [x] Die von den Vektoren aufgespannte Fläche kollabiert (ist "platt").
+
+> Die Determinante ist ein Skalierungsfaktor für Flächen. Was bleibt von einer Fläche übrig, wenn der Faktor 0 ist?
+
+# Was ist das Ergebnis von $A \cdot A^{-1}$ (Matrix mal ihre Inverse)?
+1. [ ] Eine Nullmatrix.
+1. [x] Die Einheitsmatrix ($E$).
+1. [ ] Die Matrix $A$ selbst.
+1. [ ] Das Skalar 1.
+
+> Was kommt bei normalen Zahlen heraus, wenn man $5 \cdot \frac{1}{5}$ rechnet? Das Äquivalent dazu bei Matrizen ist gesucht.
+
+# Python-Check: Was gibt dieser Code aus?
+~~~python
+A = np.eye(3)
+print(np.linalg.det(A))
+~~~
+1. [ ] 0.0
+1. [ ] 3.0
+1. [x] 1.0
+1. [ ] Error
+
+> `eye` erstellt die Einheitsmatrix. Ändert diese Matrix die Größe einer Fläche, wenn man sie anwendet?
+
+# Welche Dimension hat das Ergebnis von `(2x5) @ (5x3)`?
+1. [ ] `(5, 5)`
+1. [ ] `(2, 5)`
+1. [x] `(2, 3)`
+1. [ ] Error
+
+> Die inneren Zahlen müssen "passen" und verschwinden dann. Was bleibt übrig?
+
+# Code-Puzzle: Berechne die Inverse einer Matrix `A` und prüfe das Ergebnis!
+1. `inv_A = np.linalg.inv(A)`
+2. `check = A @ inv_A`
+3. `print(np.round(check))`
+
+> Erst invertieren, dann Probe durch Multiplikation. Das Ergebnis sollte die Einheitsmatrix sein (wir runden wegen möglicher Fließkommafehler).
+
+# Was macht `liste[::-1]` mit einer Python-Liste?
+1. [ ] Löscht das letzte Element.
+1. [ ] Gibt das letzte Element aus.
+1. [x] Dreht die Reihenfolge der Liste um.
+1. [ ] Sortiert die Liste absteigend.
+
+> Das ist Slicing mit Schrittweite -1. Wir laufen also rückwärts durch die Liste.
+
+# Wie erstellst du eine $3 \times 3$ Matrix voller Einsen?
+1. [ ] `np.eye(3)`
+1. [x] `np.ones((3, 3))`
+1. [ ] `np.fill(3, 1)`
+1. [ ] `np.array([1, 1, 1])`
+
+> Der Funktionsname sagt genau, welche Zahl drinstehen soll (Englisch für "Einsen"). `eye` wäre nur die Diagonale.
+
+# Verständnisfrage: Warum nutzen wir Computer für die Inverse, statt sie von Hand zu rechnen?
+1. [ ] Weil Computer bessere Handschrift haben.
+1. [x] Weil der Rechenaufwand extrem schnell wächst (bei großen Matrizen fast unmöglich von Hand).
+1. [ ] Weil es mathematisch von Hand nicht geht.
+1. [ ] Weil Computer dabei nie Rundungsfehler machen.
+
+> Bei kleinen Matrizen geht es noch, aber der Aufwand explodiert mit der Größe (kubisches Wachstum).
+
+# Was passiert hier (Broadcasting)?
+~~~python
+M = np.array([[10, 10], [20, 20]])
+print(M + 1)
+~~~
+1. [ ] Error, man kann Zahl nicht auf Matrix addieren.
+1. [ ] `[11, 11, 21, 21]`
+1. [x] `[[11, 11], [21, 21]]`
+1. [ ] `[[10, 11], [20, 21]]`
+
+> NumPy ist nett: Wenn du eine einzelne Zahl (`1`) auf eine Matrix addierst, wird sie einfach auf *jedes* Element draufgerechnet.
+
+# Theorie-Check: Wenn der Rang einer $3 \times 3$ Matrix nur 2 ist, dann...
+- [x] ... ist die Matrix singulär (nicht invertierbar).
+- [ ] ... ist die Matrix invertierbar.
+- [ ] ... hat sie 3 linear unabhängige Zeilen.
+- [x] ... ist die Determinante 0.
+
+> Wenn der Rang kleiner ist als die Dimension (Voller Rang), fehlt Information. Die Matrix ist "plattgedrückt".
+```
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+Now that many concepts and constructs around matrix calculation have been refreshed, this chapter shows that Python also offers ways to visualize calculations.  
+This includes the first application of matrix calculation in this tutorial: geometric transformations, which can be visualized with Python.  
+First, this chapter shows how geometric transformations can be represented by matrices. Then it shows how these matrices can be computed with Python, and finally how these transformations can be **visualized** with Python's `matplotlib` library.
+
+# Chapter overview:
+
+- **[5.1. Concept of geometric transformations](anwendung_geometrie_transformationen_konzept.qmd)**
+    - [5.1.1. Matrix representation of geometric changes](anwendung_geometrie_transformationen_konzept.qmd#matrizendarstellung-von-geometrischen-veränderungen)
+- **[5.2. Computing geometric transformations](anwendung_geometrie_transformationen_berechnen.qmd)**
+    - [5.2.1. Computing geometric changes with Python](anwendung_geometrie_transformationen_berechnen.qmd#geometrische-veränderung-mit-python-berechnen)
+- **[5.3. Visualizing geometric transformations](anwendung_geometrie_visualisierung.qmd)**
+    - [5.3.1. Basic visualization: before-and-after comparison](anwendung_geometrie_visualisierung.qmd#grundlegende-visualisierung-vorher-nachher-vergleich)
+
+
+To get as much as possible out of this tutorial, it is generally worth going through not only the chapters but also the sections in the given order, since they refer to each other.
+
+# Prior knowledge quiz 
+
+Before you start the first application chapter, **geometric transformations**, you can use the following quiz to test how well the previous contents have stuck.
+
+```quizdown
+---
+locale: en
+shuffleQuestions: true
+nQuestions: 10
+---
+
+# When is a matrix **invertible** (regular)?
+1. [ ] When it is square and contains only positive numbers.
+1. [ ] When its determinant equals 0.
+1. [x] When its determinant is non-zero.
+1. [ ] When it has more rows than columns.
+
+> Think of ordinary division of numbers: which number must you never divide by? The determinant plays a similar role for the inverse.
+
+# What does `np.linalg.matrix_rank(A)` compute?
+1. [ ] The number of elements in the matrix.
+1. [x] The number of linearly independent rows/columns.
+1. [ ] The largest value in the matrix.
+1. [ ] The dimension (e.g. 2D).
+
+> It is about the information content: how many rows are "really new" and not just copies or mixtures of the others?
+
+# Put the lines of code in the right order to compute the determinant of a matrix.
+1. `import numpy as np`
+2. `M = np.array([[2, 0], [0, 2]])`
+3. `det = np.linalg.det(M)`
+4. `print(det)`
+
+> First the import, then the data, then the function from the submodule `linalg`.
+
+# Geometrically speaking: what does it mean if the determinant of a $2 \times 2$ matrix is **0**?
+- [x] The area spanned by the vectors is 0 (the vectors lie on one line).
+- [ ] The vectors are perpendicular to each other.
+- [ ] The area is infinitely large.
+- [x] The area spanned by the vectors collapses (is "flat").
+
+> The determinant is a scaling factor for areas. What is left of an area if the factor is 0?
+
+# What is the result of $A \cdot A^{-1}$ (a matrix times its inverse)?
+1. [ ] A zero matrix.
+1. [x] The identity matrix ($I$).
+1. [ ] The matrix $A$ itself.
+1. [ ] The scalar 1.
+
+> What do you get for ordinary numbers when you compute $5 \cdot \frac{1}{5}$? We are looking for the matrix equivalent.
+
+# Python check: what does this code print?
+~~~python
+A = np.eye(3)
+print(np.linalg.det(A))
+~~~
+1. [ ] 0.0
+1. [ ] 3.0
+1. [x] 1.0
+1. [ ] Error
+
+> `eye` creates the identity matrix. Does this matrix change the size of an area when applied?
+
+# What is the dimension of the result of `(2x5) @ (5x3)`?
+1. [ ] `(5, 5)`
+1. [ ] `(2, 5)`
+1. [x] `(2, 3)`
+1. [ ] Error
+
+> The inner numbers must "match" and then disappear. What is left?
+
+# Code puzzle: compute the inverse of a matrix `A` and check the result!
+1. `inv_A = np.linalg.inv(A)`
+2. `check = A @ inv_A`
+3. `print(np.round(check))`
+
+> First invert, then check by multiplying. The result should be the identity matrix (we round because of possible floating-point errors).
+
+# What does `my_list[::-1]` do with a Python list?
+1. [ ] Deletes the last element.
+1. [ ] Prints the last element.
+1. [x] Reverses the order of the list.
+1. [ ] Sorts the list in descending order.
+
+> This is slicing with step -1. So we walk backwards through the list.
+
+# How do you create a $3 \times 3$ matrix full of ones?
+1. [ ] `np.eye(3)`
+1. [x] `np.ones((3, 3))`
+1. [ ] `np.fill(3, 1)`
+1. [ ] `np.array([1, 1, 1])`
+
+> The function name says exactly which number should be in it. `eye` would only be the diagonal.
+
+# Understanding: why do we use computers for the inverse instead of computing it by hand?
+1. [ ] Because computers have better handwriting.
+1. [x] Because the computational effort grows extremely fast (almost impossible by hand for large matrices).
+1. [ ] Because it is mathematically impossible by hand.
+1. [ ] Because computers never make rounding errors doing it.
+
+> For small matrices it is still possible, but the effort explodes with the size (cubic growth).
+
+# What happens here (broadcasting)?
+~~~python
+M = np.array([[10, 10], [20, 20]])
+print(M + 1)
+~~~
+1. [ ] Error, you cannot add a number to a matrix.
+1. [ ] `[11, 11, 21, 21]`
+1. [x] `[[11, 11], [21, 21]]`
+1. [ ] `[[10, 11], [20, 21]]`
+
+> NumPy is nice: if you add a single number (`1`) to a matrix, it is simply added to *every* element.
+
+# Theory check: if the rank of a $3 \times 3$ matrix is only 2, then...
+- [x] ... the matrix is singular (not invertible).
+- [ ] ... the matrix is invertible.
+- [ ] ... it has 3 linearly independent rows.
+- [x] ... the determinant is 0.
+
+> If the rank is smaller than the dimension (full rank), information is missing. The matrix is "squashed flat".
+```
+
+::::

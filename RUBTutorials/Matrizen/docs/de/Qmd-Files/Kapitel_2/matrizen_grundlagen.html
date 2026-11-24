@@ -1,0 +1,2110 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.11.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>2.1. Matrizen — Die Grundlagen – Matrizen mit Python</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../Qmd-Files/Kapitel_2/matrizen_attribute.html" rel="next">
+<link href="../../Qmd-Files/Kapitel_2/index.html" rel="prev">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-447e42e69aaa9833c0ba1b986f430b20.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-4de38e511a87c50155c3f4aacf5ec199.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-a75db3605971474577b384640c6b1046.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-4de38e511a87c50155c3f4aacf5ec199.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-contrib/ctm-resize-1/ctm-resize.js"></script>
+<link href="../../site_libs/quarto-contrib/ctm-resize-1/ctm-resize.css" rel="stylesheet">
+<script src="../../site_libs/quarto-contrib/ctm-coi-frame-startup-1/coi-frame-startup.js"></script>
+<script src="../../site_libs/quarto-contrib/ctm-assets-0.9.0/assets.js"></script>
+<script src="../../site_libs/quarto-contrib/ctm-locale-0.9.0/ctm-locale.js"></script>
+<script src="../../site_libs/quarto-contrib/ctm-locale-0.9.0/common.js"></script>
+<script src="../../site_libs/quarto-contrib/ctm-locale-ui-0.9.0/ui.js"></script>
+<script src="../../site_libs/quarto-contrib/ctm-layout-0.9.0/ctm-layout.js"></script>
+<script src="../../site_libs/quarto-contrib/ctm-layout-0.9.0/ctm-settings.js"></script>
+<link href="../../site_libs/quarto-contrib/ctm-layout-0.9.0/ctm-ui.css" rel="stylesheet">
+<script src="../../site_libs/quarto-contrib/ai-feedback-0.9.0/feedback-core.js"></script>
+<script src="../../site_libs/quarto-contrib/ai-feedback-0.9.0/feedback-dom.js"></script>
+<script src="../../site_libs/quarto-contrib/ai-feedback-0.9.0/ai-feedback.js"></script>
+<link href="../../site_libs/quarto-contrib/ai-feedback-0.9.0/ai-feedback.css" rel="stylesheet">
+<script src="../../site_libs/quarto-contrib/ctm-runtime-0.9.0/pyodide-runtime.js"></script>
+<script src="../../site_libs/quarto-contrib/ctm-worker-0.9.0/pyodide-worker.js"></script>
+<script src="../../site_libs/quarto-contrib/ctm-locale-py-exercise-0.9.0/py-exercise.js"></script>
+<link href="../../site_libs/quarto-contrib/py-exercise-0.5.0/py-exercise.css" rel="stylesheet">
+<link href="../../site_libs/quarto-contrib/ctm-ui-0.9.0/ctm-ui.css" rel="stylesheet">
+<script src="../../site_libs/quarto-contrib/ctm-copy-0.9.0/ctm-copy.js"></script>
+<script src="../../site_libs/quarto-contrib/ctm-store-0.9.0/ctm-store.js"></script>
+<script src="../../site_libs/quarto-contrib/ctm-locale-pyodide-interaktiv-0.9.0/pyodide-interaktiv.js"></script>
+<script src="../../site_libs/quarto-contrib/pyodide-interaktiv-1.10.0/qpyodide-locale.js" type="module"></script>
+<script src="../../site_libs/quarto-contrib/pyodide-interaktiv-1.10.0/qpyodide-storage.js" type="module"></script>
+<script src="../../site_libs/quarto-contrib/pyodide-interaktiv-1.10.0/qpyodide-document-status.js" type="module"></script>
+<script src="../../site_libs/quarto-contrib/pyodide-interaktiv-1.10.0/qpyodide-storage-settings.js" type="module"></script>
+<script src="../../site_libs/quarto-contrib/pyodide-interaktiv-1.10.0/qpyodide-worker-plugin.js" type="module"></script>
+<script src="../../site_libs/quarto-contrib/pyodide-interaktiv-1.10.0/qpyodide-document-engine-initialization.js" type="module"></script>
+<script src="../../site_libs/quarto-contrib/pyodide-interaktiv-1.10.0/qpyodide-canvas-plots.js" type="module"></script>
+<link href="../../site_libs/quarto-contrib/pyodide-interaktiv-1.10.0/qpyodide-styling.css" rel="stylesheet">
+<script src="../../site_libs/quarto-contrib/pyodide-interaktiv-feedback-1.10.0/qpyodide-feedback.js" type="module"></script>
+<script src="../../site_libs/quarto-contrib/ctm-export-0.9.0/ctm-export.js"></script>
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Keine Treffer",
+    "search-matching-documents-text": "Treffer",
+    "search-copy-link-title": "Link in die Suche kopieren",
+    "search-hide-matches-text": "Zusätzliche Treffer verbergen",
+    "search-more-match-text": "weitere Treffer in diesem Dokument",
+    "search-more-matches-text": "weitere Treffer in diesem Dokument",
+    "search-clear-button-title": "Zurücksetzen",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Abbrechen",
+    "search-submit-button-title": "Abschicken",
+    "search-label": "Suchen"
+  }
+}</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<script>globalThis.CTM_ASSETS={"bases":{"font-awesome":"https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/","jsxgraph":"https://cdn.jsdelivr.net/npm/jsxgraph@1.14.2/","katex":"https://cdn.jsdelivr.net/npm/katex@0.16.47/","mathjax-newcm-font":"https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.1.3/","mathjax3":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/","mathjax4":"https://cdn.jsdelivr.net/npm/mathjax@4.1.3/","monaco-editor":"https://cdn.jsdelivr.net/npm/monaco-editor@0.46.0/","pyodide":"https://cdn.jsdelivr.net/pyodide/v0.28.3/full/","source-sans-pro":"https://cdn.jsdelivr.net/npm/@fontsource/source-sans-pro@5.3.0/"},"mode":"cdn","v":1};</script>
+<script src="../../coi-serviceworker.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/monaco-editor@0.46.0/min/vs/editor/editor.main.css">
+<script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/js/all.min.js" defer="" crossorigin="anonymous"></script>
+<script type="text/javascript">
+// qpyodide-document-settings.js – document-wide settings (template)
+//
+// This file is a template: the {{PLACEHOLDERS}} are replaced by the Lua
+// filter (qpyodide.lua, function initializationPyodide) during rendering.
+// It's injected as the first module into the <head>, so that all further
+// modules can access the global settings.
+
+// Document level settings ----
+
+// Determine if we need to install python packages
+globalThis.qpyodideInstallPythonPackagesList = [''];
+
+// Check to see if we have an empty array, if we do set to skip the installation.
+globalThis.qpyodideSetupPythonPackages = !(qpyodideInstallPythonPackagesList.indexOf("") !== -1);
+
+// Automatically preload the HTTP shim and plotting packages? Defaults to true.
+// Explicit pyodide: packages entries still install when this is false.
+globalThis.qpyodidePreloadPackages = true;
+globalThis.qpyodideExamOutput = false;
+globalThis.qpyodideStopAfter = 20;
+
+// Display a startup message?
+globalThis.qpyodideShowStartupMessage = true;
+
+// Describe the Pyodide settings that should be used.
+// Data only (no functions) – the configuration is passed to the Pyodide
+// web worker via postMessage; the worker collects stdout/stderr itself.
+globalThis.qpyodideCustomizedPyodideOptions = {
+  "indexURL": "https://cdn.jsdelivr.net/pyodide/v0.28.3/full/",
+  "env": {
+    "HOME": "/home/pyodide",
+  }
+}
+
+// Interactive plot backend ----
+//
+// "webagg" (Pyodide 0.28+), "html5-canvas" (an older Pyodide pinned via
+// `pyodide: base-url:`) or "auto" (the base URL names no version; decided
+// from the loaded Pyodide). See qpyodide-canvas-plots.js.
+globalThis.qpyodideCanvasBackend = "webagg";
+
+// UI language for this render pass ----
+//
+// Set by the Lua filter (ctm.locale: `pyodide: lang:`, `ctm-assessment: lang:`,
+// Quarto's own `lang:`): a language of the catalogue (en, de, sv, nb, da).
+globalThis.qpyodideLang = "de";
+
+// Store cell data
+globalThis.qpyodideCellDetails = [{"code":"import numpy as np\n\nB = np.array([\n  [5, 7, 2],\n  [1, 0, 3]\n])\n\nprint(\"Unsere Matrix B:\")\nprint(B)","id":1,"options":{"autorun":"","classes":"","code-fold":"show","comment":"","context":"","ctm-extra-save":true,"ctm-extra-source":"a7b12083e25f7809","ctm-store-id":"cell:472d48c2814a3eae","ctm-store-save":true,"ctm-store-source":"472d48c2814a3eae","dpi":72,"echo":"","eval":"","feedback-context":"","feedback-policy":"","feedbackContext":{"mode":"auto","refs":"auto","text":"2.1.4. Matrizen in Python erstellen\nNachdem wir die theoretischen Grundlagen kennen, stellt sich die Frage: Wie erstellen wir eine Matrix in Python? Während man verschachtelte Listen ([[1, 2], [3, 4]]) verwenden kann, ist der De-facto-Standard für numerische und wissenschaftliche Berechnungen die Bibliothek NumPy. Wie in Kap 1 beschrieben, ist das effektiver und auch schneller, letzteres konnte leider in Kapitel 1 nicht gezeigt werden.\nNumPy bietet uns dafür den Datentyp ndarray (n-dimensionales Array), der sich perfekt für Vektoren und Matrizen eignet. Erzeugt wird ein solches Array mit der Funktion np.array()."},"fig-cap":"","fig-height":5,"fig-width":7,"include":"","label":"","local-storage":"","message":"true","out-height":"","out-width":"700px","output":"true","pdf-fallback":"","policySelection":{"exercise":"","name":""},"read-only":"false","results":"markup","save":"","task":"","warning":"true"}}];
+
+// AI feedback feature settings ----
+//
+// enabled : show a Feedback button per interactive cell?
+// storage : default for where credentials are stored
+//           ("local" = localStorage, persistent; "session" = sessionStorage, per tab).
+//           Can be changed by the user in the settings panel.
+// hints   : progressive hints – the hint level rises with each click of the
+//           Feedback button on the same cell.
+// uiLanguage : the language of the feedback interface and of the feedback
+//              (this extension's interface language).
+globalThis.qpyodideFeedbackOptions = {
+  enabled: true,
+  storage: "local",
+  hints: true,
+  uiLanguage: "de"
+};
+
+// Local-storage autosave feature settings ----
+//
+// enabled : document-wide default (`pyodide: local-storage: true`); a
+//           cell's own `#| local-storage: true/false` overrides this.
+// epoch   : "" (off) unless `pyodide: local-storage-epoch:` was set. When
+//           non-empty, it's folded into every saved-code storage key, so
+//           re-rendering with a new epoch value makes every previously
+//           saved answer on this page unreachable -- an exam-room "next
+//           group gets a clean slate" reset. See qpyodide-storage.js.
+globalThis.qpyodideLocalStorageOptions = {
+  enabled: true,
+  epoch: ""
+};
+
+</script>
+
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../Theme/styles.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Zum Hauptinhalt springen</a><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          toggle.setAttribute("aria-checked", alternate ? "true" : "false");
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455).
+    // Not run on load: stylesheets are set before first paint there, and
+    // scrolling would undo the scroll to a URL fragment (#14973).
+    // The one pixel nudge keeps the reader where they were.
+    const refreshSafariScrollbar = () => {
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        const scrollY = window.scrollY;
+        window.scrollTo(0, scrollY > 0 ? scrollY - 1 : 1);
+        setTimeout(() => {
+          window.scrollTo(0, scrollY);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const queryPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkModeDefault = queryPrefersDark.matches;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      refreshSafariScrollbar();
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    queryPrefersDark.addEventListener("change", e => {
+      if(window.localStorage.getItem("quarto-color-scheme") !== null)
+        return;
+      const alternate = e.matches
+      toggleColorMode(alternate);
+      refreshSafariScrollbar();
+      localAlternateSentinel = e.matches ? 'alternate' : 'default'; // this is used alongside local storage!
+      toggleGiscusIfUsed(alternate, darkModeDefault);
+    });
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark" aria-label="Website">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Matrizen mit Python</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Navigation umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-globe" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-globe" role="img" aria-label="Sprache wählen / Choose language">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-globe">    
+        <li>
+    <a class="dropdown-item active" aria-current="true" href="../../../de/Qmd-Files/Kapitel_2/matrizen_grundlagen.html">
+ <span class="dropdown-text">Deutsch</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../en/Qmd-Files/Kapitel_2/matrizen_grundlagen.html">
+ <span class="dropdown-text">English</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <button type="button" role="switch" aria-checked="false" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Dunkelmodus umschalten" aria-label="Dunkelmodus umschalten"><i class="bi"></i></button>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Lesemodus umschalten">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+            <div id="quarto-search" class="" title="Suchen"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" aria-label="Symbolleiste">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="Pfad"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../Qmd-Files/Kapitel_2/index.html">2. Matrizen in Python definieren</a></li><li class="breadcrumb-item"><a href="../../Qmd-Files/Kapitel_2/matrizen_grundlagen.html">2.1. Grundlagen</a></li></ol></nav>
+        <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" aria-label="Bereich">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">0. Übersichtsseite</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../Qmd-Files/Kapitel_1/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-1-label">1. Vektoren - Die Bausteine</span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-controls="quarto-sidebar-section-1" aria-expanded="false" aria-label="Abschnitt umschalten: 1. Vektoren - Die Bausteine">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-1" aria-labelledby="quarto-sidebar-section-1-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_1/vektor_grundlagen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">1.1. Grundlagen</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_1/vektor_operationen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">1.2. Vektor-Operationen</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_1/vektor_skalarprodukt.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">1.3. Skalarprodukt</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_1/vektor_laenge.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">1.4. Länge (Norm)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_1/vektor_winkel.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">1.5. Winkel zwischen Vektoren</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_1/vektor_repraesentation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">1.6. Vektoren als Datenrepräsentation</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../Qmd-Files/Kapitel_2/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-2-label">2. Matrizen in Python definieren</span></a>
+            <button type="button" class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-controls="quarto-sidebar-section-2" aria-expanded="true" aria-label="Abschnitt umschalten: 2. Matrizen in Python definieren">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-2" aria-labelledby="quarto-sidebar-section-2-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_2/matrizen_grundlagen.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">2.1. Grundlagen</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_2/matrizen_attribute.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">2.2. Matrix-Attribute</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_2/matrizen_spezielle.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">2.3. Spezielle Matrizen</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_2/matrizen_zugriff.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">2.4. Zugriff auf Elemente</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../Qmd-Files/Kapitel_3/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-3-label">3. Grundlegende Matrix-Operationen</span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-controls="quarto-sidebar-section-3" aria-expanded="false" aria-label="Abschnitt umschalten: 3. Grundlegende Matrix-Operationen">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-3" aria-labelledby="quarto-sidebar-section-3-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_3/matrizen_elementweise_addition_subtraktion_skalar.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">3.1. Elementweise Addition, Subtraktion und Skalarmultiplikation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_3/matrizen_transponieren.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">3.2. Transponieren</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_3/matrizen_vektor_multiplikation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">3.3. Matrix-Vektor-Multiplikation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_3/matrizen_multiplikation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">3.4. Matrizen-Multiplikation</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../Qmd-Files/Kapitel_4/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-4-label">4. Kernoperationen der Linearen Algebra</span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-controls="quarto-sidebar-section-4" aria-expanded="false" aria-label="Abschnitt umschalten: 4. Kernoperationen der Linearen Algebra">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-4" aria-labelledby="quarto-sidebar-section-4-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_4/kernoperationen_rang.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">4.1. Matrix-Rang</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_4/kernoperationen_determinante.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">4.2. Determinante</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_4/kernoperationen_inverse.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">4.3. Inverse</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../Qmd-Files/Kapitel_5/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-5-label">5. Anwendung 1 - Geometrische Transformationen</span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-controls="quarto-sidebar-section-5" aria-expanded="false" aria-label="Abschnitt umschalten: 5. Anwendung 1 - Geometrische Transformationen">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-5" aria-labelledby="quarto-sidebar-section-5-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_5/anwendung_geometrie_transformationen_konzept.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">5.1. Konzept geometrischer Transformationen</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_5/anwendung_geometrie_transformationen_berechnen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">5.2. Geometrische Transformationen berechnen</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_5/anwendung_geometrie_visualisierung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">5.3. Visualisierung geometrischer Transformationen</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../Qmd-Files/Kapitel_6/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-6-label">6. Anwendung 2 - Lineare Gleichungssysteme</span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-controls="quarto-sidebar-section-6" aria-expanded="false" aria-label="Abschnitt umschalten: 6. Anwendung 2 - Lineare Gleichungssysteme">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-6" aria-labelledby="quarto-sidebar-section-6-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_6/anwendung_lgs_grundlagen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">6.1. Problemstellung</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_6/anwendung_lgs_loesungsmethoden.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">6.2. Lösungsmethoden</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../Qmd-Files/Kapitel_7/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-7-label">7. Eigenwerte und Eigenvektoren</span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-controls="quarto-sidebar-section-7" aria-expanded="false" aria-label="Abschnitt umschalten: 7. Eigenwerte und Eigenvektoren">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-7" aria-labelledby="quarto-sidebar-section-7-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_7/eigenwerte_konzept.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">7.1. Konzept: Was sind Eigenwerte &amp; -vektoren?</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_7/eigenwerte_berechnung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">7.2. Berechnung in Python</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_7/eigenwerte_visualisierung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">7.3. Visualisierung &amp; Anwendungsfälle</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_8/cheatsheet.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">8. Überblick über die Inhalte</span></a>
+  </div>
+</li>
+    </ul>
+    <label class="sidebar-alle-ausklappen"><input type="checkbox"><span class="auf">▼ Alle ausklappen</span><span class="zu">▲ Alle einklappen</span></label>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active">
+    <h2 id="toc-title">Auf dieser Seite</h2>
+   
+  <ul>
+  <li><a href="#was-sind-matrizen" id="toc-was-sind-matrizen" class="nav-link active" data-scroll-target="#was-sind-matrizen">2.1.1. Was sind Matrizen?</a></li>
+  <li><a href="#was-eine-matrix-repräsentieren-kann" id="toc-was-eine-matrix-repräsentieren-kann" class="nav-link" data-scroll-target="#was-eine-matrix-repräsentieren-kann">2.1.2. Was eine Matrix repräsentieren kann</a>
+  <ul class="collapse">
+  <li><a href="#lineare-gleichungssysteme-lgs" id="toc-lineare-gleichungssysteme-lgs" class="nav-link" data-scroll-target="#lineare-gleichungssysteme-lgs">2.1.2.1. Lineare Gleichungssysteme (LGS)</a></li>
+  <li><a href="#datenmatrizen" id="toc-datenmatrizen" class="nav-link" data-scroll-target="#datenmatrizen">2.1.2.2. Datenmatrizen</a></li>
+  <li><a href="#übergangsmatrizen-stochastische-matrizen" id="toc-übergangsmatrizen-stochastische-matrizen" class="nav-link" data-scroll-target="#übergangsmatrizen-stochastische-matrizen">2.1.2.3. Übergangsmatrizen (Stochastische Matrizen)</a></li>
+  <li><a href="#permutationen-und-permutationsmatrizen" id="toc-permutationen-und-permutationsmatrizen" class="nav-link" data-scroll-target="#permutationen-und-permutationsmatrizen">2.1.2.4. Permutationen und Permutationsmatrizen</a></li>
+  </ul></li>
+  <li><a href="#die-dimension-einer-matrix" id="toc-die-dimension-einer-matrix" class="nav-link" data-scroll-target="#die-dimension-einer-matrix">2.1.3. Die Dimension einer Matrix</a></li>
+  <li><a href="#matrizen-in-python-erstellen" id="toc-matrizen-in-python-erstellen" class="nav-link" data-scroll-target="#matrizen-in-python-erstellen">2.1.4. Matrizen in Python erstellen</a>
+  <ul class="collapse">
+  <li><a href="#übung" id="toc-übung" class="nav-link" data-scroll-target="#übung">2.1.4.1. Übung</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content" tabindex="-1">
+
+<script>window.__aiFeedbackPolicies = {"layers":[],"pageLayers":[]};</script>
+<script>window.__aiFeedbackConfig = {"baseUrl":"","mode":"copy","model":""};</script>
+<script>window.__mathExerciseConfig = {"lang":"de","stopAfter":20};</script>
+<script>window.__pyExerciseConfig = {"feedback":false,"lang":"de","stopAfter":20,"submission":false,"submissionKey":"py-exercise"};</script>
+<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.46.0/min/vs/loader.js"></script>
+<script type="module" id="qpyodide-monaco-editor-init">
+
+  // Configure the Monaco Editor's loader
+  require.config({
+    paths: {
+      'vs': CTMAssets.url('monaco-editor', 'min/vs')
+    }
+  });
+</script>
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="Pfad"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../Qmd-Files/Kapitel_2/index.html">2. Matrizen in Python definieren</a></li><li class="breadcrumb-item"><a href="../../Qmd-Files/Kapitel_2/matrizen_grundlagen.html">2.1. Grundlagen</a></li></ol></nav>
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">2.1. Matrizen — Die Grundlagen</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!--ctm-save-generated--><div class="ctm-save-bar" role="region" aria-label="Gespeicherte Antworten" hidden=""><p class="ctm-save-notice">Ihre Antworten werden nur in diesem Browser gespeichert.</p><div class="ctm-save-actions"><button type="button" data-ctm-save-toggle="">Auf diesem Gerät nicht speichern</button>
+<button type="button" data-ctm-export="">Meine Antworten exportieren</button>
+<button type="button" data-ctm-clear-page="">Antworten auf dieser Seite löschen</button>
+<button type="button" data-ctm-clear-course="">Alle Antworten in diesem Kurs löschen</button></div><span class="ctm-save-status" role="status" aria-live="polite"></span></div>
+<p>Aufbauend auf Kapitel <a href="../../Qmd-Files/Kapitel_1/index.html">1</a> geht es zuerst darum zu klären, was Matrizen überhaupt genau sind.</p>
+<section id="was-sind-matrizen" class="level2">
+<h2 class="anchored" data-anchor-id="was-sind-matrizen">2.1.1. Was sind Matrizen?</h2>
+<p>Betrachten wir zunächst die mathematische Definition einer Matrix:</p>
+<p>Eine Matrix ist eine Funktion: <span class="math display">\[A:\{1,\dots,m\} \times \{1,\dots,n\} \rightarrow K, \quad (i,j) \mapsto a_{ij}\]</span></p>
+<p>Dabei ist <span class="math inline">\(m\)</span> die Anzahl der Zeilen, <span class="math inline">\(n\)</span> die Anzahl der Spalten und <span class="math inline">\(K\)</span> die Menge, aus der die Einträge stammen (ein Körper, in diesem Tutorial stets die reellen Zahlen <span class="math inline">\(\mathbb{R}\)</span>). Das heißt, einem Paar von Indizes <span class="math inline">\((i,j)\)</span> wird ein Wert <span class="math inline">\(a_{ij} \in K\)</span> zugeordnet. <span class="math inline">\(A\)</span>, bestehend aus allen <span class="math inline">\(a_{ij}\)</span> nennt man Matrix.</p>
+<p>Zur Notation: Die Elemente der Matrix werden üblicherweise mit runden- oder eckigen- Klammern umschlossen. Die Werte <span class="math inline">\(a_{ij}\)</span> werden dabei wie folgt angeordnet:</p>
+<p><span class="math display">\[
+A = \begin{pmatrix}
+a_{11} &amp; a_{12} &amp; \dots &amp; a_{1n} \\
+a_{21} &amp; a_{22} &amp; \dots &amp; a_{2n} \\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+a_{m1} &amp; a_{m2} &amp; \dots &amp; a_{mn}
+\end{pmatrix}
+\quad \text{oder} \quad
+A = \begin{bmatrix}
+a_{11} &amp; a_{12} &amp; \dots &amp; a_{1n} \\
+a_{21} &amp; a_{22} &amp; \dots &amp; a_{2n} \\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+a_{m1} &amp; a_{m2} &amp; \dots &amp; a_{mn}
+\end{bmatrix}
+\]</span></p>
+<p>Ein konkretes Beispiel für eine Matrix mit Zahlenwerten wäre: <span class="math display">\[
+B = \begin{pmatrix}
+5 &amp; 7 &amp; 2 \\
+1 &amp; 0 &amp; 3
+\end{pmatrix}
+\]</span> <span class="math display">\[
+\text{mit} \quad b_{11}=5, b_{12}=7, b_{13}=2, b_{21}=1, b_{22}=0, b_{23}=3
+\]</span></p>
+</section>
+<section id="was-eine-matrix-repräsentieren-kann" class="level2">
+<h2 class="anchored" data-anchor-id="was-eine-matrix-repräsentieren-kann">2.1.2. Was eine Matrix repräsentieren kann</h2>
+<p>Eine Matrix ist mehr als nur eine Ansammlung von Zahlen; sie kann verschiedenste Arten von Informationen und Beziehungen strukturiert darstellen. Diese Darstellungen unterscheiden sich teilweise gravierend. Hier sind einige vermutlich bekannte Beispiele:</p>
+<section id="lineare-gleichungssysteme-lgs" class="level3">
+<h3 class="anchored" data-anchor-id="lineare-gleichungssysteme-lgs">2.1.2.1. Lineare Gleichungssysteme (LGS)</h3>
+<p>In der Schule lernt man Matrizen oft im Kontext von linearen Gleichungssystemen kennen. Eine Matrix kann die Koeffizienten eines solchen Systems speichern. Das System <span class="math display">\[
+\begin{align*}
+2x + 3y &amp;= 8 \\
+4x - y &amp;= 2
+\end{align*}
+\]</span> kann als Matrixgleichung <span class="math inline">\(A \cdot \vec{x} = \vec{b}\)</span> geschrieben werden: <span class="math display">\[
+\begin{pmatrix} 2 &amp; 3 \\ 4 &amp; -1 \end{pmatrix}
+\begin{pmatrix} x \\ y \end{pmatrix} =
+\begin{pmatrix} 8 \\ 2 \end{pmatrix}
+\]</span> Hier repräsentiert die Matrix <span class="math inline">\(A\)</span> die Beziehungen zwischen den Variablen. Häufig auch kurz geschrieben als: <span class="math display">\[
+\begin{pmatrix} 2 &amp; 3 &amp; 8\\ 4 &amp; -1 &amp; 2 \end{pmatrix}
+\]</span></p>
+</section>
+<section id="datenmatrizen" class="level3">
+<h3 class="anchored" data-anchor-id="datenmatrizen">2.1.2.2. Datenmatrizen</h3>
+<p>Im Bereich der Datenanalyse und des maschinellen Lernens (zum Beispiel in LLMs) werden Matrizen verwendet, um Datensätze darzustellen. Typischerweise steht jede Zeile für eine einzelne Beobachtung (ein Schüler, ein Produkt, ein Bild) und jede Spalte für ein bestimmtes Merkmal (Alter, Preis, Pixelfarbe). <span class="math display">\[
+\text{Schülerdaten} = \begin{pmatrix}
+15 &amp; 165 &amp; 2 \\
+16 &amp; 172 &amp; 1 \\
+15 &amp; 168 &amp; 3
+\end{pmatrix} \quad \begin{matrix} \leftarrow \text{Schüler 1} \\ \leftarrow \text{Schüler 2} \\ \leftarrow \text{Schüler 3} \end{matrix}
+\]</span> Die Spalten könnten hier für Alter, Größe (in cm) und Note stehen.</p>
+</section>
+<section id="übergangsmatrizen-stochastische-matrizen" class="level3">
+<h3 class="anchored" data-anchor-id="übergangsmatrizen-stochastische-matrizen">2.1.2.3. Übergangsmatrizen (Stochastische Matrizen)</h3>
+<p>Diese Matrizen, auch stochastische Matrizen oder Markov-Matrizen genannt, beschreiben die Wahrscheinlichkeiten von Zustandsübergängen in einem System (einem sogenannten Markov-Prozess).</p>
+<p>Sei ein System mit <span class="math inline">\(n\)</span> Zuständen <span class="math inline">\(\{S_1, S_2, \dots, S_n\}\)</span> gegeben. Die Übergangsmatrix <span class="math inline">\(P\)</span> ist eine <span class="math inline">\(n \times n\)</span>-Matrix, bei der der Eintrag <span class="math inline">\(p_{ij}\)</span> die Wahrscheinlichkeit angibt, vom Zustand <span class="math inline">\(S_i\)</span> in den Zustand <span class="math inline">\(S_j\)</span> zu wechseln.</p>
+<p><span class="math display">\[ P = (p_{ij}) \quad \text{mit} \quad p_{ij} = P(X_{t+1} = S_j \mid X_t = S_i) \]</span></p>
+<p>Für eine solche Matrix müssen zwei Bedingungen erfüllt sein:</p>
+<ol type="1">
+<li>Alle Einträge sind nicht-negativ: <span class="math inline">\(p_{ij} \ge 0\)</span> für alle <span class="math inline">\(i,j\)</span>.</li>
+<li>Die Summe jeder Zeile ist 1: <span class="math inline">\(\sum_{j=1}^n p_{ij} = 1\)</span> für alle <span class="math inline">\(i=1, \dots, n\)</span>. Dies stellt sicher, dass von jedem Zustand aus ein Übergang in <em>irgendeinen</em> der möglichen Zustände mit Wahrscheinlichkeit 1 erfolgt.</li>
+</ol>
+<p><strong>Beispiel:</strong> Betrachten wir ein System mit zwei Zuständen, <span class="math inline">\(S_1\)</span> und <span class="math inline">\(S_2\)</span>. Die Übergangsmatrix könnte wie folgt aussehen, wobei die Spalten die Zielzustände <span class="math inline">\(S_1\)</span> und <span class="math inline">\(S_2\)</span> repräsentieren: <span class="math display">\[
+P = \begin{pmatrix}
+p_{11} &amp; p_{12} \\
+p_{21} &amp; p_{22}
+\end{pmatrix}
+=
+\begin{pmatrix} 0.9 &amp; 0.1 \\ 0.5 &amp; 0.5 \end{pmatrix}
+\quad
+\begin{matrix}
+\leftarrow \text{Von Zustand } S_1 \\
+\leftarrow \text{Von Zustand } S_2
+\end{matrix}
+\]</span> Die Matrix besagt:</p>
+<ul>
+<li>Die Wahrscheinlichkeit, von <span class="math inline">\(S_1\)</span> in <span class="math inline">\(S_1\)</span> zu bleiben, ist <span class="math inline">\(p_{11} = 0.9\)</span>.</li>
+<li>Die Wahrscheinlichkeit, von <span class="math inline">\(S_1\)</span> nach <span class="math inline">\(S_2\)</span> zu wechseln, ist <span class="math inline">\(p_{12} = 0.1\)</span>.</li>
+<li>Die Wahrscheinlichkeit, von <span class="math inline">\(S_2\)</span> nach <span class="math inline">\(S_1\)</span> zu wechseln, ist <span class="math inline">\(p_{21} = 0.5\)</span>.</li>
+<li>Die Wahrscheinlichkeit, von <span class="math inline">\(S_2\)</span> in <span class="math inline">\(S_2\)</span> zu bleiben, ist <span class="math inline">\(p_{22} = 0.5\)</span>.</li>
+</ul>
+</section>
+<section id="permutationen-und-permutationsmatrizen" class="level3">
+<h3 class="anchored" data-anchor-id="permutationen-und-permutationsmatrizen">2.1.2.4. Permutationen und Permutationsmatrizen</h3>
+<p>Eine Permutation ist eine Neuanordnung von Elementen. Matrizen können diese auf zwei grundlegend verschiedene Weisen darstellen, die man nicht verwechseln sollte: als <em>Liste</em> von Anordnungen oder als <em>Operator</em>, der eine Anordnung durchführt.</p>
+<section id="darstellung-als-datenmatrix-liste-von-permutationen" class="level4">
+<h4 class="anchored" data-anchor-id="darstellung-als-datenmatrix-liste-von-permutationen">2.1.2.4.1. Darstellung als Datenmatrix (Liste von Permutationen)</h4>
+<p>Die einfachste Methode ist, verschiedene Permutationen als Zeilen in einer Matrix aufzulisten. Dies ist im Grunde eine <strong>Datenmatrix</strong>, wie wir sie oben gesehen haben.</p>
+<p>Betrachten wir die Elemente <span class="math inline">\((1, 2, 3)\)</span>. Eine Matrix, die einige ihrer Permutationen enthält, könnte so aussehen: <span class="math display">\[
+\text{Permutationen} = \begin{pmatrix}
+1 &amp; 2 &amp; 3 \\
+2 &amp; 1 &amp; 3 \\
+3 &amp; 1 &amp; 2
+\end{pmatrix} \quad \begin{matrix} \leftarrow \text{Original-Reihenfolge} \\ \leftarrow \text{Permutation 1 (1 und 2 getauscht)} \\ \leftarrow \text{Permutation 2 (zyklische Verschiebung)} \end{matrix}
+\]</span> Diese Matrix <em>beschreibt</em> die Anordnungen, führt sie aber nicht aus.</p>
+</section>
+<section id="darstellung-als-permutationsmatrix-operator" class="level4">
+<h4 class="anchored" data-anchor-id="darstellung-als-permutationsmatrix-operator">2.1.2.4.2. Darstellung als Permutationsmatrix (Operator)</h4>
+<p>Eine <strong>Permutationsmatrix</strong> ist eine quadratische Matrix, die eine bestimmte Permutation durch Matrixmultiplikation auf einen Vektor anwendet. Sie hat in jeder Zeile und jeder Spalte genau eine 1, ansonsten Nullen.</p>
+<p>Nehmen wir die Permutation “3, 1, 2” aus dem Beispiel oben. Sie ordnet das 1. Element an die 2. Stelle, das 2. an die 3. und das 3. an die 1. Stelle. Wie sieht die zugehörige Permutationsmatrix aus, die einen Vektor <span class="math inline">\((x,y,z)\)</span> entsprechend zu <span class="math inline">\((z,x,y)\)</span> transformiert?</p>
+<ul>
+<li>Um das <strong>neue erste Element</strong> <code>z</code> zu erhalten, muss die erste Zeile der Matrix <code>(0 0 1)</code> sein.</li>
+<li>Um das <strong>neue zweite Element</strong> <code>x</code> zu erhalten, muss die zweite Zeile <code>(1 0 0)</code> sein.</li>
+<li>Um das <strong>neue dritte Element</strong> <code>y</code> zu erhalten, muss die dritte Zeile <code>(0 1 0)</code> sein.</li>
+</ul>
+<p>Die Permutation <code>(3, 1, 2)</code> wird also durch folgende Matrix repräsentiert: <span class="math display">\[
+P = \begin{pmatrix} 0 &amp; 0 &amp; 1 \\ 1 &amp; 0 &amp; 0 \\ 0 &amp; 1 &amp; 0 \end{pmatrix}
+\]</span> Angewendet auf einen Vektor, führt sie die Permutation aus: <span class="math display">\[
+\underbrace{\begin{pmatrix} 0 &amp; 0 &amp; 1 \\ 1 &amp; 0 &amp; 0 \\ 0 &amp; 1 &amp; 0 \end{pmatrix}}_{\text{Permutationsmatrix}} \cdot \underbrace{\begin{pmatrix} x \\ y \\ z \end{pmatrix}}_{\text{Original}} = \underbrace{\begin{pmatrix} z \\ x \\ y \end{pmatrix}}_{\text{Permutiert}}
+\]</span></p>
+<p>Zusammenfassend: Die Datenmatrix <strong>zeigt</strong> Permutationen, die Permutationsmatrix <strong>führt sie aus</strong>. Das Verständnis dieses Unterschieds ist entscheidend, da die mathematischen Operationen und der Sinn dahinter völlig verschieden sind.</p>
+</section>
+</section>
+</section>
+<section id="die-dimension-einer-matrix" class="level2">
+<h2 class="anchored" data-anchor-id="die-dimension-einer-matrix">2.1.3. Die Dimension einer Matrix</h2>
+<p>Die <strong>Dimension</strong> einer Matrix wird durch die Anzahl ihrer Zeilen und Spalten bestimmt. Eine Matrix mit <span class="math inline">\(m\)</span> Zeilen und <span class="math inline">\(n\)</span> Spalten wird als <strong><span class="math inline">\(m \times n\)</span>-Matrix</strong> (gelesen als “m mal n Matrix”) bezeichnet.</p>
+<ul>
+<li><span class="math inline">\(m\)</span>: Anzahl der Zeilen (horizontale Linien)</li>
+<li><span class="math inline">\(n\)</span>: Anzahl der Spalten (vertikale Linien) <span class="math display">\[
+B = \begin{pmatrix}
+5 &amp; 7 &amp; 2 \\
+1 &amp; 0 &amp; 3
+\end{pmatrix}
+\]</span></li>
+</ul>
+<p>Für unsere Beispielmatrix <span class="math inline">\(B\)</span> gilt also:</p>
+<ul>
+<li><span class="math inline">\(m = 2\)</span> (zwei Zeilen)</li>
+<li><span class="math inline">\(n = 3\)</span> (drei Spalten) Somit ist <span class="math inline">\(B\)</span> eine <span class="math inline">\(2 \times 3\)</span>-Matrix.</li>
+</ul>
+<p>Die Dimension ist eine der fundamentalsten Eigenschaften einer Matrix, da sie bestimmt, welche mathematischen Operationen (wie Addition oder Multiplikation) mit anderen Matrizen möglich sind.</p>
+</section>
+<section id="matrizen-in-python-erstellen" class="level2">
+<h2 class="anchored" data-anchor-id="matrizen-in-python-erstellen">2.1.4. Matrizen in Python erstellen</h2>
+<p>Nachdem wir die theoretischen Grundlagen kennen, stellt sich die Frage: <strong>Wie erstellen wir eine Matrix in Python?</strong> Während man verschachtelte Listen (<code>[[1, 2], [3, 4]]</code>) verwenden kann, ist der De-facto-Standard für numerische und wissenschaftliche Berechnungen die Bibliothek <strong>NumPy</strong>. Wie in Kap <a href="../../Qmd-Files/Kapitel_1/index.html">1</a> beschrieben, ist das effektiver und auch schneller, letzteres konnte leider in Kapitel 1 nicht gezeigt werden.</p>
+<p>NumPy bietet uns dafür den Datentyp <code>ndarray</code> (n-dimensionales Array), der sich perfekt für Vektoren und Matrizen eignet. Erzeugt wird ein solches Array mit der Funktion <code>np.array()</code>.</p>
+<div id="qpyodide-insertion-location-1"></div>
+<noscript>Bitte JavaScript aktivieren, um die interaktiven Code-Zellen dieser Seite zu nutzen.</noscript>
+<section id="übung" class="level3">
+<h3 class="anchored" data-anchor-id="übung">2.1.4.1. Übung</h3>
+<p>Schreibe eine Funktion <code>erstelle_studierenden_matrix()</code>, die als <span class="math inline">\(3 \times 3\)</span>-Matrix die Daten aus dem Abschnitt “Datenmatrizen” (Alter, Größe, Note der drei Schüler) zurückgibt. Versteckte Tests prüfen automatisch, ob deine Lösung stimmt — klicke nach dem Ausfüllen auf <strong>Überprüfen</strong>.</p>
+<p><strong>Befehle, die du brauchst:</strong> <code>np.array()</code> mit einer Liste von Zeilen, <code>return</code>.</p>
+<div class="py-exercise-cell" id="py-exercise-1" data-ctm-component="py-exercise" data-ctm-id="matrizen-grundlagen-studierenden-matrix" data-ctm-runtime-id="ctm-block-2" data-ctm-source="76eee54af78a8d60" data-ctm-save="true">
+  <noscript>
+    Bitte JavaScript aktivieren, um die interaktive Aufgabe zu laden.
+  </noscript>
+</div>
+<script>
+(window.__pyExercises = window.__pyExercises || []).push({"caption":"erstelle_studierenden_matrix implementieren","feedbackLanguage":"de","forbiddenImports":[],"forbiddenKeywords":[],"id":1,"label":"matrizen-grundlagen-studierenden-matrix","learnerLevel":"","save":true,"showTestHints":false,"source":"76eee54af78a8d60","starter":"import numpy as np\n\ndef erstelle_studierenden_matrix():\n    # Dein Code hier — gib die 3x3-Matrix aus dem Abschnitt \"Datenmatrizen\" zurück\n    pass","storeId":"matrizen-grundlagen-studierenden-matrix","tests":"ergebnis = erstelle_studierenden_matrix()\nassert np.array(ergebnis).shape == (3, 3), \"Die Matrix sollte 3 Zeilen und 3 Spalten haben\"\nassert np.array_equal(ergebnis, [[15, 165, 2], [16, 172, 1], [15, 168, 3]]), \"Die Werte der Matrix stimmen nicht mit den Schülerdaten überein\""});
+</script>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tipp</span>Tipp
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Du kannst die Matrix genauso erstellen wie <code>B</code> oben — nur eben innerhalb der Funktion mit <code>return</code> statt mit <code>print()</code>.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Vorsicht</span>Lösung
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" data-ai-feedback-context="2.1.4.1. Übung
+Schreibe eine Funktion erstelle_studierenden_matrix(), die als \(3 \times 3\)-Matrix die Daten aus dem Abschnitt “Datenmatrizen” (Alter, Größe, Note der drei Schüler) zurückgibt. Versteckte Tests prüfen automatisch, ob deine Lösung stimmt — klicke nach dem Ausfüllen auf Überprüfen.
+Befehle, die du brauchst: np.array() mit einer Liste von Zeilen, return.
+Lösung"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> erstelle_studierenden_matrix():</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array([[<span class="dv">15</span>, <span class="dv">165</span>, <span class="dv">2</span>],</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>                     [<span class="dv">16</span>, <span class="dv">172</span>, <span class="dv">1</span>],</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>                     [<span class="dv">15</span>, <span class="dv">168</span>, <span class="dv">3</span>]])</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+<hr>
+<p>Im nächsten Abschnitt <a href="../../Qmd-Files/Kapitel_2/matrizen_attribute.html">Matrix-Attribute</a> sehen wir uns an, wie wir diese und andere Eigenschaften von Matrizen in Python abfragen können.</p>
+
+
+<!-- -->
+
+<!--ctm-save-generated--><script type="application/json" id="ctm-store-manifest">{"exercises":[{"component":"py-exercise","id":"matrizen-grundlagen-studierenden-matrix","order":2,"runtimeId":"ctm-block-2","save":true,"source":"76eee54af78a8d60"},{"component":"pyodide-interaktiv","id":"cell:472d48c2814a3eae","order":2,"runtimeId":"ctm-runtime-2","save":true,"source":"472d48c2814a3eae"},{"component":"pyodide-interaktiv","id":"extra:cell:472d48c2814a3eae","order":3,"runtimeId":"ctm-runtime-3","save":true,"source":"a7b12083e25f7809"}],"export":true,"messages":{"answered":"Beantwortet, noch nicht bewertet","answersStorage":"Antworten \u0026 Speicherung","clearFailed":"Der Browserspeicher konnte nicht gelöscht oder aktualisiert werden. Entfernen Sie die Kursdaten in den Browsereinstellungen.","confirmClearCourse":"Alle gespeicherten Antworten in diesem Kurs löschen?","confirmClearPage":"Alle gespeicherten Antworten auf dieser Seite löschen?","confirmNewVariant":"Die ausgefüllten Antworten durch eine neue Variante ersetzen?","confirmSaveOff":"Alle gespeicherten Antworten dieses Kurses werden gelöscht und die Speicherung beendet.","copyAll":"Alles kopieren","correct":"✓ richtig","downloadHTML":".html herunterladen","downloadMarkdown":".md herunterladen","exercise":"Aufgabe","exportClose":"Schließen","exportTitle":"Meine Antworten exportieren","lastResult":"Letztes Ergebnis","locale":"de","notSaving":"Antworten werden nicht gespeichert","outdated":"Veraltet","partial":"½ teilweise","progressTitle":"Fortschritt auf dieser Seite","recordTooLarge":"Diese Antwort ist zum Speichern zu groß. Kopieren Sie sie, bevor Sie die Seite verlassen.","saveOff":"Auf diesem Gerät nicht speichern","saveOn":"Wieder speichern","savedLocal":"In diesem Browser gespeichert","savingDisabled":"Speichern ist für diese Seite ausgeschaltet.","savingLocal":"Speichern in diesem Browser","savingNotice":"Ihre Antworten werden nur in diesem Browser gespeichert.","savingOffNotice":"Speichern ist auf diesem Gerät für diesen Kurs ausgeschaltet.","settings":"Einstellungen","showSaved":"Gespeicherte Antwort anzeigen","sourceChanged":"Die Aufgabe wurde seit Ihrer Antwort geändert.","statusCorrect":"richtig","statusInvalid":"ungültig","statusPartial":"teilweise richtig","statusWrong":"falsch","storageUnavailable":"Speichern ist nicht verfügbar. Ihre Antworten bleiben nur im Arbeitsspeicher dieser Seite.","total":"{score} von {count}","unattempted":"– nicht versucht","variantChanged":"Diese Variante wurde geändert.","variantWithdrawn":"Diese Variante wurde zurückgezogen.","wrong":"✗ falsch"},"progress":false,"quizzes":[],"save":true,"v":1}</script>
+<!--ctm-layout-generated--><span id="ctm-layout-ready" hidden=""></span>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const toggle = window.document.createElement('button');
+      toggle.type = "button";
+      toggle.setAttribute("role", "switch");
+      toggle.setAttribute("aria-checked", "false");
+      toggle.classList.add('top-right');
+      toggle.classList.add('quarto-color-scheme-toggle');
+      toggle.setAttribute("aria-label", "Dunkelmodus umschalten");
+      toggle.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      toggle.appendChild(i);
+      // Put the toggle in a landmark of its own, so that landmark navigation
+      // can reach it.
+      //
+      // The container is always a fresh direct child of body, and the toggle is
+      // never moved into page furniture that the theme or the author controls.
+      // The toggle is positioned against the page, so any ancestor that
+      // establishes a containing block captures it: a positioned element or a
+      // grid for position: absolute, and transform, filter, will-change or
+      // contain for position: fixed. A direct child of body has none of these
+      // to inherit, and the shift when one appears is silent and visual.
+      //
+      // ARIA says a document should have at most one banner, and axe reports a
+      // duplicate whether or not the banners carry distinct labels. So use a
+      // header when the page has no banner yet, and a named region otherwise.
+      //
+      // A header is a banner wherever it sits, unless it is inside sectioning
+      // content, so this cannot just look at the children of body: a custom
+      // page layout wraps the title block header in a plain div. An explicit
+      // role="banner" always counts.
+      const sectioning = 'article, aside, main, nav, section, [role="article"], [role="complementary"], [role="main"], [role="navigation"], [role="region"]';
+      const hasBanner = Array.from(
+        window.document.querySelectorAll('header:not([role]), [role="banner"]')
+      ).some(function(el) {
+        return el.hasAttribute("role") || el.closest(sectioning) === null;
+      });
+      const container = window.document.createElement(hasBanner ? "div" : "header");
+      if (hasBanner) {
+        container.setAttribute("role", "region");
+        container.setAttribute("aria-label", "Dunkelmodus umschalten");
+      }
+      container.classList.add('quarto-color-scheme-toggle-container');
+      container.appendChild(toggle);
+      window.document.body.appendChild(container);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Kopiert");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Kopiert");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const cellDetails = window.document.querySelectorAll(".cell details.code-fold");
+        for (let i=0; i<cellDetails.length; i++) {
+          const details = cellDetails[i];
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell div.sourceCode.cell-code");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          // Each band is positioned against its own containing block, which is
+          // not the offsetParent of the lines, so place it from client rects.
+          const placeBand = (band, firstEl, lastEl, codeBlock) => {
+            const container = band.offsetParent;
+            if (container === null) {
+              return;
+            }
+            const containerRect = container.getBoundingClientRect();
+            // Reveal.js scales slides with a transform, so convert client
+            // pixels back to the CSS pixels of the container.
+            const scale = containerRect.height / container.offsetHeight || 1;
+            const firstRect = firstEl.getBoundingClientRect();
+            const lastRect = lastEl.getBoundingClientRect();
+            const top = (firstRect.top - containerRect.top) / scale - container.clientTop + container.scrollTop;
+            const height = (lastRect.bottom - firstRect.top) / scale;
+            band.style.top = top - 2 + "px";
+            band.style.height = height + 4 + "px";
+            if (codeBlock) {
+              // Without the copy button wrapper, the containing block is wider
+              // than the code block, so span the code block explicitly.
+              const blockRect = codeBlock.getBoundingClientRect();
+              band.style.left = (blockRect.left - containerRect.left) / scale - container.clientLeft + container.scrollLeft + "px";
+              band.style.width = blockRect.width / scale + "px";
+            }
+          };
+          if (lineIds.length > 0) {
+            const el = window.document.getElementById(lineIds[0]);
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const parent = el.parentElement.parentElement;
+            // cook up a div (if necessary) and position it
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            placeBand(div, el, lastEl, parent.closest("div.sourceCode") || parent);
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            placeBand(gutterDiv, el, lastEl);
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Scrollbarer Code","output":"Scrollbare Ausgabe"};
+  </script>
+<nav class="page-navigation" aria-label="Seite">
+  <div class="nav-page nav-page-previous">
+      <a href="../../Qmd-Files/Kapitel_2/index.html" class="pagination-link" aria-label="2. Matrizen in Python definieren">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">2. Matrizen in Python definieren</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../Qmd-Files/Kapitel_2/matrizen_attribute.html" class="pagination-link" aria-label="2.2. Matrix-Attribute">
+        <span class="nav-page-text">2.2. Matrix-Attribute</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Quellcode</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" data-shortcodes="false" data-ai-feedback-context="2.1.4.1. Übung
+Schreibe eine Funktion erstelle_studierenden_matrix(), die als \(3 \times 3\)-Matrix die Daten aus dem Abschnitt “Datenmatrizen” (Alter, Größe, Note der drei Schüler) zurückgibt. Versteckte Tests prüfen automatisch, ob deine Lösung stimmt — klicke nach dem Ausfüllen auf Überprüfen.
+Befehle, die du brauchst: np.array() mit einer Liste von Zeilen, return.
+Im nächsten Abschnitt Matrix-Attribute sehen wir uns an, wie wir diese und andere Eigenschaften von Matrizen in Python abfragen können."><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> '2.1. Matrizen — Die Grundlagen'</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="an">title-en:</span><span class="co"> '2.1. Matrices — The Basics'</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span><span class="co"> html</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="an">filters:</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">  - ctm-assessment</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="an">engine:</span><span class="co"> markdown</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>:::: {.content-visible when-profile="deutsch"}</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>Aufbauend auf Kapitel <span class="co">[</span><span class="ot">1</span><span class="co">](../Kapitel_1/index.qmd)</span> geht es zuerst darum zu klären, was Matrizen überhaupt genau sind.</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2.1.1. Was sind Matrizen?</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>Betrachten wir zunächst die mathematische Definition einer Matrix:</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>Eine Matrix ist eine Funktion:</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>$$A:<span class="sc">\{</span>1,\dots,m<span class="sc">\}</span> \times <span class="sc">\{</span>1,\dots,n<span class="sc">\}</span> \rightarrow K, \quad (i,j) \mapsto a_{ij}$$</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>Dabei ist $m$ die Anzahl der Zeilen, $n$ die Anzahl der Spalten und $K$ die Menge, aus der die Einträge stammen (ein Körper, in diesem Tutorial stets die reellen Zahlen $\mathbb{R}$). Das heißt, einem Paar von Indizes $(i,j)$ wird ein Wert $a_{ij} \in K$ zugeordnet.</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>$A$, bestehend aus allen $a_{ij}$ nennt man Matrix.</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>Zur Notation: Die Elemente der Matrix werden üblicherweise mit runden- oder eckigen- Klammern umschlossen. Die Werte $a_{ij}$ werden dabei wie folgt angeordnet:</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>A = \begin{pmatrix}</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>a_{11} &amp; a_{12} &amp; \dots &amp; a_{1n} <span class="sc">\\</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>a_{21} &amp; a_{22} &amp; \dots &amp; a_{2n} <span class="sc">\\</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>\vdots &amp; \vdots &amp; \ddots &amp; \vdots <span class="sc">\\</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>a_{m1} &amp; a_{m2} &amp; \dots &amp; a_{mn}</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>\end{pmatrix}</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>\quad \text{oder} \quad</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>A = \begin{bmatrix}</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>a_{11} &amp; a_{12} &amp; \dots &amp; a_{1n} <span class="sc">\\</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>a_{21} &amp; a_{22} &amp; \dots &amp; a_{2n} <span class="sc">\\</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>\vdots &amp; \vdots &amp; \ddots &amp; \vdots <span class="sc">\\</span></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>a_{m1} &amp; a_{m2} &amp; \dots &amp; a_{mn}</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>\end{bmatrix}</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>Ein konkretes Beispiel für eine Matrix mit Zahlenwerten wäre:</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>B = \begin{pmatrix}</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>5 &amp; 7 &amp; 2 <span class="sc">\\</span></span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>1 &amp; 0 &amp; 3</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>\end{pmatrix}</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>\text{mit} \quad b_{11}=5, b_{12}=7, b_{13}=2, b_{21}=1, b_{22}=0, b_{23}=3</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2.1.2. Was eine Matrix repräsentieren kann</span></span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>Eine Matrix ist mehr als nur eine Ansammlung von Zahlen; sie kann verschiedenste Arten von Informationen und Beziehungen strukturiert darstellen. Diese Darstellungen unterscheiden sich teilweise gravierend. Hier sind einige vermutlich bekannte Beispiele:</span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2.1.2.1. Lineare Gleichungssysteme (LGS)</span></span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>In der Schule lernt man Matrizen oft im Kontext von linearen Gleichungssystemen kennen. Eine Matrix kann die Koeffizienten eines solchen Systems speichern. Das System</span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>\begin{align*}</span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>2x + 3y &amp;= 8 <span class="sc">\\</span></span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>4x - y &amp;= 2</span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>\end{align*}</span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a>kann als Matrixgleichung $A \cdot \vec{x} = \vec{b}$ geschrieben werden:</span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a>\begin{pmatrix} 2 &amp; 3 <span class="sc">\\</span> 4 &amp; -1 \end{pmatrix}</span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>\begin{pmatrix} x <span class="sc">\\</span> y \end{pmatrix} =</span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>\begin{pmatrix} 8 <span class="sc">\\</span> 2 \end{pmatrix}</span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a>Hier repräsentiert die Matrix $A$ die Beziehungen zwischen den Variablen.</span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a>Häufig auch kurz geschrieben als:</span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>\begin{pmatrix} 2 &amp; 3 &amp; 8<span class="sc">\\</span> 4 &amp; -1 &amp; 2 \end{pmatrix}</span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2.1.2.2. Datenmatrizen</span></span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a>Im Bereich der Datenanalyse und des maschinellen Lernens (zum Beispiel in LLMs) werden Matrizen verwendet, um Datensätze darzustellen. Typischerweise steht jede Zeile für eine einzelne Beobachtung (ein Schüler, ein Produkt, ein Bild) und jede Spalte für ein bestimmtes Merkmal (Alter, Preis, Pixelfarbe).</span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>\text{Schülerdaten} = \begin{pmatrix}</span>
+<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a>15 &amp; 165 &amp; 2 <span class="sc">\\</span></span>
+<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a>16 &amp; 172 &amp; 1 <span class="sc">\\</span></span>
+<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a>15 &amp; 168 &amp; 3</span>
+<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a>\end{pmatrix} \quad \begin{matrix} \leftarrow \text{Schüler 1} <span class="sc">\\</span> \leftarrow \text{Schüler 2} <span class="sc">\\</span> \leftarrow \text{Schüler 3} \end{matrix}</span>
+<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a>Die Spalten könnten hier für Alter, Größe (in cm) und Note stehen.</span>
+<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2.1.2.3. Übergangsmatrizen (Stochastische Matrizen)</span></span>
+<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a>Diese Matrizen, auch stochastische Matrizen oder Markov-Matrizen genannt, beschreiben die Wahrscheinlichkeiten von Zustandsübergängen in einem System (einem sogenannten Markov-Prozess).</span>
+<span id="cb2-90"><a href="#cb2-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-91"><a href="#cb2-91" aria-hidden="true" tabindex="-1"></a>Sei ein System mit $n$ Zuständen $<span class="sc">\{</span>S_1, S_2, \dots, S_n<span class="sc">\}</span>$ gegeben. Die Übergangsmatrix $P$ ist eine $n \times n$-Matrix, bei der der Eintrag $p_{ij}$ die Wahrscheinlichkeit angibt, vom Zustand $S_i$ in den Zustand $S_j$ zu wechseln.</span>
+<span id="cb2-92"><a href="#cb2-92" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-93"><a href="#cb2-93" aria-hidden="true" tabindex="-1"></a>$$ P = (p_{ij}) \quad \text{mit} \quad p_{ij} = P(X_{t+1} = S_j \mid X_t = S_i) $$</span>
+<span id="cb2-94"><a href="#cb2-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-95"><a href="#cb2-95" aria-hidden="true" tabindex="-1"></a>Für eine solche Matrix müssen zwei Bedingungen erfüllt sein:</span>
+<span id="cb2-96"><a href="#cb2-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-97"><a href="#cb2-97" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>Alle Einträge sind nicht-negativ: $p_{ij} \ge 0$ für alle $i,j$.</span>
+<span id="cb2-98"><a href="#cb2-98" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>Die Summe jeder Zeile ist 1: $\sum_{j=1}^n p_{ij} = 1$ für alle $i=1, \dots, n$. Dies stellt sicher, dass von jedem Zustand aus ein Übergang in *irgendeinen* der möglichen Zustände mit Wahrscheinlichkeit 1 erfolgt.</span>
+<span id="cb2-99"><a href="#cb2-99" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-100"><a href="#cb2-100" aria-hidden="true" tabindex="-1"></a>**Beispiel:**</span>
+<span id="cb2-101"><a href="#cb2-101" aria-hidden="true" tabindex="-1"></a>Betrachten wir ein System mit zwei Zuständen, $S_1$ und $S_2$. Die Übergangsmatrix könnte wie folgt aussehen, wobei die Spalten die Zielzustände $S_1$ und $S_2$ repräsentieren:</span>
+<span id="cb2-102"><a href="#cb2-102" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-103"><a href="#cb2-103" aria-hidden="true" tabindex="-1"></a>P = \begin{pmatrix}</span>
+<span id="cb2-104"><a href="#cb2-104" aria-hidden="true" tabindex="-1"></a>p_{11} &amp; p_{12} <span class="sc">\\</span></span>
+<span id="cb2-105"><a href="#cb2-105" aria-hidden="true" tabindex="-1"></a>p_{21} &amp; p_{22}</span>
+<span id="cb2-106"><a href="#cb2-106" aria-hidden="true" tabindex="-1"></a>\end{pmatrix}</span>
+<span id="cb2-107"><a href="#cb2-107" aria-hidden="true" tabindex="-1"></a>=</span>
+<span id="cb2-108"><a href="#cb2-108" aria-hidden="true" tabindex="-1"></a>\begin{pmatrix} 0.9 &amp; 0.1 <span class="sc">\\</span> 0.5 &amp; 0.5 \end{pmatrix}</span>
+<span id="cb2-109"><a href="#cb2-109" aria-hidden="true" tabindex="-1"></a>\quad</span>
+<span id="cb2-110"><a href="#cb2-110" aria-hidden="true" tabindex="-1"></a>\begin{matrix}</span>
+<span id="cb2-111"><a href="#cb2-111" aria-hidden="true" tabindex="-1"></a>\leftarrow \text{Von Zustand } S_1 <span class="sc">\\</span></span>
+<span id="cb2-112"><a href="#cb2-112" aria-hidden="true" tabindex="-1"></a>\leftarrow \text{Von Zustand } S_2</span>
+<span id="cb2-113"><a href="#cb2-113" aria-hidden="true" tabindex="-1"></a>\end{matrix}</span>
+<span id="cb2-114"><a href="#cb2-114" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-115"><a href="#cb2-115" aria-hidden="true" tabindex="-1"></a>Die Matrix besagt:</span>
+<span id="cb2-116"><a href="#cb2-116" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-117"><a href="#cb2-117" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Die Wahrscheinlichkeit, von $S_1$ in $S_1$ zu bleiben, ist $p_{11} = 0.9$.</span>
+<span id="cb2-118"><a href="#cb2-118" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Die Wahrscheinlichkeit, von $S_1$ nach $S_2$ zu wechseln, ist $p_{12} = 0.1$.</span>
+<span id="cb2-119"><a href="#cb2-119" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Die Wahrscheinlichkeit, von $S_2$ nach $S_1$ zu wechseln, ist $p_{21} = 0.5$.</span>
+<span id="cb2-120"><a href="#cb2-120" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Die Wahrscheinlichkeit, von $S_2$ in $S_2$ zu bleiben, ist $p_{22} = 0.5$.</span>
+<span id="cb2-121"><a href="#cb2-121" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-122"><a href="#cb2-122" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2.1.2.4. Permutationen und Permutationsmatrizen</span></span>
+<span id="cb2-123"><a href="#cb2-123" aria-hidden="true" tabindex="-1"></a>Eine Permutation ist eine Neuanordnung von Elementen. Matrizen können diese auf zwei grundlegend verschiedene Weisen darstellen, die man nicht verwechseln sollte: als *Liste* von Anordnungen oder als *Operator*, der eine Anordnung durchführt.</span>
+<span id="cb2-124"><a href="#cb2-124" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-125"><a href="#cb2-125" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 2.1.2.4.1. Darstellung als Datenmatrix (Liste von Permutationen)</span></span>
+<span id="cb2-126"><a href="#cb2-126" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-127"><a href="#cb2-127" aria-hidden="true" tabindex="-1"></a>Die einfachste Methode ist, verschiedene Permutationen als Zeilen in einer Matrix aufzulisten. Dies ist im Grunde eine **Datenmatrix**, wie wir sie oben gesehen haben.</span>
+<span id="cb2-128"><a href="#cb2-128" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-129"><a href="#cb2-129" aria-hidden="true" tabindex="-1"></a>Betrachten wir die Elemente $(1, 2, 3)$. Eine Matrix, die einige ihrer Permutationen enthält, könnte so aussehen:</span>
+<span id="cb2-130"><a href="#cb2-130" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-131"><a href="#cb2-131" aria-hidden="true" tabindex="-1"></a>\text{Permutationen} = \begin{pmatrix}</span>
+<span id="cb2-132"><a href="#cb2-132" aria-hidden="true" tabindex="-1"></a>1 &amp; 2 &amp; 3 <span class="sc">\\</span></span>
+<span id="cb2-133"><a href="#cb2-133" aria-hidden="true" tabindex="-1"></a>2 &amp; 1 &amp; 3 <span class="sc">\\</span></span>
+<span id="cb2-134"><a href="#cb2-134" aria-hidden="true" tabindex="-1"></a>3 &amp; 1 &amp; 2</span>
+<span id="cb2-135"><a href="#cb2-135" aria-hidden="true" tabindex="-1"></a>\end{pmatrix} \quad \begin{matrix} \leftarrow \text{Original-Reihenfolge} <span class="sc">\\</span> \leftarrow \text{Permutation 1 (1 und 2 getauscht)} <span class="sc">\\</span> \leftarrow \text{Permutation 2 (zyklische Verschiebung)} \end{matrix}</span>
+<span id="cb2-136"><a href="#cb2-136" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-137"><a href="#cb2-137" aria-hidden="true" tabindex="-1"></a>Diese Matrix *beschreibt* die Anordnungen, führt sie aber nicht aus.</span>
+<span id="cb2-138"><a href="#cb2-138" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-139"><a href="#cb2-139" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 2.1.2.4.2. Darstellung als Permutationsmatrix (Operator)</span></span>
+<span id="cb2-140"><a href="#cb2-140" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-141"><a href="#cb2-141" aria-hidden="true" tabindex="-1"></a>Eine **Permutationsmatrix** ist eine quadratische Matrix, die eine bestimmte Permutation durch Matrixmultiplikation auf einen Vektor anwendet. Sie hat in jeder Zeile und jeder Spalte genau eine 1, ansonsten Nullen.</span>
+<span id="cb2-142"><a href="#cb2-142" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-143"><a href="#cb2-143" aria-hidden="true" tabindex="-1"></a>Nehmen wir die Permutation "3, 1, 2" aus dem Beispiel oben. Sie ordnet das 1. Element an die 2. Stelle, das 2. an die 3. und das 3. an die 1. Stelle. Wie sieht die zugehörige Permutationsmatrix aus, die einen Vektor $(x,y,z)$ entsprechend zu $(z,x,y)$ transformiert?</span>
+<span id="cb2-144"><a href="#cb2-144" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-145"><a href="#cb2-145" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Um das **neue erste Element** <span class="in">`z`</span> zu erhalten, muss die erste Zeile der Matrix <span class="in">`(0 0 1)`</span> sein.</span>
+<span id="cb2-146"><a href="#cb2-146" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Um das **neue zweite Element** <span class="in">`x`</span> zu erhalten, muss die zweite Zeile <span class="in">`(1 0 0)`</span> sein.</span>
+<span id="cb2-147"><a href="#cb2-147" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Um das **neue dritte Element** <span class="in">`y`</span> zu erhalten, muss die dritte Zeile <span class="in">`(0 1 0)`</span> sein.</span>
+<span id="cb2-148"><a href="#cb2-148" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-149"><a href="#cb2-149" aria-hidden="true" tabindex="-1"></a>Die Permutation <span class="in">`(3, 1, 2)`</span> wird also durch folgende Matrix repräsentiert:</span>
+<span id="cb2-150"><a href="#cb2-150" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-151"><a href="#cb2-151" aria-hidden="true" tabindex="-1"></a>P = \begin{pmatrix} 0 &amp; 0 &amp; 1 <span class="sc">\\</span> 1 &amp; 0 &amp; 0 <span class="sc">\\</span> 0 &amp; 1 &amp; 0 \end{pmatrix}</span>
+<span id="cb2-152"><a href="#cb2-152" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-153"><a href="#cb2-153" aria-hidden="true" tabindex="-1"></a>Angewendet auf einen Vektor, führt sie die Permutation aus:</span>
+<span id="cb2-154"><a href="#cb2-154" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-155"><a href="#cb2-155" aria-hidden="true" tabindex="-1"></a>\underbrace{\begin{pmatrix} 0 &amp; 0 &amp; 1 <span class="sc">\\</span> 1 &amp; 0 &amp; 0 <span class="sc">\\</span> 0 &amp; 1 &amp; 0 \end{pmatrix}}_{\text{Permutationsmatrix}} \cdot \underbrace{\begin{pmatrix} x \\ y \\ z \end{pmatrix}}_{\text{Original}} = \underbrace{\begin{pmatrix} z \\ x \\ y \end{pmatrix}}_{\text{Permutiert}}</span>
+<span id="cb2-156"><a href="#cb2-156" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-157"><a href="#cb2-157" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-158"><a href="#cb2-158" aria-hidden="true" tabindex="-1"></a>Zusammenfassend: Die Datenmatrix **zeigt** Permutationen, die Permutationsmatrix **führt sie aus**. Das Verständnis dieses Unterschieds ist entscheidend, da die mathematischen Operationen und der Sinn dahinter völlig verschieden sind.</span>
+<span id="cb2-159"><a href="#cb2-159" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-160"><a href="#cb2-160" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2.1.3. Die Dimension einer Matrix</span></span>
+<span id="cb2-161"><a href="#cb2-161" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-162"><a href="#cb2-162" aria-hidden="true" tabindex="-1"></a>Die **Dimension** einer Matrix wird durch die Anzahl ihrer Zeilen und Spalten bestimmt. Eine Matrix mit $m$ Zeilen und $n$ Spalten wird als **$m \times n$-Matrix** (gelesen als "m mal n Matrix") bezeichnet.</span>
+<span id="cb2-163"><a href="#cb2-163" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-164"><a href="#cb2-164" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>$m$: Anzahl der Zeilen (horizontale Linien)</span>
+<span id="cb2-165"><a href="#cb2-165" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>$n$: Anzahl der Spalten (vertikale Linien)</span>
+<span id="cb2-166"><a href="#cb2-166" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-167"><a href="#cb2-167" aria-hidden="true" tabindex="-1"></a>B = \begin{pmatrix}</span>
+<span id="cb2-168"><a href="#cb2-168" aria-hidden="true" tabindex="-1"></a>5 &amp; 7 &amp; 2 <span class="sc">\\</span></span>
+<span id="cb2-169"><a href="#cb2-169" aria-hidden="true" tabindex="-1"></a>1 &amp; 0 &amp; 3</span>
+<span id="cb2-170"><a href="#cb2-170" aria-hidden="true" tabindex="-1"></a>\end{pmatrix}</span>
+<span id="cb2-171"><a href="#cb2-171" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-172"><a href="#cb2-172" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-173"><a href="#cb2-173" aria-hidden="true" tabindex="-1"></a>Für unsere Beispielmatrix $B$ gilt also:</span>
+<span id="cb2-174"><a href="#cb2-174" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-175"><a href="#cb2-175" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>$m = 2$ (zwei Zeilen)</span>
+<span id="cb2-176"><a href="#cb2-176" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>$n = 3$ (drei Spalten)</span>
+<span id="cb2-177"><a href="#cb2-177" aria-hidden="true" tabindex="-1"></a>Somit ist $B$ eine $2 \times 3$-Matrix.</span>
+<span id="cb2-178"><a href="#cb2-178" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-179"><a href="#cb2-179" aria-hidden="true" tabindex="-1"></a>Die Dimension ist eine der fundamentalsten Eigenschaften einer Matrix, da sie bestimmt, welche mathematischen Operationen (wie Addition oder Multiplikation) mit anderen Matrizen möglich sind.</span>
+<span id="cb2-180"><a href="#cb2-180" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-181"><a href="#cb2-181" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2.1.4. Matrizen in Python erstellen</span></span>
+<span id="cb2-182"><a href="#cb2-182" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-183"><a href="#cb2-183" aria-hidden="true" tabindex="-1"></a>Nachdem wir die theoretischen Grundlagen kennen, stellt sich die Frage:</span>
+<span id="cb2-184"><a href="#cb2-184" aria-hidden="true" tabindex="-1"></a>**Wie erstellen wir eine Matrix in Python?**</span>
+<span id="cb2-185"><a href="#cb2-185" aria-hidden="true" tabindex="-1"></a>Während man verschachtelte Listen (<span class="in">`[[1, 2], [3, 4]]`</span>) verwenden kann, ist der De-facto-Standard für numerische und wissenschaftliche Berechnungen die Bibliothek **NumPy**.</span>
+<span id="cb2-186"><a href="#cb2-186" aria-hidden="true" tabindex="-1"></a>Wie in Kap <span class="co">[</span><span class="ot">1</span><span class="co">](../Kapitel_1/index.qmd)</span> beschrieben, ist das effektiver und auch schneller, letzteres konnte leider in Kapitel 1 nicht gezeigt werden.</span>
+<span id="cb2-187"><a href="#cb2-187" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-188"><a href="#cb2-188" aria-hidden="true" tabindex="-1"></a>NumPy bietet uns dafür den Datentyp <span class="in">`ndarray`</span> (n-dimensionales Array), der sich perfekt für Vektoren und Matrizen eignet. Erzeugt wird ein solches Array mit der Funktion <span class="in">`np.array()`</span>.</span>
+<span id="cb2-189"><a href="#cb2-189" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-190"><a href="#cb2-190" aria-hidden="true" tabindex="-1"></a><span class="in">```{pyodide-python}</span></span>
+<span id="cb2-191"><a href="#cb2-191" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-192"><a href="#cb2-192" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-193"><a href="#cb2-193" aria-hidden="true" tabindex="-1"></a>B <span class="op">=</span> np.array([</span>
+<span id="cb2-194"><a href="#cb2-194" aria-hidden="true" tabindex="-1"></a>  [<span class="dv">5</span>, <span class="dv">7</span>, <span class="dv">2</span>],</span>
+<span id="cb2-195"><a href="#cb2-195" aria-hidden="true" tabindex="-1"></a>  [<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">3</span>]</span>
+<span id="cb2-196"><a href="#cb2-196" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb2-197"><a href="#cb2-197" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-198"><a href="#cb2-198" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Unsere Matrix B:"</span>)</span>
+<span id="cb2-199"><a href="#cb2-199" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(B)</span>
+<span id="cb2-200"><a href="#cb2-200" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb2-201"><a href="#cb2-201" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-202"><a href="#cb2-202" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2.1.4.1. Übung</span></span>
+<span id="cb2-203"><a href="#cb2-203" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-204"><a href="#cb2-204" aria-hidden="true" tabindex="-1"></a>Schreibe eine Funktion <span class="in">`erstelle_studierenden_matrix()`</span>, die als $3 \times 3$-Matrix die Daten aus dem Abschnitt "Datenmatrizen" (Alter, Größe, Note der drei Schüler) zurückgibt. Versteckte Tests prüfen automatisch, ob deine Lösung stimmt — klicke nach dem Ausfüllen auf **Überprüfen**.</span>
+<span id="cb2-205"><a href="#cb2-205" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-206"><a href="#cb2-206" aria-hidden="true" tabindex="-1"></a>**Befehle, die du brauchst:** <span class="in">`np.array()`</span> mit einer Liste von Zeilen, <span class="in">`return`</span>.</span>
+<span id="cb2-207"><a href="#cb2-207" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-208"><a href="#cb2-208" aria-hidden="true" tabindex="-1"></a><span class="in">```{py-exercise}</span></span>
+<span id="cb2-209"><a href="#cb2-209" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: matrizen-grundlagen-studierenden-matrix</span></span>
+<span id="cb2-210"><a href="#cb2-210" aria-hidden="true" tabindex="-1"></a><span class="co">#| caption: erstelle_studierenden_matrix implementieren</span></span>
+<span id="cb2-211"><a href="#cb2-211" aria-hidden="true" tabindex="-1"></a><span class="co">#| show-test-hints: false</span></span>
+<span id="cb2-212"><a href="#cb2-212" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-213"><a href="#cb2-213" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-214"><a href="#cb2-214" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> erstelle_studierenden_matrix():</span>
+<span id="cb2-215"><a href="#cb2-215" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Dein Code hier — gib die 3x3-Matrix aus dem Abschnitt "Datenmatrizen" zurück</span></span>
+<span id="cb2-216"><a href="#cb2-216" aria-hidden="true" tabindex="-1"></a>    <span class="cf">pass</span></span>
+<span id="cb2-217"><a href="#cb2-217" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-218"><a href="#cb2-218" aria-hidden="true" tabindex="-1"></a><span class="co">## TESTS ##</span></span>
+<span id="cb2-219"><a href="#cb2-219" aria-hidden="true" tabindex="-1"></a>ergebnis <span class="op">=</span> erstelle_studierenden_matrix()</span>
+<span id="cb2-220"><a href="#cb2-220" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> np.array(ergebnis).shape <span class="op">==</span> (<span class="dv">3</span>, <span class="dv">3</span>), <span class="st">"Die Matrix sollte 3 Zeilen und 3 Spalten haben"</span></span>
+<span id="cb2-221"><a href="#cb2-221" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> np.array_equal(ergebnis, [[<span class="dv">15</span>, <span class="dv">165</span>, <span class="dv">2</span>], [<span class="dv">16</span>, <span class="dv">172</span>, <span class="dv">1</span>], [<span class="dv">15</span>, <span class="dv">168</span>, <span class="dv">3</span>]]), <span class="st">"Die Werte der Matrix stimmen nicht mit den Schülerdaten überein"</span></span>
+<span id="cb2-222"><a href="#cb2-222" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb2-223"><a href="#cb2-223" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-224"><a href="#cb2-224" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip title="Tipp" collapse="true"}</span>
+<span id="cb2-225"><a href="#cb2-225" aria-hidden="true" tabindex="-1"></a>Du kannst die Matrix genauso erstellen wie <span class="in">`B`</span> oben — nur eben innerhalb der Funktion mit <span class="in">`return`</span> statt mit <span class="in">`print()`</span>.</span>
+<span id="cb2-226"><a href="#cb2-226" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb2-227"><a href="#cb2-227" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-228"><a href="#cb2-228" aria-hidden="true" tabindex="-1"></a>::: {.callout-caution title="Lösung" collapse="true"}</span>
+<span id="cb2-229"><a href="#cb2-229" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
+<span id="cb2-230"><a href="#cb2-230" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-231"><a href="#cb2-231" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-232"><a href="#cb2-232" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> erstelle_studierenden_matrix():</span>
+<span id="cb2-233"><a href="#cb2-233" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array([[<span class="dv">15</span>, <span class="dv">165</span>, <span class="dv">2</span>],</span>
+<span id="cb2-234"><a href="#cb2-234" aria-hidden="true" tabindex="-1"></a>                     [<span class="dv">16</span>, <span class="dv">172</span>, <span class="dv">1</span>],</span>
+<span id="cb2-235"><a href="#cb2-235" aria-hidden="true" tabindex="-1"></a>                     [<span class="dv">15</span>, <span class="dv">168</span>, <span class="dv">3</span>]])</span>
+<span id="cb2-236"><a href="#cb2-236" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb2-237"><a href="#cb2-237" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb2-238"><a href="#cb2-238" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-239"><a href="#cb2-239" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-240"><a href="#cb2-240" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb2-241"><a href="#cb2-241" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-242"><a href="#cb2-242" aria-hidden="true" tabindex="-1"></a>Im nächsten Abschnitt <span class="co">[</span><span class="ot">Matrix-Attribute</span><span class="co">](matrizen_attribute.qmd)</span> sehen wir uns an, wie wir diese und andere Eigenschaften von Matrizen in Python abfragen können.</span>
+<span id="cb2-243"><a href="#cb2-243" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-244"><a href="#cb2-244" aria-hidden="true" tabindex="-1"></a>::::</span>
+<span id="cb2-245"><a href="#cb2-245" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-246"><a href="#cb2-246" aria-hidden="true" tabindex="-1"></a>:::: {.content-visible when-profile="english"}</span>
+<span id="cb2-247"><a href="#cb2-247" aria-hidden="true" tabindex="-1"></a>Building on Chapter <span class="co">[</span><span class="ot">1</span><span class="co">](../Kapitel_1/index.qmd)</span>, let's first clarify what matrices actually are.</span>
+<span id="cb2-248"><a href="#cb2-248" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-249"><a href="#cb2-249" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2.1.1. What are Matrices? {#was-sind-matrizen}</span></span>
+<span id="cb2-250"><a href="#cb2-250" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-251"><a href="#cb2-251" aria-hidden="true" tabindex="-1"></a>Let's start with the mathematical definition of a matrix:</span>
+<span id="cb2-252"><a href="#cb2-252" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-253"><a href="#cb2-253" aria-hidden="true" tabindex="-1"></a>A matrix is a function:</span>
+<span id="cb2-254"><a href="#cb2-254" aria-hidden="true" tabindex="-1"></a>$$A:<span class="sc">\{</span>1,\dots,m<span class="sc">\}</span> \times <span class="sc">\{</span>1,\dots,n<span class="sc">\}</span> \rightarrow K, \quad (i,j) \mapsto a_{ij}$$</span>
+<span id="cb2-255"><a href="#cb2-255" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-256"><a href="#cb2-256" aria-hidden="true" tabindex="-1"></a>Here $m$ is the number of rows, $n$ the number of columns and $K$ the set the entries come from (a field, in this tutorial always the real numbers $\mathbb{R}$). That is, a pair of indices $(i,j)$ is assigned a value $a_{ij} \in K$.</span>
+<span id="cb2-257"><a href="#cb2-257" aria-hidden="true" tabindex="-1"></a>$A$, consisting of all $a_{ij}$, is called a matrix.</span>
+<span id="cb2-258"><a href="#cb2-258" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-259"><a href="#cb2-259" aria-hidden="true" tabindex="-1"></a>Regarding notation: the elements of a matrix are usually enclosed by round or square brackets. The values $a_{ij}$ are arranged as follows:</span>
+<span id="cb2-260"><a href="#cb2-260" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-261"><a href="#cb2-261" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-262"><a href="#cb2-262" aria-hidden="true" tabindex="-1"></a>A = \begin{pmatrix}</span>
+<span id="cb2-263"><a href="#cb2-263" aria-hidden="true" tabindex="-1"></a>a_{11} &amp; a_{12} &amp; \dots &amp; a_{1n} <span class="sc">\\</span></span>
+<span id="cb2-264"><a href="#cb2-264" aria-hidden="true" tabindex="-1"></a>a_{21} &amp; a_{22} &amp; \dots &amp; a_{2n} <span class="sc">\\</span></span>
+<span id="cb2-265"><a href="#cb2-265" aria-hidden="true" tabindex="-1"></a>\vdots &amp; \vdots &amp; \ddots &amp; \vdots <span class="sc">\\</span></span>
+<span id="cb2-266"><a href="#cb2-266" aria-hidden="true" tabindex="-1"></a>a_{m1} &amp; a_{m2} &amp; \dots &amp; a_{mn}</span>
+<span id="cb2-267"><a href="#cb2-267" aria-hidden="true" tabindex="-1"></a>\end{pmatrix}</span>
+<span id="cb2-268"><a href="#cb2-268" aria-hidden="true" tabindex="-1"></a>\quad \text{or} \quad</span>
+<span id="cb2-269"><a href="#cb2-269" aria-hidden="true" tabindex="-1"></a>A = \begin{bmatrix}</span>
+<span id="cb2-270"><a href="#cb2-270" aria-hidden="true" tabindex="-1"></a>a_{11} &amp; a_{12} &amp; \dots &amp; a_{1n} <span class="sc">\\</span></span>
+<span id="cb2-271"><a href="#cb2-271" aria-hidden="true" tabindex="-1"></a>a_{21} &amp; a_{22} &amp; \dots &amp; a_{2n} <span class="sc">\\</span></span>
+<span id="cb2-272"><a href="#cb2-272" aria-hidden="true" tabindex="-1"></a>\vdots &amp; \vdots &amp; \ddots &amp; \vdots <span class="sc">\\</span></span>
+<span id="cb2-273"><a href="#cb2-273" aria-hidden="true" tabindex="-1"></a>a_{m1} &amp; a_{m2} &amp; \dots &amp; a_{mn}</span>
+<span id="cb2-274"><a href="#cb2-274" aria-hidden="true" tabindex="-1"></a>\end{bmatrix}</span>
+<span id="cb2-275"><a href="#cb2-275" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-276"><a href="#cb2-276" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-277"><a href="#cb2-277" aria-hidden="true" tabindex="-1"></a>A concrete example of a matrix with numeric values would be:</span>
+<span id="cb2-278"><a href="#cb2-278" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-279"><a href="#cb2-279" aria-hidden="true" tabindex="-1"></a>B = \begin{pmatrix}</span>
+<span id="cb2-280"><a href="#cb2-280" aria-hidden="true" tabindex="-1"></a>5 &amp; 7 &amp; 2 <span class="sc">\\</span></span>
+<span id="cb2-281"><a href="#cb2-281" aria-hidden="true" tabindex="-1"></a>1 &amp; 0 &amp; 3</span>
+<span id="cb2-282"><a href="#cb2-282" aria-hidden="true" tabindex="-1"></a>\end{pmatrix}</span>
+<span id="cb2-283"><a href="#cb2-283" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-284"><a href="#cb2-284" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-285"><a href="#cb2-285" aria-hidden="true" tabindex="-1"></a>\text{with} \quad b_{11}=5, b_{12}=7, b_{13}=2, b_{21}=1, b_{22}=0, b_{23}=3</span>
+<span id="cb2-286"><a href="#cb2-286" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-287"><a href="#cb2-287" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-288"><a href="#cb2-288" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-289"><a href="#cb2-289" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2.1.2. What a Matrix can Represent {#was-eine-matrix-repräsentieren-kann}</span></span>
+<span id="cb2-290"><a href="#cb2-290" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-291"><a href="#cb2-291" aria-hidden="true" tabindex="-1"></a>A matrix is more than just a collection of numbers; it can structurally represent very different kinds of information and relationships. These representations sometimes differ drastically. Here are a few examples you have probably seen before:</span>
+<span id="cb2-292"><a href="#cb2-292" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-293"><a href="#cb2-293" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2.1.2.1. Systems of Linear Equations</span></span>
+<span id="cb2-294"><a href="#cb2-294" aria-hidden="true" tabindex="-1"></a>At school, matrices are often introduced in the context of systems of linear equations. A matrix can store the coefficients of such a system. The system</span>
+<span id="cb2-295"><a href="#cb2-295" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-296"><a href="#cb2-296" aria-hidden="true" tabindex="-1"></a>\begin{align*}</span>
+<span id="cb2-297"><a href="#cb2-297" aria-hidden="true" tabindex="-1"></a>2x + 3y &amp;= 8 <span class="sc">\\</span></span>
+<span id="cb2-298"><a href="#cb2-298" aria-hidden="true" tabindex="-1"></a>4x - y &amp;= 2</span>
+<span id="cb2-299"><a href="#cb2-299" aria-hidden="true" tabindex="-1"></a>\end{align*}</span>
+<span id="cb2-300"><a href="#cb2-300" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-301"><a href="#cb2-301" aria-hidden="true" tabindex="-1"></a>can be written as the matrix equation $A \cdot \vec{x} = \vec{b}$:</span>
+<span id="cb2-302"><a href="#cb2-302" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-303"><a href="#cb2-303" aria-hidden="true" tabindex="-1"></a>\begin{pmatrix} 2 &amp; 3 <span class="sc">\\</span> 4 &amp; -1 \end{pmatrix}</span>
+<span id="cb2-304"><a href="#cb2-304" aria-hidden="true" tabindex="-1"></a>\begin{pmatrix} x <span class="sc">\\</span> y \end{pmatrix} =</span>
+<span id="cb2-305"><a href="#cb2-305" aria-hidden="true" tabindex="-1"></a>\begin{pmatrix} 8 <span class="sc">\\</span> 2 \end{pmatrix}</span>
+<span id="cb2-306"><a href="#cb2-306" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-307"><a href="#cb2-307" aria-hidden="true" tabindex="-1"></a>Here, the matrix $A$ represents the relationships between the variables.</span>
+<span id="cb2-308"><a href="#cb2-308" aria-hidden="true" tabindex="-1"></a>Often also written more briefly as:</span>
+<span id="cb2-309"><a href="#cb2-309" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-310"><a href="#cb2-310" aria-hidden="true" tabindex="-1"></a>\begin{pmatrix} 2 &amp; 3 &amp; 8<span class="sc">\\</span> 4 &amp; -1 &amp; 2 \end{pmatrix}</span>
+<span id="cb2-311"><a href="#cb2-311" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-312"><a href="#cb2-312" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-313"><a href="#cb2-313" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2.1.2.2. Data Matrices</span></span>
+<span id="cb2-314"><a href="#cb2-314" aria-hidden="true" tabindex="-1"></a>In data analysis and machine learning (for example in LLMs), matrices are used to represent datasets. Typically, each row stands for a single observation (a student, a product, an image) and each column for a specific feature (age, price, pixel color).</span>
+<span id="cb2-315"><a href="#cb2-315" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-316"><a href="#cb2-316" aria-hidden="true" tabindex="-1"></a>\text{Student data} = \begin{pmatrix}</span>
+<span id="cb2-317"><a href="#cb2-317" aria-hidden="true" tabindex="-1"></a>15 &amp; 165 &amp; 2 <span class="sc">\\</span></span>
+<span id="cb2-318"><a href="#cb2-318" aria-hidden="true" tabindex="-1"></a>16 &amp; 172 &amp; 1 <span class="sc">\\</span></span>
+<span id="cb2-319"><a href="#cb2-319" aria-hidden="true" tabindex="-1"></a>15 &amp; 168 &amp; 3</span>
+<span id="cb2-320"><a href="#cb2-320" aria-hidden="true" tabindex="-1"></a>\end{pmatrix} \quad \begin{matrix} \leftarrow \text{Student 1} <span class="sc">\\</span> \leftarrow \text{Student 2} <span class="sc">\\</span> \leftarrow \text{Student 3} \end{matrix}</span>
+<span id="cb2-321"><a href="#cb2-321" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-322"><a href="#cb2-322" aria-hidden="true" tabindex="-1"></a>Here, the columns could stand for age, height (in cm), and grade.</span>
+<span id="cb2-323"><a href="#cb2-323" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-324"><a href="#cb2-324" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2.1.2.3. Transition Matrices (Stochastic Matrices)</span></span>
+<span id="cb2-325"><a href="#cb2-325" aria-hidden="true" tabindex="-1"></a>These matrices, also called stochastic matrices or Markov matrices, describe the probabilities of state transitions in a system (a so-called Markov process).</span>
+<span id="cb2-326"><a href="#cb2-326" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-327"><a href="#cb2-327" aria-hidden="true" tabindex="-1"></a>Let a system with $n$ states $<span class="sc">\{</span>S_1, S_2, \dots, S_n<span class="sc">\}</span>$ be given. The transition matrix $P$ is an $n \times n$ matrix, where the entry $p_{ij}$ gives the probability of transitioning from state $S_i$ to state $S_j$.</span>
+<span id="cb2-328"><a href="#cb2-328" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-329"><a href="#cb2-329" aria-hidden="true" tabindex="-1"></a>$$ P = (p_{ij}) \quad \text{with} \quad p_{ij} = P(X_{t+1} = S_j \mid X_t = S_i) $$</span>
+<span id="cb2-330"><a href="#cb2-330" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-331"><a href="#cb2-331" aria-hidden="true" tabindex="-1"></a>Two conditions must hold for such a matrix:</span>
+<span id="cb2-332"><a href="#cb2-332" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-333"><a href="#cb2-333" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>All entries are non-negative: $p_{ij} \ge 0$ for all $i,j$.</span>
+<span id="cb2-334"><a href="#cb2-334" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>The sum of every row is 1: $\sum_{j=1}^n p_{ij} = 1$ for all $i=1, \dots, n$. This ensures that from every state, a transition to *some* possible state occurs with probability 1.</span>
+<span id="cb2-335"><a href="#cb2-335" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-336"><a href="#cb2-336" aria-hidden="true" tabindex="-1"></a>**Example:**</span>
+<span id="cb2-337"><a href="#cb2-337" aria-hidden="true" tabindex="-1"></a>Consider a system with two states, $S_1$ and $S_2$. The transition matrix could look like this, where the columns represent the target states $S_1$ and $S_2$:</span>
+<span id="cb2-338"><a href="#cb2-338" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-339"><a href="#cb2-339" aria-hidden="true" tabindex="-1"></a>P = \begin{pmatrix}</span>
+<span id="cb2-340"><a href="#cb2-340" aria-hidden="true" tabindex="-1"></a>p_{11} &amp; p_{12} <span class="sc">\\</span></span>
+<span id="cb2-341"><a href="#cb2-341" aria-hidden="true" tabindex="-1"></a>p_{21} &amp; p_{22}</span>
+<span id="cb2-342"><a href="#cb2-342" aria-hidden="true" tabindex="-1"></a>\end{pmatrix}</span>
+<span id="cb2-343"><a href="#cb2-343" aria-hidden="true" tabindex="-1"></a>=</span>
+<span id="cb2-344"><a href="#cb2-344" aria-hidden="true" tabindex="-1"></a>\begin{pmatrix} 0.9 &amp; 0.1 <span class="sc">\\</span> 0.5 &amp; 0.5 \end{pmatrix}</span>
+<span id="cb2-345"><a href="#cb2-345" aria-hidden="true" tabindex="-1"></a>\quad</span>
+<span id="cb2-346"><a href="#cb2-346" aria-hidden="true" tabindex="-1"></a>\begin{matrix}</span>
+<span id="cb2-347"><a href="#cb2-347" aria-hidden="true" tabindex="-1"></a>\leftarrow \text{From state } S_1 <span class="sc">\\</span></span>
+<span id="cb2-348"><a href="#cb2-348" aria-hidden="true" tabindex="-1"></a>\leftarrow \text{From state } S_2</span>
+<span id="cb2-349"><a href="#cb2-349" aria-hidden="true" tabindex="-1"></a>\end{matrix}</span>
+<span id="cb2-350"><a href="#cb2-350" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-351"><a href="#cb2-351" aria-hidden="true" tabindex="-1"></a>The matrix states:</span>
+<span id="cb2-352"><a href="#cb2-352" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-353"><a href="#cb2-353" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The probability of staying in $S_1$ from $S_1$ is $p_{11} = 0.9$.</span>
+<span id="cb2-354"><a href="#cb2-354" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The probability of moving from $S_1$ to $S_2$ is $p_{12} = 0.1$.</span>
+<span id="cb2-355"><a href="#cb2-355" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The probability of moving from $S_2$ to $S_1$ is $p_{21} = 0.5$.</span>
+<span id="cb2-356"><a href="#cb2-356" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The probability of staying in $S_2$ from $S_2$ is $p_{22} = 0.5$.</span>
+<span id="cb2-357"><a href="#cb2-357" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-358"><a href="#cb2-358" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2.1.2.4. Permutations and Permutation Matrices</span></span>
+<span id="cb2-359"><a href="#cb2-359" aria-hidden="true" tabindex="-1"></a>A permutation is a reordering of elements. Matrices can represent this in two fundamentally different ways that should not be confused: as a *list* of arrangements, or as an *operator* that performs a rearrangement.</span>
+<span id="cb2-360"><a href="#cb2-360" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-361"><a href="#cb2-361" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 2.1.2.4.1. Representation as a Data Matrix (List of Permutations)</span></span>
+<span id="cb2-362"><a href="#cb2-362" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-363"><a href="#cb2-363" aria-hidden="true" tabindex="-1"></a>The simplest method is to list different permutations as rows in a matrix. This is essentially a **data matrix**, as we saw above.</span>
+<span id="cb2-364"><a href="#cb2-364" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-365"><a href="#cb2-365" aria-hidden="true" tabindex="-1"></a>Consider the elements $(1, 2, 3)$. A matrix containing some of their permutations could look like this:</span>
+<span id="cb2-366"><a href="#cb2-366" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-367"><a href="#cb2-367" aria-hidden="true" tabindex="-1"></a>\text{Permutations} = \begin{pmatrix}</span>
+<span id="cb2-368"><a href="#cb2-368" aria-hidden="true" tabindex="-1"></a>1 &amp; 2 &amp; 3 <span class="sc">\\</span></span>
+<span id="cb2-369"><a href="#cb2-369" aria-hidden="true" tabindex="-1"></a>2 &amp; 1 &amp; 3 <span class="sc">\\</span></span>
+<span id="cb2-370"><a href="#cb2-370" aria-hidden="true" tabindex="-1"></a>3 &amp; 1 &amp; 2</span>
+<span id="cb2-371"><a href="#cb2-371" aria-hidden="true" tabindex="-1"></a>\end{pmatrix} \quad \begin{matrix} \leftarrow \text{Original order} <span class="sc">\\</span> \leftarrow \text{Permutation 1 (1 and 2 swapped)} <span class="sc">\\</span> \leftarrow \text{Permutation 2 (cyclic shift)} \end{matrix}</span>
+<span id="cb2-372"><a href="#cb2-372" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-373"><a href="#cb2-373" aria-hidden="true" tabindex="-1"></a>This matrix *describes* the arrangements, but does not perform them.</span>
+<span id="cb2-374"><a href="#cb2-374" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-375"><a href="#cb2-375" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 2.1.2.4.2. Representation as a Permutation Matrix (Operator)</span></span>
+<span id="cb2-376"><a href="#cb2-376" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-377"><a href="#cb2-377" aria-hidden="true" tabindex="-1"></a>A **permutation matrix** is a square matrix that applies a specific permutation to a vector via matrix multiplication. It has exactly one 1 in every row and every column, and zeros elsewhere.</span>
+<span id="cb2-378"><a href="#cb2-378" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-379"><a href="#cb2-379" aria-hidden="true" tabindex="-1"></a>Take the permutation "3, 1, 2" from the example above. It moves the 1st element to the 2nd position, the 2nd to the 3rd, and the 3rd to the 1st. What does the corresponding permutation matrix look like, which transforms a vector $(x,y,z)$ into $(z,x,y)$?</span>
+<span id="cb2-380"><a href="#cb2-380" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-381"><a href="#cb2-381" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>To obtain the **new first element** <span class="in">`z`</span>, the first row of the matrix must be <span class="in">`(0 0 1)`</span>.</span>
+<span id="cb2-382"><a href="#cb2-382" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>To obtain the **new second element** <span class="in">`x`</span>, the second row must be <span class="in">`(1 0 0)`</span>.</span>
+<span id="cb2-383"><a href="#cb2-383" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>To obtain the **new third element** <span class="in">`y`</span>, the third row must be <span class="in">`(0 1 0)`</span>.</span>
+<span id="cb2-384"><a href="#cb2-384" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-385"><a href="#cb2-385" aria-hidden="true" tabindex="-1"></a>So the permutation <span class="in">`(3, 1, 2)`</span> is represented by the following matrix:</span>
+<span id="cb2-386"><a href="#cb2-386" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-387"><a href="#cb2-387" aria-hidden="true" tabindex="-1"></a>P = \begin{pmatrix} 0 &amp; 0 &amp; 1 <span class="sc">\\</span> 1 &amp; 0 &amp; 0 <span class="sc">\\</span> 0 &amp; 1 &amp; 0 \end{pmatrix}</span>
+<span id="cb2-388"><a href="#cb2-388" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-389"><a href="#cb2-389" aria-hidden="true" tabindex="-1"></a>Applied to a vector, it performs the permutation:</span>
+<span id="cb2-390"><a href="#cb2-390" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-391"><a href="#cb2-391" aria-hidden="true" tabindex="-1"></a>\underbrace{\begin{pmatrix} 0 &amp; 0 &amp; 1 <span class="sc">\\</span> 1 &amp; 0 &amp; 0 <span class="sc">\\</span> 0 &amp; 1 &amp; 0 \end{pmatrix}}_{\text{Permutation matrix}} \cdot \underbrace{\begin{pmatrix} x \\ y \\ z \end{pmatrix}}_{\text{Original}} = \underbrace{\begin{pmatrix} z \\ x \\ y \end{pmatrix}}_{\text{Permuted}}</span>
+<span id="cb2-392"><a href="#cb2-392" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-393"><a href="#cb2-393" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-394"><a href="#cb2-394" aria-hidden="true" tabindex="-1"></a>In summary: the data matrix **shows** permutations, the permutation matrix **carries them out**. Understanding this distinction is crucial, since the mathematical operations and their meaning are completely different.</span>
+<span id="cb2-395"><a href="#cb2-395" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-396"><a href="#cb2-396" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2.1.3. The Dimension of a Matrix {#die-dimension-einer-matrix}</span></span>
+<span id="cb2-397"><a href="#cb2-397" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-398"><a href="#cb2-398" aria-hidden="true" tabindex="-1"></a>The **dimension** of a matrix is determined by the number of its rows and columns. A matrix with $m$ rows and $n$ columns is called an **$m \times n$ matrix** (read as "m by n matrix").</span>
+<span id="cb2-399"><a href="#cb2-399" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-400"><a href="#cb2-400" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>$m$: number of rows (horizontal lines)</span>
+<span id="cb2-401"><a href="#cb2-401" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>$n$: number of columns (vertical lines)</span>
+<span id="cb2-402"><a href="#cb2-402" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-403"><a href="#cb2-403" aria-hidden="true" tabindex="-1"></a>B = \begin{pmatrix}</span>
+<span id="cb2-404"><a href="#cb2-404" aria-hidden="true" tabindex="-1"></a>5 &amp; 7 &amp; 2 <span class="sc">\\</span></span>
+<span id="cb2-405"><a href="#cb2-405" aria-hidden="true" tabindex="-1"></a>1 &amp; 0 &amp; 3</span>
+<span id="cb2-406"><a href="#cb2-406" aria-hidden="true" tabindex="-1"></a>\end{pmatrix}</span>
+<span id="cb2-407"><a href="#cb2-407" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb2-408"><a href="#cb2-408" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-409"><a href="#cb2-409" aria-hidden="true" tabindex="-1"></a>For our example matrix $B$, we therefore have:</span>
+<span id="cb2-410"><a href="#cb2-410" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-411"><a href="#cb2-411" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>$m = 2$ (two rows)</span>
+<span id="cb2-412"><a href="#cb2-412" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>$n = 3$ (three columns)</span>
+<span id="cb2-413"><a href="#cb2-413" aria-hidden="true" tabindex="-1"></a>So $B$ is a $2 \times 3$ matrix.</span>
+<span id="cb2-414"><a href="#cb2-414" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-415"><a href="#cb2-415" aria-hidden="true" tabindex="-1"></a>The dimension is one of the most fundamental properties of a matrix, as it determines which mathematical operations (such as addition or multiplication) are possible with other matrices.</span>
+<span id="cb2-416"><a href="#cb2-416" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-417"><a href="#cb2-417" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2.1.4. Creating Matrices in Python {#matrizen-in-python-erstellen}</span></span>
+<span id="cb2-418"><a href="#cb2-418" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-419"><a href="#cb2-419" aria-hidden="true" tabindex="-1"></a>Now that we know the theoretical basics, the question arises:</span>
+<span id="cb2-420"><a href="#cb2-420" aria-hidden="true" tabindex="-1"></a>**How do we create a matrix in Python?**</span>
+<span id="cb2-421"><a href="#cb2-421" aria-hidden="true" tabindex="-1"></a>While you can use nested lists (<span class="in">`[[1, 2], [3, 4]]`</span>), the de-facto standard for numerical and scientific computing is the **NumPy** library.</span>
+<span id="cb2-422"><a href="#cb2-422" aria-hidden="true" tabindex="-1"></a>As described in Chapter <span class="co">[</span><span class="ot">1</span><span class="co">](../Kapitel_1/index.qmd)</span>, this is more efficient and also faster, though the latter could unfortunately not be demonstrated in Chapter 1.</span>
+<span id="cb2-423"><a href="#cb2-423" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-424"><a href="#cb2-424" aria-hidden="true" tabindex="-1"></a>NumPy gives us the data type <span class="in">`ndarray`</span> (n-dimensional array) for this, which is perfectly suited for vectors and matrices. Such an array is created with the function <span class="in">`np.array()`</span>.</span>
+<span id="cb2-425"><a href="#cb2-425" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-426"><a href="#cb2-426" aria-hidden="true" tabindex="-1"></a><span class="in">```{pyodide-python}</span></span>
+<span id="cb2-427"><a href="#cb2-427" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-428"><a href="#cb2-428" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-429"><a href="#cb2-429" aria-hidden="true" tabindex="-1"></a>B <span class="op">=</span> np.array([</span>
+<span id="cb2-430"><a href="#cb2-430" aria-hidden="true" tabindex="-1"></a>  [<span class="dv">5</span>, <span class="dv">7</span>, <span class="dv">2</span>],</span>
+<span id="cb2-431"><a href="#cb2-431" aria-hidden="true" tabindex="-1"></a>  [<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">3</span>]</span>
+<span id="cb2-432"><a href="#cb2-432" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb2-433"><a href="#cb2-433" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-434"><a href="#cb2-434" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Our matrix B:"</span>)</span>
+<span id="cb2-435"><a href="#cb2-435" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(B)</span>
+<span id="cb2-436"><a href="#cb2-436" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb2-437"><a href="#cb2-437" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-438"><a href="#cb2-438" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2.1.4.1. Exercise</span></span>
+<span id="cb2-439"><a href="#cb2-439" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-440"><a href="#cb2-440" aria-hidden="true" tabindex="-1"></a>Write a function <span class="in">`erstelle_studierenden_matrix()`</span> that returns the $3 \times 3$ matrix with the data from the "Data Matrices" section (age, height, grade of the three students). Hidden tests automatically check whether your solution is correct — click **Check** once you're done.</span>
+<span id="cb2-441"><a href="#cb2-441" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-442"><a href="#cb2-442" aria-hidden="true" tabindex="-1"></a>**Commands you need:** <span class="in">`np.array()`</span> with a list of rows, <span class="in">`return`</span>.</span>
+<span id="cb2-443"><a href="#cb2-443" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-444"><a href="#cb2-444" aria-hidden="true" tabindex="-1"></a><span class="in">```{py-exercise}</span></span>
+<span id="cb2-445"><a href="#cb2-445" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: matrizen-grundlagen-studierenden-matrix-en</span></span>
+<span id="cb2-446"><a href="#cb2-446" aria-hidden="true" tabindex="-1"></a><span class="co">#| caption: Implement erstelle_studierenden_matrix</span></span>
+<span id="cb2-447"><a href="#cb2-447" aria-hidden="true" tabindex="-1"></a><span class="co">#| show-test-hints: false</span></span>
+<span id="cb2-448"><a href="#cb2-448" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-449"><a href="#cb2-449" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-450"><a href="#cb2-450" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> erstelle_studierenden_matrix():</span>
+<span id="cb2-451"><a href="#cb2-451" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Your code here — return the 3x3 matrix from the "Data Matrices" section</span></span>
+<span id="cb2-452"><a href="#cb2-452" aria-hidden="true" tabindex="-1"></a>    <span class="cf">pass</span></span>
+<span id="cb2-453"><a href="#cb2-453" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-454"><a href="#cb2-454" aria-hidden="true" tabindex="-1"></a><span class="co">## TESTS ##</span></span>
+<span id="cb2-455"><a href="#cb2-455" aria-hidden="true" tabindex="-1"></a>ergebnis <span class="op">=</span> erstelle_studierenden_matrix()</span>
+<span id="cb2-456"><a href="#cb2-456" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> np.array(ergebnis).shape <span class="op">==</span> (<span class="dv">3</span>, <span class="dv">3</span>), <span class="st">"The matrix should have 3 rows and 3 columns"</span></span>
+<span id="cb2-457"><a href="#cb2-457" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> np.array_equal(ergebnis, [[<span class="dv">15</span>, <span class="dv">165</span>, <span class="dv">2</span>], [<span class="dv">16</span>, <span class="dv">172</span>, <span class="dv">1</span>], [<span class="dv">15</span>, <span class="dv">168</span>, <span class="dv">3</span>]]), <span class="st">"The values of the matrix don't match the student data"</span></span>
+<span id="cb2-458"><a href="#cb2-458" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb2-459"><a href="#cb2-459" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-460"><a href="#cb2-460" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip title="Tip" collapse="true"}</span>
+<span id="cb2-461"><a href="#cb2-461" aria-hidden="true" tabindex="-1"></a>You can create the matrix exactly like <span class="in">`B`</span> above — just do it inside the function with <span class="in">`return`</span> instead of <span class="in">`print()`</span>.</span>
+<span id="cb2-462"><a href="#cb2-462" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb2-463"><a href="#cb2-463" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-464"><a href="#cb2-464" aria-hidden="true" tabindex="-1"></a>::: {.callout-caution title="Solution" collapse="true"}</span>
+<span id="cb2-465"><a href="#cb2-465" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
+<span id="cb2-466"><a href="#cb2-466" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-467"><a href="#cb2-467" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-468"><a href="#cb2-468" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> erstelle_studierenden_matrix():</span>
+<span id="cb2-469"><a href="#cb2-469" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array([[<span class="dv">15</span>, <span class="dv">165</span>, <span class="dv">2</span>],</span>
+<span id="cb2-470"><a href="#cb2-470" aria-hidden="true" tabindex="-1"></a>                     [<span class="dv">16</span>, <span class="dv">172</span>, <span class="dv">1</span>],</span>
+<span id="cb2-471"><a href="#cb2-471" aria-hidden="true" tabindex="-1"></a>                     [<span class="dv">15</span>, <span class="dv">168</span>, <span class="dv">3</span>]])</span>
+<span id="cb2-472"><a href="#cb2-472" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb2-473"><a href="#cb2-473" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb2-474"><a href="#cb2-474" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-475"><a href="#cb2-475" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-476"><a href="#cb2-476" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb2-477"><a href="#cb2-477" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-478"><a href="#cb2-478" aria-hidden="true" tabindex="-1"></a>In the next section, <span class="co">[</span><span class="ot">Matrix Attributes</span><span class="co">](matrizen_attribute.qmd)</span>, we'll look at how to query these and other properties of matrices in Python.</span>
+<span id="cb2-479"><a href="#cb2-479" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-480"><a href="#cb2-480" aria-hidden="true" tabindex="-1"></a>::::</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+
+<script src="../../site_libs/quarto-contrib/py-exercise-0.5.0/py-exercise.js"></script>
+<script src="../../site_libs/quarto-contrib/pyodide-interaktiv-1.10.0/qpyodide-cell-classes.js" type="module"></script>
+<script src="../../site_libs/quarto-contrib/pyodide-interaktiv-1.10.0/qpyodide-cell-initialization.js" type="module"></script>
+</body></html>

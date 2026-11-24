@@ -1,0 +1,499 @@
+---
+title: '1.2. Vektor-Operationen'
+title-en: '1.2. Vector Operations'
+format: html
+filters:
+  - ctm-assessment
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+::: {.callout-note title="Zellen der Reihe nach ausführen"}
+Die Code-Zellen dieser Seite bauen aufeinander auf: Importe, Variablen und Funktionen aus einer Zelle gelten auch in allen späteren Zellen und werden dort nicht wiederholt. Führe die Zellen deshalb von oben nach unten aus. Meldet Python einen `NameError`, hast du meist eine frühere Zelle noch nicht ausgeführt. Aufgaben mit **Überprüfen** laufen für sich allein: Dort gilt nur, was in der Zelle selbst steht.
+:::
+
+Nachdem du im letzten Abschnitt gelernt hast, wie man Vektoren in Python erstellt, schauen wir uns nun an, was man mit ihnen alles anstellen kann. In diesem Kapitel lernst du die grundlegenden Vektor-Operationen kennen: Addition, Subtraktion und die Multiplikation mit Skalaren, sowie die Multiplikation von Vektoren untereinander und die Bedingung, die dafür erfüllt sein muss. 
+
+Dabei wird der entscheidende Unterschied zwischen normalen Python-Listen und den NumPy-Arrays dargestellt. Du wirst sehen, warum NumPy das Werkzeug der Wahl für die lineare Algebra in Python ist.
+
+## 1.2.1. Mathematische Grundlagen: Der Vektorraum
+
+<details>
+<summary> Definition eines Vektorraums (Wenn du dir der Axiome nicht mehr ganz sicher bist, Klicke hier!) </summary>
+
+Es sei $V$ eine Menge, $(\mathbb{K}, +, \cdot)$ ein Körper, $+: V \times V \to V$ eine *innere zweistellige Verknüpfung*, genannt **Vektoraddition**, und $\cdot: \mathbb{K} \times V \to V$ eine *externe zweistellige Verknüpfung*, genannt **Skalarmultiplikation**.  
+Dann nennt man $(V,+,\cdot)$ einen Vektorraum über dem Körper $\mathbb{K}$, oder kurz $\mathbb{K}$-Vektorraum, wenn $\forall \vec{u}, \vec{v}, \vec{w} \in V$ und $\forall a, b \in \mathbb{K}$ gilt:
+
+1.  **Vektoraddition (bildet eine abelsche Gruppe)**:
+    - Assoziativität: $$\forall \vec{u}, \vec{v}, \vec{w} \in V: (\vec{u} + \vec{v}) + \vec{w} = \vec{u} + (\vec{v} + \vec{w})$$
+    - Kommutativität: $$\forall \vec{u}, \vec{v} \in V: \vec{u} + \vec{v} = \vec{v} + \vec{u}$$
+    - Neutrale(s) Element(e): $$\exists \vec{0} \in V, \forall \vec{v} \in V: \vec{v} + \vec{0} = \vec{v} = \vec{0} + \vec{v}$$
+    - Inverses Element: $$\forall \vec{v} \in V \exists (-\vec{v}) \in V: \vec{v} + (-\vec{v}) = \vec{0} = (-\vec{v})+\vec{v}$$
+
+2.  **Skalarmultiplikation**:
+    - Assoziativität: $$\forall a, b \in \mathbb{K}, \forall \vec{v} \in V: a(b\vec{v}) = (ab)\vec{v}$$
+    - Neutrale(s) Element(e): $$\forall \vec{v} \in V: 1 \cdot \vec{v} = \vec{v}$$
+    - Distributivität (der Vektor-/Körperaddition):
+         $$\forall a \in \mathbb{K}, \forall \vec{u}, \vec{v} \in V: a(\vec{u} + \vec{v}) = a\vec{u} + a\vec{v}$$
+         $$\forall a, b \in \mathbb{K}, \forall \vec{v} \in V: (a+b)\vec{v} = a\vec{v} + b\vec{v}$$
+  
+Die NumPy-Arrays, die wir in diesem Tutorial verwenden, bilden zusammen mit der elementweisen Addition und Skalarmultiplikation einen solchen Vektorraum. Dies bildet einen der Hauptunterschiede, da in diesem Abschnitt zu sehen ist, dass Python-Listen diese Eigenschaft nicht besitzen.
+
+</details>
+ 
+***
+## 1.2.2. Vektoraddition und -subtraktion
+ 
+Mathematisch werden zwei Vektoren addiert oder subtrahiert, indem ihre entsprechenden Komponenten addiert oder subtrahiert werden. Wichtig ist, dass die Vektoren dieselbe Dimension haben müssen.
+
+$$ \vec{a} + \vec{b} = (a_1, a_2) + (b_1, b_2) = (a_1 + b_1, a_2 + b_2) $$
+
+Während der `+` Operator bei Python-Listen die Listen nur aneinander hängt (konkateniert), führt NumPy eine echte, elementweise Addition durch.
+
+```{pyodide-python}
+import numpy as np
+
+# Vektoren als Python-Listen
+a_liste = [10, 20, 30]
+b_liste = [1, 2, 3]
+
+print(f"Standardverhalten bei Listen: {a_liste + b_liste}")
+
+# Vektoren als NumPy-Arrays
+a_np = np.array(a_liste)
+b_np = np.array(b_liste)
+
+# Mit NumPy wird die korrekte elementweise Addition durchgeführt
+print(f"Elementweise Addition mit NumPy: {a_np + b_np}")
+
+# Das Gleiche gilt für die Subtraktion
+print(f"Subtraktion mit NumPy: {a_np - b_np}")
+```
+
+### 1.2.2.1 Aufgabe: Vektoraddition mit Listen
+
+Probiere zuerst eine Addition von Hand aus. Dann weißt du, was deine Funktion zurückgeben muss:
+
+```{math-exercise}
+#| label: vektor-addition-hand
+#| caption: Zwei Vektoren von Hand addieren
+$\begin{pmatrix} 10 \ 20 \ 30 \end{pmatrix} + \begin{pmatrix} 1 \ 2 \ 3 \end{pmatrix} =$ vec[11,22,33]
+```
+
+**Aufgabe**:
+Schreibe eine Funktion `vektor_summe(a, b)`, die zwei gleich lange Listen `a` und `b` elementweise addiert und das Ergebnis als neue Liste zurückgibt, ganz ohne NumPy. Versteckte Tests prüfen automatisch, ob deine Lösung stimmt.
+
+**Befehle, die du brauchst:** eine `for`-Schleife mit `range()` und `len()`, der Indexzugriff `a[i]`, `.append()`, `return`.
+
+```{py-exercise}
+#| label: vektor-summe
+#| caption: vektor_summe implementieren
+#| show-test-hints: false
+def vektor_summe(a, b):
+    # Dein Code hier
+    pass
+
+## TESTS ##
+assert vektor_summe([10, 20, 30], [1, 2, 3]) == [11, 22, 33], "Falsches Ergebnis für [10,20,30] + [1,2,3]"
+assert vektor_summe([1, -1], [-1, 1]) == [0, 0], "Falsches Ergebnis für [1,-1] + [-1,1]"
+assert vektor_summe([0, 0, 0, 0], [5, 6, 7, 8]) == [5, 6, 7, 8], "Falsches Ergebnis beim Nullvektor"
+```
+
+::: {.callout-tip collapse="true" title="Tipps"}
+*   **Elementzugriff:** Auf ein Element einer Liste greifst du über den Index zu: `a[0]` ist das erste Element.
+*   **Listenlänge:** `len(a)` liefert die Anzahl der Elemente. (Eine Vektoraddition funktioniert nur, wenn beide Vektoren gleich lang sind.)
+*   **Iteration:** Eine `for`-Schleife mit `range()` läuft über die Indizes: `for i in range(len(a)):`.
+:::
+
+::: {.callout-caution collapse="true" title="Lösung"}
+Mit einer `for`-Schleife:
+
+```python
+def vektor_summe(a, b):
+    ergebnis = []
+    for i in range(len(a)):
+        ergebnis.append(a[i] + b[i])
+    return ergebnis
+```
+
+::: {.callout-caution collapse="true" title="Elegante Lösung"}
+Die eleganteste Methode in Python ist eine **List Comprehension**. Sie führt die Operation in einer einzigen, kompakten Zeile aus:
+
+```python
+def vektor_summe(a, b):
+    return [a[i] + b[i] for i in range(len(a))]
+```
+
+Der Unterschied ist nicht dramatisch groß, aber es ist einmal ein Vierzeiler und einmal ein Zweizeiler. Das kann, wenn das häufiger verwendet werden soll, schnell einen Unterschied machen.
+:::
+
+:::
+
+## 1.2.3. Skalarmultiplikation
+
+<details> 
+<summary> Verbindung zum Vektorraum </summary>
+Die Operationen, die wir mit NumPy-Arrays durchführen, erfüllen alle Axiome eines Vektorraums:
+
+*   **Vektoraddition (Abelsche Gruppe)**: Die `+`-Operation für NumPy-Arrays ist assoziativ und kommutativ. Es gibt einen Nullvektor  `np.zeros(...)` und für jeden Vektor `v` ein inverses Element (`-v`). Damit sind alle Bedingungen für eine abelsche Gruppe erfüllt.
+*   **Skalarmultiplikation**: Die `*`-Operation mit einem Skalar erfüllt ebenfalls die notwendigen Axiome:
+    - **Assoziativität**: `a * (b * v_np)` ist das Gleiche wie `(a * b) * v_np`.
+    - **Neutrale(s) Element(e)**: `1 * v_np` ergibt wieder `v_np`.
+    - **Distributivität**: Es gilt sowohl $a(\vec{u} + \vec{v}) = a\vec{u} + a\vec{v}$ als auch $(a+b)\vec{v} = a\vec{v} + b\vec{v}$.
+
+Zusammenfassend lässt sich sagen, dass NumPy-Arrays mit der elementweisen Addition und der Skalarmultiplikation die vollständige Struktur eines Vektorraums über den reellen Zahlen ($\mathbb{K} = \mathbb{R}$) bilden. Dadurch lässt sich mit `numpy` mathematisch einfacher rechnen als mit Python-Listen. (Streng genommen gilt das nur mathematisch: Kommazahlen werden im Computer gerundet, deshalb ergibt z.B. `(0.1 + 0.2) + 0.3` nicht exakt dasselbe wie `0.1 + (0.2 + 0.3)`.)
+</details>
+
+Bei der Skalarmultiplikation wird ein Vektor mit einer einzelnen Zahl (einem Skalar) multipliziert. Dabei wird jede Komponente des Vektors mit dem Skalar multipliziert.
+
+$$
+k \cdot \vec{a} = k \cdot (a_1,a_2) = (k \cdot a_1 ,k \cdot a_2)
+$$
+
+Auch hier zeigt sich der Vorteil von NumPy. Der `*` Operator bei Listen wiederholt die Liste, während er bei NumPy-Arrays die korrekte mathematische Operation ausführt.
+
+```{pyodide-python}
+skalar = 3
+a_liste = [1, 2, 3]
+a_np = np.array(a_liste)
+
+# Mit Listen: Der *-Operator wiederholt die Liste
+print(f"Standardverhalten bei Listen: {a_liste * skalar}")
+
+# Mit NumPy: Der *-Operator führt die Skalarmultiplikation durch
+produkt_np = a_np * skalar
+print(f"Skalarmultiplikation mit NumPy: {produkt_np}")
+```
+
+Probiere beide Operationen einmal von Hand aus, bevor du sie Python überlässt:
+
+```{math-exercise}
+#| label: vektor-operationen-hand
+#| caption: Vektoren von Hand addieren und skalieren
+#| partial-credit: true
+$\begin{pmatrix} 1 \\ 2 \\ 3 \end{pmatrix} + \begin{pmatrix} 4 \\ -1 \\ 0 \end{pmatrix} =$ vec[5,1,3]
+
+$\begin{pmatrix} 5 \\ 2 \end{pmatrix} - \begin{pmatrix} 1 \\ 4 \end{pmatrix} =$ vec[4,-2]
+
+$2 \cdot \begin{pmatrix} 3 \\ -1 \\ 2 \end{pmatrix} =$ vec[6,-2,4]
+```
+
+## 1.2.4. Elementweise Multiplikation (Hadamard-Produkt)
+
+Hier werden die entsprechenden Komponenten zweier Vektoren miteinander multipliziert. Das Ergebnis ist wieder ein Vektor derselben Dimension.  
+_Das heißt, wie bei der Addition funktioniert dieses Produkt, nur wenn die Vektoren die gleiche Dimension haben._
+
+Während diese Operation für normale Python-Listen gar nicht erst definiert ist und einen Fehler auslöst, wird sie in NumPy intuitiv mit dem `*` Operator durchgeführt.
+
+```{pyodide-python}
+# Vektoren als Python-Listen
+a_liste = [2, 3, 4]
+b_liste = [5, 10, -1]
+
+# Der *-Operator ist für die Multiplikation von zwei Listen nicht definiert
+# und führt zu einem TypeError.
+try:
+    print(a_liste * b_liste)
+except TypeError as e:
+    print("Standardverhalten bei Listen: Löst einen Fehler aus")
+    print(f"-> {e}")
+
+# Vektoren als NumPy-Arrays
+a_np = np.array(a_liste)
+b_np = np.array(b_liste)
+
+# Mit NumPy funktioniert die elementweise Multiplikation wie erwartet
+produkt_np = a_np * b_np
+print(f"Elementweises Produkt mit NumPy: {produkt_np}")
+```
+
+### 1.2.4.1 Aufgabe: Elementweise Multiplikation ohne NumPy
+
+Schreibe eine Funktion `elementweise_produkt(a, b)`, die zwei gleich lange Listen `a` und `b` entgegennimmt und eine neue Liste mit den elementweisen Produkten zurückgibt — ganz ohne NumPy. Versteckte Tests prüfen automatisch, ob deine Lösung stimmt.
+
+**Befehle, die du brauchst:** eine `for`-Schleife mit `range()` und `len()`, der Indexzugriff `a[i]`, `.append()`, `return`.
+
+```{py-exercise}
+#| label: vektor-operationen-hadamard
+#| caption: elementweise_produkt implementieren
+#| show-test-hints: false
+def elementweise_produkt(a, b):
+    # Dein Code hier
+    pass
+
+## TESTS ##
+assert elementweise_produkt([2, 3, 4], [5, 10, -1]) == [10, 30, -4], "Falsches Ergebnis für [2,3,4] * [5,10,-1]"
+assert elementweise_produkt([1, 1], [7, 8]) == [7, 8], "Falsches Ergebnis für [1,1] * [7,8]"
+assert elementweise_produkt([0, 0, 0], [1, 2, 3]) == [0, 0, 0], "Falsches Ergebnis für [0,0,0] * [1,2,3]"
+```
+
+::: {.callout-caution title="Lösung" collapse="true"}
+```python
+def elementweise_produkt(a, b):
+    ergebnis = []
+    for i in range(len(a)):
+        ergebnis.append(a[i] * b[i])
+    return ergebnis
+```
+:::
+
+
+<details>
+<summary> Die Vorteile von NumPy </summary>
+In diesem Abschnitt haben wir die folgenden Vorteile von `numpy` gegenüber Listen kennengelernt:
+
+*   **Intuitives, mathematisches Verhalten**: Die Standardoperatoren (`+`, `-`, `*`) führen die korrekten, elementweisen Vektoroperationen aus, anstatt Listen zu verketten, zu wiederholen oder Fehler zu erzeugen.
+
+*   **Kürzerer und lesbarerer Code**: Eine einzelne, klare Operation wie `a_np + b_np` ersetzt mehrzeilige `for`-Schleifen oder komplexere List Comprehensions, die bei der Verwendung von Standard-Listen notwendig wären.
+</details>
+
+Im nächsten Abschnitt lernst du eine weitere wichtige Operation kennen: das [Skalarprodukt](vektor_skalarprodukt.qmd).
+
+***
+
+::::
+
+:::: {.content-visible when-profile="english"}
+::: {.callout-note title="Run the cells in order"}
+The code cells on this page build on each other: imports, variables and functions from one cell are also available in all later cells and are not repeated there. So run the cells from top to bottom. If Python reports a `NameError`, you most likely have not run an earlier cell yet. Exercises with **Check** run on their own: only what is written in the cell itself counts there.
+:::
+
+Now that you have learned how to create vectors in Python in the last section, let's take a look at what you can do with them. In this chapter, you will learn the basic vector operations: addition, subtraction, and multiplication with scalars, as well as the multiplication of vectors with each other and the condition that must be met for this. 
+
+This will illustrate the crucial difference between normal Python lists and NumPy arrays. You will see why NumPy is the tool of choice for linear algebra in Python.
+
+## 1.2.1. Mathematical Foundations: The Vector Space {#mathematische-grundlagen-der-vektorraum}
+
+<details>
+<summary> Definition of a Vector Space (If you are no longer quite sure of the axioms, click here!) </summary>
+
+Let $V$ be a set, $(\mathbb{K}, +, \cdot)$ a field, $+: V \times V \to V$ an *internal binary operation*, called **vector addition**, and $\cdot: \mathbb{K} \times V \to V$ an *external binary operation*, called **scalar multiplication**.  
+Then $(V,+,\cdot)$ is called a vector space over the field $\mathbb{K}$, or briefly a $\mathbb{K}$-vector space, if $\forall \vec{u}, \vec{v}, \vec{w} \in V$ and $\forall a, b \in \mathbb{K}$ applies:
+
+1.  **Vector addition (forms an abelian group)**:
+    - Associativity: $$\forall \vec{u}, \vec{v}, \vec{w} \in V: (\vec{u} + \vec{v}) + \vec{w} = \vec{u} + (\vec{v} + \vec{w})$$
+    - Commutativity: $$\forall \vec{u}, \vec{v} \in V: \vec{u} + \vec{v} = \vec{v} + \vec{u}$$
+    - Neutral element(s): $$\exists \vec{0} \in V, \forall \vec{v} \in V: \vec{v} + \vec{0} = \vec{v} = \vec{0} + \vec{v}$$
+    - Inverse element: $$\forall \vec{v} \in V \exists (-\vec{v}) \in V: \vec{v} + (-\vec{v}) = \vec{0} = (-\vec{v})+\vec{v}$$
+
+2.  **Scalar multiplication**:
+    - Associativity: $$\forall a, b \in \mathbb{K}, \forall \vec{v} \in V: a(b\vec{v}) = (ab)\vec{v}$$
+    - Neutral element(s): $$\forall \vec{v} \in V: 1 \cdot \vec{v} = \vec{v}$$
+    - Distributivity (of vector/field addition):
+         $$\forall a \in \mathbb{K}, \forall \vec{u}, \vec{v} \in V: a(\vec{u} + \vec{v}) = a\vec{u} + a\vec{v}$$
+         $$\forall a, b \in \mathbb{K}, \forall \vec{v} \in V: (a+b)\vec{v} = a\vec{v} + b\vec{v}$$
+  
+The NumPy arrays that we use in this tutorial form such a vector space, together with element-wise addition and scalar multiplication. This constitutes one of the main differences, as it can be seen in this section that Python lists do not possess this property.
+
+</details>
+ 
+***
+## 1.2.2. Vector Addition and Subtraction {#vektoraddition-und--subtraktion}
+ 
+Mathematically, two vectors are added or subtracted by adding or subtracting their corresponding components. It is important that the vectors must have the same dimension.
+
+$$ \vec{a} + \vec{b} = (a_1, a_2) + (b_1, b_2) = (a_1 + b_1, a_2 + b_2) $$
+
+While the `+` operator simply appends (concatenates) lists in Python, NumPy performs a true, element-wise addition.
+
+```{pyodide-python}
+import numpy as np
+
+# Vectors as Python lists
+a_list = [10, 20, 30]
+b_list = [1, 2, 3]
+
+print(f"Standard behavior for lists: {a_list + b_list}")
+
+# Vectors as NumPy arrays
+a_np = np.array(a_list)
+b_np = np.array(b_list)
+
+# With NumPy, the correct element-wise addition is performed
+print(f"Element-wise addition with NumPy: {a_np + b_np}")
+
+# The same applies to subtraction
+print(f"Subtraction with NumPy: {a_np - b_np}")
+```
+
+### 1.2.2.1 Exercise: Vector Addition with Lists
+
+First try one addition by hand. Then you know what your function has to return:
+
+```{math-exercise}
+#| label: vektor-addition-hand-en
+#| caption: Adding two vectors by hand
+$\begin{pmatrix} 10 \ 20 \ 30 \end{pmatrix} + \begin{pmatrix} 1 \ 2 \ 3 \end{pmatrix} =$ vec[11,22,33]
+```
+
+**Exercise**:
+Write a function `vector_sum(a, b)` that adds two lists `a` and `b` of equal length element by element and returns the result as a new list, without using NumPy. Hidden tests check your solution automatically.
+
+**Commands you need:** a `for` loop with `range()` and `len()`, the index access `a[i]`, `.append()`, `return`.
+
+```{py-exercise}
+#| label: vektor-summe-en
+#| caption: Implement vector_sum
+#| show-test-hints: false
+def vector_sum(a, b):
+    # Your code here
+    pass
+
+## TESTS ##
+assert vector_sum([10, 20, 30], [1, 2, 3]) == [11, 22, 33], "Wrong result for [10,20,30] + [1,2,3]"
+assert vector_sum([1, -1], [-1, 1]) == [0, 0], "Wrong result for [1,-1] + [-1,1]"
+assert vector_sum([0, 0, 0, 0], [5, 6, 7, 8]) == [5, 6, 7, 8], "Wrong result for the zero vector"
+```
+
+::: {.callout-tip collapse="true" title="Tips"}
+*   **Element access:** You can access an element of a list via its index: `a[0]` is the first element.
+*   **List length:** `len(a)` gives the number of elements. (A vector addition only works if both vectors have the same length.)
+*   **Iteration:** A `for` loop with `range()` iterates over the indices: `for i in range(len(a)):`.
+:::
+
+::: {.callout-caution collapse="true" title="Solution"}
+With a `for` loop:
+
+```python
+def vector_sum(a, b):
+    result = []
+    for i in range(len(a)):
+        result.append(a[i] + b[i])
+    return result
+```
+
+::: {.callout-caution collapse="true" title="Elegant Solution"}
+The most elegant method in Python is a **list comprehension**. It executes the operation in a single, compact line:
+
+```python
+def vector_sum(a, b):
+    return [a[i] + b[i] for i in range(len(a))]
+```
+
+The difference is not dramatically large, but one is a four-line code and the other a two-liner. If this is used frequently, it quickly makes a difference.
+:::
+
+:::
+
+## 1.2.3. Scalar Multiplication {#skalarmultiplikation}
+
+<details> 
+<summary> Connection to the Vector Space </summary>
+The operations we perform with NumPy arrays fulfill all axioms of a vector space:
+
+*   **Vector addition (Abelian group)**: The `+` operation for NumPy arrays is associative and commutative. There is a zero vector `np.zeros(...)` and for every vector `v` an inverse element (`-v`). Thus, all conditions for an abelian group are met.
+*   **Scalar multiplication**: The `*` operation with a scalar also fulfills the necessary axioms:
+    - **Associativity**: `a * (b * v_np)` is the same as `(a * b) * v_np`.
+    - **Neutral element(s)**: `1 * v_np` yields `v_np` again.
+    - **Distributivity**: Both $a(\vec{u} + \vec{v}) = a\vec{u} + a\vec{v}$ and $(a+b)\vec{v} = a\vec{v} + b\vec{v}$ apply.
+
+In summary, NumPy arrays with element-wise addition and scalar multiplication form the complete structure of a vector space over the real numbers ($\mathbb{K} = \mathbb{R}$). This makes mathematical calculations easier with `numpy` than with Python lists. (Strictly speaking, this only holds mathematically: decimal numbers are rounded in the computer, so e.g. `(0.1 + 0.2) + 0.3` does not give exactly the same as `0.1 + (0.2 + 0.3)`.)
+</details>
+
+In scalar multiplication, a vector is multiplied by a single number (a scalar). Each component of the vector is multiplied by the scalar.
+
+$$
+k \cdot \vec{a} = k \cdot (a_1,a_2) = (k \cdot a_1 ,k \cdot a_2)
+$$
+
+Here again, the advantage of NumPy becomes apparent. The `*` operator with lists repeats the list, while with NumPy arrays it performs the correct mathematical operation.
+
+```{pyodide-python}
+scalar = 3
+a_list = [1, 2, 3]
+a_np = np.array(a_list)
+
+# With lists: The * operator repeats the list
+print(f"Standard behavior for lists: {a_list * scalar}")
+
+# With NumPy: The * operator performs scalar multiplication
+product_np = a_np * scalar
+print(f"Scalar multiplication with NumPy: {product_np}")
+```
+
+Try both operations by hand before you leave them to Python:
+
+```{math-exercise}
+#| label: vektor-operationen-hand-en
+#| caption: Adding and scaling vectors by hand
+#| partial-credit: true
+$\begin{pmatrix} 1 \\ 2 \\ 3 \end{pmatrix} + \begin{pmatrix} 4 \\ -1 \\ 0 \end{pmatrix} =$ vec[5,1,3]
+
+$\begin{pmatrix} 5 \\ 2 \end{pmatrix} - \begin{pmatrix} 1 \\ 4 \end{pmatrix} =$ vec[4,-2]
+
+$2 \cdot \begin{pmatrix} 3 \\ -1 \\ 2 \end{pmatrix} =$ vec[6,-2,4]
+```
+
+## 1.2.4. Element-wise Multiplication (Hadamard Product) {#elementweise-multiplikation-hadamard-produkt}
+
+Here, the corresponding components of two vectors are multiplied together. The result is again a vector of the same dimension.  
+_This means, just like with addition, this product only works if the vectors have the same dimension._
+
+While this operation is not even defined for normal Python lists and triggers an error, it is intuitively performed in NumPy using the `*` operator.
+
+```{pyodide-python}
+# Vectors as Python lists
+a_list = [2, 3, 4]
+b_list = [5, 10, -1]
+
+# The * operator is not defined for the multiplication of two lists
+# and leads to a TypeError.
+try:
+    print(a_list * b_list)
+except TypeError as e:
+    print("Standard behavior for lists: Triggers an error")
+    print(f"-> {e}")
+
+# Vectors as NumPy arrays
+a_np = np.array(a_list)
+b_np = np.array(b_list)
+
+# With NumPy, element-wise multiplication works as expected
+product_np = a_np * b_np
+print(f"Element-wise product with NumPy: {product_np}")
+```
+
+### 1.2.4.1 Exercise: Element-wise Multiplication without NumPy
+
+Write a function `elementwise_product(a, b)` that takes two lists of equal length `a` and `b` and returns a new list with the element-wise products — without using NumPy. Hidden tests automatically check whether your solution is correct.
+
+**Commands you need:** a `for` loop with `range()` and `len()`, the index access `a[i]`, `.append()`, `return`.
+
+```{py-exercise}
+#| label: vektor-operationen-hadamard-en
+#| caption: Implement elementwise_product
+#| show-test-hints: false
+def elementwise_product(a, b):
+    # Your code here
+    pass
+
+## TESTS ##
+assert elementwise_product([2, 3, 4], [5, 10, -1]) == [10, 30, -4], "Wrong result for [2,3,4] * [5,10,-1]"
+assert elementwise_product([1, 1], [7, 8]) == [7, 8], "Wrong result for [1,1] * [7,8]"
+assert elementwise_product([0, 0, 0], [1, 2, 3]) == [0, 0, 0], "Wrong result for [0,0,0] * [1,2,3]"
+```
+
+::: {.callout-caution title="Solution" collapse="true"}
+```python
+def elementwise_product(a, b):
+    result = []
+    for i in range(len(a)):
+        result.append(a[i] * b[i])
+    return result
+```
+:::
+
+
+<details>
+<summary> The Advantages of NumPy </summary>
+In this section, we have learned the following advantages of `numpy` over lists:
+
+*   **Intuitive, mathematical behavior**: The standard operators (`+`, `-`, `*`) perform the correct, element-wise vector operations instead of concatenating lists, repeating them, or generating errors.
+
+*   **Shorter and more readable code**: A single, clear operation like `a_np + b_np` replaces multi-line `for` loops or more complex list comprehensions that would be necessary when using standard lists.
+</details>
+
+In the next section, you will learn about another important operation: the Dot Product.
+
+***
+::::

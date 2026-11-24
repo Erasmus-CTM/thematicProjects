@@ -1,0 +1,46 @@
+project:
+  type: website
+  # Alle Seiten liegen unter Qmd-Files/. Ohne index.qmd im Wurzelordner legt Quarto eine
+  # Weiterleitung auf die erste gerenderte Seite an, darum die Startseite zuerst.
+  render:
+    - Qmd-Files/index.qmd
+    - "Qmd-Files/**/*.qmd"
+
+# Zwei Sprachen als Quarto-Profile (wie bei Matrizen):
+#   quarto render --profile deutsch  -> docs/de/
+#   quarto render --profile english  -> docs/en/
+# Beides zusammen plus Weiterleitung docs/index.html: python build_multilingual_site.py
+# Sprachabhängiges (Titel, Navbar, Sidebar, lang) steht in _quarto-deutsch.yml / _quarto-english.yml,
+# Seiteninhalte stehen in ::: {.content-visible when-profile="deutsch"/"english"} Blöcken.
+profile:
+  default: deutsch
+  group: [deutsch, english]
+
+# Theme/sprache.lua: im Profil english ersetzt `title-en:` aus dem Seitenkopf den `title:`
+filters:
+  - Theme/sprache.lua
+
+pyodide:
+  # Code in bearbeitbaren Zellen wird im Browser gespeichert und beim nächsten Besuch
+  # wiederhergestellt (nie automatisch ausgeführt). Abschaltbar im ⚙-Panel.
+  local-storage: true
+
+format:
+  html:
+    theme:
+      light: [morph, Theme/morph_custom.scss]
+      dark: [slate, Theme/slate_custom.scss]
+    respect-user-color-scheme: true
+    css: Theme/styles.css
+    toc: true
+    code-tools: true
+    # Font-Awesome-Webschrift: wird von styles.css für die Navbar-Symbole (Suche,
+    # Dunkelmodus, Lesemodus) gebraucht. Die <i class="fa-…">-Icons im Text und in den
+    # Zellen macht pyodide-interaktiv mit seinem eigenen FA-JS-Kit zu SVG.
+    include-in-header:
+      - text: |
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+# Vor/Zurück-Links unten auf jeder Seite (gilt für beide Sprachprofile)
+website:
+  page-navigation: true

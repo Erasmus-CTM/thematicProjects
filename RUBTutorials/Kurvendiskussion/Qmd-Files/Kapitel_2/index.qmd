@@ -1,0 +1,209 @@
+---
+title: "Symmetrie und Achsenschnittpunkte"
+title-en: "Symmetry and Intercepts"
+format: html
+filters:
+  - ctm-assessment
+  - quizdown
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+Es geht in diesem Abschnitt darum, allgemeine Eigenschaften der Funktion zu bestimmen, 
+dazu gehören: 
+
+*   **[Symmetrieverhalten](symmetrieverhalten.qmd)**
+    * In diesem Abschnitt geht es darum, zu bestimmen, ob die Funktion achsen-, oder punktsymmetrisch ist.
+    Oder ob keines von beiden der Fall ist.
+
+---
+
+*   **[Nullstellen](nullstellen.qmd)**  
+    * In diesem Kapitel geht es darum, herauszufinden, wie mithilfe von Python Nullstellen bestimmt werden können.
+
+---
+
+*   **[Schnittpunkte mit der Y-Achse](achsenschnittpunkte.qmd)**
+    * In diesem Teil des Tutorials sollst du lernen, wie du den Y-Achsenabschnitt einer Funktion mithilfe von Python ausgeben kannst.
+
+---
+
+
+# Quiz: Python-Basics & Definitionsbereich
+
+```quizdown
+---
+locale: de
+---
+
+# Bringe den Code in die richtige Reihenfolge, um den Wertebereich zu bestimmen.
+1. from sympy.calculus.util import function_range
+2. f = sympy.sympify("x**2")
+3. bereich = function_range(f, x, sympy.S.Reals)
+4. print(bereich)
+> Hinweis: Erst importieren, dann Funktion erstellen, dann berechnen, dann ausgeben.
+
+# Welche mathematische Bedingung führt bei $f(x) = \frac{1}{x-2}$ zu einer Definitionslücke?
+- [x] $x - 2 = 0$
+- [ ] $x - 2 > 0$
+- [ ] $x = 0$
+- [ ] $f(x) = 0$
+> Hinweis: Ein Bruch darf im Nenner niemals 0 werden.
+
+# Was gibt dieser Code aus (Schleifen-Verständnis)?
+~~~python
+summe = 0
+for i in range(1, 4):
+    summe = summe + i
+print(summe)
+~~~
+- [x] 6
+- [ ] 4
+- [ ] 3
+- [ ] 10
+> Hinweis: `range(1, 4)` erzeugt die Zahlen 1, 2 und 3. (1+2+3).
+
+# Welche Aussage zum "Wertebereich" ist richtig?
+- [x] Er umfasst alle y-Werte, die die Funktion annehmen kann.
+- [ ] Er umfasst alle x-Werte, die man einsetzen darf.
+- [ ] Er ist immer gleich den reellen Zahlen ($\mathbb{R}$).
+
+# Was passiert, wenn man in Python `sympy.S.Reals` verwendet, ohne `import sympy` gemacht zu haben?
+- [x] Es gibt einen `NameError` (sympy is not defined).
+- [ ] Python importiert es automatisch.
+- [ ] Nichts, es funktioniert einfach.
+
+# Wir haben eine Liste `nullstellen = [-2, 0, 2]`. Wie greifen wir auf das **letzte** Element zu?
+- [x] `nullstellen[-1]`
+- [ ] `nullstellen[last]`
+- [ ] `nullstellen[3]`
+- [ ] `nullstellen.end()`
+> Hinweis: In Python kann man mit negativen Indizes von hinten zählen.
+
+# Welchen Definitionsbereich hat die Funktion $f(x) = \sqrt{x}$ im Reellen?
+- [x] $x \ge 0$ (Nicht-negative Zahlen)
+- [ ] $x > 0$ (Nur positive Zahlen)
+- [ ] Ganz $\mathbb{R}$ (Alles)
+- [ ] $x \le 0$ (Nicht-positive Zahlen)
+
+# Bringe die Zeilen in die richtige Reihenfolge, um eine Funktion mit einer Definitionslücke abzufangen.
+1. try:
+2.     wert = 1 / x
+3. except ZeroDivisionError:
+4.     print("Teilen durch 0 nicht erlaubt!")
+> Hinweis: Erst versuchen (`try`), dann den Fehler auffangen (`except`).
+
+# Was ist der Unterschied zwischen `sympy` und `numpy`?
+- [x] `sympy` rechnet symbolisch (exakt), `numpy` rechnet numerisch (mit Zahlen/Arrays).
+- [ ] `sympy` ist nur für Graphen, `numpy` für Gleichungen.
+- [ ] Es gibt keinen Unterschied.
+
+# Wenn eine Funktion $f(x) = x^2 + 2$ ist (eine nach oben verschobene Parabel), was ist ihr Wertebereich?
+- [x] $[2, \infty)$ (Alle Werte ab 2 aufwärts)
+- [ ] $(-\infty, \infty)$ (Alle Zahlen)
+- [ ] $[0, \infty)$ (Alle positiven Zahlen)
+> Hinweis: Der kleinste Wert, den $x^2$ annehmen kann, ist 0. Plus 2 macht...?
+```
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+This section is about determining general properties of the function, 
+which include: 
+
+*   **[Symmetry](symmetrieverhalten.qmd)**
+    * This section is about determining whether the function is symmetric about an axis or about a point,
+    or whether neither is the case.
+
+---
+
+*   **[Zeros](nullstellen.qmd)**  
+    * This chapter is about finding out how zeros can be determined with the help of Python.
+
+---
+
+*   **[Intersection with the y-axis](achsenschnittpunkte.qmd)**
+    * In this part of the tutorial, you will learn how to output the y-intercept of a function with the help of Python.
+
+---
+
+
+# Quiz: Python basics & domain
+
+```quizdown
+---
+locale: en
+---
+
+# Put the code in the right order to determine the range.
+1. from sympy.calculus.util import function_range
+2. f = sympy.sympify("x**2")
+3. value_range = function_range(f, x, sympy.S.Reals)
+4. print(value_range)
+> Hint: First import, then create the function, then calculate, then output.
+
+# Which mathematical condition leads to a gap in the domain of $f(x) = \frac{1}{x-2}$?
+- [x] $x - 2 = 0$
+- [ ] $x - 2 > 0$
+- [ ] $x = 0$
+- [ ] $f(x) = 0$
+> Hint: The denominator of a fraction must never become 0.
+
+# What does this code print (understanding loops)?
+~~~python
+total = 0
+for i in range(1, 4):
+    total = total + i
+print(total)
+~~~
+- [x] 6
+- [ ] 4
+- [ ] 3
+- [ ] 10
+> Hint: `range(1, 4)` produces the numbers 1, 2 and 3. (1+2+3).
+
+# Which statement about the "range" is correct?
+- [x] It contains all y-values the function can take.
+- [ ] It contains all x-values you are allowed to plug in.
+- [ ] It is always equal to the real numbers ($\mathbb{R}$).
+
+# What happens if you use `sympy.S.Reals` in Python without having done `import sympy`?
+- [x] You get a `NameError` (sympy is not defined).
+- [ ] Python imports it automatically.
+- [ ] Nothing, it just works.
+
+# We have a list `zeros = [-2, 0, 2]`. How do we access the **last** element?
+- [x] `zeros[-1]`
+- [ ] `zeros[last]`
+- [ ] `zeros[3]`
+- [ ] `zeros.end()`
+> Hint: In Python you can count from the end with negative indices.
+
+# What is the domain of the function $f(x) = \sqrt{x}$ in the real numbers?
+- [x] $x \ge 0$ (non-negative numbers)
+- [ ] $x > 0$ (only positive numbers)
+- [ ] all of $\mathbb{R}$ (everything)
+- [ ] $x \le 0$ (non-positive numbers)
+
+# Put the lines in the right order to catch a gap in the domain of a function.
+1. try:
+2.     value = 1 / x
+3. except ZeroDivisionError:
+4.     print("Division by 0 is not allowed!")
+> Hint: First try (`try`), then catch the error (`except`).
+
+# What is the difference between `sympy` and `numpy`?
+- [x] `sympy` calculates symbolically (exactly), `numpy` calculates numerically (with numbers/arrays).
+- [ ] `sympy` is only for graphs, `numpy` for equations.
+- [ ] There is no difference.
+
+# If a function is $f(x) = x^2 + 2$ (a parabola shifted upwards), what is its range?
+- [x] $[2, \infty)$ (all values from 2 upwards)
+- [ ] $(-\infty, \infty)$ (all numbers)
+- [ ] $[0, \infty)$ (all positive numbers)
+> Hint: The smallest value $x^2$ can take is 0. Plus 2 makes...?
+```
+
+::::

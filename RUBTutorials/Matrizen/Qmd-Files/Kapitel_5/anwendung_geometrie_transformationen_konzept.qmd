@@ -1,0 +1,247 @@
+---
+title: 5.1. Konzept geometrischer Transformationen mit Python
+title-en: "5.1. Concept of Geometric Transformations with Python"
+format: html
+filters:
+  - ctm-assessment
+  - quizdown
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+# 5.1.1. Matrizendarstellung von geometrischen Veränderungen
+Zuerst einmal als kleine Wiederholung die verschiedenen Varianten der geometrischen Veränderung von Formen im 2- oder 3-dimensionalen.
+
+::: {.panel-tabset}
+
+## **Streckung (Skalierung)**
+
+*Eine Streckung verändert die Größe eines Objekts entlang der Achsen. Die Faktoren $s_x, s_y$ und $s_z$ geben an, um wie viel entlang der jeweiligen Achse gestreckt wird. Ein Wert größer als 1 vergrößert, ein Wert zwischen 0 und 1 verkleinert das Objekt.*
+
+| 2-dimensional | 3-dimensional |
+| :---: | :---: |
+| $$ \begin{pmatrix} s_x & 0 \\ 0 & s_y \end{pmatrix} $$ | $$ \begin{pmatrix} s_x & 0 & 0 \\ 0 & s_y & 0 \\ 0 & 0 & s_z \end{pmatrix} $$ |
+
+## **Verschiebung**
+
+*Eine Verschiebung (Translation) ist eine Sonderform der Transformation. Anders als die anderen Operationen, die durch Matrix-Multiplikation dargestellt werden, wird eine Verschiebung durch [**Vektoraddition**](../Kapitel_1/vektor_operationen.qmd#vektoraddition-und--subtraktion) realisiert.*
+
+*Dabei wird zu jedem Punkt (dargestellt durch seinen Ortsvektor $\vec{p}$) ein Verschiebungsvektor $\vec{v}$ addiert, um den neuen Punkt $\vec{p'}$ zu erhalten.*
+
+$$ \vec{p'} = \vec{p} + \vec{v} $$
+
+**Beispiel (2D):**
+Ein Punkt $P(2, 1)$ soll um den Vektor $\vec{v} = \begin{pmatrix} 3 \\ 5 \end{pmatrix}$ verschoben werden.
+
+$$
+\begin{pmatrix} x' \\ y' \end{pmatrix} = \begin{pmatrix} 2 \\ 1 \end{pmatrix} + \begin{pmatrix} 3 \\ 5 \end{pmatrix} = \begin{pmatrix} 2+3 \\ 1+5 \end{pmatrix} = \begin{pmatrix} 5 \\ 6 \end{pmatrix}
+$$
+
+Der neue Punkt ist $P'(5, 6)$.
+
+## **Rotation**
+Eine Rotation kann prinzipiell um jeden beliebigen Punkt (in 2D), oder um jede beliebige Achse im Raum (in 3D), erfolgen. Diese allgemeinen Rotationen sind mathematisch komplexer, weshalb sich dieses Tutorial der Einfachheit halber auf die fundamentalen Fälle konzentriert: die Rotation um den Koordinatenursprung in 2D und um die Hauptachsen (x, y, z) in 3D.
+*Der Winkel $\theta$ (theta) gibt an, um wie viel Grad gedreht wird (üblicherweise gegen den Uhrzeigersinn (mathematisch positiv)).*
+
+| 2-dimensional | 3-dimensional |
+| :---: | :---: |
+| **Rotation um den Ursprung:** <br> $$ \begin{pmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{pmatrix} $$ | **Rotation um die x-Achse:** <br> $$ \begin{pmatrix} 1 & 0 & 0 \\ 0 & \cos\theta & -\sin\theta \\ 0 & \sin\theta & \cos\theta \end{pmatrix} $$ <br> **Rotation um die y-Achse:** <br> $$ \begin{pmatrix} \cos\theta & 0 & \sin\theta \\ 0 & 1 & 0 \\ -\sin\theta & 0 & \cos\theta \end{pmatrix} $$ <br> **Rotation um die z-Achse:** <br> $$ \begin{pmatrix} \cos\theta & -\sin\theta & 0 \\ \sin\theta & \cos\theta & 0 \\ 0 & 0 & 1 \end{pmatrix} $$ |
+
+## **Spiegelung**
+
+*Eine Spiegelung klappt die Koordinaten eines Objekts über eine Achse (in 2D) oder eine Ebene (in 3D). Dies wird erreicht, indem man die Koordinate, die zur Achse/Ebene senkrecht steht, mit -1 multipliziert.*
+
+| 2-dimensional | 3-dimensional |
+| :---: | :---: |
+| **Spiegelung an der y-Achse ($x=0$):** <br> $$ \begin{pmatrix} -1 & 0 \\ 0 & 1 \end{pmatrix} $$ <br> **Spiegelung an der x-Achse ($y=0$):** <br> $$ \begin{pmatrix} 1 & 0 \\ 0 & -1 \end{pmatrix} $$ | **Spiegelung an der y-z-Ebene ($x=0$):** <br> $$ \begin{pmatrix} -1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{pmatrix} $$ <br> **Spiegelung an der x-z-Ebene ($y=0$):** <br> $$ \begin{pmatrix} 1 & 0 & 0 \\ 0 & -1 & 0 \\ 0 & 0 & 1 \end{pmatrix} $$ <br> **Spiegelung an der x-y-Ebene ($z=0$):** <br> $$ \begin{pmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & -1 \end{pmatrix} $$ |
+
+:::{.callout-tip title="Hinweis: Allgemeine Spiegelungen" collapse="true"}
+Die oben gezeigten Matrizen sind Spezialfälle für Spiegelungen, die exakt auf den Koordinatenachsen (2D) oder Koordinatenebenen (3D) liegen. Man kann jedoch an jeder beliebigen Geraden (im 2D) oder Ebene (im 3D) spiegeln, die "schräg" im Raum liegt.
+
+Das allgemeine Verfahren nutzt den **Normalenvektor** (den Vektor, der senkrecht auf der Geraden/Ebene steht):
+
+*   **Im 2D (Spiegelung an einer Geraden):** Man bestimmt den Normalenvektor $\vec{n}$ der Geraden. Um einen Punkt $P$ zu spiegeln, findet man den kürzesten Weg zur Geraden (das Lot) und "verdoppelt" diesen Vektor auf die andere Seite, um den Spiegelpunkt $P'$ zu erhalten.
+
+*   **Im 3D (Spiegelung an einer Ebene):** Das Prinzip ist identisch. Man verwendet einen Normalenvektor $\vec{n}$ der Ebene mit Länge 1 (Normaleneinheitsvektor) und schreibt die Ebene als $\vec{x} \cdot \vec{n} = d$. Man berechnet den (gerichteten) Abstand $k$ von $P$ (mit Ortsvektor $\vec{p}$) zur Ebene (mittels $k = d - (\vec{p} \cdot \vec{n})$) und geht von $P$ aus den Vektor $2k \cdot \vec{n}$ weiter, um $P'$ zu finden.
+
+**Gibt es dafür auch eine allgemeine Matrix?**
+
+Ja. Obwohl dieser "Vektor-Weg" sehr intuitiv ist, lässt sich auch jede allgemeine Spiegelung (an einer Ebene/Geraden durch den Ursprung) als eine einzige Transformationsmatrix $M$ ausdrücken.
+
+Diese Matrix (ein "Householder-Reflektor") wird direkt aus dem Normaleneinheitsvektor $\vec{n}$ berechnet:
+$$H = E - 2\, \vec{n}\, \vec{n}^T$$
+Wobei $E$ die Einheitsmatrix und $\vec{n}\, \vec{n}^T$ das äußere Produkt (Spalte mal Zeile, ergibt eine Matrix) ist.
+
+Wendet man diese Matrix $H$ auf einen Punkt $P$ an ($P' = H \cdot P$), führt dies exakt zur selben Spiegelung wie der oben beschriebene Vektor-Weg. Wenn die Ebene nicht durch den Ursprung geht, wird die Transformation "affin" und man nutzt homogene Koordinaten.
+:::
+
+:::
+
+Bevor es an Python geht, eine kurze Probe von Hand. Die Punkte werden als Spaltenvektoren geschrieben, jede Komponente wird einzeln geprüft:
+
+```{math-exercise}
+#| label: transformation-hand
+#| caption: Transformationen von Hand
+#| partial-credit: true
+Der Punkt $P(2, 1)$ wird an der x-Achse gespiegelt: $P' =$ vec[2,-1]
+
+Der Punkt $P(2, 1)$ wird um $90°$ um den Ursprung gedreht ($\cos 90° = 0$, $\sin 90° = 1$): $P' =$ vec[-1,2]
+
+Die Matrix, die in 2D um den Faktor 3 in x-Richtung streckt und die y-Richtung unverändert lässt, lautet mat[3,0;0,1]
+```
+
+Nachdem nun ein kleiner Überblick über die unterschiedlichen Transformationsmöglichkeiten im 2- oder 3- dimensionalen Raum gegeben ist, geht es als nächstes darum, [wie werden diese Berechnungen berechnet?](anwendung_geometrie_transformationen_berechnen.qmd#geometrische-veränderung-mit-python-berechnen)
+
+### Kurzes Quiz
+
+```quizdown
+---
+locale: de
+---
+
+# Wie wirkt eine Drehung um $90°$ um den Ursprung auf den Punkt $(x, y)$?
+1. [ ] Er wird zu $(y, x)$.
+1. [x] Er wird zu $(-y, x)$.
+1. [ ] Er wird zu $(x, -y)$.
+1. [ ] Er wird zu $(-x, -y)$.
+
+> Das haben wir oben mit $\cos 90° = 0$ und $\sin 90° = 1$ gesehen: $P(2,1)$ wird zu $(-1, 2)$.
+
+# Welche Matrix streckt in 2D um den Faktor 2 in x-Richtung und lässt y unverändert?
+1. [ ] $\begin{pmatrix} 1 & 0 \\ 0 & 2 \end{pmatrix}$
+1. [x] $\begin{pmatrix} 2 & 0 \\ 0 & 1 \end{pmatrix}$
+1. [ ] $\begin{pmatrix} 2 & 0 \\ 0 & 2 \end{pmatrix}$
+1. [ ] $\begin{pmatrix} 0 & 2 \\ 1 & 0 \end{pmatrix}$
+
+> Die Diagonale enthält die Streckfaktoren für x und y.
+
+# Der Punkt $P(2, 1)$ wird an der x-Achse gespiegelt. Wo liegt $P'$?
+1. [ ] $(-2, 1)$
+1. [x] $(2, -1)$
+1. [ ] $(-2, -1)$
+1. [ ] $(1, 2)$
+
+> Die Spiegelung an der x-Achse kehrt das Vorzeichen der y-Koordinate um.
+```
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+# 5.1.1. Matrix representation of geometric changes {#matrizendarstellung-von-geometrischen-veränderungen}
+First, as a short review, the different kinds of geometric changes of shapes in 2 or 3 dimensions.
+
+::: {.panel-tabset}
+
+## **Stretching (scaling)**
+
+*A stretching changes the size of an object along the axes. The factors $s_x, s_y$ and $s_z$ state how much it is stretched along the respective axis. A value greater than 1 enlarges the object, a value between 0 and 1 shrinks it.*
+
+| 2-dimensional | 3-dimensional |
+| :---: | :---: |
+| $$ \begin{pmatrix} s_x & 0 \\ 0 & s_y \end{pmatrix} $$ | $$ \begin{pmatrix} s_x & 0 & 0 \\ 0 & s_y & 0 \\ 0 & 0 & s_z \end{pmatrix} $$ |
+
+## **Translation**
+
+*A translation (shift) is a special kind of transformation. Unlike the other operations, which are represented by matrix multiplication, a translation is realized by [**vector addition**](../Kapitel_1/vektor_operationen.qmd#vektoraddition-und--subtraktion).*
+
+*A translation vector $\vec{v}$ is added to every point (represented by its position vector $\vec{p}$) to obtain the new point $\vec{p'}$.*
+
+$$ \vec{p'} = \vec{p} + \vec{v} $$
+
+**Example (2D):**
+A point $P(2, 1)$ is to be shifted by the vector $\vec{v} = \begin{pmatrix} 3 \\ 5 \end{pmatrix}$.
+
+$$
+\begin{pmatrix} x' \\ y' \end{pmatrix} = \begin{pmatrix} 2 \\ 1 \end{pmatrix} + \begin{pmatrix} 3 \\ 5 \end{pmatrix} = \begin{pmatrix} 2+3 \\ 1+5 \end{pmatrix} = \begin{pmatrix} 5 \\ 6 \end{pmatrix}
+$$
+
+The new point is $P'(5, 6)$.
+
+## **Rotation**
+In principle, a rotation can be about any point (in 2D) or about any axis in space (in 3D). These general rotations are mathematically more complex, which is why, for simplicity, this tutorial concentrates on the fundamental cases: rotation about the origin in 2D and about the main axes (x, y, z) in 3D.
+*The angle $\theta$ (theta) states by how many degrees the object is rotated (usually counterclockwise, i.e. mathematically positive).*
+
+| 2-dimensional | 3-dimensional |
+| :---: | :---: |
+| **Rotation about the origin:** <br> $$ \begin{pmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{pmatrix} $$ | **Rotation about the x-axis:** <br> $$ \begin{pmatrix} 1 & 0 & 0 \\ 0 & \cos\theta & -\sin\theta \\ 0 & \sin\theta & \cos\theta \end{pmatrix} $$ <br> **Rotation about the y-axis:** <br> $$ \begin{pmatrix} \cos\theta & 0 & \sin\theta \\ 0 & 1 & 0 \\ -\sin\theta & 0 & \cos\theta \end{pmatrix} $$ <br> **Rotation about the z-axis:** <br> $$ \begin{pmatrix} \cos\theta & -\sin\theta & 0 \\ \sin\theta & \cos\theta & 0 \\ 0 & 0 & 1 \end{pmatrix} $$ |
+
+## **Reflection**
+
+*A reflection flips the coordinates of an object across an axis (in 2D) or a plane (in 3D). This is achieved by multiplying the coordinate that is perpendicular to the axis/plane by -1.*
+
+| 2-dimensional | 3-dimensional |
+| :---: | :---: |
+| **Reflection across the y-axis ($x=0$):** <br> $$ \begin{pmatrix} -1 & 0 \\ 0 & 1 \end{pmatrix} $$ <br> **Reflection across the x-axis ($y=0$):** <br> $$ \begin{pmatrix} 1 & 0 \\ 0 & -1 \end{pmatrix} $$ | **Reflection across the y-z plane ($x=0$):** <br> $$ \begin{pmatrix} -1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{pmatrix} $$ <br> **Reflection across the x-z plane ($y=0$):** <br> $$ \begin{pmatrix} 1 & 0 & 0 \\ 0 & -1 & 0 \\ 0 & 0 & 1 \end{pmatrix} $$ <br> **Reflection across the x-y plane ($z=0$):** <br> $$ \begin{pmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & -1 \end{pmatrix} $$ |
+
+:::{.callout-tip title="Note: general reflections" collapse="true"}
+The matrices shown above are special cases for reflections that lie exactly on the coordinate axes (2D) or coordinate planes (3D). However, you can reflect across any line (in 2D) or plane (in 3D) that lies "at an angle" in space.
+
+The general method uses the **normal vector** (the vector perpendicular to the line/plane):
+
+*   **In 2D (reflection across a line):** Determine the normal vector $\vec{n}$ of the line. To reflect a point $P$, find the shortest path to the line (the perpendicular) and "double" this vector to the other side to obtain the mirror point $P'$.
+
+*   **In 3D (reflection across a plane):** The principle is identical. Use a unit normal vector $\vec{n}$ of the plane (length 1) and write the plane as $\vec{x} \cdot \vec{n} = d$. Compute the (signed) distance $k$ from $P$ (with position vector $\vec{p}$) to the plane (using $k = d - (\vec{p} \cdot \vec{n})$) and, starting from $P$, go on by the vector $2k \cdot \vec{n}$ to find $P'$.
+
+**Is there also a general matrix for this?**
+
+Yes. Although this "vector route" is very intuitive, every general reflection (across a plane/line through the origin) can also be expressed as a single transformation matrix.
+
+This matrix (a "Householder reflector") is computed directly from the unit normal vector $\vec{n}$:
+$$H = I - 2\, \vec{n}\, \vec{n}^T$$
+where $I$ is the identity matrix and $\vec{n}\, \vec{n}^T$ is the outer product (column times row, which gives a matrix).
+
+Applying this matrix $H$ to a point $P$ ($P' = H \cdot P$) leads to exactly the same reflection as the vector route described above. If the plane does not pass through the origin, the transformation becomes "affine" and homogeneous coordinates are used.
+:::
+
+:::
+
+Before we turn to Python, a short check by hand. The points are written as column vectors; each component is checked individually:
+
+```{math-exercise}
+#| label: transformation-hand-en
+#| caption: Transformations by hand
+#| partial-credit: true
+The point $P(2, 1)$ is reflected across the x-axis: $P' =$ vec[2,-1]
+
+The point $P(2, 1)$ is rotated by $90°$ about the origin ($\cos 90° = 0$, $\sin 90° = 1$): $P' =$ vec[-1,2]
+
+The matrix that stretches by a factor of 3 in the x-direction in 2D and leaves the y-direction unchanged is mat[3,0;0,1]
+```
+
+Now that you have a small overview of the different transformations in 2- or 3-dimensional space, the next question is [how these transformations are computed](anwendung_geometrie_transformationen_berechnen.qmd#geometrische-veränderung-mit-python-berechnen).
+
+### Short Quiz
+
+```quizdown
+---
+locale: en
+---
+
+# How does a rotation by $90°$ about the origin act on the point $(x, y)$?
+1. [ ] It becomes $(y, x)$.
+1. [x] It becomes $(-y, x)$.
+1. [ ] It becomes $(x, -y)$.
+1. [ ] It becomes $(-x, -y)$.
+
+> We saw this above with $\cos 90° = 0$ and $\sin 90° = 1$: $P(2,1)$ becomes $(-1, 2)$.
+
+# Which matrix stretches by a factor of 2 in the x-direction in 2D and leaves y unchanged?
+1. [ ] $\begin{pmatrix} 1 & 0 \\ 0 & 2 \end{pmatrix}$
+1. [x] $\begin{pmatrix} 2 & 0 \\ 0 & 1 \end{pmatrix}$
+1. [ ] $\begin{pmatrix} 2 & 0 \\ 0 & 2 \end{pmatrix}$
+1. [ ] $\begin{pmatrix} 0 & 2 \\ 1 & 0 \end{pmatrix}$
+
+> The diagonal contains the stretch factors for x and y.
+
+# The point $P(2, 1)$ is reflected across the x-axis. Where is $P'$?
+1. [ ] $(-2, 1)$
+1. [x] $(2, -1)$
+1. [ ] $(-2, -1)$
+1. [ ] $(1, 2)$
+
+> The reflection across the x-axis flips the sign of the y-coordinate.
+```
+
+::::

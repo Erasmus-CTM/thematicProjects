@@ -1,0 +1,551 @@
+/*-- scss:defaults --*/
+
+// Gemeinsames Theme aller Tutorials (Kurvendiskussion, Matrizen, Statistik,
+// Quarto Tutorial). Änderungen hier und in slate_custom.scss / styles.css immer
+// in alle Tutorials kopieren, die drei Dateien sind überall gleich.
+// Farben auf Lesbarkeit geprüft (Kontrast gegen Hintergrund #d9e3f1, Ziel >= 4.5:1).
+
+// Mermaid-Diagramme: Die Pfeile bekamen sonst genau die Hintergrundfarbe (#d9e3f1).
+$mermaid-edge-color: #4a5a8a;
+
+
+/*-- scss:rules --*/
+body {
+  color: #1f2a5c; /* Navy, deckend (10.5:1). Vorher halbtransparent #000080c1 = 3.3:1 */
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #0d1758; /* dunkles Navy (12.7:1). Gold war auf Hellblau nur 1.8:1 */
+}
+
+/* Gold bleibt als Akzent: Linie unter den Abschnittsüberschriften */
+main h2 {
+  border-bottom: 2px solid #b8aa6e;
+  padding-bottom: 0.2rem;
+}
+
+body:not(.quarto-dark) main a:not(.btn):not(.nav-link) {
+  color: #2b3f8c; /* 7.4:1 */
+}
+
+blockquote, .blockquote {
+  color: #1f2a5c !important;
+  border-left: 4px solid #b8aa6e;
+  border-top: none;
+  border-bottom: none;
+  border-radius: 6px;
+  background-color: #fdf6e3;
+  padding: 0.6rem 1rem;
+}
+
+
+.theorem.definition {
+  background-color: #ccd1e7;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-top: 1px solid gray;
+  border-right: 1px solid gray;
+  border-bottom: 1px solid gray;
+  border-left: 7px solid #0d6efd;
+}
+
+.theorem {
+  background-color: #ccd1e7;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-top: 1px solid gray;
+  border-right: 1px solid gray;
+  border-bottom: 1px solid gray;
+  border-left: 7px solid #dc3545;
+}
+
+.theorem.example {
+  background-color: #ccd1e7;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-top: 1px solid gray;
+  border-right: 1px solid gray;
+  border-bottom: 1px solid gray;
+  border-left: 7px solid #198754;
+}
+
+.theorem.exercise {
+  background-color: #ccd1e7;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-top: 1px solid gray;
+  border-right: 1px solid gray;
+  border-bottom: 1px solid gray;
+  border-left: 7px solid #fd7e14;
+}
+
+.proof.solution {
+  background-color: #ccd1e7;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-top: 1px solid gray;
+  border-right: 1px solid gray;
+  border-bottom: 1px solid gray;
+  border-left: 7px solid #3fb618;
+}
+
+.proof.remark {
+  background-color: #ccd1e7;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-top: 1px solid gray;
+  border-right: 1px solid gray;
+  border-bottom: 1px solid gray;
+  border-left: 7px solid #ffc107;
+}
+
+i.pencil,
+.pencil .theorem-title::before {
+    content: url("Theme/Icons/pencil.svg");
+    display: inline-block;
+    height: 1em;
+    width: 1em;
+    margin-right: 0.25em;
+}
+
+i.python,
+.python .theorem-title::before {
+    content: url("Theme/Icons/python.svg");
+    display: inline-block;
+    height: 1em;
+    width: 1em;
+    margin-right: 0.25em;
+}
+
+.proof {
+    color: #5a6570;
+    margin: 0 0 1rem;
+    padding: 0.625rem 1.25rem;
+    border-left: 0.25rem solid #e9ecef;
+}
+
+.aside, .aside *, .margin-note, .margin-note *, .column-margin, .column-margin * {
+  color: #000080 !important;
+}
+
+.callout-header, .callout-header *, .callout-title, .callout-title strong {
+  color: #035a8a !important; /* 5.9:1 auf dem Callout-Hintergrund (vorher #0475b2 = 4.0:1) */
+}
+
+/* ── Custom Callout: Python-Tipp ───────────────────────────────────────── */
+.callout-python {
+  border-left-color: #3776ab !important;
+  background-color: #dde8f5 !important;
+}
+.callout-python .callout-icon::before {
+  background-image: none !important;
+  content: url("Theme/Icons/python.svg");
+  display: inline-block;
+  height: 1em;
+  width: 1em;
+}
+
+/* ── Custom Callout: Rechenhinweis (Bleistift) ─────────────────────────── */
+.callout-rechnen {
+  border-left-color: #b8aa6e !important;
+  background-color: #f5f2e3 !important;
+}
+.callout-rechnen .callout-icon::before {
+  background-image: none !important;
+  content: url("Theme/Icons/pencil.svg");
+  display: inline-block;
+  height: 1em;
+  width: 1em;
+}
+
+.nav {
+  --bs-nav-link-padding-x: 1rem;
+  --bs-nav-link-padding-y: 0.5rem;
+  --bs-nav-link-font-weight: ;
+  --bs-nav-link-color: #1a2e69;
+  --bs-nav-link-hover-color: #3a13f8;
+  --bs-nav-link-disabled-color: #6c757d;
+  list-style: none;
+}
+
+.callout {
+  border-top: 1px solid #7f8a99 !important;
+  border-bottom: 1px solid #7f8a99 !important;
+  border-right: 1px solid #7f8a99 !important;
+  background-color: #e6e7cc !important;
+}
+
+.nav-tabs {
+  background-color: #94b6eea8 !important;
+}
+
+/* Code-Blöcke etwas vom Seitenhintergrund abheben (aus dem Quarto Tutorial) */
+body:not(.quarto-dark) div.sourceCode {
+  background-color: rgba(255, 255, 255, 0.65);
+}
+
+/* Anpassungen für Bildunterschriften */
+figcaption, .figure-caption {
+  color: #2b3f8c !important;
+}
+
+#fig-schema-mermaid .label text,
+#fig-schema-mermaid .nodeLabel,
+#fig-schema-mermaid span {
+  color: #000080 !important;         // ← Textfarbe (braucht !important wegen inline-style)
+  fill:  #000080 !important;         // ← fill für SVG-Text
+}
+
+#fig-schema-mermaid .edgePath .path,
+#fig-schema-mermaid .flowchart-link {
+  stroke:       rgb(131, 130, 131) !important;           // ← Farbe der Linie
+  stroke-width: 3px;               // ← Dicke (Original: 2px)
+}
+
+#fig-schema-mermaid .marker {
+  fill:   rgb(131, 130, 131) !important;                 // ← Rahmen/Fill des Markers
+  stroke: rgb(131, 130, 131) !important;
+}
+
+#fig-schema-mermaid {
+  font-size: 16px;                 // ← Schriftgröße (kannst du anpassen)
+  // font-family: sans-serif;      // ← auskommentiert – Original bleibt
+}
+
+.panel-tabset .tab-content {
+  border-left:   1px solid hsla(238.9, 89.9%, 53.3%, 0.15) !important;
+  border-right:  1px solid hsla(238.9, 89.9%, 53.3%, 0.15) !important;
+  border-bottom: 1px solid hsla(238.9, 89.9%, 53.3%, 0.15) !important;
+}
+
+/* Navbar Hintergrund & Titel */
+.navbar {
+  min-height: 56px;
+  padding-top: 0.6rem;
+  padding-bottom: 0.6rem;
+  background-color: #4a5c96;
+}
+/* Ab hier nur im hellen Modus: Quarto lädt das helle Stylesheet auch im dunklen
+   Modus mit (respect-user-color-scheme), die Regeln würden sonst dort mitwirken. */
+body:not(.quarto-dark) .navbar {
+  /* Schrift und Symbole hell: Morph setzt sie sonst halbtransparent schwarz,
+     auf dem dunklen Blau kaum zu erkennen */
+  --bs-navbar-color: #f0ece0;
+  --bs-navbar-hover-color: #ffffff;
+  --bs-navbar-active-color: #ffffff;
+}
+.navbar > .container-fluid {
+  min-height: 56px;
+}
+.navbar-brand {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #f0ece0 !important;
+}
+.navbar-brand:hover {
+  color: #ffffff !important;
+}
+body:not(.quarto-dark) .navbar .nav-link,
+body:not(.quarto-dark) .navbar .quarto-navigation-tool,
+body:not(.quarto-dark) .navbar .dropdown-toggle,
+body:not(.quarto-dark) .navbar .navbar-toggler {
+  color: #f0ece0 !important;
+}
+body:not(.quarto-dark) .navbar .nav-link:hover,
+body:not(.quarto-dark) .navbar .quarto-navigation-tool:hover {
+  color: #ffffff !important;
+}
+
+/* Trennlinien in der Navbar wie im Dunkelmodus (Slate) */
+body:not(.quarto-dark) .navbar .nav-link {
+  border-right: 1px solid rgba(0, 0, 0, 0.25);
+  border-left: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+/* Deutlicheres Highlighting für den aktiven Navbar-Tab */
+body:not(.quarto-dark) .navbar-nav .nav-link.active {
+  color: #ffffff !important;
+  font-weight: bold;
+  border-bottom: 2px solid #d4c27e;
+}
+
+/* Übergangslösung aus dem Quarto Tutorial, gehört eigentlich in die Extension
+   math-exercise: Rahmen und Überschrift der Aufgaben hängen dort an
+   --bs-border-color / --bs-body-color, die in Morph fast so hell wie der
+   Hintergrund sind. Entfernen, sobald es in CTM behoben ist. */
+body:not(.quarto-dark) .math-exercise-cell {
+  border-color: #7f8a99 !important;
+}
+body:not(.quarto-dark) .math-exercise-caption {
+  color: #1a2e69 !important;
+  border-bottom-color: #7f8a99 !important;
+}
+body:not(.quarto-dark) .math-chevron {
+  color: #1a2e69 !important;
+}
+body:not(.quarto-dark) .math-exercise-toggle:hover,
+body:not(.quarto-dark) .math-exercise-toggle:hover .math-chevron {
+  color: #2b3f8c !important; /* Morph-Primärblau wäre nur 2.6:1 */
+  border-bottom-color: #2b3f8c !important;
+}
+
+/* Ausklappbare Blöcke („Python-Code anzeigen“, <details>): waren grau #6c757d (3.9:1).
+   Als dezenter Knopf, damit sie sich vom Fließtext abheben. */
+body:not(.quarto-dark) main summary {
+  display: list-item;
+  width: fit-content;
+  color: #035a8a;
+  font-weight: 600;
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.55);
+  border: 1px solid #b7c3dc;
+  border-radius: 4px;
+  padding: 0.1em 0.6em;
+}
+body:not(.quarto-dark) main summary:hover {
+  background-color: rgba(255, 255, 255, 0.85);
+}
+
+/* Inline-Code wie `matplotlib`: als kleines Kästchen vom Text abheben */
+body:not(.quarto-dark) main :not(pre):not(.qpyodide-terminal) > code {
+  color: #a3195b; /* Magenta: klar anders als der navyblaue Text */
+  background-color: rgba(255, 255, 255, 0.7);
+  border: 1px solid #b7c3dc;
+  border-radius: 4px;
+  padding: 0.05em 0.3em;
+}
+
+/* Knopf „</> Code“ oben rechts: war #7b8ab8 auf Hellblau (2.8:1) */
+body:not(.quarto-dark) .code-tools-button {
+  color: #2b3f8c !important;
+}
+
+/* Read-only-Zellen (pyodide): Leiste hatte genau die Seitenfarbe, der Editorrand
+   war hellgrau auf Hellblau – der Block hatte keinen erkennbaren Umriss. */
+body:not(.quarto-dark) .qpyodide-toolbar-readonly {
+  background-color: #c5d2e8;
+}
+body:not(.quarto-dark) .qpyodide-editor {
+  border-color: #7f8a99;
+}
+body:not(.quarto-dark) .qpyodide-readonly-label {
+  color: #1f2a5c;
+  opacity: 1;
+}
+
+/* Hover deutlich sichtbar: Seitenleiste, „Auf dieser Seite“ und Navbar.
+   box-shadow statt padding, damit beim Überfahren nichts verrutscht. */
+body:not(.quarto-dark) #quarto-sidebar .sidebar-link:hover,
+body:not(.quarto-dark) #quarto-sidebarnav-toggle .sidebar-link:hover,
+body:not(.quarto-dark) #TOC a:hover {
+  color: #0d1758 !important;
+  background-color: rgba(43, 63, 140, 0.14);
+  box-shadow: 0 0 0 3px rgba(43, 63, 140, 0.14);
+  border-radius: 3px;
+}
+body:not(.quarto-dark) .navbar .nav-link:hover,
+body:not(.quarto-dark) .navbar .quarto-navigation-tool:hover {
+  background-color: rgba(255, 255, 255, 0.18);
+  border-radius: 4px;
+}
+
+/* Morph setzt die Textfarben-Variable auf blasses Graublau (#7b8ab8, 3.3:1).
+   Extensions (math-exercise, pyodide) nutzen die Variable statt der body-Farbe. */
+body:not(.quarto-dark) {
+  --bs-body-color: #1f2a5c;
+}
+
+/* math-exercise: Knöpfe und Eingabefelder flach und in beiden Modi gleich
+   aufgebaut (hell und dunkel unterscheiden sich nur in der Farbe).
+   „Überprüfen“ grün, damit man es mit Bewertung verbindet. */
+body:not(.quarto-dark) .math-exercise-controls .btn,
+body:not(.quarto-dark) .py-exercise-buttons .btn,
+body:not(.quarto-dark) .py-download-section .btn {
+  box-shadow: none;
+  background-image: none;
+  border: 1px solid #7f8a99;
+  border-radius: 6px;
+}
+body:not(.quarto-dark) .math-exercise-controls .btn-light,
+body:not(.quarto-dark) .py-exercise-buttons .btn-light,
+body:not(.quarto-dark) .py-download-section .btn {
+  background-color: rgba(255, 255, 255, 0.6);
+  color: #1f2a5c;
+}
+body:not(.quarto-dark) .math-exercise-controls .btn-light:hover,
+body:not(.quarto-dark) .py-exercise-buttons .btn-light:hover,
+body:not(.quarto-dark) .py-download-section .btn:hover {
+  background-color: #ffffff;
+  color: #0d1758;
+}
+body:not(.quarto-dark) .math-exercise-controls .btn-group > .btn + .btn {
+  border-left-color: #7f8a99; /* Trennstrich zwischen Feedback und Zahnrad */
+}
+body:not(.quarto-dark) .math-exercise-controls .math-check-btn,
+body:not(.quarto-dark) .py-exercise-buttons .py-exercise-check {
+  background-color: #1e7a4a;
+  border-color: #1e7a4a;
+  color: #ffffff;
+}
+body:not(.quarto-dark) .math-exercise-controls .math-check-btn:hover,
+body:not(.quarto-dark) .py-exercise-buttons .py-exercise-check:hover {
+  background-color: #17643c;
+  border-color: #17643c;
+  color: #ffffff;
+}
+body:not(.quarto-dark) .math-input {
+  background-color: #ffffff;
+  border: 1px solid #7f8a99;
+  color: #1f2a5c;
+}
+
+/* Navbar-Suche: Morph färbt das Lupensymbol halbtransparent schwarz (als einziges
+   Symbol). Titel und Suche bekommen denselben Hover wie die übrigen Einträge. */
+body:not(.quarto-dark) .navbar #quarto-search .aa-Autocomplete,
+body:not(.quarto-dark) .navbar #quarto-search .aa-DetachedSearchButtonIcon,
+body:not(.quarto-dark) .navbar #quarto-search svg.aa-SubmitIcon {
+  color: #f0ece0 !important;
+}
+body:not(.quarto-dark) .navbar .navbar-brand:hover,
+body:not(.quarto-dark) .navbar #quarto-search .aa-DetachedSearchButton:hover {
+  background-color: rgba(255, 255, 255, 0.18);
+  border-radius: 4px;
+}
+body:not(.quarto-dark) .navbar #quarto-search .aa-DetachedSearchButton:hover .aa-DetachedSearchButtonIcon,
+body:not(.quarto-dark) .navbar #quarto-search .aa-DetachedSearchButton:hover svg.aa-SubmitIcon {
+  color: #ffffff !important;
+}
+
+/* Gefunden bei der automatischen Prüfung aller Seiten (Kontrast < 4.5:1) */
+/* Aktiver Reiter in Reitergruppen: weiß auf Hellblau war 3.3:1 */
+body:not(.quarto-dark) .panel-tabset .nav-tabs .nav-link.active {
+  background-color: #2b3f8c;
+  border-color: #2b3f8c;
+  color: #ffffff;
+}
+/* Speicherstatus der Code-Zellen („💾 Speicherbar“): Extension macht ihn blass */
+body:not(.quarto-dark) .qpyodide-storage-status {
+  opacity: 1;
+  color: #1f2a5c;
+}
+body:not(.quarto-dark) .qpyodide-readonly-label {
+  font-weight: 600; /* wie im Dunkelmodus der Extension */
+}
+body:not(.quarto-dark) .py-download-hint {
+  color: #3d4a73;
+}
+body:not(.quarto-dark) .sidebar-alle-ausklappen {
+  opacity: 1 !important;
+  color: #1f2a5c;
+}
+/* Gleiche Maße wie dunkel: Slate hat hier 1px-Ränder, Morph keine */
+body:not(.quarto-dark) .code-tools-button {
+  border: 1px solid transparent;
+}
+body:not(.quarto-dark) .quarto-title-breadcrumbs .breadcrumb {
+  border: 1px solid rgba(43, 63, 140, 0.12);
+}
+body:not(.quarto-dark) main table td {
+  border-bottom: 1px solid rgba(43, 63, 140, 0.2); /* Zeilentrenner wie dunkel */
+}
+/* Navbar-Dropdowns (Sprachwahl): nicht aktive Einträge waren #7b8ab8 = zu blass */
+body:not(.quarto-dark) .navbar .dropdown-menu .dropdown-item {
+  color: #1f2a5c;
+}
+body:not(.quarto-dark) .navbar .dropdown-menu .dropdown-item:hover,
+body:not(.quarto-dark) .navbar .dropdown-menu .dropdown-item:focus {
+  color: #0d1758;
+  background-color: rgba(43, 63, 140, 0.14);
+}
+body:not(.quarto-dark) .navbar .dropdown-menu .dropdown-item.active {
+  color: #fff;
+  background-color: #2b3f8c; /* wie aktiver Tab */
+}
+/* Funde aus der Prüfung der anderen Tutorials (2026-10-08) */
+/* Statischer Python-Code (Syntaxfarben github): Kommentar, Schlüsselwörter und Variablen zu blass */
+body:not(.quarto-dark) code span.co { color: #57606a; }
+body:not(.quarto-dark) code span.kw,
+body:not(.quarto-dark) code span.cf,
+body:not(.quarto-dark) code span.bu { color: #b31d28; }
+body:not(.quarto-dark) code span.va { color: #a04100; }
+/* math-exercise: Knopf „Neue Aufgabe“ halbtransparent */
+body:not(.quarto-dark) .math-pool-reload { color: #3d4a73; }
+/* Vor/Zurück-Links unten auf der Seite */
+body:not(.quarto-dark) .nav-page .pagination-link .nav-page-text { color: #2b3f8c; }
+/* Inhaltsverzeichnis rechts: Einträge als Links erkennbar, aktiver Eintrag deutlich
+   (vorher war der aktive Eintrag sogar blasser als die anderen) */
+body:not(.quarto-dark) #TOC a.nav-link {
+  color: #2b3f8c !important;
+}
+body:not(.quarto-dark) #TOC a.nav-link.active {
+  color: #0d1758 !important;
+  font-weight: 700 !important;
+  border-left-color: #2b3f8c !important;
+}
+/* Kapitelübersicht über dem Titel: Links unterstrichen, aktuelle Seite als Text */
+body:not(.quarto-dark) .quarto-title-breadcrumbs .breadcrumb-item a,
+body:not(.quarto-dark) .quarto-page-breadcrumbs .breadcrumb-item a {
+  color: #2b3f8c !important;
+  text-decoration: underline !important;
+  text-decoration-color: rgba(43, 63, 140, 0.45) !important;
+}
+body:not(.quarto-dark) .quarto-title-breadcrumbs .breadcrumb-item a:hover,
+body:not(.quarto-dark) .quarto-page-breadcrumbs .breadcrumb-item a:hover {
+  color: #0d1758 !important;
+  text-decoration-color: #0d1758 !important;
+}
+body:not(.quarto-dark) .quarto-title-breadcrumbs .breadcrumb-item:last-child a,
+body:not(.quarto-dark) .quarto-page-breadcrumbs .breadcrumb-item:last-child a {
+  color: #1f2a5c !important;
+  text-decoration: none !important;
+}
+body:not(.quarto-dark) .breadcrumb-item + .breadcrumb-item::before {
+  color: #3d4a73 !important;
+}
+/* Lesemodus: aufklappbare Leisten für Seitenleiste/Inhaltsverzeichnis (Schrift 3.3:1, Pfeil unsichtbar) */
+body:not(.quarto-dark) .quarto-sidebar-toggle {
+  background-color: rgba(255, 255, 255, 0.55) !important;
+  border-color: #7f8a99 !important;
+}
+body:not(.quarto-dark) .quarto-sidebar-toggle-title {
+  color: #1f2a5c !important;
+}
+body:not(.quarto-dark) .quarto-sidebar-toggle-title:hover {
+  background-color: #fff !important;
+}
+body:not(.quarto-dark) .quarto-sidebar-toggle-icon {
+  color: #2b3f8c !important;
+}
+/* Überschriften der beiden Leisten („Tutorial-Übersicht“ links, Text/Größe in
+   styles.css, und „Auf dieser Seite“ rechts): dunkles Gold wie das Gold in Slate,
+   damit sie sich von den blauen Einträgen abheben (Navy war kaum anders). 4.7:1 */
+body:not(.quarto-dark) #quarto-sidebar .sidebar-menu-container::before,
+body:not(.quarto-dark) #toc-title {
+  color: #7a5f12;
+}
+/* Seitenleiste: Einträge als Links erkennbar wie rechts (Morph: neutrales Grau
+   #45494d), aktuelle Seite wie im Inhaltsverzeichnis rechts (Aufbau in styles.css) */
+body:not(.quarto-dark) #quarto-sidebar .sidebar-link,
+body:not(.quarto-dark) #quarto-sidebar .sidebar-item-toggle,
+body:not(.quarto-dark) #quarto-sidebarnav-toggle .sidebar-link,
+body:not(.quarto-dark) #quarto-sidebarnav-toggle .sidebar-item-toggle {
+  color: #2b3f8c;
+}
+body:not(.quarto-dark) #quarto-sidebar .sidebar-link.active,
+body:not(.quarto-dark) #quarto-sidebarnav-toggle .sidebar-link.active {
+  color: #0d1758 !important;
+  box-shadow: inset 2px 0 0 #2b3f8c;
+}
+
+/* Mermaid-Beschriftungen: Mermaid färbt sie blau (2,2:1 auf Hellblau), hier dunkles Navy */
+body:not(.quarto-dark) svg.mermaid-js .nodeLabel,
+body:not(.quarto-dark) svg.mermaid-js .nodeLabel p,
+body:not(.quarto-dark) svg.mermaid-js .edgeLabel,
+body:not(.quarto-dark) svg.mermaid-js .edgeLabel p {
+  color: #1f2a5c !important;
+}
+
+/* Mit \color{red/green} gefärbte Formeln: Standardrot und -grün sind auf Hellblau zu blass */
+body:not(.quarto-dark) mjx-mstyle[style*="color: red"] { color: #b30000 !important; }
+body:not(.quarto-dark) mjx-mstyle[style*="color: green"] { color: #006400 !important; }

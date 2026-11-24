@@ -1,0 +1,1787 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.11.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Krümmungsverhalten untersuchen – Kurvendiskussion mit Python</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../Qmd-Files/Kapitel_4/wendepunkte.html" rel="next">
+<link href="../../Qmd-Files/Kapitel_4/extrempunkte.html" rel="prev">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-447e42e69aaa9833c0ba1b986f430b20.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-4de38e511a87c50155c3f4aacf5ec199.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-a75db3605971474577b384640c6b1046.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-4de38e511a87c50155c3f4aacf5ec199.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-contrib/ctm-resize-1/ctm-resize.js"></script>
+<link href="../../site_libs/quarto-contrib/ctm-resize-1/ctm-resize.css" rel="stylesheet">
+<script src="../../site_libs/quarto-contrib/ctm-coi-frame-startup-1/coi-frame-startup.js"></script>
+<script src="../../site_libs/quarto-contrib/ctm-assets-0.9.0/assets.js"></script>
+<script src="../../site_libs/quarto-contrib/ctm-locale-0.9.0/ctm-locale.js"></script>
+<script src="../../site_libs/quarto-contrib/ctm-locale-0.9.0/common.js"></script>
+<script src="../../site_libs/quarto-contrib/ctm-locale-ui-0.9.0/ui.js"></script>
+<script src="../../site_libs/quarto-contrib/ctm-layout-0.9.0/ctm-layout.js"></script>
+<script src="../../site_libs/quarto-contrib/ctm-layout-0.9.0/ctm-settings.js"></script>
+<link href="../../site_libs/quarto-contrib/ctm-layout-0.9.0/ctm-ui.css" rel="stylesheet">
+<script src="../../site_libs/quarto-contrib/ai-feedback-0.9.0/feedback-core.js"></script>
+<script src="../../site_libs/quarto-contrib/ai-feedback-0.9.0/feedback-dom.js"></script>
+<script src="../../site_libs/quarto-contrib/ai-feedback-0.9.0/ai-feedback.js"></script>
+<link href="../../site_libs/quarto-contrib/ai-feedback-0.9.0/ai-feedback.css" rel="stylesheet">
+<script src="../../site_libs/quarto-contrib/ctm-runtime-0.9.0/pyodide-runtime.js"></script>
+<script src="../../site_libs/quarto-contrib/ctm-worker-0.9.0/pyodide-worker.js"></script>
+<script src="../../site_libs/quarto-contrib/ctm-checkers-0.12.0.dev0+dfad141a/ctm-checkers.js"></script>
+<script src="../../site_libs/quarto-contrib/ctm-locale-math-exercise-0.9.0/math-exercise.js"></script>
+<link href="../../site_libs/quarto-contrib/ctm-matrix-input-0.9.0/ctm-matrix-input.css" rel="stylesheet">
+<link href="../../site_libs/quarto-contrib/math-exercise-0.11.0/math-exercise.css" rel="stylesheet">
+<link href="../../site_libs/quarto-contrib/ctm-ui-0.9.0/ctm-ui.css" rel="stylesheet">
+<script src="../../site_libs/quarto-contrib/ctm-copy-0.9.0/ctm-copy.js"></script>
+<script src="../../site_libs/quarto-contrib/ctm-store-0.9.0/ctm-store.js"></script>
+<script src="../../site_libs/quarto-contrib/ctm-locale-py-exercise-0.9.0/py-exercise.js"></script>
+<link href="../../site_libs/quarto-contrib/py-exercise-0.5.0/py-exercise.css" rel="stylesheet">
+<script src="../../site_libs/quarto-contrib/ctm-locale-pyodide-interaktiv-0.9.0/pyodide-interaktiv.js"></script>
+<script src="../../site_libs/quarto-contrib/pyodide-interaktiv-1.10.0/qpyodide-locale.js" type="module"></script>
+<script src="../../site_libs/quarto-contrib/pyodide-interaktiv-1.10.0/qpyodide-storage.js" type="module"></script>
+<script src="../../site_libs/quarto-contrib/pyodide-interaktiv-1.10.0/qpyodide-document-status.js" type="module"></script>
+<script src="../../site_libs/quarto-contrib/pyodide-interaktiv-1.10.0/qpyodide-storage-settings.js" type="module"></script>
+<script src="../../site_libs/quarto-contrib/pyodide-interaktiv-1.10.0/qpyodide-worker-plugin.js" type="module"></script>
+<script src="../../site_libs/quarto-contrib/pyodide-interaktiv-1.10.0/qpyodide-document-engine-initialization.js" type="module"></script>
+<script src="../../site_libs/quarto-contrib/pyodide-interaktiv-1.10.0/qpyodide-canvas-plots.js" type="module"></script>
+<link href="../../site_libs/quarto-contrib/pyodide-interaktiv-1.10.0/qpyodide-styling.css" rel="stylesheet">
+<script src="../../site_libs/quarto-contrib/pyodide-interaktiv-feedback-1.10.0/qpyodide-feedback.js" type="module"></script>
+<script src="../../site_libs/quarto-contrib/ctm-export-0.9.0/ctm-export.js"></script>
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Keine Treffer",
+    "search-matching-documents-text": "Treffer",
+    "search-copy-link-title": "Link in die Suche kopieren",
+    "search-hide-matches-text": "Zusätzliche Treffer verbergen",
+    "search-more-match-text": "weitere Treffer in diesem Dokument",
+    "search-more-matches-text": "weitere Treffer in diesem Dokument",
+    "search-clear-button-title": "Zurücksetzen",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Abbrechen",
+    "search-submit-button-title": "Abschicken",
+    "search-label": "Suchen"
+  }
+}</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<script>globalThis.CTM_ASSETS={"bases":{"font-awesome":"https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/","jsxgraph":"https://cdn.jsdelivr.net/npm/jsxgraph@1.14.2/","katex":"https://cdn.jsdelivr.net/npm/katex@0.16.47/","mathjax-newcm-font":"https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font@4.1.3/","mathjax3":"https://cdn.jsdelivr.net/npm/mathjax@3.2.2/","mathjax4":"https://cdn.jsdelivr.net/npm/mathjax@4.1.3/","monaco-editor":"https://cdn.jsdelivr.net/npm/monaco-editor@0.46.0/","pyodide":"https://cdn.jsdelivr.net/pyodide/v0.28.3/full/","source-sans-pro":"https://cdn.jsdelivr.net/npm/@fontsource/source-sans-pro@5.3.0/"},"mode":"cdn","v":1};</script>
+<script src="../../coi-serviceworker.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/monaco-editor@0.46.0/min/vs/editor/editor.main.css">
+<script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/js/all.min.js" defer="" crossorigin="anonymous"></script>
+<script type="text/javascript">
+// qpyodide-document-settings.js – document-wide settings (template)
+//
+// This file is a template: the {{PLACEHOLDERS}} are replaced by the Lua
+// filter (qpyodide.lua, function initializationPyodide) during rendering.
+// It's injected as the first module into the <head>, so that all further
+// modules can access the global settings.
+
+// Document level settings ----
+
+// Determine if we need to install python packages
+globalThis.qpyodideInstallPythonPackagesList = [''];
+
+// Check to see if we have an empty array, if we do set to skip the installation.
+globalThis.qpyodideSetupPythonPackages = !(qpyodideInstallPythonPackagesList.indexOf("") !== -1);
+
+// Automatically preload the HTTP shim and plotting packages? Defaults to true.
+// Explicit pyodide: packages entries still install when this is false.
+globalThis.qpyodidePreloadPackages = true;
+globalThis.qpyodideExamOutput = false;
+globalThis.qpyodideStopAfter = 20;
+
+// Display a startup message?
+globalThis.qpyodideShowStartupMessage = true;
+
+// Describe the Pyodide settings that should be used.
+// Data only (no functions) – the configuration is passed to the Pyodide
+// web worker via postMessage; the worker collects stdout/stderr itself.
+globalThis.qpyodideCustomizedPyodideOptions = {
+  "indexURL": "https://cdn.jsdelivr.net/pyodide/v0.28.3/full/",
+  "env": {
+    "HOME": "/home/pyodide",
+  }
+}
+
+// Interactive plot backend ----
+//
+// "webagg" (Pyodide 0.28+), "html5-canvas" (an older Pyodide pinned via
+// `pyodide: base-url:`) or "auto" (the base URL names no version; decided
+// from the loaded Pyodide). See qpyodide-canvas-plots.js.
+globalThis.qpyodideCanvasBackend = "webagg";
+
+// UI language for this render pass ----
+//
+// Set by the Lua filter (ctm.locale: `pyodide: lang:`, `ctm-assessment: lang:`,
+// Quarto's own `lang:`): a language of the catalogue (en, de, sv, nb, da).
+globalThis.qpyodideLang = "de";
+
+// Store cell data
+globalThis.qpyodideCellDetails = [{"code":"import numpy as np\nimport matplotlib.pyplot as plt\n\nx_werte = np.linspace(-1.2, 3.8, 400)\nf_werte = x_werte**4 - 4*x_werte**3 + 2\nf_2strich = 12*x_werte**2 - 24*x_werte\n\nplt.plot(x_werte, f_werte, color=\"black\", label=\"f(x)\")\nunten, oben = -30, 15\nplt.fill_between(x_werte, unten, oben, where=f_2strich > 0, color=\"green\", alpha=0.12, label=\"f'' > 0: linksgekrümmt\")\nplt.fill_between(x_werte, unten, oben, where=f_2strich < 0, color=\"red\", alpha=0.12, label=\"f'' < 0: rechtsgekrümmt\")\nplt.ylim(unten, oben)\nplt.legend()\nplt.grid(True)\nplt.show()","id":1,"options":{"autorun":"","classes":"","code-fold":"show","comment":"","context":"","ctm-extra-save":true,"ctm-extra-source":"eeaa7579daa80140","ctm-store-id":"cell:36abca4790afca68","ctm-store-save":false,"ctm-store-source":"36abca4790afca68","dpi":72,"echo":"","eval":"","feedback-context":"","feedback-policy":"","feedbackContext":{"mode":"auto","refs":"auto","text":"Krümmung im Bild\nDer folgende Plot zeigt \\(f(x) = x^4 - 4x^3 + 2\\). Grün hinterlegt sind die Bereiche, in denen \\(f''(x) > 0\\) ist (linksgekrümmt), rot die mit \\(f''(x) < 0\\) (rechtsgekrümmt). Stell dir vor, du fährst mit dem Fahrrad von links nach rechts über den Graphen: Im grünen Bereich lenkst du nach links, im roten nach rechts."},"fig-cap":"","fig-height":5,"fig-width":7,"include":"","label":"","local-storage":"","message":"true","out-height":"","out-width":"700px","output":"true","pdf-fallback":"","policySelection":{"exercise":"","name":""},"read-only":"true","results":"markup","save":"","task":"","warning":"true"}},{"code":"import sympy\nx = sympy.symbols('x')\nf = x**4 - 4*x**3 + 2\n\nprint(f\"Die Funktion ist: f(x) = {f}\")\nf_prime = sympy.diff(f, x)\nprint(f\"f'(x) = {f_prime}\")\nf_double_prime = sympy.diff(f_prime, x)\nprint(f\"f''(x) = {f_double_prime}\")\n\npotentielle_wendepunkte = sympy.solve(f_double_prime, x)\npotentielle_wendepunkte.sort() \nprint(f\"Die Nullstellen der zweiten Ableitung sind: {potentielle_wendepunkte}\")\n\nintervall_grenzen = [-sympy.oo] + potentielle_wendepunkte + [sympy.oo]\n\nprint(\"\\n--- Untersuchung des Krümmungsverhaltens ---\")\nfor i in range(len(intervall_grenzen) - 1):\n    untere_grenze = intervall_grenzen[i]\n    obere_grenze = intervall_grenzen[i+1]\n\n    # Hier wird der Mittelpunkt des Intervalls betrachtet (falls die Grenzen endlich sind)\n    if untere_grenze == -sympy.oo:\n        test_wert = obere_grenze - 1 if obere_grenze != sympy.oo else 0\n    elif obere_grenze == sympy.oo:\n        test_wert = untere_grenze + 1\n    else:\n        test_wert = (untere_grenze + obere_grenze) / 2\n\n    f_double_prime_at_test_wert = f_double_prime.subs(x, test_wert)","id":2,"options":{"autorun":"","classes":"","code-fold":"show","comment":"","context":"","ctm-extra-save":true,"ctm-extra-source":"5b6492cb1feb4a0d","ctm-store-id":"cell:4618d5a6371e3666","ctm-store-save":false,"ctm-store-source":"4618d5a6371e3666","dpi":72,"echo":"","eval":"","feedback-context":"","feedback-policy":"","feedbackContext":{"mode":"auto","refs":"auto","text":"Python Implementierung\nWenn die oben kurzgefasste Theorie verstanden ist kann betrachtet werden, wie das Ganze in Python implementiert werden kann."},"fig-cap":"","fig-height":5,"fig-width":7,"include":"","label":"","local-storage":"","message":"true","out-height":"","out-width":"700px","output":"true","pdf-fallback":"","policySelection":{"exercise":"","name":""},"read-only":"true","results":"markup","save":"","task":"","warning":"true"}},{"code":"# Gib hier deinen Code an","id":3,"options":{"autorun":"","classes":"","code-fold":"show","comment":"","context":"","ctm-extra-save":true,"ctm-extra-source":"debfb4023e27b490","ctm-store-id":"kruemmung-aufgabe","ctm-store-save":true,"ctm-store-source":"ceecfc5a77d868e9","dpi":72,"echo":"","eval":"","feedback-context":"","feedback-policy":"","feedbackContext":{"mode":"auto","refs":"auto","text":"Aufgabe: Krümmungsverhalten bestimmen\nDer Code oben hat bisher noch keine Ausgabe. Um zu testen, dass du den Code wirklich verstanden hast, versuche eine Ausgabe zu schreiben, welche den entsprechenden Werten, die in der Funktion bestimmt werden, die passende Ausgabe zuordnet. Das heißt in welchem Intervall hat die Funktion welche Krümmung?"},"fig-cap":"","fig-height":5,"fig-width":7,"include":"","label":"kruemmung-aufgabe","local-storage":"","message":"true","out-height":"","out-width":"700px","output":"true","pdf-fallback":"","policySelection":{"exercise":"kruemmung-aufgabe","name":""},"read-only":"false","results":"markup","save":"","task":"","warning":"true"}}];
+
+// AI feedback feature settings ----
+//
+// enabled : show a Feedback button per interactive cell?
+// storage : default for where credentials are stored
+//           ("local" = localStorage, persistent; "session" = sessionStorage, per tab).
+//           Can be changed by the user in the settings panel.
+// hints   : progressive hints – the hint level rises with each click of the
+//           Feedback button on the same cell.
+// uiLanguage : the language of the feedback interface and of the feedback
+//              (this extension's interface language).
+globalThis.qpyodideFeedbackOptions = {
+  enabled: true,
+  storage: "local",
+  hints: true,
+  uiLanguage: "de"
+};
+
+// Local-storage autosave feature settings ----
+//
+// enabled : document-wide default (`pyodide: local-storage: true`); a
+//           cell's own `#| local-storage: true/false` overrides this.
+// epoch   : "" (off) unless `pyodide: local-storage-epoch:` was set. When
+//           non-empty, it's folded into every saved-code storage key, so
+//           re-rendering with a new epoch value makes every previously
+//           saved answer on this page unreachable -- an exam-room "next
+//           group gets a clean slate" reset. See qpyodide-storage.js.
+globalThis.qpyodideLocalStorageOptions = {
+  enabled: true,
+  epoch: ""
+};
+
+</script>
+
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../Theme/styles.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Zum Hauptinhalt springen</a><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          toggle.setAttribute("aria-checked", alternate ? "true" : "false");
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455).
+    // Not run on load: stylesheets are set before first paint there, and
+    // scrolling would undo the scroll to a URL fragment (#14973).
+    // The one pixel nudge keeps the reader where they were.
+    const refreshSafariScrollbar = () => {
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        const scrollY = window.scrollY;
+        window.scrollTo(0, scrollY > 0 ? scrollY - 1 : 1);
+        setTimeout(() => {
+          window.scrollTo(0, scrollY);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const queryPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkModeDefault = queryPrefersDark.matches;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      refreshSafariScrollbar();
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    queryPrefersDark.addEventListener("change", e => {
+      if(window.localStorage.getItem("quarto-color-scheme") !== null)
+        return;
+      const alternate = e.matches
+      toggleColorMode(alternate);
+      refreshSafariScrollbar();
+      localAlternateSentinel = e.matches ? 'alternate' : 'default'; // this is used alongside local storage!
+      toggleGiscusIfUsed(alternate, darkModeDefault);
+    });
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark" aria-label="Website">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Kurvendiskussion mit Python</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Navigation umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-globe" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-globe" role="img" aria-label="Sprache wählen / Choose language">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-globe">    
+        <li>
+    <a class="dropdown-item active" aria-current="true" href="../../../de/Qmd-Files/Kapitel_4/kruemmungsverhalten.html">
+ <span class="dropdown-text">Deutsch</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../en/Qmd-Files/Kapitel_4/kruemmungsverhalten.html">
+ <span class="dropdown-text">English</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <button type="button" role="switch" aria-checked="false" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Dunkelmodus umschalten" aria-label="Dunkelmodus umschalten"><i class="bi"></i></button>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Lesemodus umschalten">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+            <div id="quarto-search" class="" title="Suchen"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" aria-label="Symbolleiste">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Seitenleiste umschalten" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="Pfad"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../Qmd-Files/Kapitel_4/index.html">Monotonie- und Krümmungsverhalten</a></li><li class="breadcrumb-item"><a href="../../Qmd-Files/Kapitel_4/kruemmungsverhalten.html">Krümmungsverhalten untersuchen</a></li></ol></nav>
+        <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" aria-label="Bereich">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Startseite</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/toc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Inhaltsverzeichnis</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/grundlagen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Python Grundlagen</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../Qmd-Files/Kapitel_1/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-1-label">Definitionsbereich und Wertebereich</span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-controls="quarto-sidebar-section-1" aria-expanded="false" aria-label="Abschnitt umschalten: Definitionsbereich und Wertebereich">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-1" aria-labelledby="quarto-sidebar-section-1-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_1/definitionsbereich.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Definitionsbereich bestimmen</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_1/wertebereich.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Wertebereich bestimmen</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../Qmd-Files/Kapitel_2/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-2-label">Symmetrie und Achsenschnittpunkte</span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-controls="quarto-sidebar-section-2" aria-expanded="false" aria-label="Abschnitt umschalten: Symmetrie und Achsenschnittpunkte">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-2" aria-labelledby="quarto-sidebar-section-2-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_2/symmetrieverhalten.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Symmetrieverhalten untersuchen</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_2/nullstellen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Nullstellen bestimmen</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_2/achsenschnittpunkte.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Y-Achsenschnittpunkte bestimmen</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../Qmd-Files/Kapitel_3/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-3-label">Globalverhalten und Asymptoten</span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-controls="quarto-sidebar-section-3" aria-expanded="false" aria-label="Abschnitt umschalten: Globalverhalten und Asymptoten">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-3" aria-labelledby="quarto-sidebar-section-3-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_3/globalverhalten.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Globalverhalten untersuchen</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_3/asymptoten.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Asymptoten bestimmen</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../Qmd-Files/Kapitel_4/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-4-label">Monotonie- und Krümmungsverhalten</span></a>
+            <button type="button" class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-controls="quarto-sidebar-section-4" aria-expanded="true" aria-label="Abschnitt umschalten: Monotonie- und Krümmungsverhalten">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-4" aria-labelledby="quarto-sidebar-section-4-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_4/ableitungen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Ableitungen berechnen</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_4/monotonieverhalten.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Monotonieverhalten untersuchen</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_4/extrempunkte.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Extrempunkte/ Sattelpunkte bestimmen</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_4/kruemmungsverhalten.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Krümmungsverhalten untersuchen</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_4/wendepunkte.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Wendepunkte bestimmen</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../Qmd-Files/Kapitel_5/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text" id="quarto-sidebar-section-5-label">Graphen zeichnen</span></a>
+            <button type="button" class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-controls="quarto-sidebar-section-5" aria-expanded="false" aria-label="Abschnitt umschalten: Graphen zeichnen">
+              <i class="bi bi-chevron-right ms-2" aria-hidden="true"></i>
+            </button> 
+      </div>
+      <ul id="quarto-sidebar-section-5" aria-labelledby="quarto-sidebar-section-5-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_5/graphen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Graphen erstellen</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Qmd-Files/Kapitel_5/graphen_beschriften.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Graphen beschriften</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    <label class="sidebar-alle-ausklappen"><input type="checkbox"><span class="auf">▼ Alle ausklappen</span><span class="zu">▲ Alle einklappen</span></label>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active">
+    <h2 id="toc-title">Auf dieser Seite</h2>
+   
+  <ul>
+  <li><a href="#was-ist-die-krümmung" id="toc-was-ist-die-krümmung" class="nav-link active" data-scroll-target="#was-ist-die-krümmung">Was ist die Krümmung?</a>
+  <ul class="collapse">
+  <li><a href="#krümmungsverhalten-bestimmen" id="toc-krümmungsverhalten-bestimmen" class="nav-link" data-scroll-target="#krümmungsverhalten-bestimmen">Krümmungsverhalten bestimmen</a></li>
+  <li><a href="#krümmung-im-bild" id="toc-krümmung-im-bild" class="nav-link" data-scroll-target="#krümmung-im-bild">Krümmung im Bild</a></li>
+  </ul></li>
+  <li><a href="#python-implementierung" id="toc-python-implementierung" class="nav-link" data-scroll-target="#python-implementierung">Python Implementierung</a>
+  <ul class="collapse">
+  <li><a href="#aufgabe-krümmungsverhalten-bestimmen" id="toc-aufgabe-krümmungsverhalten-bestimmen" class="nav-link" data-scroll-target="#aufgabe-krümmungsverhalten-bestimmen">Aufgabe: Krümmungsverhalten bestimmen</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content" tabindex="-1">
+
+<script>window.__aiFeedbackPolicies = {"layers":[],"pageLayers":[]};</script>
+<script>window.__aiFeedbackConfig = {"baseUrl":"","mode":"copy","model":""};</script>
+<script>window.__mathExerciseConfig = {"lang":"de","stopAfter":20};</script>
+<script>window.__pyExerciseConfig = {"feedback":false,"lang":"de","stopAfter":20,"submission":false,"submissionKey":"py-exercise"};</script>
+<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.46.0/min/vs/loader.js"></script>
+<script type="module" id="qpyodide-monaco-editor-init">
+
+  // Configure the Monaco Editor's loader
+  require.config({
+    paths: {
+      'vs': CTMAssets.url('monaco-editor', 'min/vs')
+    }
+  });
+</script>
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="Pfad"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../Qmd-Files/Kapitel_4/index.html">Monotonie- und Krümmungsverhalten</a></li><li class="breadcrumb-item"><a href="../../Qmd-Files/Kapitel_4/kruemmungsverhalten.html">Krümmungsverhalten untersuchen</a></li></ol></nav>
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">Krümmungsverhalten untersuchen</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!--ctm-save-generated--><div class="ctm-save-bar" role="region" aria-label="Gespeicherte Antworten" hidden=""><p class="ctm-save-notice">Ihre Antworten werden nur in diesem Browser gespeichert.</p><div class="ctm-save-actions"><button type="button" data-ctm-save-toggle="">Auf diesem Gerät nicht speichern</button>
+<button type="button" data-ctm-export="">Meine Antworten exportieren</button>
+<button type="button" data-ctm-clear-page="">Antworten auf dieser Seite löschen</button>
+<button type="button" data-ctm-clear-course="">Alle Antworten in diesem Kurs löschen</button></div><span class="ctm-save-status" role="status" aria-live="polite"></span></div>
+<section id="was-ist-die-krümmung" class="level1">
+<h1>Was ist die Krümmung?</h1>
+<p>Die <strong>Krümmung</strong> einer Funktion beschreibt, wie sich der Graph “krümmt”, bzw. “biegt”, das heißt wie weit sich die Funktion von einer Geraden entfernt. Es hilft, sich das als Analogie mit Hilfe einer Straße vorzustellen, die Krümmung gibt an, ob die Straße nach rechts oder nach links abknickt und wie stark der Knick ist.<br>
+Die Krümmung einer Funktion erkennt man am <strong><a href="../../Qmd-Files/Kapitel_4/monotonieverhalten.html">Monotonieverhalten</a></strong> der ersten Ableitung: Steigt <span class="math inline">\(f'\)</span>, ist <span class="math inline">\(f\)</span> linksgekrümmt, fällt <span class="math inline">\(f'\)</span>, ist <span class="math inline">\(f\)</span> rechtsgekrümmt. Dort, wo sich das Monotonieverhalten von <span class="math inline">\(f'\)</span> ändert, liegen die Wendestellen.<br>
+<strong>Wichtig</strong>: Bei Betrachtung des “Monotonieverhaltens” darf nicht außer Acht gelassen werden, dass hier das Monotonieverhalten der ersten <strong>Ableitung</strong> betrachtet wird. Mathematisch unterscheiden wir <strong>zwei Hauptarten der Krümmung</strong>:</p>
+<ul>
+<li><strong>Linksgekrümmt (konvex)</strong>: Der Graph “knickt” sich nach oben. Wenn man sich auf dem Graphen bewegt, biegt er sich nach links.</li>
+<li><strong>Rechtsgekrümmt (konkav)</strong>: Der Graph “knickt” sich nach unten. Wenn man sich auf dem Graphen bewegt, biegt er sich nach rechts.</li>
+</ul>
+<section id="krümmungsverhalten-bestimmen" class="level2">
+<h2 class="anchored" data-anchor-id="krümmungsverhalten-bestimmen">Krümmungsverhalten bestimmen</h2>
+<p>Um das Krümmungsverhalten einer Funktion zu bestimmen, nutzen wir die <strong>zweite Ableitung</strong> <span class="math inline">\(f''(x)\)</span>. Sie ist die Ableitung von <span class="math inline">\(f'\)</span> und zeigt deshalb, ob <span class="math inline">\(f'\)</span> steigt oder fällt. Die <strong>Schritte zur Bestimmung des Krümmungsverhaltens</strong> sind wie folgt:</p>
+<ol type="1">
+<li><strong>Zweite Ableitung bilden:</strong> Berechne die zweite Ableitung <span class="math inline">\(f''(x)\)</span> der Funktion <span class="math inline">\(f(x)\)</span>.</li>
+<li><strong>Nullstellen der zweiten Ableitung finden:</strong> Bestimme die Nullstellen der zweiten Ableitung, indem du die Gleichung <span class="math inline">\(f''(x) = 0\)</span> löst. Diese Nullstellen sind <strong>potenzielle Wendepunkte</strong>, an denen sich das Krümmungsverhalten ändern könnte.</li>
+<li><strong>Intervalle aufstellen:</strong> Die Nullstellen von <span class="math inline">\(f''(x)\)</span> bilden die Grenzen der Intervalle.</li>
+<li><strong>Vorzeichen von <span class="math inline">\(f''(x)\)</span> prüfen:</strong> Wähle für jedes Intervall einen beliebigen Wert innerhalb des Intervalls aus. Setze diesen Wert in <span class="math inline">\(f''(x)\)</span> ein. Das Vorzeichen des Ergebnisses verrät dir das Krümmungsverhalten in diesem gesamten Intervall:
+<ul>
+<li><span class="math inline">\(f''(x) &gt; 0 \implies\)</span> Der Graph ist in diesem Intervall <strong>linksgekrümmt (konvex)</strong>.</li>
+<li><span class="math inline">\(f''(x) &lt; 0 \implies\)</span> Der Graph ist in diesem Intervall <strong>rechtsgekrümmt (konkav)</strong>.</li>
+</ul></li>
+</ol>
+</section>
+<section id="krümmung-im-bild" class="level2">
+<h2 class="anchored" data-anchor-id="krümmung-im-bild">Krümmung im Bild</h2>
+<p>Der folgende Plot zeigt <span class="math inline">\(f(x) = x^4 - 4x^3 + 2\)</span>. Grün hinterlegt sind die Bereiche, in denen <span class="math inline">\(f''(x) &gt; 0\)</span> ist (linksgekrümmt), rot die mit <span class="math inline">\(f''(x) &lt; 0\)</span> (rechtsgekrümmt). Stell dir vor, du fährst mit dem Fahrrad von links nach rechts über den Graphen: Im grünen Bereich lenkst du nach links, im roten nach rechts.</p>
+<div id="qpyodide-insertion-location-1"></div>
+<noscript>Bitte JavaScript aktivieren, um die interaktiven Code-Zellen dieser Seite zu nutzen.</noscript>
+<p><strong>Kurz überlegt:</strong> Wo ändert sich die Krümmung? Einmal von Hand.</p>
+<div class="math-exercise-cell" data-similar="false" data-similar-guidance="[]" data-generation-policy="[]" data-similar-data="" id="math-exercise-1" data-label="kruemmung-vorcheck" data-mode="equivalent" data-reject="" data-vars="x" data-tolerance="" data-decplaces="" data-sigfigs="" data-form="" data-checker="&quot;&quot;" data-givens="&quot;&quot;" data-packages="[]" data-response="" data-embed-response="false" data-partial-credit="true" data-form-credit="0.5" data-field-labels="[&quot;g''(x)&quot;,&quot;Grenze&quot;]" data-vecdir="col" data-feedback-policy="{&quot;exercise&quot;:&quot;kruemmung-vorcheck&quot;,&quot;name&quot;:&quot;&quot;}" data-variant-boards="[]" data-variant-board-title="" data-context-mode="auto" data-context-refs="auto" data-context="&quot;Krümmung im Bild\nDer folgende Plot zeigt \\(f(x) = x^4 - 4x^3 + 2\\). Grün hinterlegt sind die Bereiche, in denen \\(f''(x) > 0\\) ist (linksgekrümmt), rot die mit \\(f''(x) < 0\\) (rechtsgekrümmt). Stell dir vor, du fährst mit dem Fahrrad von links nach rechts über den Graphen: Im grünen Bereich lenkst du nach links, im roten nach rechts.\nKurz überlegt: Wo ändert sich die Krümmung? Einmal von Hand.&quot;" data-context-text="&quot;&quot;" data-ctm-source="8cd04d78728fed6a" data-ctm-save="true" data-ctm-id="kruemmung-vorcheck" data-ctm-runtime-id="ctm-block-2" data-ctm-component="math-exercise" data-fields="[&quot;math-exercise-1-f1&quot;,&quot;math-exercise-1-f2&quot;]" data-structural-field-labels="[&quot;&quot;,&quot;&quot;]">
+<div class="math-exercise-caption math-exercise-toggle" data-math-exercise-source="Vorab-Check – Krümmung von Hand" role="button" tabindex="0" aria-expanded="false"><span class="math-chevron" aria-hidden="true"></span>Vorab-Check – Krümmung von Hand</div>
+
+<div class="math-exercise-body" aria-hidden="true">
+<div id="kruemmung-vorcheck-question" class="math-exercise-question ai-feedback-context" data-math-exercise-source="Für \(g(x)=x^3-3x\) gilt \(g''(x)=\) <input type=&quot;text&quot; id=&quot;math-exercise-1-f1&quot; data-vars=&quot;x&quot; autocomplete=&quot;off&quot; autocorrect=&quot;off&quot; spellcheck=&quot;false&quot; class=&quot;math-input math-input-medium&quot;>. Der Graph ist linksgekrümmt für \(x&amp;gt;\) <input type=&quot;text&quot; id=&quot;math-exercise-1-f2&quot; data-vars=&quot;x&quot; autocomplete=&quot;off&quot; autocorrect=&quot;off&quot; spellcheck=&quot;false&quot; class=&quot;math-input math-input-small&quot;> und rechtsgekrümmt für \(x&amp;lt;0\).">Für \(g(x)=x^3-3x\) gilt \(g''(x)=\) <input type="text" id="math-exercise-1-f1" data-answer="6*x" data-vars="x" autocomplete="off" autocorrect="off" spellcheck="false" class="math-input math-input-medium">. Der Graph ist linksgekrümmt für \(x&gt;\) <input type="text" id="math-exercise-1-f2" data-answer="0" data-vars="x" autocomplete="off" autocorrect="off" spellcheck="false" class="math-input math-input-small"> und rechtsgekrümmt für \(x&lt;0\).</div>
+
+<div class="math-exercise-controls">
+  <button type="button" class="btn btn-primary math-check-btn">✓&nbsp;Überprüfen</button>
+  <button type="button" class="btn btn-light math-legend-btn">ⓘ&nbsp;Eingabe-Hilfe</button>
+  <div class="btn-group">
+    <button type="button" class="btn btn-light math-feedback-btn">💬&nbsp;Feedback</button>
+    <button type="button" class="btn btn-light math-reconfig-btn" title="KI-Konfiguration ändern">⚙</button>
+  </div>
+</div>
+<div class="math-legend-panel" style="display:none;"></div>
+<div class="math-feedback-area"></div>
+</div>
+</div>
+</section>
+</section>
+<section id="python-implementierung" class="level1">
+<h1>Python Implementierung</h1>
+<p>Wenn die oben kurzgefasste Theorie verstanden ist kann betrachtet werden, wie das Ganze in Python implementiert werden kann.</p>
+<div id="qpyodide-insertion-location-2"></div>
+<noscript>Bitte JavaScript aktivieren, um die interaktiven Code-Zellen dieser Seite zu nutzen.</noscript>
+<section id="aufgabe-krümmungsverhalten-bestimmen" class="level2">
+<h2 class="anchored" data-anchor-id="aufgabe-krümmungsverhalten-bestimmen">Aufgabe: Krümmungsverhalten bestimmen</h2>
+<p>Der Code oben hat bisher noch keine Ausgabe.<br>
+Um zu testen, dass du den Code wirklich verstanden hast, versuche eine Ausgabe zu schreiben, welche den entsprechenden Werten, die in der Funktion bestimmt werden, die passende Ausgabe zuordnet.<br>
+Das heißt in welchem Intervall hat die Funktion welche Krümmung?</p>
+<div id="qpyodide-insertion-location-3"></div>
+<noscript>Bitte JavaScript aktivieren, um die interaktiven Code-Zellen dieser Seite zu nutzen.</noscript>
+<div class="math-exercise-cell" data-similar="false" data-similar-guidance="[]" data-generation-policy="[]" data-similar-data="" id="math-exercise-2" data-label="kruemmung-kontrolle" data-mode="equivalent" data-reject="" data-vars="" data-tolerance="" data-decplaces="" data-sigfigs="" data-form="" data-checker="&quot;&quot;" data-givens="&quot;&quot;" data-packages="[]" data-response="" data-embed-response="false" data-partial-credit="true" data-form-credit="0.5" data-field-labels="[&quot;Anfang&quot;,&quot;Ende&quot;]" data-vecdir="col" data-feedback-policy="{&quot;exercise&quot;:&quot;kruemmung-kontrolle&quot;,&quot;name&quot;:&quot;&quot;}" data-variant-boards="[]" data-variant-board-title="" data-context-mode="auto" data-context-refs="auto" data-context="&quot;Aufgabe: Krümmungsverhalten bestimmen\nDer Code oben hat bisher noch keine Ausgabe. Um zu testen, dass du den Code wirklich verstanden hast, versuche eine Ausgabe zu schreiben, welche den entsprechenden Werten, die in der Funktion bestimmt werden, die passende Ausgabe zuordnet. Das heißt in welchem Intervall hat die Funktion welche Krümmung?&quot;" data-context-text="&quot;&quot;" data-ctm-source="e38486a062a9203a" data-ctm-save="true" data-ctm-id="kruemmung-kontrolle" data-ctm-runtime-id="ctm-block-5" data-ctm-component="math-exercise" data-fields="[&quot;math-exercise-2-f1&quot;,&quot;math-exercise-2-f2&quot;]" data-structural-field-labels="[&quot;&quot;,&quot;&quot;]">
+<div class="math-exercise-caption math-exercise-toggle" data-math-exercise-source="Kontrolle – Krümmungsintervalle" role="button" tabindex="0" aria-expanded="false"><span class="math-chevron" aria-hidden="true"></span>Kontrolle – Krümmungsintervalle</div>
+
+<div class="math-exercise-body" aria-hidden="true">
+<div id="kruemmung-kontrolle-question" class="math-exercise-question ai-feedback-context" data-math-exercise-source="\(f(x) = x^4 - 4x^3 + 2\) ist <strong>rechtsgekrümmt</strong> zwischen \(x =\) <input type=&quot;text&quot; id=&quot;math-exercise-2-f1&quot; data-vars=&quot;&quot; autocomplete=&quot;off&quot; autocorrect=&quot;off&quot; spellcheck=&quot;false&quot; class=&quot;math-input math-input-small&quot;> und \(x =\) <input type=&quot;text&quot; id=&quot;math-exercise-2-f2&quot; data-vars=&quot;&quot; autocomplete=&quot;off&quot; autocorrect=&quot;off&quot; spellcheck=&quot;false&quot; class=&quot;math-input math-input-small&quot;>, sonst linksgekrümmt.">\(f(x) = x^4 - 4x^3 + 2\) ist <strong>rechtsgekrümmt</strong> zwischen \(x =\) <input type="text" id="math-exercise-2-f1" data-answer="0" data-vars="" autocomplete="off" autocorrect="off" spellcheck="false" class="math-input math-input-small"> und \(x =\) <input type="text" id="math-exercise-2-f2" data-answer="2" data-vars="" autocomplete="off" autocorrect="off" spellcheck="false" class="math-input math-input-small">, sonst linksgekrümmt.</div>
+
+<div class="math-exercise-controls">
+  <button type="button" class="btn btn-primary math-check-btn">✓&nbsp;Überprüfen</button>
+  <button type="button" class="btn btn-light math-legend-btn">ⓘ&nbsp;Eingabe-Hilfe</button>
+  <div class="btn-group">
+    <button type="button" class="btn btn-light math-feedback-btn">💬&nbsp;Feedback</button>
+    <button type="button" class="btn btn-light math-reconfig-btn" title="KI-Konfiguration ändern">⚙</button>
+  </div>
+</div>
+<div class="math-legend-panel" style="display:none;"></div>
+<div class="math-feedback-area"></div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Hinweis</span>Hinweis
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li>Überlege dir welcher Abschnitt im Code dafür zuständig ist das Krümmungsverhalten zu berechnen</li>
+<li>Im Anschluss überlege dir warum die Variablen so heißen wie sie heißen (Was bedeutet jede einzelne)</li>
+<li>Zuletzt was wurde oben im Text erklärt? Was muss angegeben werden, wenn es darum geht ein Krümmungsverhalten anzugeben?</li>
+</ul>
+</div>
+</div>
+</div>
+<p>Verpacke das anschließend in eine Funktion. Ergänze <code>kruemmung_intervalle(f)</code>: Sie gibt eine Liste von Tupeln <code>(von, bis, art)</code> zurück, wobei <code>art</code> entweder <code>'links'</code> (linksgekrümmt) oder <code>'rechts'</code> (rechtsgekrümmt) ist.</p>
+<div class="py-exercise-cell" id="py-exercise-1" data-ctm-component="py-exercise" data-ctm-id="kruemmung-intervalle-funktion" data-ctm-runtime-id="ctm-block-6" data-ctm-source="0d9de1b97028318b" data-ctm-save="true">
+  <noscript>
+    Bitte JavaScript aktivieren, um die interaktive Aufgabe zu laden.
+  </noscript>
+</div>
+<script>
+(window.__pyExercises = window.__pyExercises || []).push({"caption":"kruemmung_intervalle schreiben","feedbackLanguage":"de","forbiddenImports":[],"forbiddenKeywords":[],"id":1,"label":"kruemmung-intervalle-funktion","learnerLevel":"","save":true,"showTestHints":false,"source":"0d9de1b97028318b","starter":"import sympy\nx = sympy.symbols('x')\n\ndef kruemmung_intervalle(f):\n    f_2strich = sympy.diff(f, x, 2)\n    stellen = sorted(sympy.solveset(f_2strich, x, sympy.Reals))\n    punkte = [-sympy.oo] + stellen + [sympy.oo]\n    ergebnis = []\n    for i in range(len(punkte) - 1):\n        links, rechts = punkte[i], punkte[i + 1]\n        if links == -sympy.oo and rechts == sympy.oo:\n            test = 0\n        elif links == -sympy.oo:\n            test = rechts - 1\n        elif rechts == sympy.oo:\n            test = links + 1\n        else:\n            test = (links + rechts) / 2\n        # Dein Code hier: Ist f_2strich an der Stelle test \u003e 0, ist die Art 'links', sonst 'rechts'.\n        # Hänge (links, rechts, art) an ergebnis an.\n    return ergebnis","storeId":"kruemmung-intervalle-funktion","tests":"assert kruemmung_intervalle(x**4 - 4*x**3 + 2) == [(-sympy.oo, 0, 'links'), (0, 2, 'rechts'), (2, sympy.oo, 'links')], \"f'' = 12x²-24x: links, rechts, links\"\nassert kruemmung_intervalle(x**3) == [(-sympy.oo, 0, 'rechts'), (0, sympy.oo, 'links')], \"x**3 ist links von 0 rechtsgekrümmt, rechts davon linksgekrümmt\"\nassert kruemmung_intervalle(x**2) == [(-sympy.oo, sympy.oo, 'links')], \"x**2 ist überall linksgekrümmt\""});
+</script>
+<p>Wenn du damit fertig bist, kommt als letzter Teil dieses Kapitels der Abschnitt <strong><a href="../../Qmd-Files/Kapitel_4/wendepunkte.html">Wendepunkte bestimmen</a></strong>.</p>
+
+
+<!-- -->
+
+<!--ctm-save-generated--><script type="application/json" id="ctm-store-manifest">{"exercises":[{"component":"math-exercise","id":"kruemmung-vorcheck","order":2,"runtimeId":"ctm-block-2","save":true,"source":"8cd04d78728fed6a"},{"component":"pyodide-interaktiv","id":"cell:36abca4790afca68","order":4,"runtimeId":"ctm-runtime-4","save":false,"source":"36abca4790afca68"},{"component":"pyodide-interaktiv","id":"extra:cell:36abca4790afca68","order":5,"runtimeId":"ctm-runtime-5","save":true,"source":"eeaa7579daa80140"},{"component":"math-exercise","id":"kruemmung-kontrolle","order":5,"runtimeId":"ctm-block-5","save":true,"source":"e38486a062a9203a"},{"component":"py-exercise","id":"kruemmung-intervalle-funktion","order":6,"runtimeId":"ctm-block-6","save":true,"source":"0d9de1b97028318b"},{"component":"pyodide-interaktiv","id":"cell:4618d5a6371e3666","order":6,"runtimeId":"ctm-runtime-6","save":false,"source":"4618d5a6371e3666"},{"component":"pyodide-interaktiv","id":"extra:cell:4618d5a6371e3666","order":7,"runtimeId":"ctm-runtime-7","save":true,"source":"5b6492cb1feb4a0d"},{"component":"pyodide-interaktiv","id":"kruemmung-aufgabe","order":8,"runtimeId":"ctm-runtime-8","save":true,"source":"ceecfc5a77d868e9"},{"component":"pyodide-interaktiv","id":"extra:kruemmung-aufgabe","order":9,"runtimeId":"ctm-runtime-9","save":true,"source":"debfb4023e27b490"}],"export":true,"messages":{"answered":"Beantwortet, noch nicht bewertet","answersStorage":"Antworten \u0026 Speicherung","clearFailed":"Der Browserspeicher konnte nicht gelöscht oder aktualisiert werden. Entfernen Sie die Kursdaten in den Browsereinstellungen.","confirmClearCourse":"Alle gespeicherten Antworten in diesem Kurs löschen?","confirmClearPage":"Alle gespeicherten Antworten auf dieser Seite löschen?","confirmNewVariant":"Die ausgefüllten Antworten durch eine neue Variante ersetzen?","confirmSaveOff":"Alle gespeicherten Antworten dieses Kurses werden gelöscht und die Speicherung beendet.","copyAll":"Alles kopieren","correct":"✓ richtig","downloadHTML":".html herunterladen","downloadMarkdown":".md herunterladen","exercise":"Aufgabe","exportClose":"Schließen","exportTitle":"Meine Antworten exportieren","lastResult":"Letztes Ergebnis","locale":"de","notSaving":"Antworten werden nicht gespeichert","outdated":"Veraltet","partial":"½ teilweise","progressTitle":"Fortschritt auf dieser Seite","recordTooLarge":"Diese Antwort ist zum Speichern zu groß. Kopieren Sie sie, bevor Sie die Seite verlassen.","saveOff":"Auf diesem Gerät nicht speichern","saveOn":"Wieder speichern","savedLocal":"In diesem Browser gespeichert","savingDisabled":"Speichern ist für diese Seite ausgeschaltet.","savingLocal":"Speichern in diesem Browser","savingNotice":"Ihre Antworten werden nur in diesem Browser gespeichert.","savingOffNotice":"Speichern ist auf diesem Gerät für diesen Kurs ausgeschaltet.","settings":"Einstellungen","showSaved":"Gespeicherte Antwort anzeigen","sourceChanged":"Die Aufgabe wurde seit Ihrer Antwort geändert.","statusCorrect":"richtig","statusInvalid":"ungültig","statusPartial":"teilweise richtig","statusWrong":"falsch","storageUnavailable":"Speichern ist nicht verfügbar. Ihre Antworten bleiben nur im Arbeitsspeicher dieser Seite.","total":"{score} von {count}","unattempted":"– nicht versucht","variantChanged":"Diese Variante wurde geändert.","variantWithdrawn":"Diese Variante wurde zurückgezogen.","wrong":"✗ falsch"},"progress":false,"quizzes":[],"save":true,"v":1}</script>
+<!--ctm-layout-generated--><span id="ctm-layout-ready" hidden=""></span>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const toggle = window.document.createElement('button');
+      toggle.type = "button";
+      toggle.setAttribute("role", "switch");
+      toggle.setAttribute("aria-checked", "false");
+      toggle.classList.add('top-right');
+      toggle.classList.add('quarto-color-scheme-toggle');
+      toggle.setAttribute("aria-label", "Dunkelmodus umschalten");
+      toggle.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      toggle.appendChild(i);
+      // Put the toggle in a landmark of its own, so that landmark navigation
+      // can reach it.
+      //
+      // The container is always a fresh direct child of body, and the toggle is
+      // never moved into page furniture that the theme or the author controls.
+      // The toggle is positioned against the page, so any ancestor that
+      // establishes a containing block captures it: a positioned element or a
+      // grid for position: absolute, and transform, filter, will-change or
+      // contain for position: fixed. A direct child of body has none of these
+      // to inherit, and the shift when one appears is silent and visual.
+      //
+      // ARIA says a document should have at most one banner, and axe reports a
+      // duplicate whether or not the banners carry distinct labels. So use a
+      // header when the page has no banner yet, and a named region otherwise.
+      //
+      // A header is a banner wherever it sits, unless it is inside sectioning
+      // content, so this cannot just look at the children of body: a custom
+      // page layout wraps the title block header in a plain div. An explicit
+      // role="banner" always counts.
+      const sectioning = 'article, aside, main, nav, section, [role="article"], [role="complementary"], [role="main"], [role="navigation"], [role="region"]';
+      const hasBanner = Array.from(
+        window.document.querySelectorAll('header:not([role]), [role="banner"]')
+      ).some(function(el) {
+        return el.hasAttribute("role") || el.closest(sectioning) === null;
+      });
+      const container = window.document.createElement(hasBanner ? "div" : "header");
+      if (hasBanner) {
+        container.setAttribute("role", "region");
+        container.setAttribute("aria-label", "Dunkelmodus umschalten");
+      }
+      container.classList.add('quarto-color-scheme-toggle-container');
+      container.appendChild(toggle);
+      window.document.body.appendChild(container);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Kopiert");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Kopiert");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const cellDetails = window.document.querySelectorAll(".cell details.code-fold");
+        for (let i=0; i<cellDetails.length; i++) {
+          const details = cellDetails[i];
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell div.sourceCode.cell-code");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          // Each band is positioned against its own containing block, which is
+          // not the offsetParent of the lines, so place it from client rects.
+          const placeBand = (band, firstEl, lastEl, codeBlock) => {
+            const container = band.offsetParent;
+            if (container === null) {
+              return;
+            }
+            const containerRect = container.getBoundingClientRect();
+            // Reveal.js scales slides with a transform, so convert client
+            // pixels back to the CSS pixels of the container.
+            const scale = containerRect.height / container.offsetHeight || 1;
+            const firstRect = firstEl.getBoundingClientRect();
+            const lastRect = lastEl.getBoundingClientRect();
+            const top = (firstRect.top - containerRect.top) / scale - container.clientTop + container.scrollTop;
+            const height = (lastRect.bottom - firstRect.top) / scale;
+            band.style.top = top - 2 + "px";
+            band.style.height = height + 4 + "px";
+            if (codeBlock) {
+              // Without the copy button wrapper, the containing block is wider
+              // than the code block, so span the code block explicitly.
+              const blockRect = codeBlock.getBoundingClientRect();
+              band.style.left = (blockRect.left - containerRect.left) / scale - container.clientLeft + container.scrollLeft + "px";
+              band.style.width = blockRect.width / scale + "px";
+            }
+          };
+          if (lineIds.length > 0) {
+            const el = window.document.getElementById(lineIds[0]);
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const parent = el.parentElement.parentElement;
+            // cook up a div (if necessary) and position it
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            placeBand(div, el, lastEl, parent.closest("div.sourceCode") || parent);
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            placeBand(gutterDiv, el, lastEl);
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Scrollbarer Code","output":"Scrollbare Ausgabe"};
+  </script>
+<nav class="page-navigation" aria-label="Seite">
+  <div class="nav-page nav-page-previous">
+      <a href="../../Qmd-Files/Kapitel_4/extrempunkte.html" class="pagination-link" aria-label="Extrempunkte/ Sattelpunkte bestimmen">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Extrempunkte/ Sattelpunkte bestimmen</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../Qmd-Files/Kapitel_4/wendepunkte.html" class="pagination-link" aria-label="Wendepunkte bestimmen">
+        <span class="nav-page-text">Wendepunkte bestimmen</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Quellcode</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" data-shortcodes="false" data-ai-feedback-context="Aufgabe: Krümmungsverhalten bestimmen
+Der Code oben hat bisher noch keine Ausgabe. Um zu testen, dass du den Code wirklich verstanden hast, versuche eine Ausgabe zu schreiben, welche den entsprechenden Werten, die in der Funktion bestimmt werden, die passende Ausgabe zuordnet. Das heißt in welchem Intervall hat die Funktion welche Krümmung?
+Verpacke das anschließend in eine Funktion. Ergänze kruemmung_intervalle(f): Sie gibt eine Liste von Tupeln (von, bis, art) zurück, wobei art entweder 'links' (linksgekrümmt) oder 'rechts' (rechtsgekrümmt) ist.
+Wenn du damit fertig bist, kommt als letzter Teil dieses Kapitels der Abschnitt Wendepunkte bestimmen."><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Krümmungsverhalten untersuchen"</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="an">title-en:</span><span class="co"> "Examining Concavity"</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span><span class="co"> html</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="an">filters:</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">  - ctm-assessment</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="an">engine:</span><span class="co"> markdown</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>:::: {.content-visible when-profile="deutsch"}</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu"># Was ist die Krümmung?</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>Die **Krümmung** einer Funktion beschreibt, wie sich der Graph "krümmt", bzw. "biegt", das heißt wie weit sich die Funktion von einer Geraden entfernt. Es hilft, sich das als Analogie mit Hilfe einer Straße vorzustellen, die Krümmung gibt an, ob die Straße nach rechts oder nach links abknickt und wie stark der Knick ist.  </span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>Die Krümmung einer Funktion erkennt man am **[Monotonieverhalten](monotonieverhalten.qmd)** der ersten Ableitung: Steigt $f'$, ist $f$ linksgekrümmt, fällt $f'$, ist $f$ rechtsgekrümmt. Dort, wo sich das Monotonieverhalten von $f'$ ändert, liegen die Wendestellen.  </span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>**Wichtig**: Bei Betrachtung des "Monotonieverhaltens" darf nicht außer Acht gelassen werden, dass hier das Monotonieverhalten der ersten **Ableitung** betrachtet wird.</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>Mathematisch unterscheiden wir **zwei Hauptarten der Krümmung**:</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Linksgekrümmt (konvex)**: Der Graph "knickt" sich nach oben. Wenn man sich auf dem Graphen bewegt, biegt er sich nach links.</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Rechtsgekrümmt (konkav)**: Der Graph "knickt" sich nach unten. Wenn man sich auf dem Graphen bewegt, biegt er sich nach rechts.</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="fu">## Krümmungsverhalten bestimmen</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>Um das Krümmungsverhalten einer Funktion zu bestimmen, nutzen wir die **zweite Ableitung** $f''(x)$. Sie ist die Ableitung von $f'$ und zeigt deshalb, ob $f'$ steigt oder fällt.</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>Die **Schritte zur Bestimmung des Krümmungsverhaltens** sind wie folgt:</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>**Zweite Ableitung bilden:** Berechne die zweite Ableitung $f''(x)$ der Funktion $f(x)$.</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>**Nullstellen der zweiten Ableitung finden:** Bestimme die Nullstellen der zweiten Ableitung, indem du die Gleichung $f''(x) = 0$ löst. Diese Nullstellen sind **potenzielle Wendepunkte**, an denen sich das Krümmungsverhalten ändern könnte.</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>**Intervalle aufstellen:** Die Nullstellen von $f''(x)$ bilden die Grenzen der Intervalle.</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>**Vorzeichen von $f''(x)$ prüfen:** Wähle für jedes Intervall einen beliebigen Wert innerhalb des Intervalls aus. Setze diesen Wert in $f''(x)$ ein. Das Vorzeichen des Ergebnisses verrät dir das Krümmungsverhalten in diesem gesamten Intervall:</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="ss">    *   </span>$f''(x) &gt; 0 \implies$ Der Graph ist in diesem Intervall **linksgekrümmt (konvex)**.</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="ss">    *   </span>$f''(x) &lt; 0 \implies$ Der Graph ist in diesem Intervall **rechtsgekrümmt (konkav)**.</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="fu">## Krümmung im Bild</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>Der folgende Plot zeigt $f(x) = x^4 - 4x^3 + 2$. Grün hinterlegt sind die Bereiche, in denen $f''(x) &gt; 0$ ist (linksgekrümmt), rot die mit $f''(x) &lt; 0$ (rechtsgekrümmt). Stell dir vor, du fährst mit dem Fahrrad von links nach rechts über den Graphen: Im grünen Bereich lenkst du nach links, im roten nach rechts.</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="in">```{pyodide-python}</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="co">#| read-only: true</span></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>x_werte <span class="op">=</span> np.linspace(<span class="op">-</span><span class="fl">1.2</span>, <span class="fl">3.8</span>, <span class="dv">400</span>)</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>f_werte <span class="op">=</span> x_werte<span class="op">**</span><span class="dv">4</span> <span class="op">-</span> <span class="dv">4</span><span class="op">*</span>x_werte<span class="op">**</span><span class="dv">3</span> <span class="op">+</span> <span class="dv">2</span></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>f_2strich <span class="op">=</span> <span class="dv">12</span><span class="op">*</span>x_werte<span class="op">**</span><span class="dv">2</span> <span class="op">-</span> <span class="dv">24</span><span class="op">*</span>x_werte</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>plt.plot(x_werte, f_werte, color<span class="op">=</span><span class="st">"black"</span>, label<span class="op">=</span><span class="st">"f(x)"</span>)</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>unten, oben <span class="op">=</span> <span class="op">-</span><span class="dv">30</span>, <span class="dv">15</span></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>plt.fill_between(x_werte, unten, oben, where<span class="op">=</span>f_2strich <span class="op">&gt;</span> <span class="dv">0</span>, color<span class="op">=</span><span class="st">"green"</span>, alpha<span class="op">=</span><span class="fl">0.12</span>, label<span class="op">=</span><span class="st">"f'' &gt; 0: linksgekrümmt"</span>)</span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>plt.fill_between(x_werte, unten, oben, where<span class="op">=</span>f_2strich <span class="op">&lt;</span> <span class="dv">0</span>, color<span class="op">=</span><span class="st">"red"</span>, alpha<span class="op">=</span><span class="fl">0.12</span>, label<span class="op">=</span><span class="st">"f'' &lt; 0: rechtsgekrümmt"</span>)</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>plt.ylim(unten, oben)</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>)</span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>**Kurz überlegt:** Wo ändert sich die Krümmung? Einmal von Hand.</span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a><span class="in">```{math-exercise}</span></span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a><span class="in">#| label: kruemmung-vorcheck</span></span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a><span class="in">#| caption: Vorab-Check – Krümmung von Hand</span></span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a><span class="in">#| vars: x</span></span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a><span class="in">#| field-labels: g''(x), Grenze</span></span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a><span class="in">#| partial-credit: true</span></span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a><span class="in">Für $g(x)=x^3-3x$ gilt $g''(x)=$ __[6*x]. Der Graph ist linksgekrümmt für $x&gt;$ _[0] und rechtsgekrümmt für $x&lt;0$.</span></span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a><span class="fu"># Python Implementierung</span></span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a>Wenn die oben kurzgefasste Theorie verstanden ist kann betrachtet werden, wie das Ganze in Python implementiert werden kann.  </span>
+<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a><span class="in">```{pyodide-python}</span></span>
+<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a><span class="co">#| read-only: true</span></span>
+<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sympy</span>
+<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> sympy.symbols(<span class="st">'x'</span>)</span>
+<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a>f <span class="op">=</span> x<span class="op">**</span><span class="dv">4</span> <span class="op">-</span> <span class="dv">4</span><span class="op">*</span>x<span class="op">**</span><span class="dv">3</span> <span class="op">+</span> <span class="dv">2</span></span>
+<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Die Funktion ist: f(x) = </span><span class="sc">{</span>f<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb1-79"><a href="#cb1-79" aria-hidden="true" tabindex="-1"></a>f_prime <span class="op">=</span> sympy.diff(f, x)</span>
+<span id="cb1-80"><a href="#cb1-80" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"f'(x) = </span><span class="sc">{</span>f_prime<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a>f_double_prime <span class="op">=</span> sympy.diff(f_prime, x)</span>
+<span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"f''(x) = </span><span class="sc">{</span>f_double_prime<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a>potentielle_wendepunkte <span class="op">=</span> sympy.solve(f_double_prime, x)</span>
+<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a>potentielle_wendepunkte.sort() </span>
+<span id="cb1-86"><a href="#cb1-86" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Die Nullstellen der zweiten Ableitung sind: </span><span class="sc">{</span>potentielle_wendepunkte<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb1-87"><a href="#cb1-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-88"><a href="#cb1-88" aria-hidden="true" tabindex="-1"></a>intervall_grenzen <span class="op">=</span> [<span class="op">-</span>sympy.oo] <span class="op">+</span> potentielle_wendepunkte <span class="op">+</span> [sympy.oo]</span>
+<span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">--- Untersuchung des Krümmungsverhaltens ---"</span>)</span>
+<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(intervall_grenzen) <span class="op">-</span> <span class="dv">1</span>):</span>
+<span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a>    untere_grenze <span class="op">=</span> intervall_grenzen[i]</span>
+<span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a>    obere_grenze <span class="op">=</span> intervall_grenzen[i<span class="op">+</span><span class="dv">1</span>]</span>
+<span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Hier wird der Mittelpunkt des Intervalls betrachtet (falls die Grenzen endlich sind)</span></span>
+<span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> untere_grenze <span class="op">==</span> <span class="op">-</span>sympy.oo:</span>
+<span id="cb1-97"><a href="#cb1-97" aria-hidden="true" tabindex="-1"></a>        test_wert <span class="op">=</span> obere_grenze <span class="op">-</span> <span class="dv">1</span> <span class="cf">if</span> obere_grenze <span class="op">!=</span> sympy.oo <span class="cf">else</span> <span class="dv">0</span></span>
+<span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> obere_grenze <span class="op">==</span> sympy.oo:</span>
+<span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a>        test_wert <span class="op">=</span> untere_grenze <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb1-101"><a href="#cb1-101" aria-hidden="true" tabindex="-1"></a>        test_wert <span class="op">=</span> (untere_grenze <span class="op">+</span> obere_grenze) <span class="op">/</span> <span class="dv">2</span></span>
+<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-103"><a href="#cb1-103" aria-hidden="true" tabindex="-1"></a>    f_double_prime_at_test_wert <span class="op">=</span> f_double_prime.subs(x, test_wert)</span>
+<span id="cb1-104"><a href="#cb1-104" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb1-105"><a href="#cb1-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-106"><a href="#cb1-106" aria-hidden="true" tabindex="-1"></a><span class="fu">## Aufgabe: Krümmungsverhalten bestimmen</span></span>
+<span id="cb1-107"><a href="#cb1-107" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-108"><a href="#cb1-108" aria-hidden="true" tabindex="-1"></a>Der Code oben hat bisher noch keine Ausgabe.  </span>
+<span id="cb1-109"><a href="#cb1-109" aria-hidden="true" tabindex="-1"></a>Um zu testen, dass du den Code wirklich verstanden hast, versuche eine Ausgabe zu schreiben, welche den entsprechenden Werten, die in der Funktion bestimmt werden, die passende Ausgabe zuordnet.  </span>
+<span id="cb1-110"><a href="#cb1-110" aria-hidden="true" tabindex="-1"></a>Das heißt in welchem Intervall hat die Funktion welche Krümmung?</span>
+<span id="cb1-111"><a href="#cb1-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-112"><a href="#cb1-112" aria-hidden="true" tabindex="-1"></a><span class="in">```{pyodide-python}</span></span>
+<span id="cb1-113"><a href="#cb1-113" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: kruemmung-aufgabe</span></span>
+<span id="cb1-114"><a href="#cb1-114" aria-hidden="true" tabindex="-1"></a><span class="co"># Gib hier deinen Code an</span></span>
+<span id="cb1-115"><a href="#cb1-115" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb1-116"><a href="#cb1-116" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-117"><a href="#cb1-117" aria-hidden="true" tabindex="-1"></a><span class="in">```{math-exercise}</span></span>
+<span id="cb1-118"><a href="#cb1-118" aria-hidden="true" tabindex="-1"></a><span class="in">#| label: kruemmung-kontrolle</span></span>
+<span id="cb1-119"><a href="#cb1-119" aria-hidden="true" tabindex="-1"></a><span class="in">#| caption: Kontrolle – Krümmungsintervalle</span></span>
+<span id="cb1-120"><a href="#cb1-120" aria-hidden="true" tabindex="-1"></a><span class="in">#| field-labels: Anfang, Ende</span></span>
+<span id="cb1-121"><a href="#cb1-121" aria-hidden="true" tabindex="-1"></a><span class="in">#| partial-credit: true</span></span>
+<span id="cb1-122"><a href="#cb1-122" aria-hidden="true" tabindex="-1"></a><span class="in">$f(x) = x^4 - 4x^3 + 2$ ist **rechtsgekrümmt** zwischen $x =$ _[0] und $x =$ _[2], sonst linksgekrümmt.</span></span>
+<span id="cb1-123"><a href="#cb1-123" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb1-124"><a href="#cb1-124" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-125"><a href="#cb1-125" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Hinweis" collapse="true"}  </span>
+<span id="cb1-126"><a href="#cb1-126" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>Überlege dir welcher Abschnitt im Code dafür zuständig ist das Krümmungsverhalten zu berechnen</span>
+<span id="cb1-127"><a href="#cb1-127" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>Im Anschluss überlege dir warum die Variablen so heißen wie sie heißen (Was bedeutet jede einzelne)</span>
+<span id="cb1-128"><a href="#cb1-128" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>Zuletzt was wurde oben im Text erklärt? Was muss angegeben werden, wenn es darum geht ein Krümmungsverhalten anzugeben?</span>
+<span id="cb1-129"><a href="#cb1-129" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-130"><a href="#cb1-130" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-131"><a href="#cb1-131" aria-hidden="true" tabindex="-1"></a>Verpacke das anschließend in eine Funktion. Ergänze <span class="in">`kruemmung_intervalle(f)`</span>: Sie gibt eine Liste von Tupeln <span class="in">`(von, bis, art)`</span> zurück, wobei <span class="in">`art`</span> entweder <span class="in">`'links'`</span> (linksgekrümmt) oder <span class="in">`'rechts'`</span> (rechtsgekrümmt) ist.</span>
+<span id="cb1-132"><a href="#cb1-132" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-133"><a href="#cb1-133" aria-hidden="true" tabindex="-1"></a><span class="in">```{py-exercise}</span></span>
+<span id="cb1-134"><a href="#cb1-134" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: kruemmung-intervalle-funktion</span></span>
+<span id="cb1-135"><a href="#cb1-135" aria-hidden="true" tabindex="-1"></a><span class="co">#| caption: kruemmung_intervalle schreiben</span></span>
+<span id="cb1-136"><a href="#cb1-136" aria-hidden="true" tabindex="-1"></a><span class="co">#| show-test-hints: false</span></span>
+<span id="cb1-137"><a href="#cb1-137" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sympy</span>
+<span id="cb1-138"><a href="#cb1-138" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> sympy.symbols(<span class="st">'x'</span>)</span>
+<span id="cb1-139"><a href="#cb1-139" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-140"><a href="#cb1-140" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> kruemmung_intervalle(f):</span>
+<span id="cb1-141"><a href="#cb1-141" aria-hidden="true" tabindex="-1"></a>    f_2strich <span class="op">=</span> sympy.diff(f, x, <span class="dv">2</span>)</span>
+<span id="cb1-142"><a href="#cb1-142" aria-hidden="true" tabindex="-1"></a>    stellen <span class="op">=</span> <span class="bu">sorted</span>(sympy.solveset(f_2strich, x, sympy.Reals))</span>
+<span id="cb1-143"><a href="#cb1-143" aria-hidden="true" tabindex="-1"></a>    punkte <span class="op">=</span> [<span class="op">-</span>sympy.oo] <span class="op">+</span> stellen <span class="op">+</span> [sympy.oo]</span>
+<span id="cb1-144"><a href="#cb1-144" aria-hidden="true" tabindex="-1"></a>    ergebnis <span class="op">=</span> []</span>
+<span id="cb1-145"><a href="#cb1-145" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(punkte) <span class="op">-</span> <span class="dv">1</span>):</span>
+<span id="cb1-146"><a href="#cb1-146" aria-hidden="true" tabindex="-1"></a>        links, rechts <span class="op">=</span> punkte[i], punkte[i <span class="op">+</span> <span class="dv">1</span>]</span>
+<span id="cb1-147"><a href="#cb1-147" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> links <span class="op">==</span> <span class="op">-</span>sympy.oo <span class="kw">and</span> rechts <span class="op">==</span> sympy.oo:</span>
+<span id="cb1-148"><a href="#cb1-148" aria-hidden="true" tabindex="-1"></a>            test <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb1-149"><a href="#cb1-149" aria-hidden="true" tabindex="-1"></a>        <span class="cf">elif</span> links <span class="op">==</span> <span class="op">-</span>sympy.oo:</span>
+<span id="cb1-150"><a href="#cb1-150" aria-hidden="true" tabindex="-1"></a>            test <span class="op">=</span> rechts <span class="op">-</span> <span class="dv">1</span></span>
+<span id="cb1-151"><a href="#cb1-151" aria-hidden="true" tabindex="-1"></a>        <span class="cf">elif</span> rechts <span class="op">==</span> sympy.oo:</span>
+<span id="cb1-152"><a href="#cb1-152" aria-hidden="true" tabindex="-1"></a>            test <span class="op">=</span> links <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb1-153"><a href="#cb1-153" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb1-154"><a href="#cb1-154" aria-hidden="true" tabindex="-1"></a>            test <span class="op">=</span> (links <span class="op">+</span> rechts) <span class="op">/</span> <span class="dv">2</span></span>
+<span id="cb1-155"><a href="#cb1-155" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Dein Code hier: Ist f_2strich an der Stelle test &gt; 0, ist die Art 'links', sonst 'rechts'.</span></span>
+<span id="cb1-156"><a href="#cb1-156" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Hänge (links, rechts, art) an ergebnis an.</span></span>
+<span id="cb1-157"><a href="#cb1-157" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ergebnis</span>
+<span id="cb1-158"><a href="#cb1-158" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-159"><a href="#cb1-159" aria-hidden="true" tabindex="-1"></a><span class="co">## TESTS ##</span></span>
+<span id="cb1-160"><a href="#cb1-160" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> kruemmung_intervalle(x<span class="op">**</span><span class="dv">4</span> <span class="op">-</span> <span class="dv">4</span><span class="op">*</span>x<span class="op">**</span><span class="dv">3</span> <span class="op">+</span> <span class="dv">2</span>) <span class="op">==</span> [(<span class="op">-</span>sympy.oo, <span class="dv">0</span>, <span class="st">'links'</span>), (<span class="dv">0</span>, <span class="dv">2</span>, <span class="st">'rechts'</span>), (<span class="dv">2</span>, sympy.oo, <span class="st">'links'</span>)], <span class="st">"f'' = 12x²-24x: links, rechts, links"</span></span>
+<span id="cb1-161"><a href="#cb1-161" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> kruemmung_intervalle(x<span class="op">**</span><span class="dv">3</span>) <span class="op">==</span> [(<span class="op">-</span>sympy.oo, <span class="dv">0</span>, <span class="st">'rechts'</span>), (<span class="dv">0</span>, sympy.oo, <span class="st">'links'</span>)], <span class="st">"x**3 ist links von 0 rechtsgekrümmt, rechts davon linksgekrümmt"</span></span>
+<span id="cb1-162"><a href="#cb1-162" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> kruemmung_intervalle(x<span class="op">**</span><span class="dv">2</span>) <span class="op">==</span> [(<span class="op">-</span>sympy.oo, sympy.oo, <span class="st">'links'</span>)], <span class="st">"x**2 ist überall linksgekrümmt"</span></span>
+<span id="cb1-163"><a href="#cb1-163" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb1-164"><a href="#cb1-164" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-165"><a href="#cb1-165" aria-hidden="true" tabindex="-1"></a>Wenn du damit fertig bist, kommt als letzter Teil dieses Kapitels der Abschnitt **[Wendepunkte bestimmen](wendepunkte.qmd)**.</span>
+<span id="cb1-166"><a href="#cb1-166" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-167"><a href="#cb1-167" aria-hidden="true" tabindex="-1"></a>::::</span>
+<span id="cb1-168"><a href="#cb1-168" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-169"><a href="#cb1-169" aria-hidden="true" tabindex="-1"></a>:::: {.content-visible when-profile="english"}</span>
+<span id="cb1-170"><a href="#cb1-170" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-171"><a href="#cb1-171" aria-hidden="true" tabindex="-1"></a><span class="fu"># What is concavity?</span></span>
+<span id="cb1-172"><a href="#cb1-172" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-173"><a href="#cb1-173" aria-hidden="true" tabindex="-1"></a>The **concavity** (curvature) of a function describes how the graph "curves" or "bends", i.e. how far the function deviates from a straight line. It helps to imagine a road: the curvature tells you whether the road bends to the right or to the left and how sharp the bend is.  </span>
+<span id="cb1-174"><a href="#cb1-174" aria-hidden="true" tabindex="-1"></a>The concavity of a function can be seen from the **[monotonicity](monotonieverhalten.qmd)** of the first derivative: if $f'$ increases, $f$ is concave up; if $f'$ decreases, $f$ is concave down. Where the monotonicity of $f'$ changes, there are inflection points.  </span>
+<span id="cb1-175"><a href="#cb1-175" aria-hidden="true" tabindex="-1"></a>**Important**: When looking at this "monotonicity", keep in mind that we are looking at the monotonicity of the first **derivative**.</span>
+<span id="cb1-176"><a href="#cb1-176" aria-hidden="true" tabindex="-1"></a>Mathematically, we distinguish **two main kinds of concavity**:</span>
+<span id="cb1-177"><a href="#cb1-177" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-178"><a href="#cb1-178" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Concave up (convex)**: The graph "bends" upwards. If you move along the graph, it bends to the left.</span>
+<span id="cb1-179"><a href="#cb1-179" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Concave down (concave)**: The graph "bends" downwards. If you move along the graph, it bends to the right.</span>
+<span id="cb1-180"><a href="#cb1-180" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-181"><a href="#cb1-181" aria-hidden="true" tabindex="-1"></a><span class="fu">## Determining concavity</span></span>
+<span id="cb1-182"><a href="#cb1-182" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-183"><a href="#cb1-183" aria-hidden="true" tabindex="-1"></a>To determine the concavity of a function, we use the **second derivative** $f''(x)$, It is the derivative of $f'$ and therefore shows whether $f'$ increases or decreases.</span>
+<span id="cb1-184"><a href="#cb1-184" aria-hidden="true" tabindex="-1"></a>The **steps for determining concavity** are as follows:</span>
+<span id="cb1-185"><a href="#cb1-185" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-186"><a href="#cb1-186" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>**Compute the second derivative:** Compute the second derivative $f''(x)$ of the function $f(x)$.</span>
+<span id="cb1-187"><a href="#cb1-187" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>**Find the zeros of the second derivative:** Determine the zeros of the second derivative by solving the equation $f''(x) = 0$. These zeros are **potential inflection points**, where the concavity might change.</span>
+<span id="cb1-188"><a href="#cb1-188" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>**Set up the intervals:** The zeros of $f''(x)$ form the boundaries of the intervals.</span>
+<span id="cb1-189"><a href="#cb1-189" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>**Check the sign of $f''(x)$:** For each interval, choose any value inside it and plug it into $f''(x)$. The sign of the result tells you the concavity on that whole interval:</span>
+<span id="cb1-190"><a href="#cb1-190" aria-hidden="true" tabindex="-1"></a><span class="ss">    *   </span>$f''(x) &gt; 0 \implies$ The graph is **concave up (convex)** on this interval.</span>
+<span id="cb1-191"><a href="#cb1-191" aria-hidden="true" tabindex="-1"></a><span class="ss">    *   </span>$f''(x) &lt; 0 \implies$ The graph is **concave down (concave)** on this interval.</span>
+<span id="cb1-192"><a href="#cb1-192" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-193"><a href="#cb1-193" aria-hidden="true" tabindex="-1"></a><span class="fu">## Concavity in a picture</span></span>
+<span id="cb1-194"><a href="#cb1-194" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-195"><a href="#cb1-195" aria-hidden="true" tabindex="-1"></a>The following plot shows $f(x) = x^4 - 4x^3 + 2$. The green background marks the regions where $f''(x) &gt; 0$ (concave up), the red one those with $f''(x) &lt; 0$ (concave down). Imagine riding a bike from left to right along the graph: in the green region you steer to the left, in the red one to the right.</span>
+<span id="cb1-196"><a href="#cb1-196" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-197"><a href="#cb1-197" aria-hidden="true" tabindex="-1"></a><span class="in">```{pyodide-python}</span></span>
+<span id="cb1-198"><a href="#cb1-198" aria-hidden="true" tabindex="-1"></a><span class="co">#| read-only: true</span></span>
+<span id="cb1-199"><a href="#cb1-199" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-200"><a href="#cb1-200" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-201"><a href="#cb1-201" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-202"><a href="#cb1-202" aria-hidden="true" tabindex="-1"></a>x_values <span class="op">=</span> np.linspace(<span class="op">-</span><span class="fl">1.2</span>, <span class="fl">3.8</span>, <span class="dv">400</span>)</span>
+<span id="cb1-203"><a href="#cb1-203" aria-hidden="true" tabindex="-1"></a>f_values <span class="op">=</span> x_values<span class="op">**</span><span class="dv">4</span> <span class="op">-</span> <span class="dv">4</span><span class="op">*</span>x_values<span class="op">**</span><span class="dv">3</span> <span class="op">+</span> <span class="dv">2</span></span>
+<span id="cb1-204"><a href="#cb1-204" aria-hidden="true" tabindex="-1"></a>f_2prime <span class="op">=</span> <span class="dv">12</span><span class="op">*</span>x_values<span class="op">**</span><span class="dv">2</span> <span class="op">-</span> <span class="dv">24</span><span class="op">*</span>x_values</span>
+<span id="cb1-205"><a href="#cb1-205" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-206"><a href="#cb1-206" aria-hidden="true" tabindex="-1"></a>plt.plot(x_values, f_values, color<span class="op">=</span><span class="st">"black"</span>, label<span class="op">=</span><span class="st">"f(x)"</span>)</span>
+<span id="cb1-207"><a href="#cb1-207" aria-hidden="true" tabindex="-1"></a>bottom, top <span class="op">=</span> <span class="op">-</span><span class="dv">30</span>, <span class="dv">15</span></span>
+<span id="cb1-208"><a href="#cb1-208" aria-hidden="true" tabindex="-1"></a>plt.fill_between(x_values, bottom, top, where<span class="op">=</span>f_2prime <span class="op">&gt;</span> <span class="dv">0</span>, color<span class="op">=</span><span class="st">"green"</span>, alpha<span class="op">=</span><span class="fl">0.12</span>, label<span class="op">=</span><span class="st">"f'' &gt; 0: concave up"</span>)</span>
+<span id="cb1-209"><a href="#cb1-209" aria-hidden="true" tabindex="-1"></a>plt.fill_between(x_values, bottom, top, where<span class="op">=</span>f_2prime <span class="op">&lt;</span> <span class="dv">0</span>, color<span class="op">=</span><span class="st">"red"</span>, alpha<span class="op">=</span><span class="fl">0.12</span>, label<span class="op">=</span><span class="st">"f'' &lt; 0: concave down"</span>)</span>
+<span id="cb1-210"><a href="#cb1-210" aria-hidden="true" tabindex="-1"></a>plt.ylim(bottom, top)</span>
+<span id="cb1-211"><a href="#cb1-211" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb1-212"><a href="#cb1-212" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>)</span>
+<span id="cb1-213"><a href="#cb1-213" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb1-214"><a href="#cb1-214" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb1-215"><a href="#cb1-215" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-216"><a href="#cb1-216" aria-hidden="true" tabindex="-1"></a>**Quick check:** Where does the concavity change? Once by hand.</span>
+<span id="cb1-217"><a href="#cb1-217" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-218"><a href="#cb1-218" aria-hidden="true" tabindex="-1"></a><span class="in">```{math-exercise}</span></span>
+<span id="cb1-219"><a href="#cb1-219" aria-hidden="true" tabindex="-1"></a><span class="in">#| label: kruemmung-vorcheck-en</span></span>
+<span id="cb1-220"><a href="#cb1-220" aria-hidden="true" tabindex="-1"></a><span class="in">#| caption: Pre-check – concavity by hand</span></span>
+<span id="cb1-221"><a href="#cb1-221" aria-hidden="true" tabindex="-1"></a><span class="in">#| vars: x</span></span>
+<span id="cb1-222"><a href="#cb1-222" aria-hidden="true" tabindex="-1"></a><span class="in">#| field-labels: g''(x), boundary</span></span>
+<span id="cb1-223"><a href="#cb1-223" aria-hidden="true" tabindex="-1"></a><span class="in">#| partial-credit: true</span></span>
+<span id="cb1-224"><a href="#cb1-224" aria-hidden="true" tabindex="-1"></a><span class="in">For $g(x)=x^3-3x$ we have $g''(x)=$ __[6*x]. The graph is concave up for $x&gt;$ _[0] and concave down for $x&lt;0$.</span></span>
+<span id="cb1-225"><a href="#cb1-225" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb1-226"><a href="#cb1-226" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-227"><a href="#cb1-227" aria-hidden="true" tabindex="-1"></a><span class="fu"># Python implementation</span></span>
+<span id="cb1-228"><a href="#cb1-228" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-229"><a href="#cb1-229" aria-hidden="true" tabindex="-1"></a>Once the theory summarized above is understood, we can look at how the whole thing can be implemented in Python.  </span>
+<span id="cb1-230"><a href="#cb1-230" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-231"><a href="#cb1-231" aria-hidden="true" tabindex="-1"></a><span class="in">```{pyodide-python}</span></span>
+<span id="cb1-232"><a href="#cb1-232" aria-hidden="true" tabindex="-1"></a><span class="co">#| read-only: true</span></span>
+<span id="cb1-233"><a href="#cb1-233" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sympy</span>
+<span id="cb1-234"><a href="#cb1-234" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> sympy.symbols(<span class="st">'x'</span>)</span>
+<span id="cb1-235"><a href="#cb1-235" aria-hidden="true" tabindex="-1"></a>f <span class="op">=</span> x<span class="op">**</span><span class="dv">4</span> <span class="op">-</span> <span class="dv">4</span><span class="op">*</span>x<span class="op">**</span><span class="dv">3</span> <span class="op">+</span> <span class="dv">2</span></span>
+<span id="cb1-236"><a href="#cb1-236" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-237"><a href="#cb1-237" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"The function is: f(x) = </span><span class="sc">{</span>f<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb1-238"><a href="#cb1-238" aria-hidden="true" tabindex="-1"></a>f_prime <span class="op">=</span> sympy.diff(f, x)</span>
+<span id="cb1-239"><a href="#cb1-239" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"f'(x) = </span><span class="sc">{</span>f_prime<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb1-240"><a href="#cb1-240" aria-hidden="true" tabindex="-1"></a>f_double_prime <span class="op">=</span> sympy.diff(f_prime, x)</span>
+<span id="cb1-241"><a href="#cb1-241" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"f''(x) = </span><span class="sc">{</span>f_double_prime<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb1-242"><a href="#cb1-242" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-243"><a href="#cb1-243" aria-hidden="true" tabindex="-1"></a>potential_inflection_points <span class="op">=</span> sympy.solve(f_double_prime, x)</span>
+<span id="cb1-244"><a href="#cb1-244" aria-hidden="true" tabindex="-1"></a>potential_inflection_points.sort() </span>
+<span id="cb1-245"><a href="#cb1-245" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"The zeros of the second derivative are: </span><span class="sc">{</span>potential_inflection_points<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb1-246"><a href="#cb1-246" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-247"><a href="#cb1-247" aria-hidden="true" tabindex="-1"></a>interval_bounds <span class="op">=</span> [<span class="op">-</span>sympy.oo] <span class="op">+</span> potential_inflection_points <span class="op">+</span> [sympy.oo]</span>
+<span id="cb1-248"><a href="#cb1-248" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-249"><a href="#cb1-249" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">--- Examining the concavity ---"</span>)</span>
+<span id="cb1-250"><a href="#cb1-250" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(interval_bounds) <span class="op">-</span> <span class="dv">1</span>):</span>
+<span id="cb1-251"><a href="#cb1-251" aria-hidden="true" tabindex="-1"></a>    lower_bound <span class="op">=</span> interval_bounds[i]</span>
+<span id="cb1-252"><a href="#cb1-252" aria-hidden="true" tabindex="-1"></a>    upper_bound <span class="op">=</span> interval_bounds[i<span class="op">+</span><span class="dv">1</span>]</span>
+<span id="cb1-253"><a href="#cb1-253" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-254"><a href="#cb1-254" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Here we look at the midpoint of the interval (if the bounds are finite)</span></span>
+<span id="cb1-255"><a href="#cb1-255" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> lower_bound <span class="op">==</span> <span class="op">-</span>sympy.oo:</span>
+<span id="cb1-256"><a href="#cb1-256" aria-hidden="true" tabindex="-1"></a>        test_value <span class="op">=</span> upper_bound <span class="op">-</span> <span class="dv">1</span> <span class="cf">if</span> upper_bound <span class="op">!=</span> sympy.oo <span class="cf">else</span> <span class="dv">0</span></span>
+<span id="cb1-257"><a href="#cb1-257" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> upper_bound <span class="op">==</span> sympy.oo:</span>
+<span id="cb1-258"><a href="#cb1-258" aria-hidden="true" tabindex="-1"></a>        test_value <span class="op">=</span> lower_bound <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb1-259"><a href="#cb1-259" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb1-260"><a href="#cb1-260" aria-hidden="true" tabindex="-1"></a>        test_value <span class="op">=</span> (lower_bound <span class="op">+</span> upper_bound) <span class="op">/</span> <span class="dv">2</span></span>
+<span id="cb1-261"><a href="#cb1-261" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-262"><a href="#cb1-262" aria-hidden="true" tabindex="-1"></a>    f_double_prime_at_test_value <span class="op">=</span> f_double_prime.subs(x, test_value)</span>
+<span id="cb1-263"><a href="#cb1-263" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb1-264"><a href="#cb1-264" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-265"><a href="#cb1-265" aria-hidden="true" tabindex="-1"></a><span class="fu">## Exercise: determining concavity</span></span>
+<span id="cb1-266"><a href="#cb1-266" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-267"><a href="#cb1-267" aria-hidden="true" tabindex="-1"></a>The code above does not produce any output yet.  </span>
+<span id="cb1-268"><a href="#cb1-268" aria-hidden="true" tabindex="-1"></a>To test whether you have really understood the code, try to write output that assigns the matching description to the values determined in the function.  </span>
+<span id="cb1-269"><a href="#cb1-269" aria-hidden="true" tabindex="-1"></a>That is: on which interval does the function have which concavity?</span>
+<span id="cb1-270"><a href="#cb1-270" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-271"><a href="#cb1-271" aria-hidden="true" tabindex="-1"></a><span class="in">```{pyodide-python}</span></span>
+<span id="cb1-272"><a href="#cb1-272" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: kruemmung-aufgabe-en</span></span>
+<span id="cb1-273"><a href="#cb1-273" aria-hidden="true" tabindex="-1"></a><span class="co"># Enter your code here</span></span>
+<span id="cb1-274"><a href="#cb1-274" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb1-275"><a href="#cb1-275" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-276"><a href="#cb1-276" aria-hidden="true" tabindex="-1"></a><span class="in">```{math-exercise}</span></span>
+<span id="cb1-277"><a href="#cb1-277" aria-hidden="true" tabindex="-1"></a><span class="in">#| label: kruemmung-kontrolle-en</span></span>
+<span id="cb1-278"><a href="#cb1-278" aria-hidden="true" tabindex="-1"></a><span class="in">#| caption: Check – concavity intervals</span></span>
+<span id="cb1-279"><a href="#cb1-279" aria-hidden="true" tabindex="-1"></a><span class="in">#| field-labels: start, end</span></span>
+<span id="cb1-280"><a href="#cb1-280" aria-hidden="true" tabindex="-1"></a><span class="in">#| partial-credit: true</span></span>
+<span id="cb1-281"><a href="#cb1-281" aria-hidden="true" tabindex="-1"></a><span class="in">$f(x) = x^4 - 4x^3 + 2$ is **concave down** between $x =$ _[0] and $x =$ _[2], and concave up otherwise.</span></span>
+<span id="cb1-282"><a href="#cb1-282" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb1-283"><a href="#cb1-283" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-284"><a href="#cb1-284" aria-hidden="true" tabindex="-1"></a>::: {.callout-note title="Hint" collapse="true"}  </span>
+<span id="cb1-285"><a href="#cb1-285" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>Think about which part of the code is responsible for calculating the concavity</span>
+<span id="cb1-286"><a href="#cb1-286" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>Then think about why the variables are named the way they are (what does each one mean?)</span>
+<span id="cb1-287"><a href="#cb1-287" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>Finally: what was explained in the text above? What has to be stated when describing the concavity?</span>
+<span id="cb1-288"><a href="#cb1-288" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb1-289"><a href="#cb1-289" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-290"><a href="#cb1-290" aria-hidden="true" tabindex="-1"></a>Then wrap it in a function. Complete <span class="in">`concavity_intervals(f)`</span>: it returns a list of tuples <span class="in">`(from, to, kind)`</span>, where <span class="in">`kind`</span> is either <span class="in">`'up'`</span> (concave up) or <span class="in">`'down'`</span> (concave down).</span>
+<span id="cb1-291"><a href="#cb1-291" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-292"><a href="#cb1-292" aria-hidden="true" tabindex="-1"></a><span class="in">```{py-exercise}</span></span>
+<span id="cb1-293"><a href="#cb1-293" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: kruemmung-intervalle-funktion-en</span></span>
+<span id="cb1-294"><a href="#cb1-294" aria-hidden="true" tabindex="-1"></a><span class="co">#| caption: Write concavity_intervals</span></span>
+<span id="cb1-295"><a href="#cb1-295" aria-hidden="true" tabindex="-1"></a><span class="co">#| show-test-hints: false</span></span>
+<span id="cb1-296"><a href="#cb1-296" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sympy</span>
+<span id="cb1-297"><a href="#cb1-297" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> sympy.symbols(<span class="st">'x'</span>)</span>
+<span id="cb1-298"><a href="#cb1-298" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-299"><a href="#cb1-299" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> concavity_intervals(f):</span>
+<span id="cb1-300"><a href="#cb1-300" aria-hidden="true" tabindex="-1"></a>    f_2prime <span class="op">=</span> sympy.diff(f, x, <span class="dv">2</span>)</span>
+<span id="cb1-301"><a href="#cb1-301" aria-hidden="true" tabindex="-1"></a>    points_x <span class="op">=</span> <span class="bu">sorted</span>(sympy.solveset(f_2prime, x, sympy.Reals))</span>
+<span id="cb1-302"><a href="#cb1-302" aria-hidden="true" tabindex="-1"></a>    points <span class="op">=</span> [<span class="op">-</span>sympy.oo] <span class="op">+</span> points_x <span class="op">+</span> [sympy.oo]</span>
+<span id="cb1-303"><a href="#cb1-303" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> []</span>
+<span id="cb1-304"><a href="#cb1-304" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(points) <span class="op">-</span> <span class="dv">1</span>):</span>
+<span id="cb1-305"><a href="#cb1-305" aria-hidden="true" tabindex="-1"></a>        left, right <span class="op">=</span> points[i], points[i <span class="op">+</span> <span class="dv">1</span>]</span>
+<span id="cb1-306"><a href="#cb1-306" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> left <span class="op">==</span> <span class="op">-</span>sympy.oo <span class="kw">and</span> right <span class="op">==</span> sympy.oo:</span>
+<span id="cb1-307"><a href="#cb1-307" aria-hidden="true" tabindex="-1"></a>            test <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb1-308"><a href="#cb1-308" aria-hidden="true" tabindex="-1"></a>        <span class="cf">elif</span> left <span class="op">==</span> <span class="op">-</span>sympy.oo:</span>
+<span id="cb1-309"><a href="#cb1-309" aria-hidden="true" tabindex="-1"></a>            test <span class="op">=</span> right <span class="op">-</span> <span class="dv">1</span></span>
+<span id="cb1-310"><a href="#cb1-310" aria-hidden="true" tabindex="-1"></a>        <span class="cf">elif</span> right <span class="op">==</span> sympy.oo:</span>
+<span id="cb1-311"><a href="#cb1-311" aria-hidden="true" tabindex="-1"></a>            test <span class="op">=</span> left <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb1-312"><a href="#cb1-312" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb1-313"><a href="#cb1-313" aria-hidden="true" tabindex="-1"></a>            test <span class="op">=</span> (left <span class="op">+</span> right) <span class="op">/</span> <span class="dv">2</span></span>
+<span id="cb1-314"><a href="#cb1-314" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Your code here: if f_2prime at test is &gt; 0 the kind is 'up', otherwise 'down'.</span></span>
+<span id="cb1-315"><a href="#cb1-315" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Append (left, right, kind) to result.</span></span>
+<span id="cb1-316"><a href="#cb1-316" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> result</span>
+<span id="cb1-317"><a href="#cb1-317" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-318"><a href="#cb1-318" aria-hidden="true" tabindex="-1"></a><span class="co">## TESTS ##</span></span>
+<span id="cb1-319"><a href="#cb1-319" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> concavity_intervals(x<span class="op">**</span><span class="dv">4</span> <span class="op">-</span> <span class="dv">4</span><span class="op">*</span>x<span class="op">**</span><span class="dv">3</span> <span class="op">+</span> <span class="dv">2</span>) <span class="op">==</span> [(<span class="op">-</span>sympy.oo, <span class="dv">0</span>, <span class="st">'up'</span>), (<span class="dv">0</span>, <span class="dv">2</span>, <span class="st">'down'</span>), (<span class="dv">2</span>, sympy.oo, <span class="st">'up'</span>)], <span class="st">"f'' = 12x²-24x: up, down, up"</span></span>
+<span id="cb1-320"><a href="#cb1-320" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> concavity_intervals(x<span class="op">**</span><span class="dv">3</span>) <span class="op">==</span> [(<span class="op">-</span>sympy.oo, <span class="dv">0</span>, <span class="st">'down'</span>), (<span class="dv">0</span>, sympy.oo, <span class="st">'up'</span>)], <span class="st">"x**3 is concave down left of 0 and concave up right of it"</span></span>
+<span id="cb1-321"><a href="#cb1-321" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> concavity_intervals(x<span class="op">**</span><span class="dv">2</span>) <span class="op">==</span> [(<span class="op">-</span>sympy.oo, sympy.oo, <span class="st">'up'</span>)], <span class="st">"x**2 is concave up everywhere"</span></span>
+<span id="cb1-322"><a href="#cb1-322" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb1-323"><a href="#cb1-323" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-324"><a href="#cb1-324" aria-hidden="true" tabindex="-1"></a>Once you are done, the last part of this chapter is the section **[Finding Inflection Points](wendepunkte.qmd)**.</span>
+<span id="cb1-325"><a href="#cb1-325" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-326"><a href="#cb1-326" aria-hidden="true" tabindex="-1"></a>::::</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+
+<script src="../../site_libs/quarto-contrib/ctm-matrix-input-0.9.0/ctm-matrix-input.js"></script>
+<script src="../../site_libs/quarto-contrib/math-exercise-0.11.0/math-store.js"></script>
+<script src="../../site_libs/quarto-contrib/math-exercise-0.11.0/math-exercise.js"></script>
+<script src="../../site_libs/quarto-contrib/math-exercise-0.11.0/math-similar.js"></script>
+<script src="../../site_libs/quarto-contrib/py-exercise-0.5.0/py-exercise.js"></script>
+<script src="../../site_libs/quarto-contrib/pyodide-interaktiv-1.10.0/qpyodide-cell-classes.js" type="module"></script>
+<script src="../../site_libs/quarto-contrib/pyodide-interaktiv-1.10.0/qpyodide-cell-initialization.js" type="module"></script>
+</body></html>

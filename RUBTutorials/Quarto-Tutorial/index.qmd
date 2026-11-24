@@ -1,0 +1,152 @@
+---
+title: "Quarto-Tutorial"
+title-sv: "Quarto-handledning"
+title-no: "Quarto-veiledning"
+title-da: "Quarto-vejledning"
+title-en: "Quarto Tutorial"
+---
+
+:::: {.content-visible when-profile="deutsch"}
+Dieses Tutorial zeigt Lehrenden, was Quarto kann und wie man damit arbeitet.
+Es gibt drei Niveaus, du wählst selbst, welches zu dir passt:
+
+* Du hast noch nie eine Quarto-Seite gesehen? Dann schau dir [die Beispielseite](#niveau-beg) an.
+* Du möchtest *lernen*, selbst etwas mit Quarto zu erstellen? Dann starte mit [den ersten Schritten](#niveau-int).
+* Du erstellst schon Quarto-Dokumente und willst besser werden? Dann geht es zu [Tipps & Tricks](#niveau-exp).
+
+::: {.callout-note}
+## Sprache und Niveau
+Oben in der Leiste wechselst du das **Niveau**, über den Globus die **Sprache**.
+Beim Sprachwechsel bleibst du auf derselben Seite.
+Wie das gebaut ist, steht unter [Tipps & Tricks → Mehrsprachige Projekte](exp/Qmd Files/Tipps and Tricks/exp_multilanguage.html).
+:::
+::::
+
+:::: {.content-visible when-profile="english"}
+This tutorial shows lecturers what Quarto can do and how to work with it.
+There are three levels, pick the one that fits you:
+
+* Never seen a Quarto page before? Have a look at [the example page](#niveau-beg).
+* You want to *learn* how to create something with Quarto? Start with [Getting Started](#niveau-int).
+* You already create Quarto documents and want to get better? Go to [Tips & Tricks](#niveau-exp).
+
+::: {.callout-note}
+## Language and level
+Switch the **level** in the top bar and the **language** with the globe.
+Switching the language keeps you on the same page.
+How this is built is explained in [Tips & Tricks → Multilanguage Projects](exp/Qmd Files/Tipps and Tricks/exp_multilanguage.html).
+:::
+::::
+
+:::: {.content-visible when-profile="dansk"}
+Denne vejledning viser undervisere, hvad Quarto kan, og hvordan man arbejder med det.
+Der er tre niveauer, vælg det, der passer til dig:
+
+* Har du aldrig set en Quarto-side? Kig på [eksempelsiden](#niveau-beg).
+* Vil du *lære* at lave noget med Quarto? Begynd med [Kom i gang](#niveau-int).
+* Laver du allerede Quarto-dokumenter og vil blive bedre? Gå til [Tips & tricks](#niveau-exp).
+
+::: {.callout-note}
+## Sprog og niveau
+Skift **niveau** i menulinjen øverst og **sprog** med globussen.
+Når du skifter sprog, bliver du på den samme side.
+Hvordan det er bygget, forklares i [Tips & tricks → Flersprogede projekter](exp/Qmd Files/Tipps and Tricks/exp_multilanguage.html).
+:::
+::::
+
+:::: {.content-visible when-profile="norsk"}
+Denne veiledningen viser undervisere hva Quarto kan gjøre og hvordan man arbeider med det.
+Det er tre nivåer, velg det som passer for deg:
+
+* Har du aldri sett en Quarto-side? Ta en titt på [eksempelsiden](#niveau-beg).
+* Vil du *lære* å lage noe med Quarto? Begynn med [Kom i gang](#niveau-int).
+* Lager du allerede Quarto-dokumenter og vil bli bedre? Gå til [Tips & triks](#niveau-exp).
+
+::: {.callout-note}
+## Språk og nivå
+Bytt **nivå** i menylinjen øverst og **språk** med globusen.
+Når du bytter språk, blir du på samme side.
+Hvordan dette er bygget, forklares i [Tips & triks → Flerspråklige prosjekter](exp/Qmd Files/Tipps and Tricks/exp_multilanguage.html).
+:::
+::::
+
+:::: {.content-visible when-profile="svenska"}
+Den här handledningen visar lärare vad Quarto kan göra och hur man arbetar med det.
+Det finns tre nivåer, välj den som passar dig:
+
+* Har du aldrig sett en Quarto-sida? Titta på [exempelsidan](#niveau-beg).
+* Vill du *lära dig* att skapa något med Quarto? Börja med [Kom igång](#niveau-int).
+* Skapar du redan Quarto-dokument och vill bli bättre? Gå till [Tips & tricks](#niveau-exp).
+
+::: {.callout-note}
+## Språk och nivå
+Byt **nivå** i menyraden högst upp och **språk** med jordgloben.
+När du byter språk stannar du på samma sida.
+Hur detta är byggt förklaras i [Tips & tricks → Flerspråkiga projekt](exp/Qmd Files/Tipps and Tricks/exp_multilanguage.html).
+:::
+::::
+
+```{python}
+#| echo: false
+# Diese Zelle steht außerhalb der Sprachblöcke: Sie läuft in jedem Lauf genau einmal,
+# und das gespeicherte Ergebnis (_freeze) gilt für beide Sprachen.
+import base64, io, os, tempfile
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+from IPython.display import HTML, display
+
+fig, ax = plt.subplots(figsize=(9, 3.5), facecolor="#f8f9fa")
+ax.set_facecolor("#f8f9fa")
+for spine in ["top", "right", "left"]:
+    ax.spines[spine].set_visible(False)
+ax.spines["bottom"].set_position("zero")
+ax.spines["bottom"].set_color("#adb5bd")
+ax.set_xlim(0, 4 * np.pi)
+ax.set_ylim(-1.5, 1.5)
+ax.set_xticks([])
+ax.set_yticks([-1, 0, 1])
+ax.tick_params(axis="y", colors="#adb5bd", labelsize=9)
+ax.yaxis.set_tick_params(length=0)
+
+x = np.linspace(0, 4 * np.pi, 600)
+levels = [
+    ("#0d6efd", "Beginner",     0),
+    ("#198754", "Intermediate", np.pi / 3),
+    ("#6f42c1", "Expert",       2 * np.pi / 3),
+]
+lines = []
+for color, label, _ in levels:
+    line, = ax.plot([], [], lw=2.5, color=color, label=label, alpha=0.9)
+    lines.append(line)
+ax.legend(loc="lower center", ncol=3, framealpha=0, fontsize=11,
+          bbox_to_anchor=(0.5, -0.05))
+
+n = 60
+
+def init():
+    for line in lines:
+        line.set_data([], [])
+    return lines
+
+def animate(i):
+    shift = i * (2 * np.pi / n)
+    for line, (_, _, offset) in zip(lines, levels):
+        line.set_data(x, np.sin(x - shift + offset))
+    return lines
+
+ani = animation.FuncAnimation(fig, animate, init_func=init,
+                               frames=n, interval=50, blit=True)
+tmp = tempfile.NamedTemporaryFile(suffix=".gif", delete=False)
+tmp.close()
+ani.save(tmp.name, writer="pillow", fps=20, dpi=100)
+with open(tmp.name, "rb") as f:
+    b64 = base64.b64encode(f.read()).decode()
+os.unlink(tmp.name)
+plt.close()
+
+display(HTML(
+    f'<img src="data:image/gif;base64,{b64}" '
+    f'style="width:100%;max-width:900px;display:block;margin:1.5rem auto 0;">'
+))
+```

@@ -1,0 +1,35 @@
+project:
+  type: website
+
+execute:
+  freeze: auto
+
+# title-en: (-sv, -no, -da) in the page header becomes the title in that language's run
+filters:
+  - sprache.lua
+
+format:
+  html:
+    theme:
+      light: [morph, Theme/morph_custom.scss]
+      dark:  [slate, Theme/slate_custom.scss]
+    respect-user-color-scheme: true
+    toc: true
+    # navbar icons (search, dark mode, reader mode) as in the other tutorials
+    css: styles.css
+    include-in-header:
+      - text: |
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+# Two axes: exactly one profile from each group is active.
+#   quarto render --profile int,english --output-dir docs/en/int
+# build.py renders all combinations.
+profile:
+  default: [beg, deutsch]
+  group:
+    - [beg, int, exp, root]   # level (root = start page per language)
+    - [deutsch, english, svenska, norsk, dansk]   # language
+
+# previous/next links at the bottom of every page (all levels and languages)
+website:
+  page-navigation: true

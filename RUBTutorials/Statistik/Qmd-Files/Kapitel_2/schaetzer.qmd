@@ -1,0 +1,858 @@
+---
+title: "2.1 Schätzer"
+title-en: "2.1 Estimators"
+execute:
+  eval: false
+  echo: true
+  warning: false
+filters:
+  - ctm-assessment
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+```{python}
+#| include: true
+#| echo: false
+#| eval: true
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib
+import pandas as pd
+from scipy import stats
+
+matplotlib.rcParams['figure.dpi'] = 110
+matplotlib.rcParams['font.size'] = 11
+
+try:
+    from palmerpenguins import load_penguins
+    penguins = load_penguins()
+except Exception:
+    url = "https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"
+    penguins = pd.read_csv(url)
+```
+
+## Lernziele {.unnumbered}
+
+Am Ende dieses Unterkapitels kannst du:
+
+- das Problem der Schätzung beschreiben: Grundgesamtheit vs. Stichprobe.
+- die Begriffe Parameter, Schätzfunktion, Schätzwert und Schätzer voneinander unterscheiden.
+- die wichtigsten Standardschätzer (x̄, s², p̂) benennen und in Python berechnen.
+
+---
+
+## Das Schätzproblem
+
+Stell dir vor, du möchtest wissen, wie schwer Adélie-Pinguine **im Durchschnitt** sind –
+nicht nur die 151 gewogenen Tiere in unserem Datensatz, sondern **alle** Adélie-Pinguine auf dem Palmer-Archipel.
+Die Grundgesamtheit umfasst sehr viel mehr Tiere, als wir je alle vermessen können. (Über Adélie-Pinguine anderswo sagt diese Stichprobe dagegen nichts aus.)
+
+Das ist das typische Ausgangsproblem der Schätztheorie:
+
+```{python}
+#| echo: false
+#| eval: true
+fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+
+np.random.seed(42)
+pop_true_mu = 3700
+pop_true_sigma = 460
+n_pop = 5000
+
+ax = axes[0]
+pop = np.random.normal(pop_true_mu, pop_true_sigma, n_pop)
+ax.hist(pop, bins=40, color='#0a9396', edgecolor='white', alpha=0.7, density=True)
+xr = np.linspace(2000, 5500, 300)
+ax.plot(xr, stats.norm.pdf(xr, pop_true_mu, pop_true_sigma), '#005f73', lw=2)
+ax.axvline(pop_true_mu, color='#005f73', ls='--', lw=2, label=f'Wahrer Mittelwert μ = {pop_true_mu} g')
+ax.set_title('Grundgesamtheit\n(alle Adélie-Pinguine, unbekannt)', fontsize=10)
+ax.set_xlabel('Körpergewicht (g)')
+ax.set_ylabel('Dichte')
+ax.legend(fontsize=9)
+ax.text(0.05, 0.92, '❓ μ unbekannt', transform=ax.transAxes,
+        fontsize=12, color='darkred', fontweight='bold')
+
+ax2 = axes[1]
+sample = penguins[penguins['species'] == 'Adelie']['body_mass_g'].dropna()
+ax2.hist(sample, bins=20, color='#ae2012', edgecolor='white', alpha=0.7, density=True)
+ax2.axvline(sample.mean(), color='#9b2226', ls='--', lw=2, label=f'Stichprobenmittel x̄ = {sample.mean():.0f} g')
+ax2.set_title(f'Stichprobe\n(n = {len(sample)} Tiere im Datensatz)', fontsize=10)
+ax2.set_xlabel('Körpergewicht (g)')
+ax2.set_ylabel('Dichte')
+ax2.legend(fontsize=9)
+ax2.text(0.05, 0.92, '✓ x̄ bekannt', transform=ax2.transAxes,
+         fontsize=12, color='darkgreen', fontweight='bold')
+
+plt.tight_layout()
+plt.show()
+```
+
+Wir kennen die Stichprobe (rechts), nicht aber die Grundgesamtheit (links). Unsere Aufgabe ist es,
+aus der Stichprobe auf Eigenschaften der Grundgesamtheit zu **schließen**.
+
+---
+
+## Parameter und Schätzer
+
+Die unbekannten Größen der Grundgesamtheit nennen wir **Parameter**. Wichtige Parameter sind:
+
+| Parameter | Symbol | Beschreibung |
+|-----------|--------|--------------|
+| Erwartungswert (Mittelwert) | $\mu$ | Durchschnittswert in der Grundgesamtheit |
+| Varianz | $\sigma^2$ | Streuung in der Grundgesamtheit |
+| Standardabweichung | $\sigma$ | Wurzel aus der Varianz |
+| Anteilswert | $p$ | Anteil einer Eigenschaft in der Grundgesamtheit |
+
+Die Parameter sind **unbekannt und fest** – es gibt zwar einen wahren Wert, aber wir kennen ihn nicht.
+
+Aus der Stichprobe berechnen wir **Schätzwerte**, die den wahren Parametern möglichst nah kommen
+sollen. Die Funktion, die aus einer Stichprobe einen Schätzwert berechnet, heißt **Schätzfunktion**:
+
+::: {.callout-note icon=false}
+## Definition: Schätzfunktion, Schätzwert, Schätzer
+
+Eine **Schätzfunktion** $T$ ist eine Rechenvorschrift, die aus einer Stichprobe $(x_1, \ldots, x_n)$
+einen Schätzwert $T(x_1, \ldots, x_n)$ für den unbekannten Parameter berechnet.
+
+Der **Schätzwert** $T(x_1, \ldots, x_n)$ ist das konkrete Ergebnis der Rechnung für eine bestimmte
+Stichprobe – eine feste Zahl.
+
+Der **Schätzer** $T(X_1, \ldots, X_n)$ ist dieselbe Rechenvorschrift, aber auf *zufällige*
+Variablen $(X_1, \ldots, X_n)$ angewendet – damit ist er selbst zufällig und hat eine eigene
+Verteilung.
+:::
+
+::: {.callout-tip}
+## Der Unterschied kurz erklärt
+
+Schätzfunktion = die Formel (z.B. "nimm das arithmetische Mittel")
+
+Schätzwert = das konkrete Ergebnis (z.B. "3700 g")
+
+Schätzer = die Formel angewandt auf zufällige Daten = selbst eine Zufallsvariable
+(z.B. "das Stichprobenmittel $\overline{X}_n$")
+:::
+
+**Warum ist das wichtig?** Weil wir denselben Schätzer auf viele verschiedene Stichproben anwenden
+könnten – und jedes Mal ein etwas anderes Ergebnis bekämen. Diese Streuung der Schätzwerte um den
+wahren Parameter ist der Kern der Schätztheorie.
+
+---
+
+## Die wichtigsten Standardschätzer
+
+In den meisten Situationen sind drei Schätzer besonders wichtig:
+
+::: {.callout-note icon=false}
+## Schätzer für Erwartungswert, Varianz und Anteil
+
+Für eine Stichprobe $(x_1, \ldots, x_n)$ schätzen wir:
+
+**Erwartungswert** $\mu$:
+$$\hat{\mu} = \bar{x} = \frac{1}{n}\sum_{i=1}^n x_i$$
+
+**Varianz** $\sigma^2$:
+$$\hat{\sigma}^2 = s^2 = \frac{1}{n-1}\sum_{i=1}^n (x_i - \bar{x})^2$$
+
+**Anteil** $p$ (z.B. Anteil einer Tierart):
+$$\hat{p} = \frac{\text{Anzahl der Treffer}}{n}$$
+
+Das Warum des Faktors $1/(n-1)$ statt $1/n$ beim Varianz-Schätzer erklären wir in Kapitel 2.3.
+:::
+
+### Beispiel: Pinguindaten
+
+```{pyodide-python}
+import pandas as pd
+import numpy as np
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+adelie = penguins[penguins['species'] == 'Adelie']['body_mass_g'].dropna()
+
+mu_hat   = adelie.mean()           # Schätzwert für μ
+s2_hat   = adelie.var()            # Schätzwert für σ² (mit n-1)
+s_hat    = adelie.std()            # Schätzwert für σ
+n        = len(adelie)
+
+print(f"Stichprobengröße n = {n}")
+print(f"Geschätzter Erwartungswert: μ̂ = {mu_hat:.1f} g")
+print(f"Geschätzte Varianz:         σ̂² = {s2_hat:.1f} g²")
+print(f"Geschätzte Standardabw.:    σ̂  = {s_hat:.1f} g")
+```
+
+```{pyodide-python}
+import pandas as pd
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+
+# Anteil der weiblichen Tiere unter den Adélie-Pinguinen schätzen
+adelie = penguins[penguins['species'] == 'Adelie'].dropna(subset=['sex'])
+p_hat = (adelie['sex'] == 'female').mean()
+print(f"Geschätzter Anteil weiblicher Adélie-Pinguine: p̂ = {p_hat:.3f} ({p_hat*100:.1f}%)")
+```
+
+### Von Hand
+
+Vier Pinguine wurden gewogen: $3500$ g (w), $3800$ g (m), $4100$ g (m), $3600$ g (w). Schätze daraus $\mu$, $\sigma^2$, $\sigma$ und den Weibchenanteil $p$:
+
+```{math-exercise}
+#| label: schaetzer-hand
+#| caption: Standardschätzer von Hand
+#| mode: numeric
+#| tolerance: 1%
+#| partial-credit: true
+#| field-labels: μ̂, σ̂², σ̂, p̂
+$\hat{\mu} =$ _[3750] g, $\hat{\sigma}^2 =$ _[70000] g², $\hat{\sigma} \approx$ _[264.58] g, $\hat{p} =$ _[0.5]
+```
+
+::: {.callout-tip collapse="true" title="Lösungsweg"}
+- $\bar{x} = (3500 + 3800 + 4100 + 3600)/4 = 15000/4 = 3750$
+- Abweichungen $-250,\ 50,\ 350,\ -150$, Quadrate $62500,\ 2500,\ 122500,\ 22500$, Summe $210000$
+- $s^2 = 210000/(4-1) = 70000$ und $s = \sqrt{70000} \approx 264{,}6$
+- $\hat{p} = 2/4 = 0{,}5$
+:::
+
+---
+
+## Schätzer für mehrere Stichproben
+
+Um zu verstehen, warum ein Schätzer eine Zufallsvariable ist, können wir simulieren, was passiert,
+wenn wir mehrmals zufällig aus derselben Grundgesamtheit ziehen:
+
+```{python}
+#| echo: false
+#| eval: true
+np.random.seed(7)
+true_mu = penguins[penguins['species'] == 'Adelie']['body_mass_g'].dropna().mean()
+true_sigma = penguins[penguins['species'] == 'Adelie']['body_mass_g'].dropna().std()
+
+estimates = []
+for _ in range(500):
+    sample = np.random.normal(true_mu, true_sigma, 30)
+    estimates.append(sample.mean())
+
+estimates = np.array(estimates)
+
+fig, ax = plt.subplots(figsize=(8, 4))
+ax.hist(estimates, bins=25, color='#0a9396', edgecolor='white', alpha=0.8, density=True)
+xr = np.linspace(estimates.min(), estimates.max(), 300)
+kde = stats.gaussian_kde(estimates)
+ax.plot(xr, kde(xr), '#005f73', lw=2, label='Dichte der Schätzwerte')
+ax.axvline(true_mu, color='#ae2012', lw=2.5, ls='--', label=f'Wahrer Wert μ = {true_mu:.0f} g')
+ax.axvline(estimates.mean(), color='#ca6702', lw=1.5, ls=':', label=f'Mittl. Schätzwert = {estimates.mean():.0f} g')
+ax.set_xlabel('Schätzwert für μ (g)')
+ax.set_ylabel('Dichte')
+ax.set_title('500 Stichproben der Größe n = 30: Verteilung der Stichprobenmittel')
+ax.legend(fontsize=9)
+plt.tight_layout()
+plt.show()
+```
+
+Jede der 500 Stichproben ergibt einen etwas anderen Schätzwert – der Schätzer $\overline{X}_n$ ist
+**selbst zufällig verteilt**. Im Schnitt treffen die Schätzwerte aber den wahren Wert $\mu$ sehr
+gut (roter und oranger Strich liegen fast übereinander). Das ist die Eigenschaft der
+**Erwartungstreue**, die wir in Kapitel 2.3 genauer untersuchen.
+
+::: {.callout-python appearance="minimal"}
+**Python-Tipp: Stichproben ziehen**
+
+```python
+import numpy as np
+
+np.random.seed(42)                          # Zufallszahl reproduzierbar machen
+sample = np.random.normal(loc=3700, scale=460, size=30)   # 30 normalverteilte Zufallszahlen
+print(sample.mean())                        # Schätzwert für μ
+```
+:::
+
+:::: {.theorem .exercise}
+#### Aufgabe: μ und σ aus einer Stichprobe schätzen
+
+Du hast Zugriff auf die Körpermassen der Chinstrap-Pinguine. Schätze daraus die unbekannten Parameter der Grundgesamtheit.
+
+**Aufgabe:**
+
+1. Berechne die Punkt-Schätzer $\hat{\mu} = \bar{x}$ und $\hat{\sigma} = s$ für das Körpergewicht (`body_mass_g`) der Chinstrap-Pinguine.
+2. Simuliere 500 Stichproben der Größe $n = 20$ aus einer Normalverteilung mit den geschätzten Parametern. Berechne für jede den Mittelwert.
+
+**Überprüfen** testet `mu_hat`, `sigma_hat` und die Liste `mittelwerte` (500 simulierte Stichprobenmittel).
+
+```{py-exercise}
+#| label: schaetzer-chinstrap
+#| caption: μ und σ schätzen, Stichproben simulieren
+import numpy as np
+import pandas as pd
+from pyodide.http import open_url
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+chinstrap = penguins[penguins['species'] == 'Chinstrap']['body_mass_g'].dropna()
+
+mu_hat = None        # Dein Code hier
+sigma_hat = None     # Dein Code hier
+mittelwerte = None   # Dein Code hier: 500 Mittelwerte von Stichproben der Größe 20
+print(mu_hat, sigma_hat)
+
+## TESTS ##
+assert mu_hat is not None and abs(float(mu_hat) - 3733.09) < 0.1, "mu_hat stimmt nicht. Tipp: chinstrap.mean()"
+assert sigma_hat is not None and abs(float(sigma_hat) - 384.34) < 0.1, "sigma_hat stimmt nicht. Tipp: chinstrap.std() (mit n-1). Mit np.std ohne ddof=1 kommt 381,5 heraus."
+assert mittelwerte is not None and hasattr(mittelwerte, '__len__') and len(mittelwerte) == 500, "mittelwerte sollte genau 500 Werte enthalten (ein Mittelwert je simulierter Stichprobe)."
+assert mittelwerte is not None and hasattr(mittelwerte, '__len__') and len(mittelwerte) == 500 and abs(float(np.mean(mittelwerte)) - 3733) < 40, "Die simulierten Mittelwerte liegen im Schnitt nicht bei μ̂. Hast du loc=mu_hat verwendet?"
+assert mittelwerte is not None and hasattr(mittelwerte, '__len__') and len(mittelwerte) == 500 and 60 < float(np.std(mittelwerte)) < 115, "Die simulierten Mittelwerte streuen nicht wie erwartet (etwa 86 g). Hast du je Stichprobe 20 Werte gezogen und davon den Mittelwert genommen?"
+```
+
+3. Erstelle ein Histogramm der 500 Stichprobenmittelwerte. Was beobachtest du?
+
+```{pyodide-python}
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+chinstrap = penguins[penguins['species'] == 'Chinstrap']['body_mass_g'].dropna()
+
+# Dein Code hier
+```
+
+::: {.callout-tip title="Tipp 1" collapse="true"}
+Punkt-Schätzer: `mu_hat = chinstrap.mean()` und `sigma_hat = chinstrap.std()` (pandas `.std()` nutzt automatisch $n-1$, also korrigiert). Das sind deine besten Schätzwerte für die Grundgesamtheit.
+:::
+
+::: {.callout-tip title="Tipp 2" collapse="true"}
+Simulierte Stichproben: `np.random.normal(loc=mu_hat, scale=sigma_hat, size=20)` liefert eine Stichprobe. Wiederhole das 500-mal z.B. mit einer List-Comprehension: `[np.random.normal(mu_hat, sigma_hat, 20).mean() for _ in range(500)]`. Das Histogramm zeigt die Streuung des Schätzers – die sogenannte Stichprobenverteilung.
+:::
+
+::: {.callout-caution title="Minimale Lösung" collapse="true"}
+```python
+# Schätzen und simulieren (in der Aufgabe oben)
+mu_hat = chinstrap.mean()
+sigma_hat = chinstrap.std()
+mittelwerte = [np.random.normal(mu_hat, sigma_hat, 20).mean() for _ in range(500)]
+```
+
+```python
+# Histogramm (in der Zelle darunter)
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+chinstrap = penguins[penguins['species'] == 'Chinstrap']['body_mass_g'].dropna()
+
+mu_hat = chinstrap.mean()
+sigma_hat = chinstrap.std()
+print(f"Schätzer: μ̂ = {mu_hat:.1f} g,  σ̂ = {sigma_hat:.1f} g")
+
+np.random.seed(42)
+mittelwerte = [np.random.normal(mu_hat, sigma_hat, 20).mean() for _ in range(500)]
+
+plt.hist(mittelwerte, bins=25, color='steelblue', edgecolor='white')
+plt.axvline(mu_hat, color='red', linestyle='--', label=f'μ̂ = {mu_hat:.0f} g')
+plt.xlabel('Stichprobenmittelwert (g)')
+plt.ylabel('Häufigkeit')
+plt.title('500 simulierte Stichprobenmittelwerte (n = 20)')
+plt.legend()
+plt.show()
+```
+
+Die Mittelwerte liegen symmetrisch um $\hat{\mu} \approx 3733$ g und streuen viel weniger als die einzelnen Tiere: etwa $384/\sqrt{20} \approx 86$ g statt $384$ g. Warum genau $\sqrt{20}$, zeigt Kapitel 2.3 (Standardfehler).
+:::
+::::
+
+---
+
+## Zusammenfassung
+
+| Begriff | Bedeutung | Beispiel |
+|---------|-----------|---------|
+| **Parameter** ($\mu$, $\sigma^2$, $p$) | Unbekannte Größe der Grundgesamtheit | Mittl. Körpermasse aller Adélie-Pinguine |
+| **Schätzfunktion** | Rechenvorschrift auf konkreten Daten | $T(\boldsymbol{x}) = \bar{x}$ |
+| **Schätzwert** | Konkrete Zahl aus einer Stichprobe | $\bar{x} = 3700{,}7$ g |
+| **Schätzer** | Schätzfunktion auf Zufallsvariablen | $\overline{X}_n = \frac{1}{n}\sum X_i$ |
+
+---
+
+## Wissensüberprüfung
+
+```{quizdown}
+---
+locale: de
+primaryColor: '#0a9396'
+shuffleQuestions: false
+shuffleAnswers: true
+---
+
+### Ein Forscher berechnet aus einer Stichprobe von 50 Pinguinen den Mittelwert der Flossenlänge. Wie heißt dieser berechnete Zahlenwert?
+
+1. [x] Schätzwert
+    > Richtig! Der konkrete Zahlenwert aus einer Stichprobe ist der Schätzwert.
+1. [ ] Schätzer
+    > Der Schätzer ist die Rechenvorschrift als Zufallsvariable – nicht das konkrete Ergebnis.
+1. [ ] Parameter
+    > Der Parameter ist die unbekannte Größe der Grundgesamtheit.
+1. [ ] Estimat
+    > Das ist kein Fachbegriff in diesem Kontext.
+
+### Welche der folgenden Aussagen beschreibt einen **Schätzer** (im statistischen Sinne)?
+
+1. [ ] Eine konkrete Zahl, die aus Daten berechnet wurde.
+1. [x] Eine Zufallsvariable, die aus zufälligen Daten einen Wert für einen Parameter berechnet.
+    > Richtig! Der Schätzer ist die Rechenvorschrift als Zufallsvariable.
+1. [ ] Der unbekannte wahre Wert des Parameters.
+1. [ ] Die Stichprobe selbst.
+
+### Wie heißt der gängige Schätzer für den Anteilswert $p$ in einer Grundgesamtheit?
+
+1. [ ] Arithmetisches Mittel aller Werte
+1. [ ] Varianz der Stichprobe
+1. [x] Relative Häufigkeit des Merkmals in der Stichprobe
+    > Richtig! $\hat{p} = \text{Anzahl der Treffer} / n$.
+1. [ ] Median der Stichprobe
+
+### Warum ist der Schätzer $\overline{X}_n$ selbst eine Zufallsvariable?
+
+1. [ ] Weil er immer einen anderen Wert liefert als der wahre Parameter.
+1. [x] Weil er aus zufälligen Stichproben berechnet wird und deshalb bei jeder neuen Stichprobe einen anderen Wert annehmen kann.
+    > Richtig! Der Zufall steckt in den Daten – und damit auch im Schätzer.
+1. [ ] Weil Zufallsvariablen immer zwischen 0 und 1 liegen.
+1. [ ] Weil man ihn nicht genau berechnen kann.
+
+### Die korrigierte Stichprobenvarianz $s^2$ verwendet den Faktor $1/(n-1)$ statt $1/n$. Was ist der Grund?
+
+1. [ ] Damit die Berechnung einfacher wird.
+1. [ ] Weil $n-1$ immer kleiner ist als $n$.
+1. [x] Damit $s^2$ ein erwartungstreuer Schätzer für die Populationsvarianz $\sigma^2$ ist.
+    > Richtig! Mit $1/n$ würde die Varianz systematisch unterschätzt. Der Faktor $1/(n-1)$ korrigiert das.
+1. [ ] Weil der Median von $n-1$ Datenpunkten verwendet wird.
+```
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+```{python}
+#| include: true
+#| echo: false
+#| eval: true
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib
+import pandas as pd
+from scipy import stats
+
+matplotlib.rcParams['figure.dpi'] = 110
+matplotlib.rcParams['font.size'] = 11
+
+try:
+    from palmerpenguins import load_penguins
+    penguins = load_penguins()
+except Exception:
+    url = "https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"
+    penguins = pd.read_csv(url)
+```
+
+## Learning objectives {.unnumbered #lernziele}
+
+By the end of this section you can:
+
+- describe the estimation problem: population vs. sample.
+- distinguish the terms parameter, estimating function, estimate and estimator.
+- name the most important standard estimators (x̄, s², p̂) and compute them in Python.
+
+---
+
+## The estimation problem {#das-schätzproblem}
+
+Imagine you want to know how heavy Adélie penguins are **on average** – not only the 151 weighed
+animals in our dataset, but **all** Adélie penguins on the Palmer Archipelago. The population comprises far more
+animals than we can ever measure. (About Adélie penguins elsewhere, however, this sample says nothing.)
+
+This is the typical starting point of estimation theory:
+
+```{python}
+#| echo: false
+#| eval: true
+fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+
+np.random.seed(42)
+pop_true_mu = 3700
+pop_true_sigma = 460
+n_pop = 5000
+
+ax = axes[0]
+pop = np.random.normal(pop_true_mu, pop_true_sigma, n_pop)
+ax.hist(pop, bins=40, color='#0a9396', edgecolor='white', alpha=0.7, density=True)
+xr = np.linspace(2000, 5500, 300)
+ax.plot(xr, stats.norm.pdf(xr, pop_true_mu, pop_true_sigma), '#005f73', lw=2)
+ax.axvline(pop_true_mu, color='#005f73', ls='--', lw=2, label=f'True mean μ = {pop_true_mu} g')
+ax.set_title('Population\n(all Adélie penguins, unknown)', fontsize=10)
+ax.set_xlabel('Body mass (g)')
+ax.set_ylabel('Density')
+ax.legend(fontsize=9)
+ax.text(0.05, 0.92, '❓ μ unknown', transform=ax.transAxes,
+        fontsize=12, color='darkred', fontweight='bold')
+
+ax2 = axes[1]
+sample = penguins[penguins['species'] == 'Adelie']['body_mass_g'].dropna()
+ax2.hist(sample, bins=20, color='#ae2012', edgecolor='white', alpha=0.7, density=True)
+ax2.axvline(sample.mean(), color='#9b2226', ls='--', lw=2, label=f'Sample mean x̄ = {sample.mean():.0f} g')
+ax2.set_title(f'Sample\n(n = {len(sample)} animals in the dataset)', fontsize=10)
+ax2.set_xlabel('Body mass (g)')
+ax2.set_ylabel('Density')
+ax2.legend(fontsize=9)
+ax2.text(0.05, 0.92, '✓ x̄ known', transform=ax2.transAxes,
+         fontsize=12, color='darkgreen', fontweight='bold')
+
+plt.tight_layout()
+plt.show()
+```
+
+We know the sample (right), but not the population (left). Our task is to **infer** properties
+of the population from the sample.
+
+---
+
+## Parameters and estimators {#parameter-und-schätzer}
+
+We call the unknown quantities of the population **parameters**. Important parameters are:
+
+| Parameter | Symbol | Description |
+|-----------|--------|--------------|
+| Expected value (mean) | $\mu$ | Average value in the population |
+| Variance | $\sigma^2$ | Spread in the population |
+| Standard deviation | $\sigma$ | Square root of the variance |
+| Proportion | $p$ | Share of a property in the population |
+
+The parameters are **unknown and fixed** – there is a true value, but we do not know it.
+
+From the sample we compute **estimates** that should come as close as possible to the true
+parameters. The function that computes an estimate from a sample is called an **estimating
+function**:
+
+::: {.callout-note icon=false}
+## Definition: estimating function, estimate, estimator
+
+An **estimating function** $T$ is a computation rule that computes an estimate
+$T(x_1, \ldots, x_n)$ for the unknown parameter from a sample $(x_1, \ldots, x_n)$.
+
+The **estimate** $T(x_1, \ldots, x_n)$ is the concrete result of the computation for a specific
+sample – a fixed number.
+
+The **estimator** $T(X_1, \ldots, X_n)$ is the same computation rule, but applied to *random*
+variables $(X_1, \ldots, X_n)$ – so it is random itself and has its own distribution.
+:::
+
+::: {.callout-tip}
+## The difference in short
+
+Estimating function = the formula (e.g. "take the arithmetic mean")
+
+Estimate = the concrete result (e.g. "3700 g")
+
+Estimator = the formula applied to random data = itself a random variable
+(e.g. "the sample mean $\overline{X}_n$")
+:::
+
+**Why does this matter?** Because we could apply the same estimator to many different samples –
+and would get a slightly different result every time. This spread of the estimates around the
+true parameter is the core of estimation theory.
+
+---
+
+## The most important standard estimators {#die-wichtigsten-standardschätzer}
+
+In most situations three estimators are particularly important:
+
+::: {.callout-note icon=false}
+## Estimators for expected value, variance and proportion
+
+For a sample $(x_1, \ldots, x_n)$ we estimate:
+
+**Expected value** $\mu$:
+$$\hat{\mu} = \bar{x} = \frac{1}{n}\sum_{i=1}^n x_i$$
+
+**Variance** $\sigma^2$:
+$$\hat{\sigma}^2 = s^2 = \frac{1}{n-1}\sum_{i=1}^n (x_i - \bar{x})^2$$
+
+**Proportion** $p$ (e.g. the share of a species):
+$$\hat{p} = \frac{\text{number of hits}}{n}$$
+
+We explain why the variance estimator uses the factor $1/(n-1)$ instead of $1/n$ in section 2.3.
+:::
+
+### Example: penguin data {#beispiel-pinguindaten}
+
+```{pyodide-python}
+import pandas as pd
+import numpy as np
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+adelie = penguins[penguins['species'] == 'Adelie']['body_mass_g'].dropna()
+
+mu_hat   = adelie.mean()           # estimate for μ
+s2_hat   = adelie.var()            # estimate for σ² (with n-1)
+s_hat    = adelie.std()            # estimate for σ
+n        = len(adelie)
+
+print(f"Sample size n = {n}")
+print(f"Estimated expected value: μ̂ = {mu_hat:.1f} g")
+print(f"Estimated variance:       σ̂² = {s2_hat:.1f} g²")
+print(f"Estimated std. deviation: σ̂  = {s_hat:.1f} g")
+```
+
+```{pyodide-python}
+import pandas as pd
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+
+# Estimate the share of females among Adélie penguins
+adelie = penguins[penguins['species'] == 'Adelie'].dropna(subset=['sex'])
+p_hat = (adelie['sex'] == 'female').mean()
+print(f"Estimated share of female Adélie penguins: p̂ = {p_hat:.3f} ({p_hat*100:.1f}%)")
+```
+
+### By hand {#von-hand}
+
+Four penguins were weighed: $3500$ g (f), $3800$ g (m), $4100$ g (m), $3600$ g (f). Use them to
+estimate $\mu$, $\sigma^2$, $\sigma$ and the share of females $p$:
+
+```{math-exercise}
+#| label: schaetzer-hand-en
+#| caption: Standard estimators by hand
+#| mode: numeric
+#| tolerance: 1%
+#| partial-credit: true
+#| field-labels: μ̂, σ̂², σ̂, p̂
+$\hat{\mu} =$ _[3750] g, $\hat{\sigma}^2 =$ _[70000] g², $\hat{\sigma} \approx$ _[264.58] g, $\hat{p} =$ _[0.5]
+```
+
+::: {.callout-tip collapse="true" title="Solution steps"}
+- $\bar{x} = (3500 + 3800 + 4100 + 3600)/4 = 15000/4 = 3750$
+- Deviations $-250,\ 50,\ 350,\ -150$, squares $62500,\ 2500,\ 122500,\ 22500$, sum $210000$
+- $s^2 = 210000/(4-1) = 70000$ and $s = \sqrt{70000} \approx 264.6$
+- $\hat{p} = 2/4 = 0.5$
+:::
+
+---
+
+## Estimators for many samples {#schätzer-für-mehrere-stichproben}
+
+To understand why an estimator is a random variable, we can simulate what happens when we
+repeatedly draw at random from the same population:
+
+```{python}
+#| echo: false
+#| eval: true
+np.random.seed(7)
+true_mu = penguins[penguins['species'] == 'Adelie']['body_mass_g'].dropna().mean()
+true_sigma = penguins[penguins['species'] == 'Adelie']['body_mass_g'].dropna().std()
+
+estimates = []
+for _ in range(500):
+    sample = np.random.normal(true_mu, true_sigma, 30)
+    estimates.append(sample.mean())
+
+estimates = np.array(estimates)
+
+fig, ax = plt.subplots(figsize=(8, 4))
+ax.hist(estimates, bins=25, color='#0a9396', edgecolor='white', alpha=0.8, density=True)
+xr = np.linspace(estimates.min(), estimates.max(), 300)
+kde = stats.gaussian_kde(estimates)
+ax.plot(xr, kde(xr), '#005f73', lw=2, label='Density of the estimates')
+ax.axvline(true_mu, color='#ae2012', lw=2.5, ls='--', label=f'True value μ = {true_mu:.0f} g')
+ax.axvline(estimates.mean(), color='#ca6702', lw=1.5, ls=':', label=f'Mean estimate = {estimates.mean():.0f} g')
+ax.set_xlabel('Estimate for μ (g)')
+ax.set_ylabel('Density')
+ax.set_title('500 samples of size n = 30: distribution of the sample means')
+ax.legend(fontsize=9)
+plt.tight_layout()
+plt.show()
+```
+
+Each of the 500 samples yields a slightly different estimate – the estimator $\overline{X}_n$ is
+**itself randomly distributed**. On average, however, the estimates hit the true value $\mu$
+very well (the red and orange lines almost coincide). This is the property of
+**unbiasedness**, which we examine more closely in section 2.3.
+
+::: {.callout-python appearance="minimal"}
+**Python tip: drawing samples**
+
+```python
+import numpy as np
+
+np.random.seed(42)                          # make the random numbers reproducible
+sample = np.random.normal(loc=3700, scale=460, size=30)   # 30 normally distributed random numbers
+print(sample.mean())                        # estimate for μ
+```
+:::
+
+:::: {.theorem .exercise}
+#### Exercise: estimating μ and σ from a sample
+
+You have access to the body masses of the Chinstrap penguins. Use them to estimate the unknown
+parameters of the population.
+
+**Task:**
+
+1. Compute the point estimators $\hat{\mu} = \bar{x}$ and $\hat{\sigma} = s$ for the body mass (`body_mass_g`) of the Chinstrap penguins.
+2. Simulate 500 samples of size $n = 20$ from a normal distribution with the estimated parameters. Compute the mean of each.
+
+**Check** tests `mu_hat`, `sigma_hat` and the list `means` (500 simulated sample means).
+
+```{py-exercise}
+#| label: schaetzer-chinstrap-en
+#| caption: Estimating μ and σ, simulating samples
+import numpy as np
+import pandas as pd
+from pyodide.http import open_url
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+chinstrap = penguins[penguins['species'] == 'Chinstrap']['body_mass_g'].dropna()
+
+mu_hat = None      # your code here
+sigma_hat = None   # your code here
+means = None       # your code here: 500 means of samples of size 20
+print(mu_hat, sigma_hat)
+
+## TESTS ##
+assert mu_hat is not None and abs(float(mu_hat) - 3733.09) < 0.1, "mu_hat is not correct. Hint: chinstrap.mean()"
+assert sigma_hat is not None and abs(float(sigma_hat) - 384.34) < 0.1, "sigma_hat is not correct. Hint: chinstrap.std() (with n-1). np.std without ddof=1 gives 381.5."
+assert means is not None and hasattr(means, '__len__') and len(means) == 500, "means should contain exactly 500 values (one mean per simulated sample)."
+assert means is not None and hasattr(means, '__len__') and len(means) == 500 and abs(float(np.mean(means)) - 3733) < 40, "On average the simulated means are not at μ̂. Did you use loc=mu_hat?"
+assert means is not None and hasattr(means, '__len__') and len(means) == 500 and 60 < float(np.std(means)) < 115, "The simulated means do not spread as expected (about 86 g). Did you draw 20 values per sample and take their mean?"
+```
+
+3. Create a histogram of the 500 sample means. What do you observe?
+
+```{pyodide-python}
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+chinstrap = penguins[penguins['species'] == 'Chinstrap']['body_mass_g'].dropna()
+
+# your code here
+```
+
+::: {.callout-tip title="Hint 1" collapse="true"}
+Point estimators: `mu_hat = chinstrap.mean()` and `sigma_hat = chinstrap.std()` (pandas `.std()` automatically uses $n-1$, i.e. it is corrected). These are your best estimates for the population.
+:::
+
+::: {.callout-tip title="Hint 2" collapse="true"}
+Simulated samples: `np.random.normal(loc=mu_hat, scale=sigma_hat, size=20)` yields one sample. Repeat this 500 times, e.g. with a list comprehension: `[np.random.normal(mu_hat, sigma_hat, 20).mean() for _ in range(500)]`. The histogram shows the spread of the estimator – the so-called sampling distribution.
+:::
+
+::: {.callout-caution title="Minimal solution" collapse="true"}
+```python
+# Estimating and simulating (in the exercise above)
+mu_hat = chinstrap.mean()
+sigma_hat = chinstrap.std()
+means = [np.random.normal(mu_hat, sigma_hat, 20).mean() for _ in range(500)]
+```
+
+```python
+# Histogram (in the cell below)
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+chinstrap = penguins[penguins['species'] == 'Chinstrap']['body_mass_g'].dropna()
+
+mu_hat = chinstrap.mean()
+sigma_hat = chinstrap.std()
+print(f"Estimates: μ̂ = {mu_hat:.1f} g,  σ̂ = {sigma_hat:.1f} g")
+
+np.random.seed(42)
+means = [np.random.normal(mu_hat, sigma_hat, 20).mean() for _ in range(500)]
+
+plt.hist(means, bins=25, color='steelblue', edgecolor='white')
+plt.axvline(mu_hat, color='red', linestyle='--', label=f'μ̂ = {mu_hat:.0f} g')
+plt.xlabel('Sample mean (g)')
+plt.ylabel('Frequency')
+plt.title('500 simulated sample means (n = 20)')
+plt.legend()
+plt.show()
+```
+
+The means lie symmetrically around $\hat{\mu} \approx 3733$ g and spread much less than the
+individual animals: about $384/\sqrt{20} \approx 86$ g instead of $384$ g. Section 2.3 (standard
+error) shows why it is exactly $\sqrt{20}$.
+:::
+::::
+
+---
+
+## Summary {#zusammenfassung}
+
+| Term | Meaning | Example |
+|---------|-----------|---------|
+| **Parameter** ($\mu$, $\sigma^2$, $p$) | Unknown quantity of the population | Mean body mass of all Adélie penguins |
+| **Estimating function** | Computation rule on concrete data | $T(\boldsymbol{x}) = \bar{x}$ |
+| **Estimate** | Concrete number from one sample | $\bar{x} = 3700.7$ g |
+| **Estimator** | Estimating function applied to random variables | $\overline{X}_n = \frac{1}{n}\sum X_i$ |
+
+---
+
+## Check your knowledge {#wissensüberprüfung}
+
+```{quizdown}
+---
+primaryColor: '#0a9396'
+shuffleQuestions: false
+shuffleAnswers: true
+locale: en
+---
+
+### A researcher computes the mean flipper length from a sample of 50 penguins. What is this computed number called?
+
+1. [x] Estimate
+    > Correct! The concrete number from a sample is the estimate.
+1. [ ] Estimator
+    > The estimator is the computation rule as a random variable – not the concrete result.
+1. [ ] Parameter
+    > The parameter is the unknown quantity of the population.
+1. [ ] Estimatum
+    > That is not a technical term in this context.
+
+### Which of the following statements describes an **estimator** (in the statistical sense)?
+
+1. [ ] A concrete number computed from data.
+1. [x] A random variable that computes a value for a parameter from random data.
+    > Correct! The estimator is the computation rule as a random variable.
+1. [ ] The unknown true value of the parameter.
+1. [ ] The sample itself.
+
+### What is the usual estimator for the proportion $p$ in a population?
+
+1. [ ] Arithmetic mean of all values
+1. [ ] Variance of the sample
+1. [x] Relative frequency of the property in the sample
+    > Correct! $\hat{p} = \text{number of hits} / n$.
+1. [ ] Median of the sample
+
+### Why is the estimator $\overline{X}_n$ itself a random variable?
+
+1. [ ] Because it always yields a different value than the true parameter.
+1. [x] Because it is computed from random samples and can therefore take a different value for every new sample.
+    > Correct! The randomness lies in the data – and therefore also in the estimator.
+1. [ ] Because random variables always lie between 0 and 1.
+1. [ ] Because it cannot be computed exactly.
+
+### The corrected sample variance $s^2$ uses the factor $1/(n-1)$ instead of $1/n$. What is the reason?
+
+1. [ ] To make the computation easier.
+1. [ ] Because $n-1$ is always smaller than $n$.
+1. [x] So that $s^2$ is an unbiased estimator of the population variance $\sigma^2$.
+    > Correct! With $1/n$ the variance would be systematically underestimated. The factor $1/(n-1)$ corrects that.
+1. [ ] Because the median of $n-1$ data points is used.
+```
+
+::::

@@ -1,0 +1,72 @@
+project:
+  output-dir: docs/de
+
+lang: de
+
+crossref:
+  def-title: "Definition"
+  def-prefix: "Definition"
+  exm-title: "Beispiel"
+  exm-prefix: "Beispiel"
+  exr-title: "Aufgabe"
+  exr-prefix: "Aufgabe"
+  thm-title: "Theorem"
+  thm-prefix: "Theorem"
+
+format:
+  html:
+    code-summary: "Code anzeigen"
+
+website:
+  title: "Grundlagen der Statistik mit Python"
+  reader-mode: true
+  navbar:
+    search: true
+    right:
+      - icon: github
+        # href: "Link zum GitHub Repository"
+      - icon: globe
+        aria-label: "Sprache wählen / Choose language"
+        menu:
+          - text: "Deutsch"
+            href: "#sprache-de"
+          - text: "English"
+            href: "#sprache-en"
+  sidebar:
+    collapse-level: 1
+    style: "floating"
+    contents:
+      - text: "Startseite"
+        href: Qmd-Files/index.qmd
+      - text: "Python Grundlagen"
+        href: Qmd-Files/grundlagen.qmd
+      - section: "1. Deskriptive Statistik"
+        href: Qmd-Files/Kapitel_1/index.qmd
+        contents:
+          - text: "1.1 Eine statistische Untersuchung"
+            href: Qmd-Files/Kapitel_1/statistische_untersuchung.qmd
+          - text: "1.2 Häufigkeitsverteilung"
+            href: Qmd-Files/Kapitel_1/haeufigkeitsverteilung.qmd
+          - text: "1.3 Grafische Darstellungen"
+            href: Qmd-Files/Kapitel_1/grafische_darstellungen.qmd
+          - text: "1.4 Kennzahlen: Lage"
+            href: Qmd-Files/Kapitel_1/kennzahlen_lage.qmd
+          - text: "1.5 Kennzahlen: Streuung, Schiefe & Wölbung"
+            href: Qmd-Files/Kapitel_1/kennzahlen_streuung.qmd
+          - text: "1.6 Zweidimensionale Datenanalyse"
+            href: Qmd-Files/Kapitel_1/zweidimensional.qmd
+      - section: "2. Schätztheorie"
+        href: Qmd-Files/Kapitel_2/index.qmd
+        contents:
+          - text: "2.1 Schätzer"
+            href: Qmd-Files/Kapitel_2/schaetzer.qmd
+          - text: "2.2 Schätzmethoden"
+            href: Qmd-Files/Kapitel_2/schaetzmethoden.qmd
+          - text: "2.3 Gütekriterien für Punktschätzer"
+            href: Qmd-Files/Kapitel_2/guetekriterien.qmd
+          - text: "2.4 Konfidenzintervalle"
+            href: Qmd-Files/Kapitel_2/konfidenzintervalle.qmd
+          - text: "2.5 Statistische Signifikanz & p-Werte"
+            href: Qmd-Files/Kapitel_3/signifikanz_p_werte.qmd
+      - text: "Cheatsheet & Quiz"
+        href: Qmd-Files/cheatsheet.qmd

@@ -1,0 +1,114 @@
+---
+title: "Inhaltsverzeichnis"
+title-en: "Table of Contents"
+format: html
+filters:
+  - ctm-assessment
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+Auf dieser Seite gibt es eine kurze Beschreibung dessen, was in den unterschiedlichen Kapiteln geschehen soll. 
+
+# Kapitelübersicht
+
+*   **[Startseite](index.qmd)**
+    *   *Kurzbeschreibung:*  
+    Dieser Abschnitt soll dir erklären, wie diese Website funktioniert und dir die Möglichkeiten zeigen, die durch die Python-Codeblöcke gegeben werden. Auch kannst du hier sehen, wie du neue Python-Blöcke erzeugst, wie dein Code gespeichert wird und wie du KI-Feedback einrichtest.
+
+---
+
+*   **[Python Grundlagen](grundlagen.qmd)**
+    *   *Kurzbeschreibung:*  
+    Eine Wiederholung der Python-Grundlagen (Variablen, Fallunterscheidungen, Datentypen, Listen, Funktionen, Schleifen, Bibliotheken), die im restlichen Tutorial gebraucht werden. Einige Aufgaben werden hier automatisch geprüft.
+
+---
+
+
+*   **[Definitionsbereiche und Wertebereiche](Kapitel_1/index.qmd)**
+    *   *Kurzbeschreibung:*  
+    Dieser Abschnitt teilt sich in Definitionsbereich und Wertebereichuntersuchung auf. In den jeweiligen Abschnitten wird gezeigt, wie die jeweiligen Bereiche einer Funktion mit Hilfe von Python bestimmt werden können.
+
+---
+
+*   **[Symmetrie und Achsenschnittpunkte](Kapitel_2/index.qmd)**
+    *   *Kurzbeschreibung:*  
+    Erfahre hier, wie du Funktionen auf Symmetrieeigenschaften (Achsensymmetrie zur y-Achse, Punktsymmetrie zum Ursprung) untersuchst und die Schnittpunkte mit der x-Achse (Nullstellen) sowie der y-Achse in/mit Python bestimmst.
+
+---
+
+*   **[Globalverhalten und Asymptoten](Kapitel_3/index.qmd)**
+    *   *Kurzbeschreibung:*  
+    Dieser Teil des Tutorials zeigt dir, wie du das Verhalten einer Funktion im Unendlichen mit Python bestimmst.
+    Auch wird dir hier gezeigt, wie eine Funktion auf (die) unterschiedliche(-n) Asymptoten (waagerecht, senkrecht, schief) untersuchst und wie du das Ganze von Python ausgeben lassen kannst.
+
+---
+
+*   **[Monotonie und Krümmungsverhalten](Kapitel_4/index.qmd)**
+    *   *Kurzbeschreibung:*  
+    Lerne, wie du mithilfe der Ableitungen das Monotonieverhalten (steigend/fallend), Extrempunkte (Hoch-/Tiefpunkte), das Krümmungsverhalten (konvex/konkav) und Wendepunkte einer Funktion mit Python untersuchst.
+
+---
+
+*   **[Graphen zeichnen](Kapitel_5/index.qmd)**
+    *   *Kurzbeschreibung:*  
+    Als Abschluss des Tutorials geht es um die Visualisierung.
+    In diesem Kapitel geht es darum, zu beschreiben, wie ein Graph i.A. dargestellt werden kann, aber auch, wie in einer Darstellung Punkte markiert und beschriftet werden können (Extrem-, Wendestellen, Asymptoten).
+
+---
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+This page gives a short description of what happens in the different chapters. 
+
+# Chapter overview
+
+*   **[Home](index.qmd)**
+    *   *Short description:*  
+    This section explains how this website works and shows you what the Python code blocks can do. You can also see here how to create new Python blocks, how your code is saved and how to set up AI feedback.
+
+---
+
+*   **[Python Basics](grundlagen.qmd)**
+    *   *Short description:*  
+    A refresher of the Python basics (variables, conditionals, data types, lists, functions, loops, libraries) that are needed in the rest of the tutorial. Some exercises here are checked automatically.
+
+---
+
+
+*   **[Domain and Range](Kapitel_1/index.qmd)**
+    *   *Short description:*  
+    This section is split into examining the domain and examining the range. Each part shows how the respective set of a function can be determined with the help of Python.
+
+---
+
+*   **[Symmetry and Intercepts](Kapitel_2/index.qmd)**
+    *   *Short description:*  
+    Learn how to examine functions for symmetry (symmetry about the y-axis, point symmetry about the origin) and how to determine the intersections with the x-axis (zeros) and the y-axis with Python.
+
+---
+
+*   **[End Behavior and Asymptotes](Kapitel_3/index.qmd)**
+    *   *Short description:*  
+    This part of the tutorial shows you how to determine the behavior of a function at infinity with Python.
+    It also shows how to examine a function for the different kinds of asymptotes (horizontal, vertical, oblique) and how to let Python output all of this.
+
+---
+
+*   **[Monotonicity and Concavity](Kapitel_4/index.qmd)**
+    *   *Short description:*  
+    Learn how to use derivatives to examine the monotonicity (increasing/decreasing), extrema (maxima/minima), concavity (convex/concave) and inflection points of a function with Python.
+
+---
+
+*   **[Drawing Graphs](Kapitel_5/index.qmd)**
+    *   *Short description:*  
+    The tutorial ends with visualization.
+    This chapter describes how a graph can generally be displayed, and also how points can be marked and labeled in a plot (extrema, inflection points, asymptotes).
+
+---
+
+::::

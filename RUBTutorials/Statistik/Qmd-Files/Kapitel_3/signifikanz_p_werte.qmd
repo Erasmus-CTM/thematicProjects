@@ -1,0 +1,1146 @@
+---
+title: "2.5 Statistische Signifikanz & p-Werte"
+title-en: "2.5 Statistical Significance & p-Values"
+filters:
+  - ctm-assessment
+execute:
+  eval: false
+  echo: true
+  warning: false
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+```{python}
+#| include: true
+#| echo: false
+#| eval: true
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+import matplotlib
+import pandas as pd
+from scipy import stats
+
+matplotlib.rcParams['figure.dpi'] = 110
+matplotlib.rcParams['font.size'] = 11
+```
+
+## Lernziele {.unnumbered}
+
+Am Ende dieses Unterkapitels kannst du:
+
+- die Begriffe Nullhypothese, Alternativhypothese und Signifikanzniveau erklären.
+- Fehler 1. und 2. Art beschreiben und ihre Konsequenzen abwägen.
+- einen p-Wert korrekt interpretieren – und häufige Missverständnisse vermeiden.
+- den Unterschied zwischen statistischer und praktischer Signifikanz erläutern.
+
+---
+
+## Das Problem
+
+Angenommen, eine Pharmafirma behauptet, ihr neues Medikament sei in 60 % der Fälle wirksam. In
+einer Studie mit 40 Patienten zeigen 26 eine Verbesserung, also 65 %. Belegt das eine Wirksamkeit
+von mehr als 60 %, oder ist das nur Zufall?
+
+Oder stell dir vor: Adélie-Pinguine hatten früher eine mittlere Schnabellänge von 38 mm.
+Unsere Stichprobe zeigt 38,8 mm. Ist das ein echter Unterschied, oder nur Zufall?
+
+**Statistische Hypothesentests** geben uns ein formales Werkzeug, um solche Fragen zu
+beantworten – und dabei die Wahrscheinlichkeit für Fehlentscheidungen zu kontrollieren.
+
+---
+
+## Nullhypothese und Alternativhypothese
+
+Jeder statistische Test beginnt mit der Formulierung von zwei konkurrierenden Hypothesen:
+
+::: {.callout-note icon=false}
+## Nullhypothese und Alternativhypothese
+
+Die **Nullhypothese** $H_0$ beschreibt den "Status quo" oder "kein Effekt / kein Unterschied".
+Sie wird nur verworfen, wenn die Daten starke Evidenz dagegen liefern.
+
+Die **Alternativhypothese** $H_1$ beschreibt den vermuteten Effekt oder Unterschied.
+Wird $H_0$ verworfen, entscheidet man sich für $H_1$.
+:::
+
+::: {.callout-tip}
+## Warum ist $H_0$ asymmetrisch?
+
+Man kann $H_0$ verwerfen (mit kontrollierbarer Fehlerwahrscheinlichkeit), aber man kann
+$H_0$ nie "beweisen". Ein Test kann nur zeigen: "Die Daten sind mit $H_0$ kaum vereinbar."
+Deshalb formuliert man das, was man zeigen will, als $H_1$.
+:::
+
+### Beispiele
+
+| Fragestellung | $H_0$ | $H_1$ |
+|---------------|--------|-------|
+| Hat sich die Schnabellänge erhöht? | $\mu \leq 38$ mm | $\mu > 38$ mm |
+| Unterscheiden sich zwei Gruppen? | $\mu_1 = \mu_2$ | $\mu_1 \neq \mu_2$ |
+| Wirkt das Medikament in mehr als 60 % der Fälle? | $p \leq 0{,}6$ | $p > 0{,}6$ |
+
+**Einseitige Tests:** $H_1$ hat eine Richtung (z.B. $\mu > 38$).
+
+**Zweiseitige Tests:** $H_1$ hat keine Richtung (z.B. $\mu \neq 38$).
+
+---
+
+## Fehler 1. und 2. Art
+
+Bei einer Testentscheidung können zwei Arten von Fehlern auftreten:
+
+| | $H_0$ nicht verworfen | $H_0$ verworfen |
+|---|---|---|
+| **$H_0$ wahr** | Richtige Entscheidung ✓ | **Fehler 1. Art** (α) |
+| **$H_0$ falsch** | **Fehler 2. Art** (β) | Richtige Entscheidung ✓ |
+
+::: {.callout-note icon=false}
+## Fehler 1. und 2. Art
+
+**Fehler 1. Art** (Typ-I-Fehler, α): $H_0$ wird verworfen, obwohl sie wahr ist.
+→ "Falscher Alarm" / false positive
+
+**Fehler 2. Art** (Typ-II-Fehler, β): $H_0$ wird nicht verworfen, obwohl sie falsch ist.
+→ "Verpasster Effekt" / false negative
+
+Das **Signifikanzniveau** $\alpha$ ist die vorgegebene Obergrenze für den Fehler 1. Art.
+Typisch: $\alpha = 0{,}05$ (5 %).
+:::
+
+::: {.callout-caution}
+## Das Dilemma
+
+Macht man $\alpha$ sehr klein (z.B. 0,001), wird der Fehler 1. Art selten – aber dann steigt
+der Fehler 2. Art. Bei fester Stichprobengröße lassen sich nicht beide Fehler gleichzeitig beliebig klein machen.
+
+In der Praxis: Man fixiert $\alpha$ und wählt den Test mit der höchsten **Teststärke**
+(auch Power, $1-\beta$: die Wahrscheinlichkeit, einen echten Effekt zu finden).
+:::
+
+### Fehler 1. und 2. Art zum Anfassen {.unnumbered}
+
+Die türkise Kurve ist die Verteilung der Teststatistik, wenn $H_0$ gilt, die dunkelblaue gestrichelte Kurve die Verteilung, wenn ein Effekt der Größe $\delta$ vorliegt ($H_1$). Der Test verwirft $H_0$, sobald die Teststatistik rechts vom kritischen Wert $c$ liegt. Ziehe den schwarzen Punkt $c$ auf der Achse und stelle $\delta$ mit dem Schieberegler ein.
+
+- **Rote Fläche** $= \alpha$: $H_0$ gilt, trotzdem landet die Teststatistik rechts von $c$ (falscher Alarm).
+- **Orange Fläche** $= \beta$: $H_1$ gilt, trotzdem landet die Teststatistik links von $c$ (Effekt verpasst).
+
+```{.jsxgraph width="100" height="80" unit="%" style="border:1px solid #ccc; border-radius:8px;"}
+document.body.style.background = '#fff';
+const board = JXG.JSXGraph.initBoard(BOARDID, {
+  boundingbox: [-3.8, 0.82, 6.8, -0.09], axis: false, showCopyright: false,
+  showNavigation: false, pan: {enabled: false}, zoom: {enabled: false}
+});
+board.create('axis', [[0, 0], [1, 0]], {
+  ticks: {insertTicks: false, ticksDistance: 1, minorTicks: 0, label: {offset: [-4, -12]}}
+});
+const fmt = (x, d) => x.toFixed(d).replace('.', ',').replace('-', '−');
+// Dichte und Verteilungsfunktion der Standardnormalverteilung
+const phi = x => Math.exp(-x * x / 2) / Math.sqrt(2 * Math.PI);
+const erf = x => {
+  const v = Math.sign(x), a = Math.abs(x), t = 1 / (1 + 0.3275911 * a);
+  return v * (1 - ((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-a * a));
+};
+const Phi = x => 0.5 * (1 + erf(x / Math.SQRT2));
+
+const text = {fixed: true, highlight: false, fontSize: 14, anchorY: 'middle'};
+const dS = board.create('slider', [[-3.1, 0.76], [-0.6, 0.76], [0, 2.5, 4]], {
+  withLabel: false, snapWidth: 0.01, fillColor: '#005f73', strokeColor: '#005f73',
+  baseline: {strokeColor: '#999'}, highline: {strokeColor: '#005f73'}});
+board.create('text', [-3.6, 0.76, 'δ'], text);
+board.create('text', [-0.4, 0.76, () => fmt(dS.Value(), 2)], text);
+const d = () => dS.Value();
+
+// Kritischer Wert c: auf der x-Achse verschiebbar
+const achse = board.create('line', [[0, 0], [1, 0]], {visible: false});
+const cP = board.create('glider', [1.6449, 0, achse],
+  {name: '', size: 6, fillColor: '#000', strokeColor: '#000', showInfobox: false});
+cP.on('drag', () => { const x = Math.min(5, Math.max(-2.5, cP.X())); if (x !== cP.X()) cP.moveTo([x, 0]); });
+const c = () => cP.X();
+board.create('segment', [[c, 0], [c, 0.43]], {strokeColor: '#000', dash: 2, strokeWidth: 1.5, fixed: true, highlight: false});
+board.create('text', [c, 0.46, () => 'c = ' + fmt(c(), 2)], Object.assign({}, text, {anchorX: 'middle'}));
+
+// Flächen: α unter H₀ rechts von c, β unter H₁ links von c
+const flaeche = (von, bis, f, farbe) => {
+  const k = board.create('curve', [[], []], {fillColor: farbe, fillOpacity: 0.45, strokeWidth: 0, highlight: false});
+  k.updateDataArray = function () {
+    const a = von(), b = bis();
+    this.dataX = [a]; this.dataY = [0];
+    if (b > a) for (let i = 0; i <= 120; i++) { const x = a + (b - a) * i / 120; this.dataX.push(x); this.dataY.push(f(x)); }
+    this.dataX.push(b); this.dataY.push(0);
+  };
+  return k;
+};
+flaeche(c, () => 6.8, x => phi(x), '#ae2012');
+flaeche(() => -3.8, c, x => phi(x - d()), '#ee9b00');
+board.create('functiongraph', [x => phi(x)], {strokeColor: '#0a9396', strokeWidth: 2.5, highlight: false});
+board.create('functiongraph', [x => phi(x - d())], {strokeColor: '#005f73', strokeWidth: 2.5, dash: 3, highlight: false});
+board.create('text', [-1.3, 0.3, 'H₀'], Object.assign({}, text, {color: '#0a9396', fontSize: 16, anchorX: 'right'}));
+board.create('text', [() => d() + 1.3, 0.3, 'H₁'], Object.assign({}, text, {color: '#005f73', fontSize: 16}));
+
+const alpha = () => 1 - Phi(c()), beta = () => Phi(c() - d());
+board.create('text', [-3.6, 0.69, () => 'α = ' + fmt(100 * alpha(), 1) + ' %'], Object.assign({}, text, {color: '#ae2012'}));
+board.create('text', [-3.6, 0.63, () => 'β = ' + fmt(100 * beta(), 1) + ' %'], Object.assign({}, text, {color: '#bb3e03'}));
+board.create('text', [-3.6, 0.57, () => 'Teststärke 1−β = ' + fmt(100 * (1 - beta()), 1) + ' %'], Object.assign({}, text, {color: '#005f73'}));
+board.update();
+```
+
+**Probiere aus:**
+
+1. Ziehe $c$ nach rechts, bis $\alpha \approx 1\,\%$ ist. Was passiert mit $\beta$?
+2. Stelle $c$ auf etwa $1{,}64$ ($\alpha = 5\,\%$). Ab welchem $\delta$ erreicht die Teststärke $80\,\%$?
+3. Setze $\delta = 0$. Wie groß ist die Teststärke dann?
+
+::: {.callout-tip collapse="true" title="Auflösung"}
+1. Bei $c \approx 2{,}33$ ist $\alpha \approx 1\,\%$, dafür steigt $\beta$ von etwa $20\,\%$ auf etwa $43\,\%$. Weniger falsche Alarme kosten mehr verpasste Effekte.
+2. Ab $\delta \approx 2{,}49$.
+3. Genau $\alpha$. Ohne Effekt kann der Test nur durch einen falschen Alarm verwerfen.
+:::
+
+::: {.callout-note title="Was dahintersteckt"}
+$\delta$ ist der Abstand der beiden Verteilungen, gemessen in Standardfehlern. Beim Test auf einen Mittelwert ist $\delta = \dfrac{\mu_1 - \mu_0}{\sigma/\sqrt{n}}$. Ein größerer Effekt oder eine größere Stichprobe schiebt die $H_1$-Kurve nach rechts. So lässt sich $\beta$ senken, ohne $\alpha$ zu erhöhen. Das ist der einzige Ausweg aus dem Dilemma.
+:::
+
+---
+
+## Die Teststatistik und der p-Wert
+
+### Das allgemeine Testprinzip
+
+1. Formuliere $H_0$ und $H_1$.
+2. Wähle ein Signifikanzniveau $\alpha$ (z.B. 0,05).
+3. Berechne aus den Daten eine **Teststatistik** $T$ (eine Zahl, die misst, wie weit die Daten
+   von $H_0$ entfernt sind).
+4. Berechne den **p-Wert** = Wahrscheinlichkeit, eine mindestens so extreme Teststatistik zu
+   beobachten, wenn $H_0$ wahr wäre.
+5. Entscheidung: Verwirf $H_0$, wenn $p \leq \alpha$.
+
+### Definition des p-Werts
+
+::: {.callout-note icon=false}
+## p-Wert
+
+Der **p-Wert** ist die Wahrscheinlichkeit, unter Annahme von $H_0$ eine Teststatistik zu
+beobachten, die mindestens so extrem ist wie die tatsächlich beobachtete.
+
+Ein kleiner p-Wert bedeutet: Die Daten sind unter $H_0$ sehr unwahrscheinlich → starke Evidenz
+gegen $H_0$.
+:::
+
+```{python}
+#| echo: false
+#| eval: true
+fig, axes = plt.subplots(1, 2, figsize=(11, 4.5))
+
+x = np.linspace(-5, 5, 500)
+
+# Links: kleiner p-Wert
+ax = axes[0]
+t_obs = 2.5
+ax.plot(x, stats.norm.pdf(x), '#0a9396', lw=2.5, label='Verteilung unter H₀')
+ax.fill_between(x[x >= t_obs], stats.norm.pdf(x[x >= t_obs]), alpha=0.4, color='#ae2012',
+                label=f'p-Wert ≈ {stats.norm.sf(t_obs):.3f}')
+ax.axvline(t_obs, color='#ae2012', lw=2, ls='--', label=f'Beobachtete Teststatistik t = {t_obs}')
+ax.set_title('Kleiner p-Wert → Evidenz gegen H₀', fontsize=10)
+ax.set_xlabel('Teststatistik T')
+ax.set_ylabel('Dichte')
+ax.legend(fontsize=8.5)
+ax.set_xlim(-5, 5)
+
+# Rechts: großer p-Wert
+ax2 = axes[1]
+t_obs2 = 0.8
+ax2.plot(x, stats.norm.pdf(x), '#0a9396', lw=2.5)
+ax2.fill_between(x[x >= t_obs2], stats.norm.pdf(x[x >= t_obs2]), alpha=0.4, color='#ca6702',
+                label=f'p-Wert ≈ {stats.norm.sf(t_obs2):.3f}')
+ax2.axvline(t_obs2, color='#ca6702', lw=2, ls='--', label=f'Beobachtete Teststatistik t = {t_obs2}')
+ax2.set_title('Großer p-Wert → keine Evidenz gegen H₀', fontsize=10)
+ax2.set_xlabel('Teststatistik T')
+ax2.legend(fontsize=8.5)
+ax2.set_xlim(-5, 5)
+
+plt.suptitle('p-Wert = gefärbte Fläche (unter $H_0$)', fontsize=11, y=1.02)
+plt.tight_layout()
+plt.show()
+```
+
+### Korrekte Interpretation des p-Werts
+
+::: {.callout-caution}
+## Häufige Fehler bei der p-Wert-Interpretation
+
+**Falsch:** "Der p-Wert ist die Wahrscheinlichkeit, dass $H_0$ wahr ist."
+
+**Falsch:** "p = 0,03 bedeutet: $H_1$ ist zu 97 % wahr."
+
+**Falsch:** "p < 0,05 bedeutet, der Effekt ist groß oder praktisch relevant."
+
+**Richtig:** "p ist die Wahrscheinlichkeit, bei gültiger $H_0$ eine mindestens so extreme
+Teststatistik zu beobachten wie die tatsächlich gemessene."
+:::
+
+---
+
+## Das Vorgehen: 5 Schritte
+
+::: {.callout-rechnen appearance="minimal"}
+**Standardablauf eines Hypothesentests:**
+
+1. **Hypothesen aufstellen:** $H_0$ und $H_1$ formulieren.
+2. **Signifikanzniveau festlegen:** $\alpha$ wählen (meist 0,05).
+3. **Teststatistik berechnen:** aus den Daten.
+4. **p-Wert berechnen:** Wahrscheinlichkeit unter $H_0$.
+5. **Entscheidung treffen:** Verwirf $H_0$, wenn $p \leq \alpha$.
+:::
+
+---
+
+## Zurück zu den Einstiegsfragen
+
+### Das Medikament
+
+Die Firma möchte zeigen, dass ihr Medikament in mehr als 60 % der Fälle wirkt: $H_0: p \leq 0{,}6$, $H_1: p > 0{,}6$. Die Teststatistik ist die Anzahl $X$ der Patienten mit Verbesserung. Gilt $H_0$ mit $p = 0{,}6$, ist $X \sim \text{Bin}(40;\ 0{,}6)$ und man erwartet $24$ Verbesserungen. Der p-Wert ist die Wahrscheinlichkeit für mindestens so viele Verbesserungen wie beobachtet:
+
+$$\text{p-Wert} = P(X \geq 26) \approx 0{,}317$$
+
+```{pyodide-python}
+from scipy import stats
+
+# P(X >= 26) = P(X > 25) für X ~ Bin(40; 0,6)
+print(stats.binom.sf(25, 40, 0.6))
+# Zum Vergleich: gegen p = 0,5 (Münzwurf)
+print(stats.binom.sf(25, 40, 0.5))
+```
+
+Mit einem p-Wert von $0{,}317 > 0{,}05$ wird $H_0$ nicht verworfen. 26 von 40 passen gut zu einer Wirksamkeit von genau 60 %. Mehr als 60 % belegt die Studie also nicht. Gegen $p = 0{,}5$ getestet ergibt sich dagegen ein p-Wert von $P(X \geq 26) \approx 0{,}040 \leq 0{,}05$: Dass das Medikament besser wirkt als ein Münzwurf, zeigen die Daten schon.
+
+### Die Schnabellänge
+
+Für die $n = 151$ Adélie-Pinguine im Datensatz ist $\bar{x} = 38{,}79$ mm und $s = 2{,}66$ mm. Getestet wird $H_0: \mu \leq 38$ gegen $H_1: \mu > 38$ mit der Teststatistik
+
+$$t = \frac{\bar{x} - 38}{s/\sqrt{n}}.$$
+
+Sie misst, wie viele Standardfehler der Mittelwert über 38 mm liegt. Berechne Standardfehler und $t$:
+
+```{math-exercise}
+#| label: p-adelie
+#| caption: Teststatistik von Hand
+#| mode: numeric
+#| tolerance: 1%
+#| partial-credit: true
+#| field-labels: SE, t
+$\text{SE} =$ _[0.2165] mm, $t =$ _[3.65]
+```
+
+::: {.callout-tip collapse="true" title="Lösungsweg"}
+- $\text{SE} = s/\sqrt{n} = 2{,}66/\sqrt{151} \approx 2{,}66/12{,}29 \approx 0{,}2165$ mm
+- $t = (38{,}79 - 38)/0{,}2165 \approx 3{,}65$
+
+Unter $H_0$ ist $t$ t-verteilt mit $n - 1 = 150$ Freiheitsgraden (wie beim t-Intervall in 2.4). Der p-Wert ist $P(T \geq 3{,}65) \approx 0{,}0002 \leq 0{,}05$, also wird $H_0$ verworfen. Ein Unterschied von $0{,}79$ mm ist bei 151 Tieren kein Zufall mehr. In Python: `stats.ttest_1samp(adelie_bill, popmean=38, alternative='greater')`.
+:::
+
+---
+
+## Statistische vs. praktische Signifikanz
+
+Ein häufiges Missverständnis: Ein **statistisch signifikantes** Ergebnis ist nicht automatisch
+**praktisch relevant**.
+
+```{python}
+#| echo: false
+#| eval: true
+np.random.seed(42)
+# Großer n: kleiner echter Unterschied wird signifikant
+n_large = 10000
+mu1, mu2 = 100.0, 100.1  # Echter Unterschied: 0.1 Einheiten
+sigma = 2.0
+
+t_stat, p = stats.ttest_ind(
+    np.random.normal(mu1, sigma, n_large),
+    np.random.normal(mu2, sigma, n_large)
+)
+
+fig, axes = plt.subplots(1, 2, figsize=(10, 3.8))
+
+# Klein n: großer Unterschied, nicht signifikant
+n_small = 10
+x1 = np.random.normal(100, 15, n_small)
+x2 = np.random.normal(110, 15, n_small)
+t2, p2 = stats.ttest_ind(x1, x2)
+
+ax = axes[0]
+ax.boxplot([x1, x2], tick_labels=['Gruppe 1', 'Gruppe 2'])
+ax.set_title(f'n={n_small} pro Gruppe, wahrer Unterschied 10\np = {p2:.3f} → {"sig." if p2<0.05 else "NICHT sig."}',
+             fontsize=10)
+ax.set_ylabel('Messwert')
+
+ax2 = axes[1]
+x1b = np.random.normal(mu1, sigma, n_large)
+x2b = np.random.normal(mu2, sigma, n_large)
+t_large, p_large = stats.ttest_ind(x1b, x2b)
+ax2.boxplot([x1b, x2b], tick_labels=['Gruppe 1', 'Gruppe 2'])
+ax2.set_title(f'n={n_large} pro Gruppe, wahrer Unterschied 0,1\np = {p_large:.4f} → {"sig." if p_large<0.05 else "NICHT sig."}',
+              fontsize=10)
+
+plt.suptitle('Statistische ≠ Praktische Signifikanz', fontsize=11, y=1.02)
+plt.tight_layout()
+plt.show()
+```
+
+**Links:** n = 10, wahrer Unterschied von 10 Einheiten – statistisch nicht signifikant (zu wenig Daten
+für die große Streuung).
+
+**Rechts:** n = 10.000, wahrer Unterschied von 0,1 Einheiten – statistisch signifikant, aber praktisch
+irrelevant.
+
+::: {.callout-tip}
+## Faustregel
+
+Ein statistisch signifikantes Ergebnis zeigt nur: **Die Daten passen schlecht zu $H_0$.** Bei großen
+Stichproben reicht dafür schon ein winziger Effekt. Ob der Effekt praktisch wichtig ist, muss inhaltlich
+beurteilt werden – zum Beispiel über die Effektgröße (Cohens d, relative Differenz etc.).
+:::
+
+#### Vorab: Hypothesen aufstellen
+
+Bevor du rechnest, formuliere die Hypothesen für die folgende Aufgabe: Ein Lehrbuch behauptet, die durchschnittliche Flossenlänge von Adélie-Pinguinen betrage 190 mm.
+
+```{quizdown}
+---
+locale: de
+primaryColor: '#0a9396'
+shuffleQuestions: false
+shuffleAnswers: true
+---
+
+### Welche Hypothesen passen zur Behauptung des Lehrbuchs ($\mu$ = wahre mittlere Flossenlänge)?
+
+1. [x] $H_0$: $\mu = 190$ mm, $H_1$: $\mu \neq 190$ mm
+    > Richtig! Die Behauptung des Lehrbuchs ist die Nullhypothese, wir suchen Hinweise gegen sie.
+1. [ ] $H_0$: $\mu \neq 190$ mm, $H_1$: $\mu = 190$ mm
+1. [ ] $H_0$: $\bar{x} = 190$ mm, $H_1$: $\bar{x} \neq 190$ mm
+1. [ ] $H_0$: $\mu > 190$ mm, $H_1$: $\mu \leq 190$ mm
+
+### Ist dieser Test ein- oder zweiseitig?
+
+1. [ ] Einseitig, weil wir nur nach größeren Werten suchen
+1. [x] Zweiseitig, weil sowohl deutlich größere als auch deutlich kleinere Werte gegen die Behauptung sprechen
+    > Richtig! Die Alternative $\mu \neq 190$ erlaubt Abweichungen in beide Richtungen.
+1. [ ] Einseitig, weil wir nur einen Mittelwert haben
+1. [ ] Das lässt sich nicht sagen
+
+### Was ist der Unterschied zwischen $\mu$ und $\bar{x}$?
+
+1. [ ] Es gibt keinen Unterschied.
+1. [x] $\mu$ ist der wahre (unbekannte) Mittelwert der Grundgesamtheit, $\bar{x}$ der Mittelwert der Stichprobe.
+    > Richtig! Hypothesen beziehen sich immer auf Parameter der Grundgesamtheit, nicht auf Stichprobenwerte.
+1. [ ] $\mu$ ist der Median, $\bar{x}$ der Mittelwert.
+1. [ ] $\bar{x}$ ist der wahre Mittelwert, $\mu$ der geschätzte.
+```
+
+:::: {.theorem .exercise}
+#### Aufgabe: Hypothesentest zur Flossenlänge
+
+In einem Lehrbuch steht, die durchschnittliche Flossenlänge von Adélie-Pinguinen betrage 190 mm. Überprüfe diese Behauptung mit einem Hypothesentest.
+
+**Aufgabe:**
+
+1. Formuliere $H_0$ und $H_1$ für den Test ($\alpha = 0{,}05$).
+2. Berechne den p-Wert mit einem Einstichproben-t-Test.
+3. Triff eine Entscheidung (`verwerfen = True` oder `False`) und formuliere sie in einem vollständigen Satz (ohne Test).
+
+**Überprüfen** testet `t_stat`, `p_val` und `verwerfen`.
+
+```{py-exercise}
+#| label: p-flosse
+#| caption: Hypothesentest zur Flossenlänge
+#| show-test-hints: false
+from scipy import stats
+import pandas as pd
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+adelie_flipper = penguins[penguins['species'] == 'Adelie']['flipper_length_mm'].dropna()
+
+t_stat = None      # Dein Code hier
+p_val = None
+verwerfen = None   # True (H₀ verwerfen) oder False (H₀ beibehalten)
+print(t_stat, p_val, verwerfen)
+
+## TESTS ##
+assert t_stat is not None and p_val is not None, "Berechne t_stat und p_val mit stats.ttest_1samp."
+assert p_val is None or (abs(float(p_val) - 0.4654) > 0.002 and abs(float(p_val) - 0.5346) > 0.002), "Das ist ein einseitiger p-Wert. H₁: μ ≠ 190 mm ist zweiseitig, also ohne alternative= rechnen."
+assert t_stat is not None and abs(float(t_stat) + 0.0871) < 0.002, "t_stat stimmt nicht: Erwartet ist etwa −0,087 (Einstichproben-t-Test gegen 190 mm)."
+assert p_val is not None and abs(float(p_val) - 0.9307) < 0.002, "p_val stimmt nicht: Erwartet ist etwa 0,93."
+assert verwerfen is not None and verwerfen in (True, False), "Setze verwerfen auf True (H₀ verwerfen) oder False (H₀ beibehalten)."
+assert verwerfen is None or verwerfen not in (True, False) or verwerfen == False, "p ≈ 0,93 ist viel größer als α = 0,05: H₀ wird nicht verworfen."
+```
+
+::: {.callout-tip title="Tipp 1" collapse="true"}
+Formuliere die Hypothesen: $H_0$: μ = 190 mm (die mittlere Flossenlänge ist 190 mm), $H_1$: μ ≠ 190 mm (zweiseitiger Test). Dann: `t_stat, p_val = stats.ttest_1samp(adelie_flipper, popmean=190)`.
+:::
+
+::: {.callout-tip title="Tipp 2" collapse="true"}
+Entscheidungsregel: Wenn `p_val <= 0.05` → $H_0$ ablehnen. Wenn `p_val > 0.05` → $H_0$ beibehalten. Schreibe den Befund vollständig auf: "Bei einem Signifikanzniveau von α = 0,05 wird H₀ [abgelehnt / nicht abgelehnt], da p = ... [≤ / >] 0,05."
+:::
+
+::: {.callout-caution title="Lösung" collapse="true"}
+```python
+t_stat, p_val = stats.ttest_1samp(adelie_flipper, popmean=190)
+verwerfen = p_val <= 0.05
+```
+
+$H_0: \mu = 190$ mm, $H_1: \mu \neq 190$ mm. Mit $\bar{x} = 189{,}95$ mm ist $t \approx -0{,}09$ und $p \approx 0{,}93$.
+
+„Bei einem Signifikanzniveau von $\alpha = 0{,}05$ wird $H_0$ nicht verworfen, da $p \approx 0{,}93 > 0{,}05$. Die Daten sind mit einer mittleren Flossenlänge von 190 mm gut vereinbar.“
+
+Bewiesen ist damit nicht, dass $\mu = 190$ mm gilt. Die Daten sprechen nur nicht dagegen.
+:::
+::::
+
+---
+
+## Zusammenfassung
+
+| Begriff | Bedeutung |
+|---------|-----------|
+| **Nullhypothese** $H_0$ | "Kein Effekt" – wird verworfen oder beibehalten |
+| **Alternativhypothese** $H_1$ | Der vermutete Effekt |
+| **Signifikanzniveau** $\alpha$ | Maximale erlaubte Fehler-1.-Art-Wahrscheinlichkeit |
+| **Teststatistik** | Zusammenfassung der Daten in eine Zahl |
+| **p-Wert** | P(mindestens so extreme Daten \| $H_0$ wahr) |
+| **Fehler 1. Art** | $H_0$ verworfen, obwohl wahr (Rate ≤ α) |
+| **Fehler 2. Art** | $H_0$ nicht verworfen, obwohl falsch (Rate = β) |
+| **Teststärke** $1-\beta$ | Wahrscheinlichkeit, einen echten Effekt zu entdecken |
+
+---
+
+## Wissensüberprüfung
+
+```{quizdown}
+---
+locale: de
+primaryColor: '#0a9396'
+shuffleQuestions: false
+shuffleAnswers: true
+---
+
+### Welche Aussage beschreibt den p-Wert korrekt?
+
+1. [x] Die Wahrscheinlichkeit, bei gültiger H₀ eine mindestens so extreme Teststatistik wie die beobachtete zu erhalten.
+    > Richtig! Der p-Wert misst, wie gut die Daten mit H₀ vereinbar sind.
+1. [ ] Die Wahrscheinlichkeit, dass H₀ wahr ist.
+1. [ ] Die Wahrscheinlichkeit, dass H₁ wahr ist.
+1. [ ] Die Fehlerwahrscheinlichkeit des Tests.
+
+### Ein p-Wert von 0,02 bei α = 0,05 bedeutet:
+
+1. [ ] H₀ ist wahr mit 98% Wahrscheinlichkeit.
+1. [x] H₀ wird verworfen, da p ≤ α. Die Daten liefern statistisch signifikante Evidenz gegen H₀.
+    > Richtig! p = 0,02 < 0,05 = α → H₀ wird verworfen.
+1. [ ] H₁ ist mit 98% Wahrscheinlichkeit wahr.
+1. [ ] Der Effekt ist praktisch bedeutsam.
+
+### Was ist ein Fehler 1. Art?
+
+1. [ ] H₀ wird nicht verworfen, obwohl sie falsch ist.
+1. [x] H₀ wird verworfen, obwohl sie wahr ist (falscher Alarm).
+    > Richtig! Fehler 1. Art = false positive. Die Rate wird durch α kontrolliert.
+1. [ ] Die Teststatistik ist falsch berechnet.
+1. [ ] Der Stichprobenumfang ist zu klein.
+
+### Du führst einen Test mit α = 0,05 durch und erhältst p = 0,049. Was ist die korrekte Entscheidung?
+
+1. [x] H₀ wird verworfen (p ≤ α).
+    > Richtig! Auch wenn der Unterschied knapp ist: p = 0,049 < 0,05 = α.
+1. [ ] H₀ wird nicht verworfen, weil das Ergebnis zu knapp ist.
+1. [ ] Man muss den Test mit mehr Daten wiederholen.
+1. [ ] Die Entscheidung ist unklar.
+
+### Eine Studie mit n = 50.000 Teilnehmern findet p = 0,001 für einen Unterschied von 0,2 Blutdruckpunkten. Was ist die richtige Interpretation?
+
+1. [ ] Klinisch wichtiger Befund, sofortiger Handlungsbedarf.
+1. [x] Statistisch signifikant, aber der Effekt (0,2 Punkte) ist so klein, dass er klinisch kaum relevant ist.
+    > Richtig! Bei sehr großem n werden winzige Unterschiede statistisch signifikant.
+1. [ ] Die Studie ist fehlerhaft, weil p so klein ist.
+1. [ ] Das Ergebnis ist nicht signifikant.
+
+### Wie lässt sich bei festem α = 0,05 die Teststärke eines Tests erhöhen?
+
+1. [ ] Indem man α auf 0,01 senkt.
+1. [x] Indem man die Stichprobe vergrößert.
+    > Richtig! Mit wachsendem n wird der Standardfehler kleiner, die Verteilungen unter H₀ und H₁ rücken auseinander und β sinkt.
+1. [ ] Indem man den p-Wert halbiert.
+1. [ ] Gar nicht, die Teststärke ist durch α festgelegt.
+```
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+```{python}
+#| include: true
+#| echo: false
+#| eval: true
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+import matplotlib
+import pandas as pd
+from scipy import stats
+
+matplotlib.rcParams['figure.dpi'] = 110
+matplotlib.rcParams['font.size'] = 11
+```
+
+## Learning objectives {#lernziele .unnumbered}
+
+By the end of this subchapter you can:
+
+- explain the terms null hypothesis, alternative hypothesis and significance level.
+- describe type I and type II errors and weigh their consequences.
+- interpret a p-value correctly – and avoid common misconceptions.
+- explain the difference between statistical and practical significance.
+
+---
+
+## The problem {#das-problem}
+
+Suppose a pharmaceutical company claims its new drug is effective in 60 % of cases. In a study
+with 40 patients, 26 show an improvement, i.e. 65 %. Does this show an effectiveness of more than
+60 %, or is it just chance?
+
+Or imagine: Adélie penguins used to have a mean bill length of 38 mm. Our sample shows 38.8 mm.
+Is that a real difference, or just chance?
+
+**Statistical hypothesis tests** give us a formal tool to answer such questions – while
+controlling the probability of wrong decisions.
+
+---
+
+## Null hypothesis and alternative hypothesis {#nullhypothese-und-alternativhypothese}
+
+Every statistical test starts by stating two competing hypotheses:
+
+::: {.callout-note icon=false}
+## Null hypothesis and alternative hypothesis
+
+The **null hypothesis** $H_0$ describes the "status quo" or "no effect / no difference".
+It is only rejected if the data provide strong evidence against it.
+
+The **alternative hypothesis** $H_1$ describes the suspected effect or difference.
+If $H_0$ is rejected, one decides in favour of $H_1$.
+:::
+
+::: {.callout-tip}
+## Why is $H_0$ asymmetric?
+
+You can reject $H_0$ (with a controllable error probability), but you can never "prove"
+$H_0$. A test can only show: "The data are hardly compatible with $H_0$."
+That is why what you want to show is stated as $H_1$.
+:::
+
+### Examples {#beispiele}
+
+| Question | $H_0$ | $H_1$ |
+|---------------|--------|-------|
+| Has the bill length increased? | $\mu \leq 38$ mm | $\mu > 38$ mm |
+| Do two groups differ? | $\mu_1 = \mu_2$ | $\mu_1 \neq \mu_2$ |
+| Is the drug effective in more than 60 % of cases? | $p \leq 0.6$ | $p > 0.6$ |
+
+**One-sided tests:** $H_1$ has a direction (e.g. $\mu > 38$).
+
+**Two-sided tests:** $H_1$ has no direction (e.g. $\mu \neq 38$).
+
+---
+
+## Type I and type II errors {#fehler-1.-und-2.-art}
+
+Two kinds of errors can occur in a test decision:
+
+| | $H_0$ not rejected | $H_0$ rejected |
+|---|---|---|
+| **$H_0$ true** | Correct decision ✓ | **Type I error** (α) |
+| **$H_0$ false** | **Type II error** (β) | Correct decision ✓ |
+
+::: {.callout-note icon=false}
+## Type I and type II errors
+
+**Type I error** (α): $H_0$ is rejected although it is true.
+→ "False alarm" / false positive
+
+**Type II error** (β): $H_0$ is not rejected although it is false.
+→ "Missed effect" / false negative
+
+The **significance level** $\alpha$ is the chosen upper bound for the type I error.
+Typical: $\alpha = 0.05$ (5 %).
+:::
+
+::: {.callout-caution}
+## The dilemma
+
+If you make $\alpha$ very small (e.g. 0.001), type I errors become rare – but type II errors
+become more likely. With a fixed sample size, both errors cannot be made arbitrarily small at the same time.
+
+In practice: fix $\alpha$ and choose the test with the highest **power**
+($1-\beta$: the probability of finding a real effect).
+:::
+
+### Type I and type II errors hands-on {#fehler-1.-und-2.-art-zum-anfassen .unnumbered}
+
+The teal curve is the distribution of the test statistic if $H_0$ holds, the dark blue dashed curve the distribution if there is an effect of size $\delta$ ($H_1$). The test rejects $H_0$ as soon as the test statistic lies to the right of the critical value $c$. Drag the black point $c$ along the axis and set $\delta$ with the slider.
+
+- **Red area** $= \alpha$: $H_0$ holds, yet the test statistic lands to the right of $c$ (false alarm).
+- **Orange area** $= \beta$: $H_1$ holds, yet the test statistic lands to the left of $c$ (missed effect).
+
+```{.jsxgraph width="100" height="80" unit="%" style="border:1px solid #ccc; border-radius:8px;"}
+document.body.style.background = '#fff';
+const board = JXG.JSXGraph.initBoard(BOARDID, {
+  boundingbox: [-3.8, 0.82, 6.8, -0.09], axis: false, showCopyright: false,
+  showNavigation: false, pan: {enabled: false}, zoom: {enabled: false}
+});
+board.create('axis', [[0, 0], [1, 0]], {
+  ticks: {insertTicks: false, ticksDistance: 1, minorTicks: 0, label: {offset: [-4, -12]}}
+});
+const fmt = (x, d) => x.toFixed(d).replace('.', '.').replace('-', '−');
+// Dichte und Verteilungsfunktion der Standardnormalverteilung
+const phi = x => Math.exp(-x * x / 2) / Math.sqrt(2 * Math.PI);
+const erf = x => {
+  const v = Math.sign(x), a = Math.abs(x), t = 1 / (1 + 0.3275911 * a);
+  return v * (1 - ((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-a * a));
+};
+const Phi = x => 0.5 * (1 + erf(x / Math.SQRT2));
+
+const text = {fixed: true, highlight: false, fontSize: 14, anchorY: 'middle'};
+const dS = board.create('slider', [[-3.1, 0.76], [-0.6, 0.76], [0, 2.5, 4]], {
+  withLabel: false, snapWidth: 0.01, fillColor: '#005f73', strokeColor: '#005f73',
+  baseline: {strokeColor: '#999'}, highline: {strokeColor: '#005f73'}});
+board.create('text', [-3.6, 0.76, 'δ'], text);
+board.create('text', [-0.4, 0.76, () => fmt(dS.Value(), 2)], text);
+const d = () => dS.Value();
+
+// Kritischer Wert c: auf der x-Achse verschiebbar
+const achse = board.create('line', [[0, 0], [1, 0]], {visible: false});
+const cP = board.create('glider', [1.6449, 0, achse],
+  {name: '', size: 6, fillColor: '#000', strokeColor: '#000', showInfobox: false});
+cP.on('drag', () => { const x = Math.min(5, Math.max(-2.5, cP.X())); if (x !== cP.X()) cP.moveTo([x, 0]); });
+const c = () => cP.X();
+board.create('segment', [[c, 0], [c, 0.43]], {strokeColor: '#000', dash: 2, strokeWidth: 1.5, fixed: true, highlight: false});
+board.create('text', [c, 0.46, () => 'c = ' + fmt(c(), 2)], Object.assign({}, text, {anchorX: 'middle'}));
+
+// Flächen: α unter H₀ rechts von c, β unter H₁ links von c
+const flaeche = (von, bis, f, farbe) => {
+  const k = board.create('curve', [[], []], {fillColor: farbe, fillOpacity: 0.45, strokeWidth: 0, highlight: false});
+  k.updateDataArray = function () {
+    const a = von(), b = bis();
+    this.dataX = [a]; this.dataY = [0];
+    if (b > a) for (let i = 0; i <= 120; i++) { const x = a + (b - a) * i / 120; this.dataX.push(x); this.dataY.push(f(x)); }
+    this.dataX.push(b); this.dataY.push(0);
+  };
+  return k;
+};
+flaeche(c, () => 6.8, x => phi(x), '#ae2012');
+flaeche(() => -3.8, c, x => phi(x - d()), '#ee9b00');
+board.create('functiongraph', [x => phi(x)], {strokeColor: '#0a9396', strokeWidth: 2.5, highlight: false});
+board.create('functiongraph', [x => phi(x - d())], {strokeColor: '#005f73', strokeWidth: 2.5, dash: 3, highlight: false});
+board.create('text', [-1.3, 0.3, 'H₀'], Object.assign({}, text, {color: '#0a9396', fontSize: 16, anchorX: 'right'}));
+board.create('text', [() => d() + 1.3, 0.3, 'H₁'], Object.assign({}, text, {color: '#005f73', fontSize: 16}));
+
+const alpha = () => 1 - Phi(c()), beta = () => Phi(c() - d());
+board.create('text', [-3.6, 0.69, () => 'α = ' + fmt(100 * alpha(), 1) + ' %'], Object.assign({}, text, {color: '#ae2012'}));
+board.create('text', [-3.6, 0.63, () => 'β = ' + fmt(100 * beta(), 1) + ' %'], Object.assign({}, text, {color: '#bb3e03'}));
+board.create('text', [-3.6, 0.57, () => 'Power 1−β = ' + fmt(100 * (1 - beta()), 1) + ' %'], Object.assign({}, text, {color: '#005f73'}));
+board.update();
+```
+
+**Try it:**
+
+1. Drag $c$ to the right until $\alpha \approx 1\,\%$. What happens to $\beta$?
+2. Set $c$ to about $1.64$ ($\alpha = 5\,\%$). From which $\delta$ on does the power reach $80\,\%$?
+3. Set $\delta = 0$. How large is the power then?
+
+::: {.callout-tip collapse="true" title="Answers"}
+1. At $c \approx 2.33$, $\alpha \approx 1\,\%$, but $\beta$ rises from about $20\,\%$ to about $43\,\%$. Fewer false alarms cost more missed effects.
+2. From $\delta \approx 2.49$ on.
+3. Exactly $\alpha$. Without an effect, the test can only reject through a false alarm.
+:::
+
+::: {.callout-note title="What is behind it"}
+$\delta$ is the distance between the two distributions, measured in standard errors. For a test on a mean, $\delta = \dfrac{\mu_1 - \mu_0}{\sigma/\sqrt{n}}$. A larger effect or a larger sample shifts the $H_1$ curve to the right. This lowers $\beta$ without raising $\alpha$. It is the only way out of the dilemma.
+:::
+
+---
+
+## The test statistic and the p-value {#die-teststatistik-und-der-p-wert}
+
+### The general testing principle {#das-allgemeine-testprinzip}
+
+1. State $H_0$ and $H_1$.
+2. Choose a significance level $\alpha$ (e.g. 0.05).
+3. Compute a **test statistic** $T$ from the data (a number that measures how far the data
+   are from $H_0$).
+4. Compute the **p-value** = probability of observing a test statistic at least as extreme,
+   if $H_0$ were true.
+5. Decision: reject $H_0$ if $p \leq \alpha$.
+
+### Definition of the p-value {#definition-des-p-werts}
+
+::: {.callout-note icon=false}
+## p-value
+
+The **p-value** is the probability, assuming $H_0$, of observing a test statistic that is
+at least as extreme as the one actually observed.
+
+A small p-value means: the data are very unlikely under $H_0$ → strong evidence
+against $H_0$.
+:::
+
+```{python}
+#| echo: false
+#| eval: true
+fig, axes = plt.subplots(1, 2, figsize=(11, 4.5))
+
+x = np.linspace(-5, 5, 500)
+
+# Left: small p-value
+ax = axes[0]
+t_obs = 2.5
+ax.plot(x, stats.norm.pdf(x), '#0a9396', lw=2.5, label='Distribution under H₀')
+ax.fill_between(x[x >= t_obs], stats.norm.pdf(x[x >= t_obs]), alpha=0.4, color='#ae2012',
+                label=f'p-value ≈ {stats.norm.sf(t_obs):.3f}')
+ax.axvline(t_obs, color='#ae2012', lw=2, ls='--', label=f'Observed test statistic t = {t_obs}')
+ax.set_title('Small p-value → evidence against H₀', fontsize=10)
+ax.set_xlabel('Test statistic T')
+ax.set_ylabel('Density')
+ax.legend(fontsize=8.5)
+ax.set_xlim(-5, 5)
+
+# Right: large p-value
+ax2 = axes[1]
+t_obs2 = 0.8
+ax2.plot(x, stats.norm.pdf(x), '#0a9396', lw=2.5)
+ax2.fill_between(x[x >= t_obs2], stats.norm.pdf(x[x >= t_obs2]), alpha=0.4, color='#ca6702',
+                label=f'p-value ≈ {stats.norm.sf(t_obs2):.3f}')
+ax2.axvline(t_obs2, color='#ca6702', lw=2, ls='--', label=f'Observed test statistic t = {t_obs2}')
+ax2.set_title('Large p-value → no evidence against H₀', fontsize=10)
+ax2.set_xlabel('Test statistic T')
+ax2.legend(fontsize=8.5)
+ax2.set_xlim(-5, 5)
+
+plt.suptitle('p-value = shaded area (under $H_0$)', fontsize=11, y=1.02)
+plt.tight_layout()
+plt.show()
+```
+
+### Interpreting the p-value correctly {#korrekte-interpretation-des-p-werts}
+
+::: {.callout-caution}
+## Common mistakes in interpreting p-values
+
+**Wrong:** "The p-value is the probability that $H_0$ is true."
+
+**Wrong:** "p = 0.03 means: $H_1$ is 97 % true."
+
+**Wrong:** "p < 0.05 means the effect is large or practically relevant."
+
+**Right:** "p is the probability, if $H_0$ holds, of observing a test statistic at least as
+extreme as the one actually measured."
+:::
+
+---
+
+## The procedure: 5 steps {#das-vorgehen-5-schritte}
+
+::: {.callout-rechnen appearance="minimal"}
+**Standard procedure of a hypothesis test:**
+
+1. **State hypotheses:** formulate $H_0$ and $H_1$.
+2. **Fix the significance level:** choose $\alpha$ (usually 0.05).
+3. **Compute the test statistic:** from the data.
+4. **Compute the p-value:** probability under $H_0$.
+5. **Decide:** reject $H_0$ if $p \leq \alpha$.
+:::
+
+---
+
+## Back to the opening questions {#zurück-zu-den-einstiegsfragen}
+
+### The drug {#das-medikament}
+
+The company wants to show that its drug works in more than 60 % of cases: $H_0: p \leq 0.6$, $H_1: p > 0.6$. The test statistic is the number $X$ of patients who improve. If $H_0$ holds with $p = 0.6$, then $X \sim \text{Bin}(40;\ 0.6)$ and one expects $24$ improvements. The p-value is the probability of at least as many improvements as observed:
+
+$$\text{p-value} = P(X \geq 26) \approx 0.317$$
+
+```{pyodide-python}
+from scipy import stats
+
+# P(X >= 26) = P(X > 25) for X ~ Bin(40; 0.6)
+print(stats.binom.sf(25, 40, 0.6))
+# For comparison: against p = 0.5 (coin toss)
+print(stats.binom.sf(25, 40, 0.5))
+```
+
+With a p-value of $0.317 > 0.05$, $H_0$ is not rejected. 26 out of 40 fit an effectiveness of exactly 60 % well. So the study does not show more than 60 %. Tested against $p = 0.5$, however, the p-value is $P(X \geq 26) \approx 0.040 \leq 0.05$: the data do show that the drug works better than a coin toss.
+
+### The bill length {#die-schnabellänge}
+
+For the $n = 151$ Adélie penguins in the data set, $\bar{x} = 38.79$ mm and $s = 2.66$ mm. We test $H_0: \mu \leq 38$ against $H_1: \mu > 38$ with the test statistic
+
+$$t = \frac{\bar{x} - 38}{s/\sqrt{n}}.$$
+
+It measures how many standard errors the mean lies above 38 mm. Compute the standard error and $t$:
+
+```{math-exercise}
+#| label: p-adelie-en
+#| caption: Test statistic by hand
+#| mode: numeric
+#| tolerance: 1%
+#| partial-credit: true
+#| field-labels: SE, t
+$\text{SE} =$ _[0.2165] mm, $t =$ _[3.65]
+```
+
+::: {.callout-tip collapse="true" title="Solution steps"}
+- $\text{SE} = s/\sqrt{n} = 2.66/\sqrt{151} \approx 2.66/12.29 \approx 0.2165$ mm
+- $t = (38.79 - 38)/0.2165 \approx 3.65$
+
+Under $H_0$, $t$ follows a t-distribution with $n - 1 = 150$ degrees of freedom (as for the t-interval in 2.4). The p-value is $P(T \geq 3.65) \approx 0.0002 \leq 0.05$, so $H_0$ is rejected. A difference of $0.79$ mm is no longer chance with 151 animals. In Python: `stats.ttest_1samp(adelie_bill, popmean=38, alternative='greater')`.
+:::
+
+---
+
+## Statistical vs. practical significance {#statistische-vs.-praktische-signifikanz}
+
+A common misconception: a **statistically significant** result is not automatically
+**practically relevant**.
+
+```{python}
+#| echo: false
+#| eval: true
+np.random.seed(42)
+# Large n: small true difference becomes significant
+n_large = 10000
+mu1, mu2 = 100.0, 100.1  # True difference: 0.1 units
+sigma = 2.0
+
+t_stat, p = stats.ttest_ind(
+    np.random.normal(mu1, sigma, n_large),
+    np.random.normal(mu2, sigma, n_large)
+)
+
+fig, axes = plt.subplots(1, 2, figsize=(10, 3.8))
+
+# Small n: large difference, not significant
+n_small = 10
+x1 = np.random.normal(100, 15, n_small)
+x2 = np.random.normal(110, 15, n_small)
+t2, p2 = stats.ttest_ind(x1, x2)
+
+ax = axes[0]
+ax.boxplot([x1, x2], tick_labels=['Group 1', 'Group 2'])
+ax.set_title(f'n={n_small} per group, true difference 10\np = {p2:.3f} → {"sig." if p2<0.05 else "NOT sig."}',
+             fontsize=10)
+ax.set_ylabel('Measurement')
+
+ax2 = axes[1]
+x1b = np.random.normal(mu1, sigma, n_large)
+x2b = np.random.normal(mu2, sigma, n_large)
+t_large, p_large = stats.ttest_ind(x1b, x2b)
+ax2.boxplot([x1b, x2b], tick_labels=['Group 1', 'Group 2'])
+ax2.set_title(f'n={n_large} per group, true difference 0.1\np = {p_large:.4f} → {"sig." if p_large<0.05 else "NOT sig."}',
+              fontsize=10)
+
+plt.suptitle('Statistical ≠ practical significance', fontsize=11, y=1.02)
+plt.tight_layout()
+plt.show()
+```
+
+**Left:** n = 10, true difference of 10 units – not statistically significant (too little data
+for the large spread).
+
+**Right:** n = 10,000, true difference of 0.1 units – statistically significant, but practically
+irrelevant.
+
+::: {.callout-tip}
+## Rule of thumb
+
+A statistically significant result only shows: **the data fit $H_0$ poorly.** With large
+samples, even a tiny effect is enough for that. Whether the effect matters in practice has to be
+judged on the content – for example via the effect size (Cohen's d, relative difference etc.).
+:::
+
+#### First: formulate the hypotheses
+
+Before you compute anything, state the hypotheses for the following exercise: a textbook claims that the mean flipper length of Adélie penguins is 190 mm.
+
+```{quizdown}
+---
+locale: en
+primaryColor: '#0a9396'
+shuffleQuestions: false
+shuffleAnswers: true
+---
+
+### Which hypotheses fit the textbook's claim ($\mu$ = true mean flipper length)?
+
+1. [x] $H_0$: $\mu = 190$ mm, $H_1$: $\mu \neq 190$ mm
+    > Correct! The textbook's claim is the null hypothesis, we look for evidence against it.
+1. [ ] $H_0$: $\mu \neq 190$ mm, $H_1$: $\mu = 190$ mm
+1. [ ] $H_0$: $\bar{x} = 190$ mm, $H_1$: $\bar{x} \neq 190$ mm
+1. [ ] $H_0$: $\mu > 190$ mm, $H_1$: $\mu \leq 190$ mm
+
+### Is this test one-sided or two-sided?
+
+1. [ ] One-sided, because we only look for larger values
+1. [x] Two-sided, because both clearly larger and clearly smaller values speak against the claim
+    > Correct! The alternative $\mu \neq 190$ allows deviations in both directions.
+1. [ ] One-sided, because we only have one mean
+1. [ ] This cannot be said
+
+### What is the difference between $\mu$ and $\bar{x}$?
+
+1. [ ] There is no difference.
+1. [x] $\mu$ is the true (unknown) mean of the population, $\bar{x}$ the mean of the sample.
+    > Correct! Hypotheses always refer to parameters of the population, not to sample values.
+1. [ ] $\mu$ is the median, $\bar{x}$ the mean.
+1. [ ] $\bar{x}$ is the true mean, $\mu$ the estimated one.
+```
+
+:::: {.theorem .exercise}
+#### Exercise: hypothesis test on flipper length {#aufgabe-hypothesentest-zur-flossenlänge}
+
+A textbook states that the mean flipper length of Adélie penguins is 190 mm. Check this claim with a hypothesis test.
+
+**Task:**
+
+1. State $H_0$ and $H_1$ for the test ($\alpha = 0.05$).
+2. Compute the p-value with a one-sample t-test.
+3. Make a decision (`reject = True` or `False`) and state it in a complete sentence (not tested).
+
+**Check** tests `t_stat`, `p_val` and `reject`.
+
+```{py-exercise}
+#| label: p-flosse-en
+#| caption: Hypothesis test on flipper length
+#| show-test-hints: false
+from scipy import stats
+import pandas as pd
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+adelie_flipper = penguins[penguins['species'] == 'Adelie']['flipper_length_mm'].dropna()
+
+t_stat = None      # Your code here
+p_val = None
+reject = None      # True (reject H₀) or False (keep H₀)
+print(t_stat, p_val, reject)
+
+## TESTS ##
+assert t_stat is not None and p_val is not None, "Compute t_stat and p_val with stats.ttest_1samp."
+assert p_val is None or (abs(float(p_val) - 0.4654) > 0.002 and abs(float(p_val) - 0.5346) > 0.002), "This is a one-sided p-value. H₁: μ ≠ 190 mm is two-sided, so compute without alternative=."
+assert t_stat is not None and abs(float(t_stat) + 0.0871) < 0.002, "t_stat is not correct: expected about −0.087 (one-sample t-test against 190 mm)."
+assert p_val is not None and abs(float(p_val) - 0.9307) < 0.002, "p_val is not correct: expected about 0.93."
+assert reject is not None and reject in (True, False), "Set reject to True (reject H₀) or False (keep H₀)."
+assert reject is None or reject not in (True, False) or reject == False, "p ≈ 0.93 is much larger than α = 0.05: H₀ is not rejected."
+```
+
+::: {.callout-tip title="Hint 1" collapse="true"}
+State the hypotheses: $H_0$: μ = 190 mm (the mean flipper length is 190 mm), $H_1$: μ ≠ 190 mm (two-sided test). Then: `t_stat, p_val = stats.ttest_1samp(adelie_flipper, popmean=190)`.
+:::
+
+::: {.callout-tip title="Hint 2" collapse="true"}
+Decision rule: if `p_val <= 0.05` → reject $H_0$. If `p_val > 0.05` → keep $H_0$. Write the finding out in full: "At a significance level of α = 0.05, H₀ is [rejected / not rejected], since p = ... [≤ / >] 0.05."
+:::
+
+::: {.callout-caution title="Solution" collapse="true"}
+```python
+t_stat, p_val = stats.ttest_1samp(adelie_flipper, popmean=190)
+reject = p_val <= 0.05
+```
+
+$H_0: \mu = 190$ mm, $H_1: \mu \neq 190$ mm. With $\bar{x} = 189.95$ mm, $t \approx -0.09$ and $p \approx 0.93$.
+
+"At a significance level of $\alpha = 0.05$, $H_0$ is not rejected, since $p \approx 0.93 > 0.05$. The data are well compatible with a mean flipper length of 190 mm."
+
+This does not prove that $\mu = 190$ mm. The data just do not speak against it.
+:::
+::::
+
+---
+
+## Summary {#zusammenfassung}
+
+| Term | Meaning |
+|---------|-----------|
+| **Null hypothesis** $H_0$ | "No effect" – rejected or kept |
+| **Alternative hypothesis** $H_1$ | The suspected effect |
+| **Significance level** $\alpha$ | Maximum allowed probability of a type I error |
+| **Test statistic** | The data summarised in one number |
+| **p-value** | P(data at least as extreme \| $H_0$ true) |
+| **Type I error** | $H_0$ rejected although true (rate ≤ α) |
+| **Type II error** | $H_0$ not rejected although false (rate = β) |
+| **Power** $1-\beta$ | Probability of detecting a real effect |
+
+---
+
+## Knowledge check {#wissensüberprüfung}
+
+```{quizdown}
+---
+locale: en
+primaryColor: '#0a9396'
+shuffleQuestions: false
+shuffleAnswers: true
+---
+
+### Which statement describes the p-value correctly?
+
+1. [x] The probability, if H₀ holds, of obtaining a test statistic at least as extreme as the observed one.
+    > Correct! The p-value measures how well the data are compatible with H₀.
+1. [ ] The probability that H₀ is true.
+1. [ ] The probability that H₁ is true.
+1. [ ] The error probability of the test.
+
+### A p-value of 0.02 at α = 0.05 means:
+
+1. [ ] H₀ is true with 98% probability.
+1. [x] H₀ is rejected, since p ≤ α. The data provide statistically significant evidence against H₀.
+    > Correct! p = 0.02 < 0.05 = α → H₀ is rejected.
+1. [ ] H₁ is true with 98% probability.
+1. [ ] The effect is practically meaningful.
+
+### What is a type I error?
+
+1. [ ] H₀ is not rejected although it is false.
+1. [x] H₀ is rejected although it is true (false alarm).
+    > Correct! Type I error = false positive. Its rate is controlled by α.
+1. [ ] The test statistic was computed incorrectly.
+1. [ ] The sample size is too small.
+
+### You run a test with α = 0.05 and get p = 0.049. What is the correct decision?
+
+1. [x] H₀ is rejected (p ≤ α).
+    > Correct! Even though it is close: p = 0.049 < 0.05 = α.
+1. [ ] H₀ is not rejected because the result is too close.
+1. [ ] The test must be repeated with more data.
+1. [ ] The decision is unclear.
+
+### A study with n = 50,000 participants finds p = 0.001 for a difference of 0.2 blood pressure points. What is the right interpretation?
+
+1. [ ] Clinically important finding, immediate action needed.
+1. [x] Statistically significant, but the effect (0.2 points) is so small that it is hardly clinically relevant.
+    > Correct! With a very large n, tiny differences become statistically significant.
+1. [ ] The study is flawed because p is so small.
+1. [ ] The result is not significant.
+
+### How can the power of a test be increased at a fixed α = 0.05?
+
+1. [ ] By lowering α to 0.01.
+1. [x] By increasing the sample size.
+    > Correct! As n grows, the standard error shrinks, the distributions under H₀ and H₁ move apart and β decreases.
+1. [ ] By halving the p-value.
+1. [ ] Not at all, the power is fixed by α.
+```
+
+::::

@@ -1,0 +1,326 @@
+---
+title: "Krümmungsverhalten untersuchen"
+title-en: "Examining Concavity"
+format: html
+filters:
+  - ctm-assessment
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+# Was ist die Krümmung?
+
+Die **Krümmung** einer Funktion beschreibt, wie sich der Graph "krümmt", bzw. "biegt", das heißt wie weit sich die Funktion von einer Geraden entfernt. Es hilft, sich das als Analogie mit Hilfe einer Straße vorzustellen, die Krümmung gibt an, ob die Straße nach rechts oder nach links abknickt und wie stark der Knick ist.  
+Die Krümmung einer Funktion erkennt man am **[Monotonieverhalten](monotonieverhalten.qmd)** der ersten Ableitung: Steigt $f'$, ist $f$ linksgekrümmt, fällt $f'$, ist $f$ rechtsgekrümmt. Dort, wo sich das Monotonieverhalten von $f'$ ändert, liegen die Wendestellen.  
+**Wichtig**: Bei Betrachtung des "Monotonieverhaltens" darf nicht außer Acht gelassen werden, dass hier das Monotonieverhalten der ersten **Ableitung** betrachtet wird.
+Mathematisch unterscheiden wir **zwei Hauptarten der Krümmung**:
+
+*   **Linksgekrümmt (konvex)**: Der Graph "knickt" sich nach oben. Wenn man sich auf dem Graphen bewegt, biegt er sich nach links.
+*   **Rechtsgekrümmt (konkav)**: Der Graph "knickt" sich nach unten. Wenn man sich auf dem Graphen bewegt, biegt er sich nach rechts.
+
+## Krümmungsverhalten bestimmen
+
+Um das Krümmungsverhalten einer Funktion zu bestimmen, nutzen wir die **zweite Ableitung** $f''(x)$. Sie ist die Ableitung von $f'$ und zeigt deshalb, ob $f'$ steigt oder fällt.
+Die **Schritte zur Bestimmung des Krümmungsverhaltens** sind wie folgt:
+
+1.  **Zweite Ableitung bilden:** Berechne die zweite Ableitung $f''(x)$ der Funktion $f(x)$.
+2.  **Nullstellen der zweiten Ableitung finden:** Bestimme die Nullstellen der zweiten Ableitung, indem du die Gleichung $f''(x) = 0$ löst. Diese Nullstellen sind **potenzielle Wendepunkte**, an denen sich das Krümmungsverhalten ändern könnte.
+3.  **Intervalle aufstellen:** Die Nullstellen von $f''(x)$ bilden die Grenzen der Intervalle.
+4.  **Vorzeichen von $f''(x)$ prüfen:** Wähle für jedes Intervall einen beliebigen Wert innerhalb des Intervalls aus. Setze diesen Wert in $f''(x)$ ein. Das Vorzeichen des Ergebnisses verrät dir das Krümmungsverhalten in diesem gesamten Intervall:
+    *   $f''(x) > 0 \implies$ Der Graph ist in diesem Intervall **linksgekrümmt (konvex)**.
+    *   $f''(x) < 0 \implies$ Der Graph ist in diesem Intervall **rechtsgekrümmt (konkav)**.
+
+## Krümmung im Bild
+
+Der folgende Plot zeigt $f(x) = x^4 - 4x^3 + 2$. Grün hinterlegt sind die Bereiche, in denen $f''(x) > 0$ ist (linksgekrümmt), rot die mit $f''(x) < 0$ (rechtsgekrümmt). Stell dir vor, du fährst mit dem Fahrrad von links nach rechts über den Graphen: Im grünen Bereich lenkst du nach links, im roten nach rechts.
+
+```{pyodide-python}
+#| read-only: true
+import numpy as np
+import matplotlib.pyplot as plt
+
+x_werte = np.linspace(-1.2, 3.8, 400)
+f_werte = x_werte**4 - 4*x_werte**3 + 2
+f_2strich = 12*x_werte**2 - 24*x_werte
+
+plt.plot(x_werte, f_werte, color="black", label="f(x)")
+unten, oben = -30, 15
+plt.fill_between(x_werte, unten, oben, where=f_2strich > 0, color="green", alpha=0.12, label="f'' > 0: linksgekrümmt")
+plt.fill_between(x_werte, unten, oben, where=f_2strich < 0, color="red", alpha=0.12, label="f'' < 0: rechtsgekrümmt")
+plt.ylim(unten, oben)
+plt.legend()
+plt.grid(True)
+plt.show()
+```
+
+**Kurz überlegt:** Wo ändert sich die Krümmung? Einmal von Hand.
+
+```{math-exercise}
+#| label: kruemmung-vorcheck
+#| caption: Vorab-Check – Krümmung von Hand
+#| vars: x
+#| field-labels: g''(x), Grenze
+#| partial-credit: true
+Für $g(x)=x^3-3x$ gilt $g''(x)=$ __[6*x]. Der Graph ist linksgekrümmt für $x>$ _[0] und rechtsgekrümmt für $x<0$.
+```
+
+# Python Implementierung
+
+Wenn die oben kurzgefasste Theorie verstanden ist kann betrachtet werden, wie das Ganze in Python implementiert werden kann.  
+
+```{pyodide-python}
+#| read-only: true
+import sympy
+x = sympy.symbols('x')
+f = x**4 - 4*x**3 + 2
+
+print(f"Die Funktion ist: f(x) = {f}")
+f_prime = sympy.diff(f, x)
+print(f"f'(x) = {f_prime}")
+f_double_prime = sympy.diff(f_prime, x)
+print(f"f''(x) = {f_double_prime}")
+
+potentielle_wendepunkte = sympy.solve(f_double_prime, x)
+potentielle_wendepunkte.sort() 
+print(f"Die Nullstellen der zweiten Ableitung sind: {potentielle_wendepunkte}")
+
+intervall_grenzen = [-sympy.oo] + potentielle_wendepunkte + [sympy.oo]
+
+print("\n--- Untersuchung des Krümmungsverhaltens ---")
+for i in range(len(intervall_grenzen) - 1):
+    untere_grenze = intervall_grenzen[i]
+    obere_grenze = intervall_grenzen[i+1]
+
+    # Hier wird der Mittelpunkt des Intervalls betrachtet (falls die Grenzen endlich sind)
+    if untere_grenze == -sympy.oo:
+        test_wert = obere_grenze - 1 if obere_grenze != sympy.oo else 0
+    elif obere_grenze == sympy.oo:
+        test_wert = untere_grenze + 1
+    else:
+        test_wert = (untere_grenze + obere_grenze) / 2
+
+    f_double_prime_at_test_wert = f_double_prime.subs(x, test_wert)
+```
+
+## Aufgabe: Krümmungsverhalten bestimmen
+
+Der Code oben hat bisher noch keine Ausgabe.  
+Um zu testen, dass du den Code wirklich verstanden hast, versuche eine Ausgabe zu schreiben, welche den entsprechenden Werten, die in der Funktion bestimmt werden, die passende Ausgabe zuordnet.  
+Das heißt in welchem Intervall hat die Funktion welche Krümmung?
+
+```{pyodide-python}
+#| label: kruemmung-aufgabe
+# Gib hier deinen Code an
+```
+
+```{math-exercise}
+#| label: kruemmung-kontrolle
+#| caption: Kontrolle – Krümmungsintervalle
+#| field-labels: Anfang, Ende
+#| partial-credit: true
+$f(x) = x^4 - 4x^3 + 2$ ist **rechtsgekrümmt** zwischen $x =$ _[0] und $x =$ _[2], sonst linksgekrümmt.
+```
+
+::: {.callout-note title="Hinweis" collapse="true"}  
+*   Überlege dir welcher Abschnitt im Code dafür zuständig ist das Krümmungsverhalten zu berechnen
+*   Im Anschluss überlege dir warum die Variablen so heißen wie sie heißen (Was bedeutet jede einzelne)
+*   Zuletzt was wurde oben im Text erklärt? Was muss angegeben werden, wenn es darum geht ein Krümmungsverhalten anzugeben?
+:::
+
+Verpacke das anschließend in eine Funktion. Ergänze `kruemmung_intervalle(f)`: Sie gibt eine Liste von Tupeln `(von, bis, art)` zurück, wobei `art` entweder `'links'` (linksgekrümmt) oder `'rechts'` (rechtsgekrümmt) ist.
+
+```{py-exercise}
+#| label: kruemmung-intervalle-funktion
+#| caption: kruemmung_intervalle schreiben
+#| show-test-hints: false
+import sympy
+x = sympy.symbols('x')
+
+def kruemmung_intervalle(f):
+    f_2strich = sympy.diff(f, x, 2)
+    stellen = sorted(sympy.solveset(f_2strich, x, sympy.Reals))
+    punkte = [-sympy.oo] + stellen + [sympy.oo]
+    ergebnis = []
+    for i in range(len(punkte) - 1):
+        links, rechts = punkte[i], punkte[i + 1]
+        if links == -sympy.oo and rechts == sympy.oo:
+            test = 0
+        elif links == -sympy.oo:
+            test = rechts - 1
+        elif rechts == sympy.oo:
+            test = links + 1
+        else:
+            test = (links + rechts) / 2
+        # Dein Code hier: Ist f_2strich an der Stelle test > 0, ist die Art 'links', sonst 'rechts'.
+        # Hänge (links, rechts, art) an ergebnis an.
+    return ergebnis
+
+## TESTS ##
+assert kruemmung_intervalle(x**4 - 4*x**3 + 2) == [(-sympy.oo, 0, 'links'), (0, 2, 'rechts'), (2, sympy.oo, 'links')], "f'' = 12x²-24x: links, rechts, links"
+assert kruemmung_intervalle(x**3) == [(-sympy.oo, 0, 'rechts'), (0, sympy.oo, 'links')], "x**3 ist links von 0 rechtsgekrümmt, rechts davon linksgekrümmt"
+assert kruemmung_intervalle(x**2) == [(-sympy.oo, sympy.oo, 'links')], "x**2 ist überall linksgekrümmt"
+```
+
+Wenn du damit fertig bist, kommt als letzter Teil dieses Kapitels der Abschnitt **[Wendepunkte bestimmen](wendepunkte.qmd)**.
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+# What is concavity?
+
+The **concavity** (curvature) of a function describes how the graph "curves" or "bends", i.e. how far the function deviates from a straight line. It helps to imagine a road: the curvature tells you whether the road bends to the right or to the left and how sharp the bend is.  
+The concavity of a function can be seen from the **[monotonicity](monotonieverhalten.qmd)** of the first derivative: if $f'$ increases, $f$ is concave up; if $f'$ decreases, $f$ is concave down. Where the monotonicity of $f'$ changes, there are inflection points.  
+**Important**: When looking at this "monotonicity", keep in mind that we are looking at the monotonicity of the first **derivative**.
+Mathematically, we distinguish **two main kinds of concavity**:
+
+*   **Concave up (convex)**: The graph "bends" upwards. If you move along the graph, it bends to the left.
+*   **Concave down (concave)**: The graph "bends" downwards. If you move along the graph, it bends to the right.
+
+## Determining concavity
+
+To determine the concavity of a function, we use the **second derivative** $f''(x)$, It is the derivative of $f'$ and therefore shows whether $f'$ increases or decreases.
+The **steps for determining concavity** are as follows:
+
+1.  **Compute the second derivative:** Compute the second derivative $f''(x)$ of the function $f(x)$.
+2.  **Find the zeros of the second derivative:** Determine the zeros of the second derivative by solving the equation $f''(x) = 0$. These zeros are **potential inflection points**, where the concavity might change.
+3.  **Set up the intervals:** The zeros of $f''(x)$ form the boundaries of the intervals.
+4.  **Check the sign of $f''(x)$:** For each interval, choose any value inside it and plug it into $f''(x)$. The sign of the result tells you the concavity on that whole interval:
+    *   $f''(x) > 0 \implies$ The graph is **concave up (convex)** on this interval.
+    *   $f''(x) < 0 \implies$ The graph is **concave down (concave)** on this interval.
+
+## Concavity in a picture
+
+The following plot shows $f(x) = x^4 - 4x^3 + 2$. The green background marks the regions where $f''(x) > 0$ (concave up), the red one those with $f''(x) < 0$ (concave down). Imagine riding a bike from left to right along the graph: in the green region you steer to the left, in the red one to the right.
+
+```{pyodide-python}
+#| read-only: true
+import numpy as np
+import matplotlib.pyplot as plt
+
+x_values = np.linspace(-1.2, 3.8, 400)
+f_values = x_values**4 - 4*x_values**3 + 2
+f_2prime = 12*x_values**2 - 24*x_values
+
+plt.plot(x_values, f_values, color="black", label="f(x)")
+bottom, top = -30, 15
+plt.fill_between(x_values, bottom, top, where=f_2prime > 0, color="green", alpha=0.12, label="f'' > 0: concave up")
+plt.fill_between(x_values, bottom, top, where=f_2prime < 0, color="red", alpha=0.12, label="f'' < 0: concave down")
+plt.ylim(bottom, top)
+plt.legend()
+plt.grid(True)
+plt.show()
+```
+
+**Quick check:** Where does the concavity change? Once by hand.
+
+```{math-exercise}
+#| label: kruemmung-vorcheck-en
+#| caption: Pre-check – concavity by hand
+#| vars: x
+#| field-labels: g''(x), boundary
+#| partial-credit: true
+For $g(x)=x^3-3x$ we have $g''(x)=$ __[6*x]. The graph is concave up for $x>$ _[0] and concave down for $x<0$.
+```
+
+# Python implementation
+
+Once the theory summarized above is understood, we can look at how the whole thing can be implemented in Python.  
+
+```{pyodide-python}
+#| read-only: true
+import sympy
+x = sympy.symbols('x')
+f = x**4 - 4*x**3 + 2
+
+print(f"The function is: f(x) = {f}")
+f_prime = sympy.diff(f, x)
+print(f"f'(x) = {f_prime}")
+f_double_prime = sympy.diff(f_prime, x)
+print(f"f''(x) = {f_double_prime}")
+
+potential_inflection_points = sympy.solve(f_double_prime, x)
+potential_inflection_points.sort() 
+print(f"The zeros of the second derivative are: {potential_inflection_points}")
+
+interval_bounds = [-sympy.oo] + potential_inflection_points + [sympy.oo]
+
+print("\n--- Examining the concavity ---")
+for i in range(len(interval_bounds) - 1):
+    lower_bound = interval_bounds[i]
+    upper_bound = interval_bounds[i+1]
+
+    # Here we look at the midpoint of the interval (if the bounds are finite)
+    if lower_bound == -sympy.oo:
+        test_value = upper_bound - 1 if upper_bound != sympy.oo else 0
+    elif upper_bound == sympy.oo:
+        test_value = lower_bound + 1
+    else:
+        test_value = (lower_bound + upper_bound) / 2
+
+    f_double_prime_at_test_value = f_double_prime.subs(x, test_value)
+```
+
+## Exercise: determining concavity
+
+The code above does not produce any output yet.  
+To test whether you have really understood the code, try to write output that assigns the matching description to the values determined in the function.  
+That is: on which interval does the function have which concavity?
+
+```{pyodide-python}
+#| label: kruemmung-aufgabe-en
+# Enter your code here
+```
+
+```{math-exercise}
+#| label: kruemmung-kontrolle-en
+#| caption: Check – concavity intervals
+#| field-labels: start, end
+#| partial-credit: true
+$f(x) = x^4 - 4x^3 + 2$ is **concave down** between $x =$ _[0] and $x =$ _[2], and concave up otherwise.
+```
+
+::: {.callout-note title="Hint" collapse="true"}  
+*   Think about which part of the code is responsible for calculating the concavity
+*   Then think about why the variables are named the way they are (what does each one mean?)
+*   Finally: what was explained in the text above? What has to be stated when describing the concavity?
+:::
+
+Then wrap it in a function. Complete `concavity_intervals(f)`: it returns a list of tuples `(from, to, kind)`, where `kind` is either `'up'` (concave up) or `'down'` (concave down).
+
+```{py-exercise}
+#| label: kruemmung-intervalle-funktion-en
+#| caption: Write concavity_intervals
+#| show-test-hints: false
+import sympy
+x = sympy.symbols('x')
+
+def concavity_intervals(f):
+    f_2prime = sympy.diff(f, x, 2)
+    points_x = sorted(sympy.solveset(f_2prime, x, sympy.Reals))
+    points = [-sympy.oo] + points_x + [sympy.oo]
+    result = []
+    for i in range(len(points) - 1):
+        left, right = points[i], points[i + 1]
+        if left == -sympy.oo and right == sympy.oo:
+            test = 0
+        elif left == -sympy.oo:
+            test = right - 1
+        elif right == sympy.oo:
+            test = left + 1
+        else:
+            test = (left + right) / 2
+        # Your code here: if f_2prime at test is > 0 the kind is 'up', otherwise 'down'.
+        # Append (left, right, kind) to result.
+    return result
+
+## TESTS ##
+assert concavity_intervals(x**4 - 4*x**3 + 2) == [(-sympy.oo, 0, 'up'), (0, 2, 'down'), (2, sympy.oo, 'up')], "f'' = 12x²-24x: up, down, up"
+assert concavity_intervals(x**3) == [(-sympy.oo, 0, 'down'), (0, sympy.oo, 'up')], "x**3 is concave down left of 0 and concave up right of it"
+assert concavity_intervals(x**2) == [(-sympy.oo, sympy.oo, 'up')], "x**2 is concave up everywhere"
+```
+
+Once you are done, the last part of this chapter is the section **[Finding Inflection Points](wendepunkte.qmd)**.
+
+::::

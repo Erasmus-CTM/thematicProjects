@@ -1,0 +1,374 @@
+/* Gemeinsam für alle Tutorials (Kurvendiskussion, Matrizen, Statistik, Quarto
+   Tutorial), gilt in hell und dunkel. Datei ist überall gleich – Änderungen in
+   alle Tutorials kopieren. Theme-Farben stehen in Theme/morph_custom.scss und
+   Theme/slate_custom.scss. */
+
+/* --- Icons in der Navigationsleiste: Font Awesome statt Bootstrap-Icons ---
+   Braucht die Font-Awesome-Webschrift aus include-in-header in _quarto.yml. */
+
+.quarto-navbar-tools .bi {
+    display: none;
+}
+
+/* Such-Icon */
+.quarto-search-toggle::before {
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    content: "\f002"; /* fa-magnifying-glass */
+}
+
+/* Theme-Toggle-Icon */
+.quarto-color-scheme-toggle::before {
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    content: "\f042"; /* fa-circle-half-stroke */
+}
+
+/* Reader-Mode-Icon (im Reader-Mode-Button) */
+.quarto-reader-toggle-btn::before {
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    content: "\f5da"; /* fa-book-open-reader */
+}
+
+/* --- Tabellen und Formeln ---
+   Kompakte Tabellen (Quarto-Klasse .sm): etwas kleinere Schrift, damit sie in die
+   Textspalte passen. */
+main table.table-sm {
+    font-size: 0.9em;
+}
+
+/* Zu breite Tabellen, Formeln und Code scrollen in ihrem eigenen Kasten, statt die
+   ganze Seite seitlich verschiebbar zu machen (vor allem auf dem Handy). */
+main table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+}
+main .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 2px;
+}
+main div.sourceCode {
+    overflow-x: auto;
+}
+/* Handy: MathJax-Formeln (Matrizen) wie KaTeX scrollen lassen, Inline-Code darf
+   umbrechen, lange Titel in der Navigationsleiste werden mit „…“ gekürzt. */
+main mjx-container[display="true"] {
+    overflow-x: auto;
+    overflow-y: hidden;
+    max-width: 100%;
+}
+main :not(pre) > code {
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+}
+main span.math.inline {
+    display: inline-block;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    vertical-align: bottom;
+}
+@media (max-width: 575.98px) {
+    .nav-page .pagination-link {
+        white-space: normal;
+    }
+    .nav-page {
+        max-width: 50%;
+    }
+}
+@media (max-width: 991.98px) {
+    .navbar .navbar-brand-container {
+        min-width: 0;
+        flex: 1 1 0;
+        margin-right: 0.5rem;
+    }
+    .navbar .navbar-brand-container .navbar-brand {
+        min-width: 0;
+        max-width: 100%;
+        padding-left: 3.25rem !important;
+        padding-right: 6rem !important;
+    }
+    .navbar .navbar-title {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+/* Übergangslösung, gehört eigentlich in die Extension pyodide-interaktiv:
+   Die Knopfleiste über den Code-Zellen bricht sonst nicht um und schiebt auf dem
+   Handy die Seite zur Seite. Entfernen, sobald es in CTM behoben ist. */
+.qpyodide-editor-toolbar {
+    flex-wrap: wrap;
+    row-gap: 4px;
+}
+.qpyodide-editor-toolbar-right-buttons {
+    flex-wrap: wrap;
+    max-width: 100%;
+    justify-content: flex-end;
+}
+
+/* --- Große Bildschirme: alles wächst mit ---
+   Quarto begrenzt die Seite auf feste Pixelbreiten (Textspalte 800px, Seitenleisten
+   je 250px). Auf 1920px oder 2560px blieb so die Hälfte des Bildschirms leer.
+   Ab 1700px wächst deshalb die Grundschrift mit der Fensterbreite (17px wie bei Morph
+   bis 1700px, ca. 25.6px bei 2560px, höchstens 28px), und das Spaltenraster von Quarto ist unten
+   in rem statt px angegeben – Text, Formeln, Seitenleisten und Spalten werden
+   gemeinsam größer und nutzen etwa drei Viertel der Breite. Darunter bleibt alles
+   wie von Quarto vorgesehen.
+   Das Raster ist Quartos eigenes (Quarto 1.8, Layout „floating“ ab 992px),
+   nur px -> rem umgerechnet (1rem = 17px, so ändert sich bei 1700px nichts sprunghaft). */
+@media (min-width: 1700px) {
+  :root {
+    --bs-root-font-size: clamp(17px, calc(100vw / 100), 28px);
+  }
+  #quarto-sidebar .sidebar-menu-container {
+    min-width: 13.24rem;
+  }
+  .navbar,
+  .navbar > .container-fluid {
+    min-height: 3.294rem;
+  }
+  body.floating .page-columns {
+    grid-template-columns: [screen-start] 1.5em [screen-start-inset] 5fr [page-start] minmax(1.471rem, 2.941rem) [page-start-inset] minmax(2.941rem, 8.824rem) [body-start-outset] minmax(1.471rem, 2.941rem) [body-start] 1.5em [body-content-start] minmax(29.41rem, calc(47.06rem - 3em)) [body-content-end] 1.5em [body-end] minmax(1.471rem, 2.941rem) [body-end-outset] minmax(2.941rem, 8.824rem) [page-end-inset] minmax(1.471rem, 2.941rem) [page-end] 5fr [screen-end-inset] 1.5em [screen-end];
+  }
+  body.floating.fullcontent .page-columns {
+    grid-template-columns: [screen-start] 1.5em [screen-start-inset] 5fr [page-start] 2.941rem [page-start-inset] minmax(2.941rem, 8.824rem) [body-start-outset] 2.941rem [body-start] 1.5em [body-content-start] minmax(29.41rem, calc(47.06rem - 3em)) [body-content-end] 1.5em [body-end body-end-outset page-end-inset page-end] 5fr [screen-end-inset] 1.5em [screen-end];
+  }
+  body.floating.slimcontent .page-columns {
+    grid-template-columns: [screen-start] 1.5em [screen-start-inset] 5fr [page-start] 2.941rem [page-start-inset] minmax(2.941rem, 8.824rem) [body-start-outset] 2.941rem [body-start] 1.5em [body-content-start] minmax(26.47rem, calc(44.12rem - 3em)) [body-content-end] 1.5em [body-end] 2.941rem [body-end-outset] minmax(2.941rem, 8.824rem) [page-end-inset] 2.941rem [page-end] 5fr [screen-end-inset] 1.5em [screen-end];
+  }
+  body.floating.listing .page-columns {
+    grid-template-columns: [screen-start] 1.5em [screen-start-inset] 5fr [page-start] minmax(1.471rem, 2.941rem) [page-start-inset] minmax(2.941rem, 8.824rem) [body-start-outset] minmax(1.471rem, 2.941rem) [body-start] 1.5em [body-content-start] minmax(29.41rem, calc(47.06rem - 3em)) [body-content-end] 1.5em [body-end] minmax(1.471rem, 2.941rem) [body-end-outset] minmax(2.941rem, 8.824rem) [page-end-inset] minmax(1.471rem, 2.941rem) [page-end] 5fr [screen-end-inset] 1.5em [screen-end];
+  }
+}
+
+/* math-exercise: Knöpfe in hell und dunkel gleich groß und flach (Morph hätte
+   größeres Polster und Schatten, Slate kleineres). Farben in Theme/*.scss. */
+.math-exercise-controls .btn,
+.py-exercise-buttons .btn,
+.py-download-section .btn {
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    font-weight: 600; /* Morph: 600, Slate: 400 – sonst ändert sich die Breite beim Umschalten */
+}
+.math-exercise-controls .btn-group {
+    box-shadow: none !important;
+    gap: 0;
+}
+.math-exercise-controls .btn-group > .btn + .btn {
+    margin-left: -1px;
+}
+.math-exercise-controls .btn-group > .btn:not(:last-child) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+.math-exercise-controls .btn-group > .btn:not(:first-child) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+/* Navbar-Titel: gleiches Polster in hell und dunkel (sichtbar am Hover-Kästchen) */
+.navbar .navbar-brand {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+}
+
+/* Gleiche Maße in hell und dunkel (gefunden beim Vergleich aller Seiten) */
+.code-tools-button {
+    padding: 0.25rem 0.5rem;
+    border-width: 1px;
+}
+.panel-tabset .nav-tabs .nav-link {
+    padding: 0.5rem 1rem;
+    border-width: 1px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+.quarto-title-breadcrumbs .breadcrumb {
+    padding: 0.6rem 1rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+}
+
+/* Navbar-Dropdowns (Sprachwahl): aktive Sprache fett (Farbe im jeweiligen Theme) */
+.navbar .dropdown-menu .dropdown-item.active {
+    font-weight: 700;
+}
+
+/* Kapitelübersicht: aktuelle Seite halbfett (beide Modi gleich) */
+.quarto-title-breadcrumbs .breadcrumb-item:last-child a,
+.quarto-page-breadcrumbs .breadcrumb-item:last-child a {
+    font-weight: 600;
+}
+.quarto-title-breadcrumbs .breadcrumb-item a,
+.quarto-page-breadcrumbs .breadcrumb-item a {
+    text-underline-offset: 3px;
+}
+/* Lesemodus: aufklappbare Leisten als Knopf erkennbar (beide Modi gleich groß) */
+.quarto-sidebar-toggle {
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 6px;
+}
+.quarto-sidebar-toggle-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    opacity: 1 !important;
+    border-radius: 6px;
+}
+.quarto-sidebar-toggle-icon {
+    font-size: 0.9rem;
+}
+
+/* Überschrift über der linken Seitenleiste, Gegenstück zu „Auf dieser Seite“ rechts.
+   Text je Sprache aus <html lang>, Größe wie #toc-title; Farbe in den Theme-Dateien. */
+#quarto-sidebar .sidebar-menu-container::before {
+    content: "Tutorial-\00DC bersicht";
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.2;
+    margin: 0.3rem 0 0.4rem;
+}
+html:lang(en) #quarto-sidebar .sidebar-menu-container::before { content: "Tutorial overview"; }
+html:lang(da) #quarto-sidebar .sidebar-menu-container::before { content: "Tutorial-oversigt"; }
+html:lang(nb) #quarto-sidebar .sidebar-menu-container::before,
+html:lang(no) #quarto-sidebar .sidebar-menu-container::before { content: "Tutorialoversikt"; }
+html:lang(sv) #quarto-sidebar .sidebar-menu-container::before { content: "Tutorial\00F6 versikt"; }
+/* … und auf gleicher Höhe wie „Auf dieser Seite“: leerer Seitenleisten-Kopf und Menü-Polster
+   schoben die linke Spalte ~34px tiefer */
+#quarto-sidebar .sidebar-header,
+#quarto-sidebarnav-toggle .sidebar-header {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+#quarto-sidebar .sidebar-menu-container,
+#quarto-sidebarnav-toggle .sidebar-menu-container {
+    padding-top: 0;
+}
+/* Lesemodus: Quarto zeigt beim Ausklappen eine Kopie der Seitenleiste ohne die ID
+   #quarto-sidebar – deshalb steht #quarto-sidebarnav-toggle hier und in den Theme-
+   Dateien jeweils mit dabei. Ohne das waren über „Startseite“ ~58px leer. */
+#quarto-sidebarnav-toggle .quarto-sidebar-toggle-contents {
+    padding-top: 0.5rem;
+}
+
+/* Aktuelle Seite links und aktueller Abschnitt rechts gleich markiert: fett mit
+   2px-Strich links (Farben in den Theme-Dateien). Morph färbte die Seite links nur
+   minimal anders als die übrigen Einträge – man sah nicht, wo man ist.
+   Links per box-shadow (Einträge haben keinen Rand), rechts verdoppelt er den 1px-Rand. */
+#quarto-sidebar .sidebar-link.active,
+#quarto-sidebarnav-toggle .sidebar-link.active {
+    font-weight: 700;
+    padding-left: 0.4rem;
+    margin-left: -0.4rem;
+}
+#TOC a.nav-link.active {
+    box-shadow: inset 1px 0 0 currentColor;
+}
+
+/* Knopf „Alle ausklappen“ unten in der Seitenleiste: setzt build_multilingual_site.py
+   als Kästchen ein, die Wirkung kommt ganz aus CSS (kein JavaScript). Angehakt sind
+   alle Abschnitte offen und die Pfeile gedreht. Farben in den Theme-Dateien. */
+.sidebar-alle-ausklappen {
+    display: block;
+    width: calc(100% - 24px);
+    margin: 12px 12px 6px;
+    padding: 5px 10px;
+    font-size: 0.78em;
+    text-align: center;
+    cursor: pointer;
+    border: 1px solid rgba(128, 128, 128, 0.3);
+    border-radius: 4px;
+    opacity: 0.65;
+}
+.sidebar-alle-ausklappen:hover,
+.sidebar-alle-ausklappen:has(input:focus-visible) {
+    opacity: 1;
+}
+.sidebar-alle-ausklappen:has(input:focus-visible) {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+.sidebar-alle-ausklappen input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+.sidebar-alle-ausklappen .zu,
+.sidebar-alle-ausklappen:has(input:checked) .auf {
+    display: none;
+}
+.sidebar-alle-ausklappen:has(input:checked) .zu {
+    display: inline;
+}
+.sidebar-menu-container:has(.sidebar-alle-ausklappen input:checked) .sidebar-section.collapse {
+    display: block;
+}
+/* Pfeile: Quarto dreht ::before nach aria-expanded; ::before reagiert in Chrome nicht
+   zuverlässig auf :has(), daher das Element selbst – nur bei den zugeklappten */
+.sidebar-item-toggle .bi-chevron-right {
+    display: inline-block;
+    transition: transform 200ms ease;
+}
+.sidebar-menu-container:has(.sidebar-alle-ausklappen input:checked) .sidebar-item-toggle[aria-expanded=false] .bi-chevron-right {
+    transform: rotate(90deg);
+}
+
+/* Lesemodus-Leisten: lange Titel (Seitentitel links) einzeilig mit „…“, Pfeil fest rechts */
+.quarto-sidebar-toggle-title {
+    position: relative;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-left: 1.6em;
+    padding-right: 1.6em;
+}
+.quarto-sidebar-toggle-icon {
+    position: absolute;
+    right: 0.6em;
+    top: 50%;
+    transform: translateY(-50%);
+    float: none !important;
+}
+
+/* Dunkelmodus: Kontext-Kasten und Zahnrad der Extensions sind fest hell gefärbt */
+body.quarto-dark .ai-feedback-context,
+body.quarto-dark .ai-context,
+body.quarto-dark .math-exercise-context,
+body.quarto-dark .feedback-source {
+  background: rgba(255, 255, 255, .07);
+  color: var(--bs-body-color);
+}
+
+/* Zahnrad: in beiden Modi wie die Nachbar-Buttons */
+.math-exercise-controls .ai-feedback-gear,
+.py-exercise-buttons .ai-feedback-gear,
+.qpyodide-editor-toolbar .ai-feedback-gear {
+  color: #1f2a5c;
+  background: rgba(255, 255, 255, .6) !important;
+  background-image: none !important;
+  border: 1px solid #7f8a99;
+  box-shadow: none;
+}
+body.quarto-dark .math-exercise-controls .ai-feedback-gear,
+body.quarto-dark .py-exercise-buttons .ai-feedback-gear,
+body.quarto-dark .qpyodide-editor-toolbar .ai-feedback-gear {
+  color: #e9ecef;
+  background: #3e444a !important;
+  border-color: #6c757d;
+}
+
+/* Handy: JSXGraph-Fläche und breite Inhalte nicht breiter als der Bildschirm */
+iframe[id^="JXG"] { max-width: 100%; }
+main.content { overflow-x: clip; }
+
+/* Handy: lange Titel im Link zur nächsten/vorigen Seite umbrechen statt überlaufen */
+.page-navigation .nav-page { min-width: 0; max-width: 50%; }
+.page-navigation .nav-page-text { white-space: normal; overflow-wrap: anywhere; }

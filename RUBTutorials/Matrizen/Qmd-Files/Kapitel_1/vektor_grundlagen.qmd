@@ -1,0 +1,1305 @@
+---
+title: '1.1. Vektoren — Die Grundlagen'
+title-en: '1.1. Vectors — The Basics'
+format: html
+filters:
+  - ctm-assessment
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+::: {.callout-note title="Zellen der Reihe nach ausführen"}
+Die Code-Zellen dieser Seite bauen aufeinander auf: Importe, Variablen und Funktionen aus einer Zelle gelten auch in allen späteren Zellen und werden dort nicht wiederholt. Führe die Zellen deshalb von oben nach unten aus. Bei Reitern gilt dieselbe Reihenfolge von links nach rechts. Meldet Python einen `NameError`, hast du meist eine frühere Zelle noch nicht ausgeführt. Aufgaben mit **Überprüfen** laufen für sich allein: Dort gilt nur, was in der Zelle selbst steht.
+:::
+
+Wie in Kapitel 0 gesehen ist der Grund warum es dieses Python Tutorial gibt, die Möglichkeit Rechnungen zu vereinfachen und mithilfe von Entscheidungsbäumen nur die relevanten Werte zu berechnen, somit also auch ein schnelleres Programm zu bauen, da nicht immer alles ausgerechnet wird, sondern nur Relevantes.
+
+## 1.1.1. Grundlagen von Python
+
+Dieser Abschnitt ist dazu gedacht, dir die Grundlagen von Python einmal ordentlich zu erklären.
+_vor allem, wenn das dein erster Kontaktpunkt mit Python ist, solltest du diesen Abschnitt sorgfältig durcharbeiten_
+
+<details>
+<summary> Falls du das Gefühl hast, nicht genug über Python zu wissen, oder dein Wissen gerne auffrischen würdest, schlag gerne diesen Abschnitt auf! </summary>
+
+::: {.panel-tabset}
+
+## Variablen
+
+Für einen leichten Einstieg in Python beschäftigen wir uns zunächst mit Variablen. Dabei ist der Unterschied zu Variablen in der Mathematik hervorzuheben. Im Folgenden ein kleines Beispiel:
+
+```{pyodide-python}
+#| read-only: true
+a = 7
+print(a)
+```
+Dies ist eine Variablenzuweisung. Die Variablen können nach der Zuweisung für die Berechnung verwendet werden. Ein paar Beispiele siehst du im folgenden Code:
+
+```{pyodide-python}
+#| read-only: true
+a = 4
+b = 5
+print(a+b)
+print(a*b)
+print(a/2)
+print(a-b)
+```
+Für die Multiplikation wird in Python ein Sternchen * verwendet. Dividieren kannst du in Python mit dem Schrägstrich /.
+Am folgenden Beispiel lässt sich der Unterschied zu Variablen in der Mathematik verdeutlichen:
+
+```{pyodide-python}
+#| read-only: true
+a = 4
+a = 7 + a
+b = 5
+print(a+b)
+print(a*b)
+print(a/2)
+print(a-b)
+```
+
+Wie du siehst können sich Variablen verändern beziehungsweise neu zugewiesen werden. In Python hat eine Variable immer den Wert, der ihr zuletzt zugewiesen worden ist.
+
+Statt einzelner Anweisungen wollen wir uns jetzt ein ganzes Programm ansehen. Stellen wir uns vor, wir fahren mit dem Auto eine längere Strecke und notieren uns dabei den Kilometerstand des Fahrzeugs zu Beginn der Fahrt sowie zu gewissen Zeitpunkten während der Fahrt gemeinsam mit der bisherigen Fahrtdauer.
+Diese Informationen können wir nutzen, um uns die Durchschnittsgeschwindigkeit der ganzen Fahrt sowie in den Teilintervallen zu berechnen.
+Ein einfaches Python-Programm, das dies für uns erledigt, ist das folgende:
+
+
+```{pyodide-python}
+#| read-only: true
+# Programm zur Berechnung der Durchschnittsgeschwindigkeit
+s0 = 13157.6 # Kilometerstand zu Beginn
+s1 = 13160.0 # Kilometerstand bei 1. Messung
+t1 = 4 # Minuten ab Fahrtbeginn bei 1. Messung
+s2 = 13177.4 # Kilometerstand bei 2. Messung
+t2 = 16 # Minuten ab Fahrtbeginn bei 2. Messung
+s3 = 13267.4 # Kilometerstand bei 3. Messung
+t3 = 64 # Minuten ab Fahrtbeginn bei 3. Messung
+# Durchschnittsgeschwindigkeit in km/h im ...
+v1 = (s1 - s0) / (t1 / 60) # ... 1. Intervall
+v2 = (s2 - s1) / ((t2 - t1) / 60) # ... 2. Intervall
+v3 = (s3 - s2) / ((t3 - t2) / 60) # ... 3. Intervall
+v_durchschnitt = (s3 - s0) / (t3 / 60) # Gesamt
+print(v1)
+print(v2)
+print(v3)
+print("Durchschnitt: {} km/h".format(v_durchschnitt))
+```
+
+An diesem Beispiel siehst du zudem, dass Variablen auch mehr als einen Buchstaben haben können.
+Es können in Python auch Variablen durch ganze Wörter definiert werden, was zudem sinnvoll ist, um den Code mit passenden Variablennamen besser verstehen zu können.
+
+### Aufgabe zu Variablen
+
+Probiere einmal den Code so zu verändern, dass die Berechnung durch eine 4. und 5. Messung erweitert wird.
+Bei der vierten Messung war der Kilometerstand bei 13281 km und 75 Minuten nach Fahrtbeginn.
+Bei der fünften Messung betrug der Kilometerstand 13334 km und 119 Minuten nach Fahrtbeginn.
+Diese Berechnungen sollen auch mit dem Befehl print() ausgegeben werden.
+
+**Befehle, die du brauchst:** Zuweisung mit `=`, die Rechenzeichen `-` und `/`, `print()`.
+
+```{pyodide-python}
+# Programm zur Berechnung der Durchschnittsgeschwindigkeit
+s0 = 13157.6 # Kilometerstand zu Beginn
+s1 = 13160.0 # Kilometerstand bei 1. Messung
+t1 = 4 # Minuten ab Fahrtbeginn bei 1. Messung
+s2 = 13177.4 # Kilometerstand bei 2. Messung
+t2 = 16 # Minuten ab Fahrtbeginn bei 2. Messung
+s3 = 13267.4 # Kilometerstand bei 3. Messung
+t3 = 64 # Minuten ab Fahrtbeginn bei 3. Messung
+# Durchschnittsgeschwindigkeit in km/h im ...
+v1 = (s1 - s0) / (t1 / 60) # ... 1. Intervall
+v2 = (s2 - s1) / ((t2 - t1) / 60) # ... 2. Intervall
+v3 = (s3 - s2) / ((t3 - t2) / 60) # ... 3. Intervall
+v_durchschnitt = (s3 - s0) / (t3 / 60) # Gesamt
+print(v1)
+print(v2)
+print(v3)
+print("Durchschnitt: {} km/h".format(v_durchschnitt))
+```
+
+::: {.callout-caution title="Lösung" collapse="true"}
+```python
+# Ergänzungen am Ende der Wertetabelle bzw. der Rechnung:
+s4 = 13281    # Kilometerstand bei 4. Messung
+t4 = 75
+s5 = 13334    # Kilometerstand bei 5. Messung
+t5 = 119
+v4 = (s4 - s3) / ((t4 - t3) / 60)
+v5 = (s5 - s4) / ((t5 - t4) / 60)
+v_durchschnitt = (s5 - s0) / (t5 / 60)
+print(v4)
+print(v5)
+print("Durchschnitt: {} km/h".format(v_durchschnitt))
+```
+:::
+
+
+## Fallunterscheidungen
+
+Bei einer Fallunterscheidung möchte man zwei oder mehr Fälle unterscheiden.
+Übersetzt heißt dies: Wenn "x", mache "y", ansonsten mache "z". Betrachte das folgende Beispiel:
+
+```{pyodide-python}
+#| read-only: true
+a = 15
+b = 20
+if a>=b:
+    print("a ist größer als b oder gleich b")
+else:
+    print("b ist größer als a")
+```
+
+Probiere es selbst aus und schreibe einen Code, in dem du zwischen a und b unterscheidest. Wenn a gleich b ist, soll ein entsprechender Text ausgegeben werden und wenn sie unterschiedlich sind, ein entsprechend anderer Text.
+
+```{pyodide-python}
+```
+
+Wenn du mehr als zwei Fälle unterscheiden möchtest, kannst du "elif" zwischen "if" und "else" verwenden. Dies ist die Kurzfassung für "else if". Betrachte den folgenden Code:
+
+```{pyodide-python}
+#| read-only: true
+a = 25
+b = 20
+if a==b:
+    print("a ist gleich b")
+elif a>b:
+    print("a ist größer als b")
+else:
+    print("b ist größer als a")
+```
+
+Es ist nicht notwendig, immer if und else zu verwenden. Du kannst auch nur if verwenden, wenn du im else-Fall nichts machen möchtest. Das probieren wir gleich aus, und statt feste Werte vorzugeben, fragen wir a und b diesmal mit `input()` ab. `input()` liefert die Eingabe als Text, `int()` wandelt diesen Text in eine ganze Zahl um. Führe die Zelle aus und probiere verschiedene Zahlenpaare aus — einmal gleich, einmal unterschiedlich.
+
+```{pyodide-python}
+a = int(input("Gib einen Wert für a ein: "))
+b = int(input("Gib einen Wert für b ein: "))
+if a==b:
+    print("Fallunterscheidungen sind super")
+```
+
+### Aufgabe zu Fallunterscheidungen
+
+Schreibe eine Funktion `vorzeichen(x)`, die für eine ganze Zahl `x` den Text `"positiv"`, `"negativ"` oder `"null"` zurückgibt.
+
+**Befehle, die du brauchst:** `def`, `return`, `if` / `elif` / `else`, die Vergleiche `>` und `<`.
+
+```{py-exercise}
+#| label: grundlagen-vorzeichen
+#| caption: vorzeichen implementieren
+#| show-test-hints: false
+def vorzeichen(x):
+    # Dein Code hier
+    pass
+
+## TESTS ##
+assert vorzeichen(5) == "positiv", "Falsches Ergebnis für 5"
+assert vorzeichen(-3) == "negativ", "Falsches Ergebnis für -3"
+assert vorzeichen(0) == "null", "Falsches Ergebnis für 0"
+```
+
+::: {.callout-caution title="Lösung" collapse="true"}
+```python
+def vorzeichen(x):
+    if x > 0:
+        return "positiv"
+    elif x < 0:
+        return "negativ"
+    else:
+        return "null"
+```
+:::
+
+
+## Datentypen
+
+
+Es gibt verschiedene Datentypen, die in Python unterschieden werden. Ganzzahlen heißen Integer. Dezimalzahlen werden "Float" genannt.
+Sobald in einer Berechnung eine Dezimalzahl vorkommt, ist das Ergebnis ebenfalls ein Float, auch, wenn es eigentlich eine Ganzzahl ist. Im folgenden Beispiel kannst du dies sehen:
+
+```{pyodide-python}
+#| read-only: true
+a = 15
+print(a)
+b = 1.5
+print(a*b)
+print(a/b)
+```
+Die Division ergibt immer eine Gleitkommazahl, auch wenn ein Integer von einem anderen dividiert wird:
+
+```{pyodide-python}
+#| read-only: true
+a = 15
+b = 5
+print (a/b)
+```
+Ein weiterer Datentyp ist der sogenannte Boolean, der als wahr oder falsch ausgewertet wird. Führe den folgenden Code aus und verändere ihn so, dass "falsch" ausgegeben wird.
+
+```{pyodide-python}
+a = 15
+if a==15:
+  print ("wahr")
+else:
+  print ("falsch")
+```
+
+Im obigen Beispiel haben wir einen Vergleichsoperator "==" verwendet, um auf Gleichheit zu überprüfen.
+Möchte man abfragen, ob a ungleich einem bestimmten Wert ist, sagen wir 7, so verwendet man "a!=7".
+
+### Aufgabe zu Datentypen
+
+Schreibe eine Funktion `pruefe(a)`, die `"wahr"` zurückgibt, wenn `a` ungleich 8 ist, und sonst `"falsch"`.
+
+**Befehle, die du brauchst:** `def`, `return`, `if` / `else`, der Vergleich `!=`.
+
+```{py-exercise}
+#| label: grundlagen-ungleich
+#| caption: pruefe implementieren
+#| show-test-hints: false
+def pruefe(a):
+    # Dein Code hier
+    pass
+
+## TESTS ##
+assert pruefe(5) == "wahr", "Falsches Ergebnis für 5"
+assert pruefe(8) == "falsch", "Falsches Ergebnis für 8"
+assert pruefe(-8) == "wahr", "Falsches Ergebnis für -8"
+```
+
+::: {.callout-caution title="Lösung" collapse="true"}
+```python
+def pruefe(a):
+    if a != 8:
+        return "wahr"
+    else:
+        return "falsch"
+```
+:::
+
+
+## Listen
+
+Neben den numerischen Datentypen gibt es weitere, worin sich mehrere Zahlen in einer Menge darstellen lassen. Diese nennen sich Listen und können sowohl direkt mit Zahlen erstellt werden, als auch zunächst leer gelassen werden.
+Betrachte die folgenden Beispiele:
+
+```{pyodide-python}
+#| read-only: true
+Liste = [2, -4, 5, 9, 12]
+print(Liste)
+print(Liste[4])
+```
+
+Im obigen Beispiel wird eine Liste aus fünf Zahlen initialisiert. Anschließend wird die Liste und der fünfte Eintrag der Liste ausgegeben. Der Grund, wieso wir dabei "Liste[4]" und nicht "Liste[5]" verwenden, ist, weil der Index der Listeneinträge bei null beginnt.
+So ist der erste Listeneintrag bei "Liste[0]" und der fünfte bei "Liste[4]".
+
+Im nächsten Beispiel werden wir eine leere Liste erstellen und dann zwei Einträge hinzufügen. Anschließend verändern wir einen der Einträge. Beachte die Ausgabe:
+
+```{pyodide-python}
+#| read-only: true
+Liste = []
+Liste.append(4)
+Liste.append(-7)
+print(Liste)
+Liste[1]=-9
+print(Liste)
+```
+
+### Aufgabe zu Listen
+
+Versuch es einmal selbst und erstelle eine Liste mit den Einträgen 2, -13, 6 und 4. Gib die Liste aus. Verändere dann den zweiten Eintrag zu einer 4 und gib die neue Liste aus.
+
+**Befehle, die du brauchst:** eckige Klammern `[...]` zum Erstellen, der Indexzugriff `Liste[i]`, `print()`.
+
+```{pyodide-python}
+```
+
+::: {.callout-caution title="Lösung" collapse="true"}
+```python
+Liste = [2, -13, 6, 4]
+print(Liste)
+Liste[1] = 4   # der zweite Eintrag hat den Index 1
+print(Liste)
+```
+:::
+
+
+## Funktionen
+
+Bisher haben wir Code geschrieben, der von oben nach unten ausgeführt wird. Wenn wir eine Berechnung wie die der Fakultät oder der Durchschnittsgeschwindigkeit an verschiedenen Stellen mit unterschiedlichen Werten wiederholen wollten, müssten wir den Code kopieren und einfügen. Das ist unübersichtlich und fehleranfällig.
+
+**Funktionen** lösen dieses Problem. Eine Funktion ist ein benannter, wiederverwendbarer Codeblock, der eine bestimmte Aufgabe erfüllt. Man definiert sie einmal und kann sie dann beliebig oft "aufrufen".
+
+Eine Funktion wird mit dem Schlüsselwort `def` definiert, gefolgt von einem Namen und Klammern `()`. Innerhalb der Klammern können **Parameter** (Eingabewerte) übergeben werden. Mit `return` gibt die Funktion ein Ergebnis zurück.
+
+### f-Strings in Python
+Im Folgenden verwenden wir sogenannte **f-Strings** für die `print()`-Ausgaben. Ein f-String wird durch ein `f` vor dem öffnenden Anführungszeichen eingeleitet (z.B. `f"Hallo"`).
+
+Der große Vorteil ist, dass man Variablen und Ausdrücke direkt in den Text einbetten kann, indem man sie in geschweifte Klammern `{}` setzt. Das macht den Code oft deutlich lesbarer.
+```{pyodide-python}
+#| read-only: true
+# Definition einer einfachen Funktion, die zwei Zahlen addiert
+def addiere(zahl1, zahl2):
+    summe = zahl1 + zahl2
+    return summe
+
+# Aufruf der Funktion mit den Werten 5 und 10
+print(f"Das Ergebnis von 5 + 10 ist: {addiere(5, 10)}")
+
+# Erneuter Aufruf mit anderen Werten
+print(f"Das Ergebnis von -2 + 7 ist: {addiere(-2, 7)}")
+```
+
+### Aufgabe zu Funktionen
+
+Schreibe eine Funktion mit dem Namen `rechteck_flaeche`, die die Länge und Breite eines Rechtecks als Parameter entgegennimmt und dessen Flächeninhalt berechnet und zurückgibt.
+
+- Die Funktion soll zwei Parameter annehmen: `laenge` und `breite`.
+- Sie soll das Produkt der beiden Parameter berechnen und mit `return` zurückgeben.
+
+Diesmal prüfen versteckte Tests automatisch, ob deine Lösung stimmt — klicke nach dem Ausfüllen auf **Überprüfen**.
+
+**Befehle, die du brauchst:** `def`, `return`, das Rechenzeichen `*`.
+
+```{py-exercise}
+#| label: vektor-grundlagen-rechteck
+#| caption: rechteck_flaeche implementieren
+#| show-test-hints: false
+def rechteck_flaeche(laenge, breite):
+    # Dein Code hier
+    pass
+
+## TESTS ##
+assert rechteck_flaeche(2, 3) == 6,   "rechteck_flaeche(2, 3) sollte 6 ergeben"
+assert rechteck_flaeche(5, 5) == 25,  "rechteck_flaeche(5, 5) sollte 25 ergeben"
+assert rechteck_flaeche(1, 7) == 7,   "rechteck_flaeche(1, 7) sollte 7 ergeben"
+```
+
+::: {.callout-caution title="Lösung" collapse="true"}
+```python
+def rechteck_flaeche(laenge, breite):
+    return laenge * breite
+```
+:::
+
+
+
+## Schleifen
+
+Zum Verständnis ein paar Beispiele und eine Aufgabe dazu:
+
+`For-Schleifen` wiederholen sich über ein bestimmtes Intervall. Das Schlüsselwort `range` beschreibt hierbei das Intervall von $a$ bis $b$. Dabei ist $a$ der Start der Iteration, $b$ selbst gehört **nicht** mehr dazu: `range(5, 20)` läuft von 5 bis 19.
+
+```{pyodide-python}
+a = 5 #Die Variable a wird hier definiert
+b = 20
+for i in range(a,b,2): #a,b sind die Grenzen 2 die Schrittgröße
+    print(i+1)
+```
+
+Wenn eine Rechnung/ eine Abfrage mehrfach ausgeführt werden soll, ist dies vereinfacht mit Hilfe von Schleifen möglich.
+`While-Schleifen`wiederholen hierbei den Code solange, eine gewisse Bedingung erfüllt ist.
+Ein kleines Beispiel:
+```{pyodide-python}
+a = 3 #Die Variable a wird hier definiert
+b = 11
+while a<b:
+    a = a+1 #ist sehr wichtig, da die Bedingung sonst immer erfüllt bliebe, heißt es wäre eine ENDLOS-Schleife
+    print(a)
+```
+
+### Aufgabe zu For-/While- Schleifen
+
+Die obigen Blöcke sind absichtlich bearbeitbar, teste ein wenig in ihnen herum, um ein Verständnis dafür zu entwickeln wie die unterschiedlichen Systeme funktionieren.
+Wenn du dir sicher bist, dass du verstanden hast, wie beides funktioniert, versuche gerne einmal ein Programm zu schreiben, welches eine Fakultät berechnet, indem du eine `While-Schleife` verwendest.
+
+```{pyodide-python}
+#Hier ein Beispiel Code für eine For Schleife
+#Text hinter einem # zählt als Kommentar und wird von Python ignoriert
+def fakultaet_for(n):
+    if n == 0:
+        return 1
+    result = 1
+    for i in range(1, n + 1):
+        result = result*i
+        #print(result,i) <-- Das kannst du hinzufügen um ein paar mehr Schritte zu sehen
+    return result
+
+print("Die Fakultät von 5 ist:", fakultaet_for(5)) #Print gibt eine Ausgabe aus
+
+print("Die Fakultät von 0 ist:", fakultaet_for(0))
+
+print("Die Fakultät von 10 ist:", fakultaet_for(10))
+
+```
+
+```{py-exercise}
+#| label: fakultaet-while
+#| caption: fakultaet_while implementieren
+#| show-test-hints: false
+def fakultaet_while(n):
+    # Dein Code hier
+    pass
+
+## TESTS ##
+assert fakultaet_while(5) == 120, "Falsches Ergebnis für 5! (erwartet 120)"
+assert fakultaet_while(10) == 3628800, "Falsches Ergebnis für 10! (erwartet 3628800)"
+assert fakultaet_while(1) == 1, "Falsches Ergebnis für 1!"
+assert fakultaet_while(0) == 1, "Falsches Ergebnis für 0! (per Definition 1)"
+```
+
+- Deine `While-Schleife` wird ein sehr ähnliches Grundgerüst haben, wie die `For-Schleife`
+Auch wirst du die folgenden Dinge benötigen:
+1. **Initialisierung**
+   `result = 1` und `i = 1`
+
+2. **Schleifenlogik**
+   Wiederhole solange `i <= n`, multipliziere jeweils `result = result * i`
+
+3. **Zähler hochzählen!**
+   `i = i + 1` (→ sonst Endlosschleife)
+
+4. Zusatz: Was passiert bei `n = 0`?
+
+<details>
+<summary> Hier eine mögliche Lösung für eine `While Schleife`, falls du absolut nicht mehr weiter weißt </summary>
+
+```{pyodide-python}
+def fakultaet_while(n):
+    if n == 0:
+        return 1
+    result = 1
+    i = 1
+    while i <= n:
+        result = result*i
+        i = i+1
+        #print(result,i) <-- Das kannst du hinzufügen um ein paar mehr Schritte zu sehen
+    return result
+
+print("Die Fakultät von 5 ist:", fakultaet_while(5))
+```
+
+</details>
+
+
+## Bibliotheken
+
+Eine der größten Stärken von Python ist die riesige Auswahl an **Bibliotheken** (auch Module genannt). Eine Bibliothek ist eine Sammlung von vordefinierten Funktionen und Konstanten, die du in deinem Code verwenden kannst, ohne das Rad neu erfinden zu müssen.
+
+Um eine Bibliothek zu nutzen, musst du sie mit dem `import`-Befehl am Anfang deines Codes "laden". Für dieses Tutorial sind die `numpy` und `matplotlib` Bibliotheken besonders relevant:
+_`import numpy as np` lädt die ganze Bibliothek, `np` ist nur ein kürzerer Name dafür. Mit `from bibliothek import funktion` holt man sich dagegen einzelne Funktionen, die man dann ohne Vorsilbe aufrufen kann._
+
+**1. `numpy` – Für numerische Berechnungen (unser Hauptwerkzeug!)**
+`numpy` ist die _wichtigste_ Bibliothek für dieses Tutorial. Sie ist optimiert für die Arbeit mit Vektoren und Matrizen (in NumPy `arrays` genannt). Man importiert sie üblicherweise mit dem Kürzel `np`. Das sorgt dafür, dass im weiteren Verlauf des Programms `np.array` verwendet werden kann anstelle von `numpy.array`.
+
+```{pyodide-python}
+import numpy as np
+
+# Erstelle einen Vektor (ein NumPy-Array)
+vektor = np.array([1, 2, 3, 4])
+print(f"Ein NumPy-Vektor: {vektor}")
+
+# Eine Stärke von NumPy: Operationen auf dem ganzen Array
+print(f"Der doppelte Vektor: {vektor * 2}")
+```
+
+:::{.callout-tip title="Zellen teilen sich einen Python-Interpreter"}
+Alle Codezellen auf dieser Seite laufen im **selben** Python-Interpreter. Das heißt: `import numpy as np` musst du nur **einmal** pro Seite schreiben — in den nächsten Zellen ist `np` (und auch `vektor` von oben) einfach weiter verfügbar, ganz ohne erneuten Import.
+:::
+
+**2. `matplotlib` – Für die Visualisierung von Daten**
+Mit `matplotlib` können wir unsere Daten und Ergebnisse als Graphen und Diagramme darstellen. Das hilft enorm, um Zusammenhänge zu verstehen.
+In diesem Fall wird das Kürzel `plt` für `matplotlib.pyplot` verwendet. Das zeigt, wie praktisch Aliase sind, da man statt `matplotlib.pyplot.plot()` einfach `plt.plot()` schreiben kann. Wichtig ist hierbei auch, dass `pyplot` ein spezifisches Untermodul von `matplotlib` ist, das explizit importiert werden muss. Ein einfaches `import matplotlib` würde nicht ausreichen, um auf Funktionen wie `plot()` zuzugreifen.
+
+```{pyodide-python}
+import matplotlib.pyplot as plt
+
+# 'np' aus der Zelle oben ist hier weiterhin verfügbar
+x_werte = np.array([0, 1, 2, 3, 4])
+y_werte = x_werte**2 # y = x^2
+
+plt.figure() # Erstellt eine neue "Zeichenfläche"
+plt.plot(x_werte, y_werte, marker='o') # 'marker' fügt Punkte hinzu
+plt.title("Ein einfacher Plot")
+plt.xlabel("X-Achse")
+plt.ylabel("Y-Achse")
+plt.grid(True) # Fügt ein Gitter hinzu
+plt.show() # Zeigt den Plot an
+```
+
+Mithilfe von `matplotlib` können nicht nur Graphen von Funktionen dargestellt werden, sondern auch Datenpunkte graphisch dargestellt werden.
+
+```{pyodide-python}
+#Betrachten wir eine Liste an Temperaturen ('np' und 'plt' sind schon importiert)
+cvalues = [20.1, 20.8, 21.9, 22.5, 22.7,
+           21.8, 21.3, 20.9, 20.1]
+C=np.array(cvalues)
+print(C,type(C))
+plt.plot(C)
+plt.show()
+```
+
+:::
+
+</details>
+
+## 1.1.2. Was sind Vektoren?
+
+Ein Vektor ist ein mathematisches Objekt, das eine Richtung und eine Länge (Betrag) besitzt. Anschaulich lässt sich ein Vektor als Pfeil im Raum interpretieren:
+Er beginnt an einem Punkt (häufig dem Ursprung) und zeigt auf einen anderen Punkt.
+
+Anders als Punkte haben Vektoren **keine feste Position** – sie beschreiben nur eine Verschiebung. Deshalb spricht man auch von einem "Ortsvektor", wenn man den Vektor vom Ursprung zu einem Punkt betrachtet.
+
+### 1.1.2.1. Schreibweise
+
+Vektoren können unterschiedlich notiert werden:
+
+- **Als Spaltenvektor**:
+
+  $$
+  \begin{pmatrix}
+  2 \\
+  3
+  \end{pmatrix}
+  $$
+
+- **Oder als Zeilenvektor**:
+
+  $$
+  (2, 3)
+  $$
+
+Mengenklammern wie $\{2, 3\}$ eignen sich dagegen **nicht** für Vektoren: Bei Mengen spielt die Reihenfolge keine Rolle ($\{2, 3\} = \{3, 2\}$), bei Vektoren schon ($(2, 3) \neq (3, 2)$).
+
+Je nach Kontext ist eine andere Darstellung sinnvoll. In Python verwenden wir meist die „Zeilenform" – als Liste oder Array.
+
+### 1.1.2.2. Beispiele
+
+- Ein Vektor $\vec{v} = (3, 4)$ beschreibt eine Bewegung um 3 Einheiten nach rechts und 4 Einheiten nach oben.
+- Der Vektor $(0, -5)$ zeigt 5 Einheiten nach unten.
+
+Solche Vektoren sind nicht nur in der Mathematik nützlich – auch in Physik, Informatik und maschinellem Lernen spielen sie eine zentrale Rolle.
+
+***
+
+## 1.1.3. Vektoren in Python
+
+In Python nutzen wir die Bibliothek `numpy`, um Vektoren darzustellen.
+Dabei verwenden wir meist **Arrays**, die ähnlich wie Listen funktionieren, aber besser für mathematische Rechnungen optimiert sind.
+
+### 1.1.3.1. NumPy Arrays als Vektoren
+
+Python kennt keine eingebauten Vektoren – aber die Bibliothek `NumPy` bietet ein sehr leistungsfähiges Werkzeug: das `array`.
+
+```{pyodide-python}
+import numpy as np
+# Ein Vektor mit zwei Einträgen
+v = np.array([2, 3])
+print(v)
+```
+
+Du kannst dir so einen Vektor auch als Pfeil vom Ursprung $(0,0)$ zum Punkt $(2,3)$ vorstellen.
+
+### 1.1.3.2. Dimension und Form von Vektoren prüfen
+
+Wenn du mit Vektoren arbeitest, ist es wichtig, ihre Dimension (also wie viele Achsen sie haben) und ihre Form (also die genaue Struktur) zu kennen. Das hilft dir, Fehler zu vermeiden – besonders bei späteren Berechnungen wie dem Skalarprodukt oder bei Matrizenmultiplikationen.
+
+In NumPy gibt es dafür ein paar hilfreiche Attribute:
+
+- `.ndim` → Anzahl der Dimensionen (z. B. 1D, 2D)
+- `.shape` → Form des Arrays (z. B. (3,) für drei Einträge in einem Vektor)
+- `.size` → Gesamtanzahl der Elemente
+
+```{pyodide-python}
+# Ein 1D-Vektor (Zeilenform)
+v1 = np.array([4, 5, 6])
+print("v1:", v1)
+print("Dimension (ndim):", v1.ndim)
+print("Form (shape):", v1.shape)
+print("Größe (size):", v1.size)
+
+print()
+# Ein 2D-Vektor als Spaltenvektor
+v2 = np.array([[4], [5], [6]])
+print("v2:\n", v2)
+print("Dimension (ndim):", v2.ndim)
+print("Form (shape):", v2.shape)
+print("Größe (size):", v2.size)
+
+print()
+# Ein 2D-Vektor als Zeilenvektor
+v3 = np.array([[4, 5, 6]])
+print("v3:\n", v3)
+print("Dimension (ndim):", v3.ndim)
+print("Form (shape):", v3.shape)
+print("Größe (size):", v3.size)
+```
+
+:::{.callout-note title="Eine Erklärung der Vektor- Dimensionen in `numpy`" collapse="true"}
+
+**Erklärung zum Verständnis von Vektor-Dimensionen in `numpy`**
+
+- Ein Vektor in NumPy ist ein Array, dessen Dimension (Anzahl der Achsen) bestimmt, ob es ein 1D- oder 2D-Vektor ist.
+- **1D-Vektor:**
+  - Hat genau eine Achse (z.B. `shape = (3,)`)
+  - Wird meist als einfache Liste von Zahlen dargestellt, z.B. `[1, 2, 3]`
+  - Enthält nur eine Reihe von Werten ohne zusätzliche Struktur.
+- **2D-Vektor:**
+  - Hat zwei Achsen (z.B. `shape = (1, 3)` oder `(3, 1)`)
+  - Ist eine Matrix mit entweder einer Zeile und mehreren Spalten (Zeilenvektor) oder einer Spalte und mehreren Zeilen (Spaltenvektor)
+  - Wird genutzt, wenn die Vektoren als Matrizen für lineare Algebra oder als Daten in bestimmten Formaten gebraucht werden.
+- Auch wenn alle Beispiele die gleiche Anzahl an Einträgen haben (z.B. 3), unterscheidet sich die Struktur durch die Dimension des Arrays.
+- Das Verständnis der Dimension ist wichtig, da viele Operationen in NumPy (z.B. Matrixmultiplikation) davon abhängen.
+:::
+
+Wenn du alles in diesem Kapitel verstanden hast, geht es jetzt weiter im Kapitel [Vektor Operationen](vektor_operationen.qmd).
+
+::::
+
+:::: {.content-visible when-profile="english"}
+::: {.callout-note title="Run the cells in order"}
+The code cells on this page build on each other: imports, variables and functions from one cell are also available in all later cells and are not repeated there. So run the cells from top to bottom. For tabs, the same order applies from left to right. If Python reports a `NameError`, you most likely have not run an earlier cell yet. Exercises with **Check** run on their own: only what is written in the cell itself counts there.
+:::
+
+As seen in Chapter 0, the reason this Python tutorial exists is the possibility of simplifying calculations and using decision trees to compute only the relevant values — thus also building a faster program, since not everything is always calculated, but only what is relevant.
+
+## 1.1.1. Python Fundamentals {#grundlagen-von-python}
+
+This section is designed to give you a solid introduction to the fundamentals of Python.
+_Especially if this is your first contact with Python, you should work through this section carefully._
+
+<details>
+<summary> If you feel like you don't know enough Python, or would like to refresh your knowledge, feel free to open this section! </summary>
+
+::: {.panel-tabset}
+
+## Variables
+
+For an easy introduction to Python, we will first look at variables. It is worth highlighting the difference from variables in mathematics. Here is a brief example:
+
+```{pyodide-python}
+#| read-only: true
+a = 7
+print(a)
+```
+This is a variable assignment. Variables can be used for calculations after they have been assigned. You can see a few examples in the following code:
+
+```{pyodide-python}
+#| read-only: true
+a = 4
+b = 5
+print(a+b)
+print(a*b)
+print(a/2)
+print(a-b)
+```
+Multiplication in Python uses an asterisk *. Division in Python uses the forward slash /.
+The following example illustrates the difference from variables in mathematics:
+
+```{pyodide-python}
+#| read-only: true
+a = 4
+a = 7 + a
+b = 5
+print(a+b)
+print(a*b)
+print(a/2)
+print(a-b)
+```
+
+As you can see, variables can change or be reassigned. In Python, a variable always holds the value that was most recently assigned to it.
+
+Instead of individual statements, let us now look at a complete program. Imagine we are driving a longer route by car and note down the odometer reading at the beginning of the trip, at certain points during the journey, along with the elapsed driving time.
+We can use this information to calculate the average speed for the entire trip as well as for the individual intervals.
+A simple Python program that does this for us is the following:
+
+
+```{pyodide-python}
+#| read-only: true
+# Program to calculate average speed
+s0 = 13157.6 # Odometer reading at the start
+s1 = 13160.0 # Odometer reading at 1st measurement
+t1 = 4 # Minutes from trip start at 1st measurement
+s2 = 13177.4 # Odometer reading at 2nd measurement
+t2 = 16 # Minutes from trip start at 2nd measurement
+s3 = 13267.4 # Odometer reading at 3rd measurement
+t3 = 64 # Minutes from trip start at 3rd measurement
+# Average speed in km/h for the ...
+v1 = (s1 - s0) / (t1 / 60) # ... 1st interval
+v2 = (s2 - s1) / ((t2 - t1) / 60) # ... 2nd interval
+v3 = (s3 - s2) / ((t3 - t2) / 60) # ... 3rd interval
+v_average = (s3 - s0) / (t3 / 60) # Overall
+print(v1)
+print(v2)
+print(v3)
+print("Average: {} km/h".format(v_average))
+```
+
+This example also shows that variables can have more than one letter.
+In Python, variables can also be defined using whole words, which is also sensible for making the code easier to understand with meaningful variable names.
+
+### Exercise: Variables
+
+Try modifying the code to extend the calculation with a 4th and 5th measurement.
+At the fourth measurement, the odometer reading was 13,281 km and 75 minutes after the start of the trip.
+At the fifth measurement, the odometer reading was 13,334 km and 119 minutes after the start of the trip.
+These calculations should also be printed using the print() command.
+
+**Commands you need:** assignment with `=`, the operators `-` and `/`, `print()`.
+
+```{pyodide-python}
+# Program to calculate average speed
+s0 = 13157.6 # Odometer reading at the start
+s1 = 13160.0 # Odometer reading at 1st measurement
+t1 = 4 # Minutes from trip start at 1st measurement
+s2 = 13177.4 # Odometer reading at 2nd measurement
+t2 = 16 # Minutes from trip start at 2nd measurement
+s3 = 13267.4 # Odometer reading at 3rd measurement
+t3 = 64 # Minutes from trip start at 3rd measurement
+# Average speed in km/h for the ...
+v1 = (s1 - s0) / (t1 / 60) # ... 1st interval
+v2 = (s2 - s1) / ((t2 - t1) / 60) # ... 2nd interval
+v3 = (s3 - s2) / ((t3 - t2) / 60) # ... 3rd interval
+v_average = (s3 - s0) / (t3 / 60) # Overall
+print(v1)
+print(v2)
+print(v3)
+print("Average: {} km/h".format(v_average))
+```
+
+::: {.callout-caution title="Solution" collapse="true"}
+```python
+# Additions at the end of the value table and of the calculation:
+s4 = 13281    # Odometer reading at 4th measurement
+t4 = 75
+s5 = 13334    # Odometer reading at 5th measurement
+t5 = 119
+v4 = (s4 - s3) / ((t4 - t3) / 60)
+v5 = (s5 - s4) / ((t5 - t4) / 60)
+v_average = (s5 - s0) / (t5 / 60)
+print(v4)
+print(v5)
+print("Average: {} km/h".format(v_average))
+```
+:::
+
+
+## Conditional Statements
+
+A conditional statement allows you to distinguish between two or more cases.
+Translated, this means: If "x", do "y", otherwise do "z". Consider the following example:
+
+```{pyodide-python}
+#| read-only: true
+a = 15
+b = 20
+if a>=b:
+    print("a is greater than or equal to b")
+else:
+    print("b is greater than a")
+```
+
+Try it yourself and write code in which you distinguish between a and b. If a equals b, a corresponding text should be printed, and if they are different, a different text should be printed.
+
+```{pyodide-python}
+```
+
+If you want to distinguish more than two cases, you can use "elif" between "if" and "else". This is short for "else if". Consider the following code:
+
+```{pyodide-python}
+#| read-only: true
+a = 25
+b = 20
+if a==b:
+    print("a is equal to b")
+elif a>b:
+    print("a is greater than b")
+else:
+    print("b is greater than a")
+```
+
+It is not necessary to always use if and else. You can also use only if when you do not want to do anything in the else case. We try that out now, and instead of fixed values, this time we read a and b with `input()`. `input()` returns the input as text, `int()` converts this text into an integer. Run the cell and try different pairs of numbers — once equal, once different.
+
+```{pyodide-python}
+a = int(input("Enter a value for a: "))
+b = int(input("Enter a value for b: "))
+if a==b:
+    print("Conditional statements are great")
+```
+
+### Exercise: Conditional Statements
+
+Write a function `sign(x)` that returns the text `"positive"`, `"negative"` or `"zero"` for an integer `x`.
+
+**Commands you need:** `def`, `return`, `if` / `elif` / `else`, the comparisons `>` and `<`.
+
+```{py-exercise}
+#| label: basics-sign
+#| caption: Implement sign
+#| show-test-hints: false
+def sign(x):
+    # Your code here
+    pass
+
+## TESTS ##
+assert sign(5) == "positive", "Wrong result for 5"
+assert sign(-3) == "negative", "Wrong result for -3"
+assert sign(0) == "zero", "Wrong result for 0"
+```
+
+::: {.callout-caution title="Solution" collapse="true"}
+```python
+def sign(x):
+    if x > 0:
+        return "positive"
+    elif x < 0:
+        return "negative"
+    else:
+        return "zero"
+```
+:::
+
+
+## Data Types
+
+
+There are different data types in Python. Whole numbers are called integers. Decimal numbers are called "floats".
+As soon as a decimal number appears in a calculation, the result is also a float, even if it would otherwise be a whole number. You can see this in the following example:
+
+```{pyodide-python}
+#| read-only: true
+a = 15
+print(a)
+b = 1.5
+print(a*b)
+print(a/b)
+```
+Division always produces a floating-point number, even when one integer is divided by another:
+
+```{pyodide-python}
+#| read-only: true
+a = 15
+b = 5
+print (a/b)
+```
+Another data type is the so-called Boolean, which is evaluated as true or false. Run the following code and modify it so that "false" is printed.
+
+```{pyodide-python}
+a = 15
+if a==15:
+  print ("true")
+else:
+  print ("false")
+```
+
+In the example above, we used the comparison operator "==" to check for equality.
+To check whether a is not equal to a specific value, say 7, we use "a!=7".
+
+### Exercise: Data Types
+
+Write a function `check(a)` that returns `"true"` if `a` is not equal to 8 and `"false"` otherwise.
+
+**Commands you need:** `def`, `return`, `if` / `else`, the comparison `!=`.
+
+```{py-exercise}
+#| label: basics-not-equal
+#| caption: Implement check
+#| show-test-hints: false
+def check(a):
+    # Your code here
+    pass
+
+## TESTS ##
+assert check(5) == "true", "Wrong result for 5"
+assert check(8) == "false", "Wrong result for 8"
+assert check(-8) == "true", "Wrong result for -8"
+```
+
+::: {.callout-caution title="Solution" collapse="true"}
+```python
+def check(a):
+    if a != 8:
+        return "true"
+    else:
+        return "false"
+```
+:::
+
+
+## Lists
+
+In addition to numeric data types, there are others that allow multiple numbers to be stored in a collection. These are called lists and can be created directly with values or left empty initially.
+Consider the following examples:
+
+```{pyodide-python}
+#| read-only: true
+list = [2, -4, 5, 9, 12]
+print(list)
+print(list[4])
+```
+
+In the example above, a list of five numbers is initialised. The list and the fifth entry of the list are then printed. The reason we use "list[4]" and not "list[5]" is that the index of list entries starts at zero.
+So the first list entry is at "list[0]" and the fifth is at "list[4]".
+
+In the next example, we will create an empty list and then add two entries. We will then change one of the entries. Note the output:
+
+```{pyodide-python}
+#| read-only: true
+list = []
+list.append(4)
+list.append(-7)
+print(list)
+list[1]=-9
+print(list)
+```
+
+### Exercise: Lists
+
+Try it yourself: create a list with the entries 2, -13, 6 and 4. Print the list. Then change the second entry to 4 and print the new list.
+
+**Commands you need:** square brackets `[...]` to create the list, the index access `List[i]`, `print()`.
+
+```{pyodide-python}
+```
+
+::: {.callout-caution title="Solution" collapse="true"}
+```python
+List = [2, -13, 6, 4]
+print(List)
+List[1] = 4   # the second entry has index 1
+print(List)
+```
+:::
+
+
+## Functions
+
+Until now we have written code that runs from top to bottom. If we wanted to repeat a calculation, such as computing a factorial or an average speed, at different places with different values, we would have to copy and paste the code. This is messy and error-prone.
+
+**Functions** solve this problem. A function is a named, reusable block of code that performs a specific task. You define it once and can then "call" it as many times as you like.
+
+A function is defined with the keyword `def`, followed by a name and parentheses `()`. **Parameters** (input values) can be passed inside the parentheses. The function returns a result using `return`.
+
+### f-Strings in Python
+In the following we use so-called **f-strings** for `print()` output. An f-string is introduced by an `f` before the opening quotation mark (e.g. `f"Hello"`).
+
+The big advantage is that you can embed variables and expressions directly into the text by placing them inside curly braces `{}`. This often makes the code much more readable.
+```{pyodide-python}
+#| read-only: true
+# Definition of a simple function that adds two numbers
+def add(number1, number2):
+    total = number1 + number2
+    return total
+
+# Calling the function with the values 5 and 10
+print(f"The result of 5 + 10 is: {add(5, 10)}")
+
+# Calling it again with different values
+print(f"The result of -2 + 7 is: {add(-2, 7)}")
+```
+
+### Exercise: Functions
+
+Write a function named `rectangle_area` that takes the length and width of a rectangle as parameters and calculates and returns its area.
+
+- The function should accept two parameters: `length` and `width`.
+- It should compute the product of both parameters and return it using `return`.
+
+This time, hidden tests automatically check whether your solution is correct — click **Check** once you're done.
+
+**Commands you need:** `def`, `return`, the operator `*`.
+
+```{py-exercise}
+#| label: vektor-grundlagen-rectangle
+#| caption: Implement rectangle_area
+#| show-test-hints: false
+def rectangle_area(length, width):
+    # Your code here
+    pass
+
+## TESTS ##
+assert rectangle_area(2, 3) == 6,   "rectangle_area(2, 3) should be 6"
+assert rectangle_area(5, 5) == 25,  "rectangle_area(5, 5) should be 25"
+assert rectangle_area(1, 7) == 7,   "rectangle_area(1, 7) should be 7"
+```
+
+::: {.callout-caution title="Solution" collapse="true"}
+```python
+def rectangle_area(length, width):
+    return length * width
+```
+:::
+
+
+
+## Loops
+
+For understanding, here are some examples and an exercise:
+
+`For loops` repeat over a certain range. The keyword `range` describes the range from $a$ to $b$. Here $a$ is the start of the iteration; $b$ itself is **not** included: `range(5, 20)` runs from 5 to 19.
+
+```{pyodide-python}
+a = 5 #The variable a is defined here
+b = 20
+for i in range(a,b,2): #a,b are the bounds, 2 is the step size
+    print(i+1)
+```
+
+If a calculation or query needs to be executed multiple times, this is made easy with loops.
+`While loops` repeat the code for as long as a certain condition is met.
+A brief example:
+```{pyodide-python}
+a = 3 #The variable a is defined here
+b = 11
+while a<b:
+    a = a+1 #very important — otherwise the condition would always stay true, resulting in an INFINITE loop
+    print(a)
+```
+
+### Exercise: For/While Loops
+
+The code blocks above are intentionally editable — experiment with them to develop an understanding of how the different systems work.
+Once you are confident that you understand how both work, try writing a program that calculates a factorial using a `while loop`.
+
+```{pyodide-python}
+#Here is an example of a for loop
+#Text after a # counts as a comment and is ignored by Python
+def factorial_for(n):
+    if n == 0:
+        return 1
+    result = 1
+    for i in range(1, n + 1):
+        result = result*i
+        #print(result,i) <-- You can add this to see a few more steps
+    return result
+
+print("The factorial of 5 is:", factorial_for(5)) #print produces an output
+
+print("The factorial of 0 is:", factorial_for(0))
+
+print("The factorial of 10 is:", factorial_for(10))
+
+```
+
+```{py-exercise}
+#| label: factorial-while
+#| caption: Implement factorial_while
+#| show-test-hints: false
+def factorial_while(n):
+    # Your code here
+    pass
+
+## TESTS ##
+assert factorial_while(5) == 120, "Wrong result for 5! (expected 120)"
+assert factorial_while(10) == 3628800, "Wrong result for 10! (expected 3628800)"
+assert factorial_while(1) == 1, "Wrong result for 1!"
+assert factorial_while(0) == 1, "Wrong result for 0! (1 by definition)"
+```
+
+- Your `while loop` will have a very similar basic structure to the `for loop`.
+You will also need the following things:
+
+1. **Initialisation**
+   `result = 1` and `i = 1`
+
+2. **Loop logic**
+   Repeat while `i <= n`, multiplying `result = result * i` each time
+
+3. **Increment the counter!**
+   `i = i + 1` (→ otherwise infinite loop)
+
+4. Bonus: What happens when `n = 0`?
+
+<details>
+<summary> Here is a possible solution for a while loop, in case you are absolutely stuck </summary>
+
+```{pyodide-python}
+def factorial_while(n):
+    if n == 0:
+        return 1
+    result = 1
+    i = 1
+    while i <= n:
+        result = result*i
+        i = i+1
+        #print(result,i) <-- You can add this to see a few more steps
+    return result
+
+print("The factorial of 5 is:", factorial_while(5))
+```
+
+</details>
+
+
+## Libraries
+
+One of the greatest strengths of Python is the enormous selection of **libraries** (also called modules). A library is a collection of predefined functions and constants that you can use in your code without having to reinvent the wheel.
+
+To use a library, you need to "load" it with the `import` command at the beginning of your code. For this tutorial, the `numpy` and `matplotlib` libraries are particularly relevant:
+_`import numpy as np` loads the whole library; `np` is just a shorter name for it. With `from library import function`, on the other hand, you fetch individual functions that you can then call without a prefix._
+
+**1. `numpy` – For numerical calculations (our main tool!)**
+`numpy` is the _most important_ library for this tutorial. It is optimised for working with vectors and matrices (called `arrays` in NumPy). It is typically imported with the alias `np`. This means that `np.array` can be used later in the program instead of `numpy.array`.
+
+```{pyodide-python}
+import numpy as np
+
+# Create a vector (a NumPy array)
+vector = np.array([1, 2, 3, 4])
+print(f"A NumPy vector: {vector}")
+
+# A strength of NumPy: operations on the entire array
+print(f"The doubled vector: {vector * 2}")
+```
+
+:::{.callout-tip title="Cells share one Python interpreter"}
+Every code cell on this page runs in the **same** Python interpreter. That means `import numpy as np` only needs to happen **once** per page — in the next cells, `np` (and `vector` from above) simply stay available, no re-import needed.
+:::
+
+**2. `matplotlib` – For data visualisation**
+With `matplotlib` we can display our data and results as graphs and charts. This is enormously helpful for understanding relationships.
+In this case, the alias `plt` is used for `matplotlib.pyplot`. This shows how practical aliases are — instead of writing `matplotlib.pyplot.plot()`, you can simply write `plt.plot()`. It is also important to note that `pyplot` is a specific sub-module of `matplotlib` that must be imported explicitly. A simple `import matplotlib` would not be sufficient to access functions like `plot()`.
+
+```{pyodide-python}
+import matplotlib.pyplot as plt
+
+# 'np' from the cell above is still available here
+x_values = np.array([0, 1, 2, 3, 4])
+y_values = x_values**2 # y = x^2
+
+plt.figure() # Creates a new "canvas"
+plt.plot(x_values, y_values, marker='o') # 'marker' adds data points
+plt.title("A simple plot")
+plt.xlabel("X-axis")
+plt.ylabel("Y-axis")
+plt.grid(True) # Adds a grid
+plt.show() # Displays the plot
+```
+
+Using `matplotlib`, not only graphs of functions can be displayed, but also data points can be visualised graphically.
+
+```{pyodide-python}
+#Let us look at a list of temperatures ('np' and 'plt' are already imported)
+cvalues = [20.1, 20.8, 21.9, 22.5, 22.7,
+           21.8, 21.3, 20.9, 20.1]
+C=np.array(cvalues)
+print(C,type(C))
+plt.plot(C)
+plt.show()
+```
+
+:::
+
+</details>
+
+## 1.1.2. What are Vectors? {#was-sind-vektoren}
+
+A vector is a mathematical object that has a direction and a magnitude (length). Intuitively, a vector can be interpreted as an arrow in space:
+It starts at one point (often the origin) and points to another.
+
+Unlike points, vectors have **no fixed position** — they describe only a displacement. This is why the term "position vector" is used when considering the vector from the origin to a specific point.
+
+### 1.1.2.1. Notation
+
+Vectors can be written in different ways:
+
+- **As a column vector**:
+
+  $$
+  \begin{pmatrix}
+  2 \\
+  3
+  \end{pmatrix}
+  $$
+
+- **Or as a row vector**:
+
+  $$
+  (2, 3)
+  $$
+
+Set braces like $\{2, 3\}$, on the other hand, are **not** suitable for vectors: for sets the order does not matter ($\{2, 3\} = \{3, 2\}$), for vectors it does ($(2, 3) \neq (3, 2)$).
+
+Depending on the context, a different representation makes sense. In Python, we mostly use the "row form" — as a list or array.
+
+### 1.1.2.2. Examples
+
+- A vector $\vec{v} = (3, 4)$ describes a movement of 3 units to the right and 4 units upward.
+- The vector $(0, -5)$ points 5 units downward.
+
+Such vectors are not only useful in mathematics — they also play a central role in physics, computer science, and machine learning.
+
+***
+
+## 1.1.3. Vectors in Python {#vektoren-in-python}
+
+In Python, we use the `numpy` library to represent vectors.
+We primarily use **arrays**, which work similarly to lists but are better optimised for mathematical calculations.
+
+### 1.1.3.1. NumPy Arrays as Vectors
+
+Python has no built-in vectors — but the `NumPy` library provides a very powerful tool: the `array`.
+
+```{pyodide-python}
+import numpy as np
+# A vector with two entries
+v = np.array([2, 3])
+print(v)
+```
+
+You can think of such a vector as an arrow from the origin $(0,0)$ to the point $(2,3)$.
+
+### 1.1.3.2. Checking the Dimension and Shape of Vectors
+
+When working with vectors, it is important to know their dimension (how many axes they have) and their shape (the exact structure). This helps you avoid errors — especially in later calculations such as the dot product or matrix multiplication.
+
+NumPy provides a few helpful attributes for this:
+
+- `.ndim` → Number of dimensions (e.g. 1D, 2D)
+- `.shape` → Shape of the array (e.g. (3,) for three entries in a vector)
+- `.size` → Total number of elements
+
+```{pyodide-python}
+# A 1D vector (row form)
+v1 = np.array([4, 5, 6])
+print("v1:", v1)
+print("Dimensions (ndim):", v1.ndim)
+print("Shape:", v1.shape)
+print("Size:", v1.size)
+
+print()
+# A 2D vector as a column vector
+v2 = np.array([[4], [5], [6]])
+print("v2:\n", v2)
+print("Dimensions (ndim):", v2.ndim)
+print("Shape:", v2.shape)
+print("Size:", v2.size)
+
+print()
+# A 2D vector as a row vector
+v3 = np.array([[4, 5, 6]])
+print("v3:\n", v3)
+print("Dimensions (ndim):", v3.ndim)
+print("Shape:", v3.shape)
+print("Size:", v3.size)
+```
+
+:::{.callout-note title="An Explanation of Vector Dimensions in `numpy`" collapse="true"}
+
+**Explanation for Understanding Vector Dimensions in `numpy`**
+
+- A vector in NumPy is an array whose dimension (number of axes) determines whether it is a 1D or 2D vector.
+- **1D vector:**
+  - Has exactly one axis (e.g. `shape = (3,)`)
+  - Is typically represented as a simple list of numbers, e.g. `[1, 2, 3]`
+  - Contains only a single sequence of values with no additional structure.
+- **2D vector:**
+  - Has two axes (e.g. `shape = (1, 3)` or `(3, 1)`)
+  - Is a matrix with either one row and multiple columns (row vector) or one column and multiple rows (column vector)
+  - Is used when vectors are needed as matrices for linear algebra or as data in certain formats.
+- Even though all examples have the same number of entries (e.g. 3), the structure differs due to the array's dimension.
+- Understanding dimensions is important, as many NumPy operations (e.g. matrix multiplication) depend on it.
+:::
+
+Once you have understood everything in this chapter, continue to the chapter on [Vector Operations](vektor_operationen.qmd).
+
+::::

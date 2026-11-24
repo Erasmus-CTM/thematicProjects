@@ -1,0 +1,629 @@
+---
+title: "Asymptoten bestimmen"
+title-en: "Finding Asymptotes"
+format: html
+filters:
+  - ctm-assessment
+  - quizdown
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+# Was ist eine Asymptote?
+
+Bevor es um die Python-Implementierung geht, ist es wichtig zu wissen, was eine Asymptote im Allgemeinen ist.
+Eine **Asymptote ist** eine Kurve, der sich die Funktion **im Unendlichen** immer weiter annähert.  
+
+**Wichtig**: Das heißt nicht, dass sich die Funktion und die Kurve (meistens handelt es sich um eine Gerade) nie treffen. Es gibt hier unterschiedliche Möglichkeiten.
+
+1.  Sie treffen sich nie, z.B.: $f(x)=\frac{1}{x}$
+2.  Sie treffen sich endlich oft, bevor sie sich im Unendlichen nicht mehr treffen, z.B.: $f(x) = \frac{x^3 + 2x^2 + 1}{x^2 + 1}$
+3.  Sie treffen sich unendlich oft, da die Funktion um die Asymptote oszilliert (d.h. in Form einer Schwingung), also diese auch unendlich oft nicht schneidet, aber bei jeder Schwingung einmal schneidet, z.B.: $f(x) = \frac{\sin(x)}{x}$.
+
+* **[Lineare Asymptoten:](#lineare-asymptoten)**  
+  *   **[Vertikale Asymptoten](#vertikale-asymptoten)**
+  *   **[Horizontale Asymptoten](#horizontale-asymptoten)**
+  *   **[Schiefe Asymptoten](#schiefe-asymptoten)**
+* **[Nicht-lineare Asymptoten](#nicht-lineare-asymptoten)**
+
+# Lineare Asymptoten
+
+## Vertikale Asymptoten
+
+Eine **vertikale Asymptote** ist eine senkrechte Gerade der Form $x = a$, an die sich die Funktion annähert. Solche Asymptoten treten typischerweise an Stellen auf, an denen die Funktion Definitionslücken hat, z.B. bei **[Division durch Null](../Kapitel_1/definitionsbereich.qmd#gebrochen-rationale-funktionen)**.  
+_Es kann jedoch auch bei anderen Funktionen wie Logarithmen auftreten der Einfachheit werden jedoch nur Fälle mit Division durch Null betrachtet. Fortgeschrittene können eine Abfrage für eine Logarithmusfunktion gerne mit einbauen._
+
+**Der Graph der Funktion $f(x)$ hat bei $x=a$ eine vertikale Asymptote, wenn mindestens einer der folgenden Grenzwerte gilt:**
+$$ \lim_{x \to a^+} f(x) = \pm\infty \quad \text{oder} \quad \lim_{x \to a^-} f(x) = \pm\infty $$
+
+
+**Kurz überlegt:** Sitzt die Mathematik? Dann geht es mit dem Code leichter.
+
+```{math-exercise}
+#| label: asymptoten-vertikal-vorcheck
+#| caption: Vorab-Check – Nullstellen des Nenners
+#| mode: set
+#| partial-credit: true
+Bei welchen $x$ ist der Nenner von $f(x)=\dfrac{x}{x^2-9}$ gleich null? $x \in \{$ __[3, -3] $\}$
+```
+
+```{math-exercise}
+#| label: asymptoten-vertikal-vorcheck-luecke
+#| caption: Vorab-Check – Lücke oder Asymptote?
+Es gilt $\dfrac{x^2-1}{x-1}=x+1$ für $x\neq 1$. Welchen Wert hat die gekürzte Funktion $x+1$ bei $x=1$? Dort ist **keine** Asymptote, sondern nur eine Lücke. $y =$ _[2]
+```
+
+### Python-Implementierung: Vertikale Asymptoten finden
+
+Um die Vertikale Asymptote zu finden, muss also wie im Abschnitt **[Definitionsbereich](../Kapitel_1/definitionsbereich.qmd#gebrochen-rationale-funktionen)** vorgegangen werden.
+Eine kleine Erinnerung an die Grundlagen aus dem Abschnitt:
+```{pyodide-python}
+#| read-only: true
+import sympy
+x = sympy.symbols('x')
+funktion_str = "(x**2 + 1) / (x - 2)"
+f = sympy.sympify(funktion_str)
+zaehler, nenner = sympy.fraction(f)
+potenzielle_asymptoten = sympy.solve(nenner, x)
+print(f"Die potentiellen Asymptoten sind: {potenzielle_asymptoten}")
+```
+
+#### Aufgabe
+
+Ergänze die Funktion `vertikale_asymptoten(f)`, sodass sie die $x$-Werte aller vertikalen Asymptoten als **aufsteigend sortierte Liste** zurückgibt. Das Gerüst steht schon, es fehlt nur eine Zeile (`sorted(...)` macht aus einer Menge eine sortierte Liste).  
+Beachte dabei, eine Asymptote ist nur an einer Stelle vorhanden, an der $\text{der Nenner}=0 \text{ ist und der Zähler } \neq 0$. Das gilt für einen **vollständig gekürzten** Bruch: Bei $f(x) = \frac{x^2-1}{(x-1)^3}$ sind an der Stelle $x = 1$ Zähler und Nenner null, nach dem Kürzen ($\frac{x+1}{(x-1)^2}$) sieht man aber, dass dort doch eine Asymptote liegt. Mit `sympy.cancel(f)` kürzt `sympy` den Bruch für dich.
+
+
+```{py-exercise}
+#| label: asymptoten-vertikal-funktion
+#| caption: vertikale_asymptoten schreiben
+#| show-test-hints: false
+import sympy
+x = sympy.symbols('x')
+
+def vertikale_asymptoten(f):
+    f = sympy.cancel(f)                      # Bruch vollständig kürzen
+    zaehler, nenner = sympy.fraction(f)
+    # Dein Code hier: Bestimme die reellen Nullstellen des Nenners
+    # (Tipp: sympy.solveset(nenner, x, sympy.Reals)) und gib sie sortiert zurück
+    pass
+
+## TESTS ##
+assert vertikale_asymptoten((x + 1)/(x**2 - 4)) == [-2, 2], "f(x) = (x+1)/(x**2-4) hat Asymptoten bei -2 und 2"
+assert vertikale_asymptoten((x**2 - 1)/(x - 1)**3) == [1], "Nach dem Kürzen bleibt (x+1)/(x-1)**2: Asymptote bei 1"
+assert vertikale_asymptoten((x**2 - 1)/(x - 1)) == [], "Hier lässt sich ganz kürzen: nur eine Lücke bei 1, keine Asymptote"
+assert vertikale_asymptoten(1/(x**2 + 1)) == [], "x**2+1 hat keine reellen Nullstellen"
+assert vertikale_asymptoten(x**2 + 3) == [], "Ein Polynom hat keine vertikalen Asymptoten"
+```
+
+::: {.callout-note title="Tipp 1:" collapse="true"}
+*   `sympy.solveset(nenner, x, sympy.Reals)` liefert die **reellen** Nullstellen des Nenners als Menge.
+*   Weil der Bruch schon gekürzt ist, ist an jeder dieser Stellen der Zähler $\neq 0$. Es sind also wirklich Asymptoten.
+:::
+::: {.callout-note title="Tipp 2:" collapse="true"}
+Die Zeile könnte so aussehen: `return sorted(sympy.solveset(nenner, x, sympy.Reals))`
+:::
+
+---
+
+## Horizontale Asymptoten
+
+Eine **horizontale Asymptote** ist eine horizontale Gerade, der Form $y=a$, an die sich die Funktion annähert in ihrem **[Globalverhalten](globalverhalten.qmd)**
+
+**Die Gerade $y=a$ ist eine horizontale Asymptote von $f(x)$, wenn für $a\in \mathbb{R}$ gilt:** 
+$$ \lim_{x \to \infty} f(x) = a \quad \text{oder} \quad \lim_{x \to -\infty} f(x) = a $$ 
+
+**Kurz überlegt:**
+
+```{math-exercise}
+#| label: asymptoten-horizontal-vorcheck
+#| caption: Vorab-Check – Grenzwert im Unendlichen
+Welchen Grenzwert hat $f(x)=\dfrac{3x^2+1}{x^2-5}$ für $x\to\infty$? $\lim f(x) =$ _[3]
+```
+
+### Python-Implementierung: Horizontale Asymptoten finden
+
+Hier wird wie in **[Globalverhalten untersuchen](globalverhalten.qmd)** vorgegangen, das heißt es es werden die `sympy.limit`'s bestimmt, es benötigt jedoch noch einen Schritt, der bisher noch nicht genutzt wurde, es existiert nur eine horizontale Asymptote, falls der Wert reell ist.
+
+Ergänze die Funktion `horizontale_asymptoten(f)`: Sie soll alle $y$-Werte horizontaler Asymptoten als **aufsteigend sortierte Liste** zurückgeben (ohne doppelte Werte, bei keiner Asymptote eine leere Liste).
+
+```{py-exercise}
+#| label: asymptoten-horizontal-funktion
+#| caption: horizontale_asymptoten schreiben
+#| show-test-hints: false
+import sympy
+x = sympy.symbols('x')
+
+def horizontale_asymptoten(f):
+    grenzwerte = [sympy.limit(f, x, sympy.oo), sympy.limit(f, x, -sympy.oo)]
+    ergebnis = []
+    for g in grenzwerte:
+        # Dein Code hier: Hänge g an die Liste ergebnis an,
+        # falls g endlich ist (g.is_finite) und noch nicht in ergebnis steht
+        pass
+    return sorted(ergebnis)
+
+## TESTS ##
+assert horizontale_asymptoten((x + 1)/(x**2 - 4)) == [0], "f(x) = (x+1)/(x**2-4) hat die Asymptote y = 0"
+assert horizontale_asymptoten((3*x**2 + 1)/(x**2 - 5)) == [3], "Beide Grenzwerte sind 3, die Liste soll 3 nur einmal enthalten"
+assert horizontale_asymptoten(x**2) == [], "x**2 wächst über alle Grenzen, keine horizontale Asymptote"
+assert horizontale_asymptoten(sympy.atan(x)) == [-sympy.pi/2, sympy.pi/2], "arctan hat zwei verschiedene Asymptoten"
+```
+
+::: {.callout-note title="Tipp:" collapse="true"}
+*   Die Eigenschaft `.is_finite` sagt, ob ein Wert endlich ist (bei `oo` ist sie `False`).
+*   Die Abfrage könnte so aussehen: `if g.is_finite and g not in ergebnis:`
+:::
+
+---
+
+## Schiefe Asymptoten
+
+Eine **schiefe (oder schräge) Asymptote** ist eine Gerade der Form $y = mx + b$, an die sich die Funktion annähert.  
+Sie tritt bei gebrochen-rationalen Funktionen auf, wenn der Grad des Zählerpolynoms genau um eins größer ist als der Grad des Nennerpolynoms und bei der Polynomdivision ein Rest existiert.
+Das Ergebnis der Polynomdivision ist die Geradengleichung der Asymptote.  
+**Die Gerade $f_a(x) = mx + b$ ist eine *schiefe* Asymptote von $f$, wenn der Abstand zwischen $f$ und $f_a$ im Unendlichen gegen 0 geht:** 
+$$ \lim_{x \to \infty} | f(x) - f_a(x) | = 0 \quad \text{oder} \quad \lim_{x \to -\infty} | f(x) - f_a(x) | = 0 $$ 
+
+**Kurz überlegt:**
+
+```{math-exercise}
+#| label: asymptoten-schief-vorcheck-grad
+#| caption: Vorab-Check – Grade vergleichen
+Um wie viel ist der Zählergrad größer als der Nennergrad bei $f(x)=\dfrac{x^3+1}{x^2-4}$? Differenz $=$ _[1]
+```
+
+```{math-exercise}
+#| label: asymptoten-schief-vorcheck-division
+#| caption: Vorab-Check – Polynomdivision
+#| vars: x
+Führe die Polynomdivision $(x^2+x+2):(x-1)$ von Hand aus. Das Ergebnis ohne Rest ist $x+2$, der Rest ist $4$. Welche schiefe Asymptote hat also $f(x)=\dfrac{x^2+x+2}{x-1}$? $y =$ __[x+2]
+```
+
+### Python-Implementierung: Schiefe Asymptoten finden
+
+Die Polynomdivision kann in Python wie viele der Rechnungen, die wir in anderen Kapiteln bereits getätigt haben, mit der `sympy` Bibliothek durchführen.  
+Die passende Funktion heißt `sympy.div()`.
+Der Grad einer Funktion kann mit `sympy.degree` bestimmt werden.
+
+
+Ergänze die Funktion `schiefe_asymptote(f)`: Sie soll die Geradengleichung $mx+b$ der schiefen Asymptote zurückgeben, oder `None`, falls es keine gibt. Beachte, dass es nur dann eine gibt, wenn der Zählergrad genau um eins größer ist **und** bei der Polynomdivision ein Rest bleibt.
+
+```{py-exercise}
+#| label: asymptoten-schief-funktion
+#| caption: schiefe_asymptote schreiben
+#| show-test-hints: false
+import sympy
+x = sympy.symbols('x')
+
+def schiefe_asymptote(f):
+    zaehler, nenner = sympy.fraction(sympy.cancel(f))
+    grad_z = sympy.degree(zaehler, x)
+    grad_n = sympy.degree(nenner, x)
+    quotient, rest = sympy.div(zaehler, nenner, x)
+    # Dein Code hier: Gib None zurück, falls es keine schiefe Asymptote gibt
+    # (Grad-Bedingung nicht erfüllt oder rest == 0), sonst den quotient
+    pass
+
+## TESTS ##
+assert schiefe_asymptote((2*x**2 + 3*x - 1)/(x + 1)) == 2*x + 1, "f(x) = (2x²+3x-1)/(x+1) hat die Asymptote y = 2x+1"
+assert schiefe_asymptote((x**2 + x + 2)/(x - 1)) == x + 2, "f(x) = (x²+x+2)/(x-1) hat die Asymptote y = x+2"
+assert schiefe_asymptote((x + 1)/(x**2 - 4)) is None, "Der Zählergrad ist kleiner als der Nennergrad: keine schiefe Asymptote"
+assert schiefe_asymptote((x**3 + 1)/x) is None, "Zählergrad - Nennergrad = 2: keine schiefe, sondern eine nicht-lineare Asymptote"
+assert schiefe_asymptote((x**2 - 1)/(x - 1)) is None, "Gekürzt bleibt x+1 ohne Rest: das ist die Funktion selbst, keine Asymptote"
+```
+
+::: {.callout-note title="Tipp 1:" collapse="true"}
+*   Zwei Bedingungen müssen zusammen erfüllt sein: `grad_z == grad_n + 1` **und** `rest != 0`.
+*   Mit `if not (...)`: kannst du den Nein-Fall zuerst abfangen und `None` zurückgeben.
+:::
+::: {.callout-note title="Tipp 2:" collapse="true"}
+```python
+if grad_z != grad_n + 1 or rest == 0:
+    return None
+return quotient
+```
+:::
+
+---
+
+# Nicht-lineare Asymptoten 
+
+*Dieser Abschnitt ist ein freiwilliger **Bonus** und hat keine automatische Prüfung.*
+
+_In der Schule wird sich meist nur mit geraden Asymptoten beschäftigt. Es gibt jedoch auch nicht-lineare oder nicht-gerade Asymptoten. Diese **Kurve** an die sich die Funktion **im Unendlichen** annähert wird auch **Näherungskurve** oder **kurvenförmige Asymptote** genannt._
+
+Eine solche Asymptote entsteht ähnlich wie schiefe Asymptoten durch eine gebrochen-rationale Funktion, nur dass in diesem Fall der Grad des Zählerpolynoms **mehr als eins größer** ist als der Grad des Nennerpolynoms $(Zählergrad > Nennergrad + 1)$.  
+Ähnlich wie bei den schiefen Asymptoten ist es auch hier die **Existenz eines Rests bei der Polynomdivision wichtig**. Wenn sie keinen hat, nähert sich die Funktion der **Näherungskurve** im Unendlichen nicht an, sondern ist durchgehend mit ihr identisch, wodurch es sich nicht um eine Asymptote handelt!  
+Auch hier findet man die Näherungskurve durch **Polynomdivision**.
+
+#### Python-Implementierung und Visualisierung
+
+Im Prinzip ist die Idee zur Berechnung einer nicht-linearen Asymptoten der Berechnung einer schiefen Asymptoten _sehr_ ähnlich.  
+Daher ist das eine Aufgabe:
+
+```{pyodide-python}
+#| label: asymptoten-aufgabe-nichtlinear
+import sympy
+#Füge hier deinen Code ein
+```
+
+Wie das aussieht, zeigt der folgende Plot für $f(x)=\frac{x^3+1}{x}$: Die Polynomdivision ergibt $x^2$ mit Rest $1$, die Näherungskurve ist also die Parabel $y=x^2$. Führe den Block aus und **zoome mit der Lupe** in einen Bereich weit rechts oder links hinein: Je weiter außen, desto enger liegen Funktion und Parabel beieinander. In der Nähe von $x=0$ siehst du außerdem die vertikale Asymptote.
+
+```{pyodide-python}
+#| read-only: true
+import numpy as np
+import matplotlib.pyplot as plt
+
+x_werte = np.linspace(-5, 5, 1000)
+f_werte = (x_werte**3 + 1) / x_werte
+f_werte[np.abs(x_werte) < 0.05] = np.nan    # Lücke bei x = 0 (Definitionslücke), sonst verbindet plt.plot die beiden Äste
+
+plt.plot(x_werte, f_werte, label="f(x) = (x³+1)/x")
+plt.plot(x_werte, x_werte**2, "--", label="Näherungskurve y = x²")
+plt.axvline(0, color="gray", linestyle=":", label="vertikale Asymptote x = 0")
+plt.ylim(-10, 30)
+plt.legend()
+plt.grid(True)
+plt.show()
+```
+
+::: {.callout-note title="Tipp:" collapse="true"}
+Wie schon erwähnt ist die Bestimmung der Berechnung der schiefen Asymptote sehr ähnlich.  
+Überlege was die beiden Codes voneinander unterscheidet und bestimme dann mit Hilfe des Codes von oben den Code hier.
+:::
+
+## Abschluss-Quiz
+
+```quizdown
+---
+locale: de
+shuffleQuestions: true
+---
+
+# Was gibt `sympy.limit(1/x, x, sympy.oo)` aus?
+- [x] `0`
+- [ ] `oo`
+- [ ] `1`
+- [ ] `zoo`
+> Hinweis: $\frac{1}{x}$ wird für große $x$ beliebig klein. Daher ist $y=0$ eine horizontale Asymptote.
+
+# Wie lautet `sympy.oo.is_finite`?
+- [x] `False`
+- [ ] `True`
+- [ ] `None`
+> Hinweis: Unendlich ist keine endliche Zahl. Genau deshalb filtert man damit horizontale Asymptoten heraus.
+
+# $f(x)=\dfrac{x^2-1}{x-1}$: Zähler und Nenner sind bei $x=1$ null. Was liegt dort vor?
+- [ ] eine vertikale Asymptote
+- [x] nur eine Lücke, nach dem Kürzen bleibt $x+1$
+- [ ] eine schiefe Asymptote
+> Hinweis: Immer erst vollständig kürzen, dann den Nenner untersuchen.
+
+# Zählergrad 3, Nennergrad 2 (mit Rest bei der Polynomdivision). Welche Asymptote entsteht?
+- [ ] eine horizontale Asymptote
+- [x] eine schiefe Asymptote
+- [ ] eine nicht-lineare Asymptote
+> Hinweis: Zählergrad = Nennergrad + 1.
+
+# Zählergrad 4, Nennergrad 2 (mit Rest bei der Polynomdivision). Welche Asymptote entsteht?
+- [ ] eine horizontale Asymptote
+- [ ] eine schiefe Asymptote
+- [x] eine nicht-lineare Asymptote
+> Hinweis: Zählergrad > Nennergrad + 1, der Quotient ist dann keine Gerade mehr.
+```
+
+Wenn Du diesen Abschnitt beendet hast, hast du das Kapitel **Globalverhalten und Asymptoten** erfolgreich abgeschlossen. Weiter geht es mit dem Kapitel [Monotonie und Krümmungsverhalten](../Kapitel_4/index.qmd).
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+# What is an asymptote?
+
+Before we get to the Python implementation, it is important to know what an asymptote is in general.
+An **asymptote is** a curve that the function approaches more and more closely **at infinity**.  
+
+**Important**: This does not mean that the function and the curve (usually a straight line) never meet. There are different possibilities.
+
+1.  They never meet, e.g.: $f(x)=\frac{1}{x}$
+2.  They meet finitely often before they no longer meet at infinity, e.g.: $f(x) = \frac{x^3 + 2x^2 + 1}{x^2 + 1}$
+3.  They meet infinitely often because the function oscillates around the asymptote (i.e. in the form of a wave), crossing it once with every oscillation, e.g.: $f(x) = \frac{\sin(x)}{x}$.
+
+* **[Linear asymptotes:](#linear-asymptotes)**  
+  *   **[Vertical asymptotes](#vertical-asymptotes)**
+  *   **[Horizontal asymptotes](#horizontal-asymptotes)**
+  *   **[Oblique asymptotes](#oblique-asymptotes)**
+* **[Non-linear asymptotes](#non-linear-asymptotes)**
+
+# Linear asymptotes
+
+## Vertical asymptotes
+
+A **vertical asymptote** is a vertical line of the form $x = a$ that the function approaches. Such asymptotes typically occur where the function has gaps in its domain, e.g. with **[division by zero](../Kapitel_1/definitionsbereich.qmd#rational-functions)**.  
+_They can also occur with other functions such as logarithms, but for simplicity we only consider cases with division by zero. Advanced learners are welcome to add a check for logarithmic functions._
+
+**The graph of the function $f(x)$ has a vertical asymptote at $x=a$ if at least one of the following limits holds:**
+$$ \lim_{x \to a^+} f(x) = \pm\infty \quad \text{or} \quad \lim_{x \to a^-} f(x) = \pm\infty $$
+
+
+**Quick check:** Is the maths solid? Then the code will be easier.
+
+```{math-exercise}
+#| label: asymptoten-vertikal-vorcheck-en
+#| caption: Pre-check – zeros of the denominator
+#| mode: set
+#| partial-credit: true
+At which $x$ is the denominator of $f(x)=\dfrac{x}{x^2-9}$ equal to zero? $x \in \{$ __[3, -3] $\}$
+```
+
+```{math-exercise}
+#| label: asymptoten-vertikal-vorcheck-luecke-en
+#| caption: Pre-check – gap or asymptote?
+We have $\dfrac{x^2-1}{x-1}=x+1$ for $x\neq 1$. What is the value of the reduced function $x+1$ at $x=1$? There is **no** asymptote there, only a gap. $y =$ _[2]
+```
+
+### Python implementation: finding vertical asymptotes
+
+To find the vertical asymptote, we proceed as in the section **[Domain](../Kapitel_1/definitionsbereich.qmd#rational-functions)**.
+A small reminder of the basics from that section:
+```{pyodide-python}
+#| read-only: true
+import sympy
+x = sympy.symbols('x')
+function_str = "(x**2 + 1) / (x - 2)"
+f = sympy.sympify(function_str)
+numerator, denominator = sympy.fraction(f)
+potential_asymptotes = sympy.solve(denominator, x)
+print(f"The potential asymptotes are: {potential_asymptotes}")
+```
+
+#### Exercise
+
+Complete the function `vertical_asymptotes(f)` so that it returns the $x$-values of all vertical asymptotes as an **ascending sorted list**. The skeleton is ready, only one line is missing (`sorted(...)` turns a set into a sorted list).  
+Note that an asymptote only exists where $\text{the denominator}=0 \text{ and the numerator } \neq 0$. This holds for a **fully reduced** fraction: for $f(x) = \frac{x^2-1}{(x-1)^3}$, numerator and denominator are both zero at $x = 1$, but after reducing ($\frac{x+1}{(x-1)^2}$) you can see that there is an asymptote after all. `sympy.cancel(f)` reduces the fraction for you.
+
+
+```{py-exercise}
+#| label: asymptoten-vertikal-funktion-en
+#| caption: Write vertical_asymptotes
+#| show-test-hints: false
+import sympy
+x = sympy.symbols('x')
+
+def vertical_asymptotes(f):
+    f = sympy.cancel(f)                      # reduce the fraction completely
+    numerator, denominator = sympy.fraction(f)
+    # Your code here: determine the real zeros of the denominator
+    # (hint: sympy.solveset(denominator, x, sympy.Reals)) and return them sorted
+    pass
+
+## TESTS ##
+assert vertical_asymptotes((x + 1)/(x**2 - 4)) == [-2, 2], "f(x) = (x+1)/(x**2-4) has asymptotes at -2 and 2"
+assert vertical_asymptotes((x**2 - 1)/(x - 1)**3) == [1], "After reducing, (x+1)/(x-1)**2 remains: asymptote at 1"
+assert vertical_asymptotes((x**2 - 1)/(x - 1)) == [], "This reduces completely: only a gap at 1, no asymptote"
+assert vertical_asymptotes(1/(x**2 + 1)) == [], "x**2+1 has no real zeros"
+assert vertical_asymptotes(x**2 + 3) == [], "A polynomial has no vertical asymptotes"
+```
+
+::: {.callout-note title="Tip 1:" collapse="true"}
+*   `sympy.solveset(denominator, x, sympy.Reals)` returns the **real** zeros of the denominator as a set.
+*   Since the fraction is already reduced, the numerator is $\neq 0$ at each of these points. So they really are asymptotes.
+:::
+::: {.callout-note title="Tip 2:" collapse="true"}
+The line could look like this: `return sorted(sympy.solveset(denominator, x, sympy.Reals))`
+:::
+
+---
+
+## Horizontal asymptotes
+
+A **horizontal asymptote** is a horizontal line of the form $y=a$ that the function approaches in its **[end behavior](globalverhalten.qmd)**.
+
+**The line $y=a$ is a horizontal asymptote of $f(x)$ if for $a\in \mathbb{R}$:** 
+$$ \lim_{x \to \infty} f(x) = a \quad \text{or} \quad \lim_{x \to -\infty} f(x) = a $$ 
+
+**Quick check:**
+
+```{math-exercise}
+#| label: asymptoten-horizontal-vorcheck-en
+#| caption: Pre-check – limit at infinity
+What is the limit of $f(x)=\dfrac{3x^2+1}{x^2-5}$ as $x\to\infty$? $\lim f(x) =$ _[3]
+```
+
+### Python implementation: finding horizontal asymptotes
+
+Here we proceed as in **[Examining End Behavior](globalverhalten.qmd)**, i.e. we determine the `sympy.limit`s. However, we need one more step that we have not used so far: a horizontal asymptote only exists if the value is real (finite).
+
+Complete the function `horizontal_asymptotes(f)`: it should return all $y$-values of horizontal asymptotes as an **ascending sorted list** (no duplicates, an empty list if there is no asymptote).
+
+```{py-exercise}
+#| label: asymptoten-horizontal-funktion-en
+#| caption: Write horizontal_asymptotes
+#| show-test-hints: false
+import sympy
+x = sympy.symbols('x')
+
+def horizontal_asymptotes(f):
+    limits = [sympy.limit(f, x, sympy.oo), sympy.limit(f, x, -sympy.oo)]
+    result = []
+    for g in limits:
+        # Your code here: append g to the list result
+        # if g is finite (g.is_finite) and not already in result
+        pass
+    return sorted(result)
+
+## TESTS ##
+assert horizontal_asymptotes((x + 1)/(x**2 - 4)) == [0], "f(x) = (x+1)/(x**2-4) has the asymptote y = 0"
+assert horizontal_asymptotes((3*x**2 + 1)/(x**2 - 5)) == [3], "Both limits are 3, the list should contain 3 only once"
+assert horizontal_asymptotes(x**2) == [], "x**2 grows without bound, no horizontal asymptote"
+assert horizontal_asymptotes(sympy.atan(x)) == [-sympy.pi/2, sympy.pi/2], "arctan has two different asymptotes"
+```
+
+::: {.callout-note title="Tip:" collapse="true"}
+*   The property `.is_finite` tells you whether a value is finite (for `oo` it is `False`).
+*   The check could look like this: `if g.is_finite and g not in result:`
+:::
+
+---
+
+## Oblique asymptotes
+
+An **oblique (or slant) asymptote** is a line of the form $y = mx + b$ that the function approaches.  
+It occurs with rational functions when the degree of the numerator polynomial is exactly one greater than the degree of the denominator polynomial and the polynomial division leaves a remainder.
+The result of the polynomial division is the equation of the asymptote.  
+**The line $f_a(x) = mx + b$ is an *oblique* asymptote of $f$ if the distance between $f$ and $f_a$ tends to 0 at infinity:** 
+$$ \lim_{x \to \infty} | f(x) - f_a(x) | = 0 \quad \text{or} \quad \lim_{x \to -\infty} | f(x) - f_a(x) | = 0 $$ 
+
+**Quick check:**
+
+```{math-exercise}
+#| label: asymptoten-schief-vorcheck-grad-en
+#| caption: Pre-check – compare degrees
+By how much is the numerator degree greater than the denominator degree for $f(x)=\dfrac{x^3+1}{x^2-4}$? Difference $=$ _[1]
+```
+
+```{math-exercise}
+#| label: asymptoten-schief-vorcheck-division-en
+#| caption: Pre-check – polynomial division
+#| vars: x
+Carry out the polynomial division $(x^2+x+2):(x-1)$ by hand. The result without remainder is $x+2$, the remainder is $4$. So which oblique asymptote does $f(x)=\dfrac{x^2+x+2}{x-1}$ have? $y =$ __[x+2]
+```
+
+### Python implementation: finding oblique asymptotes
+
+Like many of the calculations we have already done in other chapters, polynomial division can be carried out in Python with the `sympy` library.  
+The matching function is called `sympy.div()`.
+The degree of a function can be determined with `sympy.degree`.
+
+
+Complete the function `oblique_asymptote(f)`: it should return the line $mx+b$ of the oblique asymptote, or `None` if there is none. Note that one exists only if the numerator degree is exactly one greater **and** the polynomial division leaves a remainder.
+
+```{py-exercise}
+#| label: asymptoten-schief-funktion-en
+#| caption: Write oblique_asymptote
+#| show-test-hints: false
+import sympy
+x = sympy.symbols('x')
+
+def oblique_asymptote(f):
+    numerator, denominator = sympy.fraction(sympy.cancel(f))
+    deg_n = sympy.degree(numerator, x)
+    deg_d = sympy.degree(denominator, x)
+    quotient, remainder = sympy.div(numerator, denominator, x)
+    # Your code here: return None if there is no oblique asymptote
+    # (degree condition not met or remainder == 0), otherwise return the quotient
+    pass
+
+## TESTS ##
+assert oblique_asymptote((2*x**2 + 3*x - 1)/(x + 1)) == 2*x + 1, "f(x) = (2x²+3x-1)/(x+1) has the asymptote y = 2x+1"
+assert oblique_asymptote((x**2 + x + 2)/(x - 1)) == x + 2, "f(x) = (x²+x+2)/(x-1) has the asymptote y = x+2"
+assert oblique_asymptote((x + 1)/(x**2 - 4)) is None, "The numerator degree is smaller than the denominator degree: no oblique asymptote"
+assert oblique_asymptote((x**3 + 1)/x) is None, "Numerator degree - denominator degree = 2: a non-linear, not an oblique asymptote"
+assert oblique_asymptote((x**2 - 1)/(x - 1)) is None, "Reduced, x+1 remains without remainder: that is the function itself, not an asymptote"
+```
+
+::: {.callout-note title="Tip 1:" collapse="true"}
+*   Two conditions must hold together: `deg_n == deg_d + 1` **and** `remainder != 0`.
+*   With `if not (...)`: you can handle the no case first and return `None`.
+:::
+::: {.callout-note title="Tip 2:" collapse="true"}
+```python
+if deg_n != deg_d + 1 or remainder == 0:
+    return None
+return quotient
+```
+:::
+
+---
+
+# Non-linear asymptotes 
+
+*This section is an optional **bonus** and has no automatic check.*
+
+_At school, usually only straight-line asymptotes are covered. However, there are also non-linear asymptotes. This **curve** that the function approaches **at infinity** is also called an **approximating curve** or **curvilinear asymptote**._
+
+Like oblique asymptotes, such an asymptote arises from a rational function, except that in this case the degree of the numerator polynomial is **more than one greater** than the degree of the denominator polynomial $(\text{numerator degree} > \text{denominator degree} + 1)$.  
+As with oblique asymptotes, the **existence of a remainder in the polynomial division is important** here. If there is none, the function does not approach the **approximating curve** at infinity but is identical to it everywhere, so it is not an asymptote!  
+Here, too, you find the approximating curve by **polynomial division**.
+
+#### Python implementation and visualization
+
+In principle, the idea for calculating a non-linear asymptote is _very_ similar to calculating an oblique asymptote.  
+That is why this is an exercise:
+
+```{pyodide-python}
+#| label: asymptoten-aufgabe-nichtlinear-en
+import sympy
+#Insert your code here
+```
+
+The following plot shows what this looks like for $f(x)=\frac{x^3+1}{x}$: the polynomial division gives $x^2$ with remainder $1$, so the approximating curve is the parabola $y=x^2$. Run the block and **zoom in with the magnifier** on an area far to the right or left: the further out, the closer the function and the parabola lie. Near $x=0$ you can also see the vertical asymptote.
+
+```{pyodide-python}
+#| read-only: true
+import numpy as np
+import matplotlib.pyplot as plt
+
+x_values = np.linspace(-5, 5, 1000)
+f_values = (x_values**3 + 1) / x_values
+f_values[np.abs(x_values) < 0.05] = np.nan    # gap at x = 0 (gap in the domain), otherwise plt.plot connects both branches
+
+plt.plot(x_values, f_values, label="f(x) = (x³+1)/x")
+plt.plot(x_values, x_values**2, "--", label="approximating curve y = x²")
+plt.axvline(0, color="gray", linestyle=":", label="vertical asymptote x = 0")
+plt.ylim(-10, 30)
+plt.legend()
+plt.grid(True)
+plt.show()
+```
+
+::: {.callout-note title="Tip:" collapse="true"}
+As already mentioned, the calculation is very similar to that of the oblique asymptote.  
+Think about what distinguishes the two pieces of code and then use the code from above to write the code here.
+:::
+
+## Final quiz
+
+```quizdown
+---
+locale: en
+shuffleQuestions: true
+---
+
+# What does `sympy.limit(1/x, x, sympy.oo)` return?
+- [x] `0`
+- [ ] `oo`
+- [ ] `1`
+- [ ] `zoo`
+> Hint: $\frac{1}{x}$ becomes arbitrarily small for large $x$. So $y=0$ is a horizontal asymptote.
+
+# What is `sympy.oo.is_finite`?
+- [x] `False`
+- [ ] `True`
+- [ ] `None`
+> Hint: Infinity is not a finite number. That is exactly why it is used to filter out horizontal asymptotes.
+
+# $f(x)=\dfrac{x^2-1}{x-1}$: numerator and denominator are zero at $x=1$. What is there?
+- [ ] a vertical asymptote
+- [x] only a gap, after reducing $x+1$ remains
+- [ ] an oblique asymptote
+> Hint: Always reduce completely first, then examine the denominator.
+
+# Numerator degree 3, denominator degree 2 (with a remainder in the polynomial division). Which asymptote arises?
+- [ ] a horizontal asymptote
+- [x] an oblique asymptote
+- [ ] a non-linear asymptote
+> Hint: numerator degree = denominator degree + 1.
+
+# Numerator degree 4, denominator degree 2 (with a remainder in the polynomial division). Which asymptote arises?
+- [ ] a horizontal asymptote
+- [ ] an oblique asymptote
+- [x] a non-linear asymptote
+> Hint: numerator degree > denominator degree + 1, so the quotient is no longer a line.
+```
+
+Once you have finished this section, you have successfully completed the chapter **End Behavior and Asymptotes**. Next up is the chapter [Monotonicity and Concavity](../Kapitel_4/index.qmd).
+
+::::

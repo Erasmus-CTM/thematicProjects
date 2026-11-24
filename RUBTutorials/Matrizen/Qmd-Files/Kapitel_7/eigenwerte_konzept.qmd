@@ -1,0 +1,167 @@
+---
+title: "7.1. Eigenwerte und Eigenvektoren - Das Konzept"
+title-en: "7.1. Eigenvalues and Eigenvectors - The Concept"
+format: html
+filters:
+  - ctm-assessment
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+Wir haben in den vorherigen Kapiteln gelernt, dass Matrizen als **Transformationen** wirken können. Wenn wir eine Matrix auf einen Vektor anwenden, wird dieser Vektor meistens verändert: Er wird gedreht, gestreckt oder gespiegelt.
+
+In diesem Kapitel beschäftigen wir uns mit einer ganz besonderen Klasse von Vektoren, die sich gegen diese Veränderung "wehren". Sie sind gewissermaßen die "sturen" Vektoren einer Matrix. Diese Vektoren verraten uns extrem viel über die innere Struktur der Matrix und sind der Schlüssel zu Algorithmen wie dem Google PageRank oder der Gesichtserkennung.
+
+## 7.1.1. Die geometrische Intuition
+
+Stell dir eine lineare Transformation vor, zum Beispiel eine Scherung oder eine Drehung im Raum.
+Wenn du irgendeinen zufälligen Vektor nimmst und die Transformation anwendest, zeigt der Ergebnisvektor fast immer in eine **andere Richtung** als der ursprüngliche Vektor.
+
+Es gibt aber Ausnahmen. Bei fast jeder Transformation gibt es Vektoren, die **auf ihrer Geraden bleiben**. Die Transformation bewirkt bei ihnen nur, dass sie **länger** oder **kürzer** werden (oder umklappen und in die exakte Gegenrichtung zeigen). Die Richtung an sich ändert sich nicht.
+
+* Diese Vektoren heißen **Eigenvektoren**.
+* Der Faktor, um den sie gestreckt oder gestaucht werden, heißt **Eigenwert**.
+
+### 7.1.1.1. Ein Beispiel aus der Realität: Die Erde
+
+Stell dir die Erde vor, die sich um ihre eigene Achse dreht. Jeder Vektor, der vom Erdmittelpunkt zu einer Stadt (z.B. Berlin) zeigt, bewegt sich im Laufe der Zeit. Seine Richtung ändert sich ständig.
+Es gibt jedoch genau eine Richtung, die sich **nicht** ändert: die der Rotationsachse, also z.B. der Vektor, der vom Mittelpunkt zum Nordpol zeigt (und jedes Vielfache davon).
+
+* Dieser Vektor ist ein **Eigenvektor** der Erdrotation.
+* Da er nicht länger oder kürzer wird, ist sein **Eigenwert 1**.
+
+## 7.1.2. Die mathematische Definition
+
+Mathematisch lässt sich diese Beobachtung wie folgt zusammenfassen.
+
+Sei $A$ eine quadratische Matrix. Ein Vektor $\vec{v}$ (der nicht der Nullvektor ist) ist ein Eigenvektor von $A$, wenn gilt:
+
+$$A \cdot \vec{v} = \lambda \cdot \vec{v}$$
+
+Schauen wir uns die Bestandteile genau an:
+
+1.  **$A \cdot \vec{v}$**: Auf der linken Seite steht die **Matrix-Vektor-Multiplikation**. Das ist die Transformation.
+2.  **$\lambda \cdot \vec{v}$**: Auf der rechten Seite steht eine **Skalarmultiplikation**. Der Vektor $\vec{v}$ wird nur mit einer Zahl $\lambda$ (Lambda) malgenommen.
+3.  **$\lambda$ (Lambda)**: Das ist der **Eigenwert**. Es ist eine einfache Zahl (Skalar).
+
+**Das bedeutet:** Die Wirkung der Matrix $A$ auf den Vektor $\vec{v}$ ist identisch mit einer einfachen Skalierung durch $\lambda$. Die Matrix verhält sich für diesen speziellen Vektor wie eine Zahl!
+
+::: {.callout-note title="Wichtig"}
+Der Nullvektor $\vec{0}$ ist **kein** Eigenvektor, auch wenn die Gleichung $A \cdot \vec{0} = \lambda \cdot \vec{0}$ immer stimmt. Eigenvektoren müssen eine Richtung haben, und der Nullvektor hat keine.
+:::
+
+## 7.1.3. Bedeutung des Eigenwerts $\lambda$
+
+Der Wert von $\lambda$ verrät uns, was mit dem Eigenvektor passiert:
+
+| Wert von $\lambda$ | Geometrische Bedeutung |
+| :--- | :--- |
+| $\lambda > 1$ | Der Vektor wird gestreckt (wird länger). |
+| $0 < \lambda < 1$ | Der Vektor wird gestaucht (wird kürzer). |
+| $\lambda = 1$ | Der Vektor ändert sich gar nicht (Identität). |
+| $\lambda = 0$ | Der Vektor wird zum Nullvektor "zerstört" (Matrix ist nicht invertierbar). |
+| $\lambda < 0$ | Der Vektor ändert die Orientierung (zeigt in die Gegenrichtung) und wird skaliert. |
+
+Probiere die Definition einmal von Hand aus. Gegeben ist die Matrix
+
+$$A = \begin{pmatrix} 2 & 1 \\ 1 & 2 \end{pmatrix}.$$
+
+Berechne $A \cdot \vec{v}$ für die beiden Vektoren und lies ab, um welchen Faktor $\lambda$ der Vektor gestreckt wurde:
+
+```{math-exercise}
+#| label: eigenwert-probe
+#| caption: Eigenvektor von Hand prüfen
+#| partial-credit: true
+$A \cdot \begin{pmatrix} 1 \\ 1 \end{pmatrix} =$ vec[3,3], also ist $\lambda =$ _[3]
+
+$A \cdot \begin{pmatrix} 1 \\ -1 \end{pmatrix} =$ vec[1,-1], also ist $\lambda =$ _[1]
+
+$A \cdot \begin{pmatrix} 1 \\ 0 \end{pmatrix} =$ vec[2,1]
+```
+
+Die ersten beiden Vektoren bleiben auf ihrer Geraden, sie sind Eigenvektoren (zu $\lambda = 3$ und $\lambda = 1$). Der dritte kippt: $(2, 1)$ ist kein Vielfaches von $(1, 0)$, also ist $(1, 0)$ **kein** Eigenvektor. Genau das zeigt auch die Animation in [7.3](eigenwerte_visualisierung.qmd).
+
+
+Nachdem nun geklärt ist, was **Eigenwerte & Eigenvektoren** geometrisch und mathematisch sind, geht es in Unterkapitel [7.2. Berechnung in Python](eigenwerte_berechnung.qmd) mit der automatischen Berechnung von Eigenwerten und Eigenvektoren in Python weiter.
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+In the previous chapters we learned that matrices can act as **transformations**. If we apply a matrix to a vector, this vector is usually changed: it is rotated, stretched or reflected.
+
+In this chapter we deal with a very special class of vectors that "resist" this change. They are, so to speak, the "stubborn" vectors of a matrix. These vectors tell us an extreme amount about the inner structure of the matrix and are the key to algorithms such as Google PageRank or face recognition.
+
+## 7.1.1. The geometric intuition {#die-geometrische-intuition}
+
+Imagine a linear transformation, for example a shear or a rotation in space.
+If you take any random vector and apply the transformation, the resulting vector almost always points in a **different direction** from the original vector.
+
+But there are exceptions. For almost every transformation there are vectors that **stay on their line**. The transformation only makes them **longer** or **shorter** (or flips them so they point in exactly the opposite direction). The direction itself does not change.
+
+* These vectors are called **eigenvectors**.
+* The factor by which they are stretched or compressed is called the **eigenvalue**.
+
+### 7.1.1.1. A real-world example: the Earth {#ein-beispiel-aus-der-realität-die-erde}
+
+Imagine the Earth rotating about its own axis. Every vector that points from the center of the Earth to a city (e.g. Berlin) moves over time. Its direction changes constantly.
+However, there is exactly one direction that does **not** change: the vector that points from the center to the North Pole (the axis of rotation).
+
+* This vector is an **eigenvector** of the Earth's rotation.
+* Since it does not get longer or shorter, its **eigenvalue is 1**.
+
+## 7.1.2. The mathematical definition {#die-mathematische-definition}
+
+Mathematically, this observation can be summarized as follows.
+
+Let $A$ be a square matrix. A vector $\vec{v}$ (that is not the zero vector) is an eigenvector of $A$ if:
+
+$$A \cdot \vec{v} = \lambda \cdot \vec{v}$$
+
+Let us look at the components in detail:
+
+1.  **$A \cdot \vec{v}$**: On the left-hand side is the **matrix-vector multiplication**. This is the transformation.
+2.  **$\lambda \cdot \vec{v}$**: On the right-hand side is a **scalar multiplication**. The vector $\vec{v}$ is only multiplied by a number $\lambda$ (lambda).
+3.  **$\lambda$ (lambda)**: This is the **eigenvalue**. It is a simple number (scalar).
+
+**This means:** The effect of the matrix $A$ on the vector $\vec{v}$ is identical to a simple scaling by $\lambda$. For this special vector, the matrix behaves like a number!
+
+::: {.callout-note title="Important"}
+The zero vector $\vec{0}$ is **not** an eigenvector, even though the equation $A \cdot \vec{0} = \lambda \cdot \vec{0}$ always holds. Eigenvectors must have a direction, and the zero vector has none.
+:::
+
+## 7.1.3. Meaning of the eigenvalue $\lambda$ {#bedeutung-des-eigenwerts-lambda}
+
+The value of $\lambda$ tells us what happens to the eigenvector:
+
+| Value of $\lambda$ | Geometric meaning |
+| :--- | :--- |
+| $\lambda > 1$ | The vector is stretched (gets longer). |
+| $0 < \lambda < 1$ | The vector is compressed (gets shorter). |
+| $\lambda = 1$ | The vector does not change at all (identity). |
+| $\lambda = 0$ | The vector is "destroyed" into the zero vector (the matrix is not invertible). |
+| $\lambda < 0$ | The vector changes orientation (points in the opposite direction) and is scaled. |
+
+Try the definition by hand. The matrix is
+
+$$A = \begin{pmatrix} 2 & 1 \\ 1 & 2 \end{pmatrix}.$$
+
+Compute $A \cdot \vec{v}$ for the vectors and read off the factor $\lambda$ by which the vector was stretched:
+
+```{math-exercise}
+#| label: eigenwert-probe-en
+#| caption: Checking an eigenvector by hand
+#| partial-credit: true
+$A \cdot \begin{pmatrix} 1 \\ 1 \end{pmatrix} =$ vec[3,3], so $\lambda =$ _[3]
+
+$A \cdot \begin{pmatrix} 1 \\ -1 \end{pmatrix} =$ vec[1,-1], so $\lambda =$ _[1]
+
+$A \cdot \begin{pmatrix} 1 \\ 0 \end{pmatrix} =$ vec[2,1]
+```
+
+The first two vectors stay on their line, they are eigenvectors (for $\lambda = 3$ and $\lambda = 1$). The third one tilts: $(2, 1)$ is not a multiple of $(1, 0)$, so $(1, 0)$ is **not** an eigenvector. The animation in [7.3](eigenwerte_visualisierung.qmd) shows exactly this.
+
+Now that it is clear what **eigenvalues & eigenvectors** are geometrically and mathematically, section [7.2. Computation in Python](eigenwerte_berechnung.qmd) continues with the automatic computation of eigenvalues and eigenvectors in Python.
+
+::::

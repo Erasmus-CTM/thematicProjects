@@ -1,0 +1,152 @@
+---
+title: '1. Vektoren — Die Grundbausteine'
+title-en: '1. Vectors — The Building Blocks'
+format: html
+filters:
+  - quizdown
+engine: markdown
+---
+
+::: {.content-visible when-profile="deutsch"}
+In diesem Kapitel soll es zunächst darum gehen, eine Grundlage für die folgenden Kapitel zu schaffen, indem Vektoren in Python beschrieben werden.
+Rechnungen mit Vektoren sind aus dem händischen Gebrauch vertraut, weshalb die Verarbeitung in Python leichter zu verstehen ist.
+In diesem Kapitel werden daher die folgenden Abschnitte betrachtet:
+
+- **[1.1. Vektoren - Die Grundlagen](vektor_grundlagen.qmd)**
+    - [1.1.1. Grundlagen von Python](vektor_grundlagen.qmd#grundlagen-von-python)
+    - [1.1.2. Was sind Vektoren?](vektor_grundlagen.qmd#was-sind-vektoren)
+    - [1.1.3. Vektoren in Python](vektor_grundlagen.qmd#vektoren-in-python)
+- **[1.2. Vektor-Operationen](vektor_operationen.qmd)**
+    - [1.2.1. Mathematische Grundlagen: Der Vektorraum](vektor_operationen.qmd#mathematische-grundlagen-der-vektorraum)
+    - [1.2.2. Vektoraddition und -subtraktion](vektor_operationen.qmd#vektoraddition-und--subtraktion)
+    - [1.2.3. Skalarmultiplikation](vektor_operationen.qmd#skalarmultiplikation)
+    - [1.2.4. Elementweise Multiplikation (Hadamard-Produkt)](vektor_operationen.qmd#elementweise-multiplikation-hadamard-produkt)
+- **[1.3. Skalarprodukt](vektor_skalarprodukt.qmd)**
+    - [1.3.1. Mathematische Grundlagen](vektor_skalarprodukt.qmd#mathematische-grundlagen)
+- **[1.4. Länge (Norm)](vektor_laenge.qmd)**
+    - [1.4.1. Mathematische Grundlagen](vektor_laenge.qmd#mathematische-grundlagen)
+    - [1.4.2. Länge in NumPy berechnen](vektor_laenge.qmd#länge-in-numpy-berechnen)
+- **[1.5. Winkel zwischen zwei Vektoren](vektor_winkel.qmd)**
+    - [1.5.1. Mathematische Grundlagen](vektor_winkel.qmd#mathematische-grundlagen)
+    - [1.5.2. Winkel in NumPy berechnen](vektor_winkel.qmd#winkel-in-numpy-berechnen)
+- **[1.6. Vektoren als Datenrepräsentation](vektor_repraesentation.qmd)**
+    - [1.6.1. Vom Pfeil zum Datenpunkt](vektor_repraesentation.qmd#vom-pfeil-zum-datenpunkt)
+    - [1.6.2. Warum ist das nützlich? Die Macht der Vektor-Arithmetik](vektor_repraesentation.qmd#warum-ist-das-nützlich-die-macht-der-vektor-arithmetik)
+    - [1.6.3. Zusammenfassung und Ausblick](vektor_repraesentation.qmd#zusammenfassung-und-ausblick)
+
+Um möglichst viel aus diesem Tutorial mitzunehmen, lohnt es sich im Allgemeinen, nicht nur die Kapitel in der Reihenfolge durchzugehen, sondern auch die Abschnitte in der angegebenen Reihenfolge durchzugehen, da diese sich teilweise aufeinander beziehen.
+
+## Abschluss-Quiz zu Kapitel 1
+
+Komm nach den Abschnitten 1.1 bis 1.6 hierher zurück und teste kurz, ob die wichtigsten Begriffe hängengeblieben sind.
+
+```quizdown
+---
+locale: de
+---
+
+# Was beschreibt ein Vektor $\vec{v} = (3, 4)$ anschaulich?
+1. [ ] Einen einzelnen Punkt im Raum.
+1. [x] Eine Bewegung/einen Pfeil vom Ursprung zum Punkt (3, 4).
+1. [ ] Eine Fläche.
+1. [ ] Eine Zahl ohne Richtung.
+
+> Ein Vektor hat Richtung und Länge, keine feste Position — er beschreibt eine Verschiebung.
+
+# Was berechnet `np.linalg.norm(v)`?
+1. [ ] Das Skalarprodukt von `v` mit sich selbst.
+1. [x] Die Länge (Norm) des Vektors `v`.
+1. [ ] Den Winkel von `v` zur x-Achse.
+1. [ ] Die Anzahl der Elemente in `v`.
+
+> `norm()` liefert die Länge/den Betrag eines Vektors — geometrisch der Abstand vom Ursprung zum Endpunkt.
+
+# Wann ist das Skalarprodukt zweier Vektoren gleich 0?
+1. [ ] Wenn beide Vektoren gleich lang sind.
+1. [x] Wenn die Vektoren orthogonal (rechtwinklig) zueinander stehen.
+1. [ ] Wenn beide Vektoren in dieselbe Richtung zeigen.
+1. [ ] Nie, das Skalarprodukt ist immer positiv.
+
+> Der Kosinus von 90° ist 0, daher wird das gesamte Skalarprodukt 0, wenn die Vektoren rechtwinklig zueinander stehen.
+
+# Was ist der Unterschied zwischen elementweiser Multiplikation und dem Skalarprodukt?
+1. [ ] Es gibt keinen Unterschied.
+1. [x] Elementweise Multiplikation ergibt wieder einen Vektor, das Skalarprodukt ergibt eine einzelne Zahl.
+1. [ ] Elementweise Multiplikation funktioniert nur bei quadratischen Matrizen.
+1. [ ] Das Skalarprodukt gibt es nur bei 2D-Vektoren.
+
+> `a * b` (elementweise) liefert einen neuen Vektor gleicher Länge; `a @ b` bzw. `np.dot(a, b)` liefert eine einzelne Zahl.
+```
+:::
+
+::: {.content-visible when-profile="english"}
+In this chapter, the goal is first to lay the groundwork for the chapters that follow by describing vectors in Python.
+Calculations with vectors are familiar from manual work, which makes their processing in Python easier to understand.
+This chapter therefore covers the following sections:
+
+- **[1.1. Vectors - The Basics](vektor_grundlagen.qmd)**
+    - [1.1.1. Python Fundamentals](vektor_grundlagen.qmd#grundlagen-von-python)
+    - [1.1.2. What are Vectors?](vektor_grundlagen.qmd#was-sind-vektoren)
+    - [1.1.3. Vectors in Python](vektor_grundlagen.qmd#vektoren-in-python)
+- **[1.2. Vector Operations](vektor_operationen.qmd)**
+    - [1.2.1. Mathematical Foundations: The Vector Space](vektor_operationen.qmd#mathematische-grundlagen-der-vektorraum)
+    - [1.2.2. Vector Addition and Subtraction](vektor_operationen.qmd#vektoraddition-und--subtraktion)
+    - [1.2.3. Scalar Multiplication](vektor_operationen.qmd#skalarmultiplikation)
+    - [1.2.4. Element-wise Multiplication (Hadamard Product)](vektor_operationen.qmd#elementweise-multiplikation-hadamard-produkt)
+- **[1.3. Dot Product](vektor_skalarprodukt.qmd)**
+    - [1.3.1. Mathematical Foundations](vektor_skalarprodukt.qmd#mathematische-grundlagen)
+- **[1.4. Length (Norm)](vektor_laenge.qmd)**
+    - [1.4.1. Mathematical Foundations](vektor_laenge.qmd#mathematische-grundlagen)
+    - [1.4.2. Calculating Length in NumPy](vektor_laenge.qmd#länge-in-numpy-berechnen)
+- **[1.5. Angle between Two Vectors](vektor_winkel.qmd)**
+    - [1.5.1. Mathematical Foundations](vektor_winkel.qmd#mathematische-grundlagen)
+    - [1.5.2. Calculating Angles in NumPy](vektor_winkel.qmd#winkel-in-numpy-berechnen)
+- **[1.6. Vectors as Data Representation](vektor_repraesentation.qmd)**
+    - [1.6.1. From Arrow to Data Point](vektor_repraesentation.qmd#vom-pfeil-zum-datenpunkt)
+    - [1.6.2. Why is this useful? The Power of Vector Arithmetic](vektor_repraesentation.qmd#warum-ist-das-nützlich-die-macht-der-vektor-arithmetik)
+    - [1.6.3. Summary and Outlook](vektor_repraesentation.qmd#zusammenfassung-und-ausblick)
+
+To get the most out of this tutorial, it is generally worthwhile to work through not only the chapters but also the sections within each chapter in the given order, as they partially build on one another.
+
+## Final Quiz for Chapter 1
+
+Come back here after sections 1.1 to 1.6 and check quickly whether the key concepts stuck.
+
+```quizdown
+---
+locale: en
+---
+
+# What does a vector $\vec{v} = (3, 4)$ intuitively represent?
+1. [ ] A single point in space.
+1. [x] A displacement/arrow from the origin to the point (3, 4).
+1. [ ] An area.
+1. [ ] A number without direction.
+
+> A vector has direction and length, not a fixed position — it describes a displacement.
+
+# What does `np.linalg.norm(v)` compute?
+1. [ ] The dot product of `v` with itself.
+1. [x] The length (norm) of the vector `v`.
+1. [ ] The angle of `v` relative to the x-axis.
+1. [ ] The number of elements in `v`.
+
+> `norm()` returns the length/magnitude of a vector — geometrically the distance from the origin to its endpoint.
+
+# When is the dot product of two vectors equal to 0?
+1. [ ] When both vectors have the same length.
+1. [x] When the vectors are orthogonal (perpendicular) to each other.
+1. [ ] When both vectors point in the same direction.
+1. [ ] Never, the dot product is always positive.
+
+> The cosine of 90° is 0, so the entire dot product becomes 0 when the vectors are perpendicular to each other.
+
+# What is the difference between element-wise multiplication and the dot product?
+1. [ ] There is no difference.
+1. [x] Element-wise multiplication produces another vector, the dot product produces a single number.
+1. [ ] Element-wise multiplication only works for square matrices.
+1. [ ] The dot product only exists for 2D vectors.
+
+> `a * b` (element-wise) produces a new vector of the same length; `a @ b` or `np.dot(a, b)` produces a single number.
+```
+:::

@@ -1,0 +1,72 @@
+project:
+  output-dir: docs/de
+
+lang: de
+
+website:
+  title: "Kurvendiskussion mit Python"
+  reader-mode: true
+  navbar:
+    right:
+      - icon: github
+        #href: "Hier Link zum GitHub einfügen"
+      - icon: globe
+        aria-label: "Sprache wählen / Choose language"
+        menu:
+          - text: "Deutsch"
+            href: "#sprache-de"
+          - text: "English"
+            href: "#sprache-en"
+  sidebar:
+    collapse-level: 1
+    style: "floating"
+    contents:
+      - text: "Startseite"
+        href: Qmd-Files/index.qmd
+      - text: "Inhaltsverzeichnis"
+        href: Qmd-Files/toc.qmd
+      - text: "Python Grundlagen"
+        href: Qmd-Files/grundlagen.qmd
+      - section: "Definitionsbereich und Wertebereich"
+        href: Qmd-Files/Kapitel_1/index.qmd
+        contents:
+          - text: "Definitionsbereich bestimmen"
+            href: Qmd-Files/Kapitel_1/definitionsbereich.qmd
+          - text: "Wertebereich bestimmen"
+            href: Qmd-Files/Kapitel_1/wertebereich.qmd
+      - section: "Symmetrie und Achsenschnittpunkte"
+        href: Qmd-Files/Kapitel_2/index.qmd
+        contents:
+          - text: "Symmetrieverhalten untersuchen"
+            href: Qmd-Files/Kapitel_2/symmetrieverhalten.qmd
+          - text: "Nullstellen bestimmen"
+            href: Qmd-Files/Kapitel_2/nullstellen.qmd
+          - text: "Y-Achsenschnittpunkte bestimmen"
+            href: Qmd-Files/Kapitel_2/achsenschnittpunkte.qmd
+      - section: "Globalverhalten und Asymptoten"
+        href: Qmd-Files/Kapitel_3/index.qmd
+        contents:
+          - text: "Globalverhalten untersuchen"
+            href: Qmd-Files/Kapitel_3/globalverhalten.qmd
+          - text: "Asymptoten bestimmen"
+            href: Qmd-Files/Kapitel_3/asymptoten.qmd
+      - section: "Monotonie- und Krümmungsverhalten"
+        href: Qmd-Files/Kapitel_4/index.qmd
+        contents:
+          - text: "Ableitungen berechnen"
+            href: Qmd-Files/Kapitel_4/ableitungen.qmd
+          - text: "Monotonieverhalten untersuchen"
+            href: Qmd-Files/Kapitel_4/monotonieverhalten.qmd
+          - text: "Extrempunkte/ Sattelpunkte bestimmen"
+            href: Qmd-Files/Kapitel_4/extrempunkte.qmd
+          - text: "Krümmungsverhalten untersuchen"
+            href: Qmd-Files/Kapitel_4/kruemmungsverhalten.qmd
+          - text: "Wendepunkte bestimmen"
+            href: Qmd-Files/Kapitel_4/wendepunkte.qmd
+      - section: "Graphen zeichnen"
+        href: Qmd-Files/Kapitel_5/index.qmd
+        contents:
+          - text: "Graphen erstellen"
+            href: Qmd-Files/Kapitel_5/graphen.qmd
+          - text: "Graphen beschriften"
+            href: Qmd-Files/Kapitel_5/graphen_beschriften.qmd

@@ -1,0 +1,232 @@
+---
+title: Tutorial Übersicht
+title-en: Tutorial Overview
+format: html
+filters:
+  - ctm-assessment
+  - quizdown
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+
+# Kurvendiskussion mit Python realisieren
+
+Auf dieser Webseite soll dir anhand eines dir bekannten Themas Python näher gebracht werden.  
+
+:::{.callout-note title="Für ein paar Tipps zur Nutzung des Tutorials hier klicken!" collapse="true"}
+*Solche klickbaren Blöcke wird es immer mal wieder im Tutorial geben, um das Ganze ein wenig übersichtlicher zu machen, oder aber um evtl. bekanntes Wissen für Nutzende, die dieses bereits haben, auszublenden.*  
+<details>
+<summary> Hier klicken! </summary>
+_Auch diese Form der klickbaren Blöcke wird aus ähnlichen Gründen im Tutorial erscheinen, sie kann aber im Gegensatz zum oberen keine Icons enthalten._
+</details>
+
+**Linksseitig** siehst du eine Übersicht über das ganze Tutorial.  
+Du kannst die einzelnen Abschnitte auf-/zu klappen.  
+Das Tutorial ist dafür gemacht, von oben bis unten nacheinander durchgearbeitet zu werden. Beim Überspringen von Kapiteln/Unterkapiteln kann es daher sein, dass Weiteres nicht verstanden wird.  
+
+**Rechtsseitig** siehst du die Übersicht über die Seite, auf der du bist. Das heißt, hier kannst du die einzelnen Überschriften des Unterkapitels sehen und direkt dorthin springen.  
+
+**Oben** in der Leiste erkennst du mehrere Symbole. Die <i class="fa-solid fa-magnifying-glass"></i> ist die Suchfunktion, mit der du im ganzen Tutorial nach einem Begriff suchen kannst. Mit dem <i class="fa-solid fa-circle-half-stroke"></i>-Symbol kannst du zwischen Light- und Dark-Mode wechseln. Das <i class="fa-solid fa-book-open-reader"></i>-Symbol aktiviert den *Reader-Mode*, der die Seitenleisten ausblendet, um dir ein ungestörtes Lesen zu ermöglichen. Über das <i class="fa-solid fa-globe"></i>-Symbol kannst du zwischen Deutsch und Englisch wechseln, du landest dabei auf derselben Seite in der anderen Sprache.
+
+Es wird auch zwischendurch immer wieder **Quizze** geben, mit welchen du testen kannst, ob du das bisherige gut verstanden hast. Bei manchen Fragen gibt es einen **Tipp**-Knopf, der dir einen Hinweis gibt, ohne die Lösung zu verraten. Probier ihn gleich hier aus:
+```quizdown
+---
+locale: de
+---
+
+# Single-Choice Quiz Beispiel
+We will we will ____ you! (Queen)
+
+> Denk an das Stampfen und Klatschen im Stadion.
+
+1. [ ] `sing with`
+1. [ ] `ring`
+1. [ ] `roll`
+1. [x] `rock`
+
+# Multiple-Choice Quiz Beispiel
+Klassische Rock Bands der 60-80er Jahre sind:
+
+> Mehrere Antworten sind richtig. Eine der Bands hat den Eurovision Song Contest gewonnen und gilt eher als Pop.
+- [x] `The Beatles`
+- [x] `Queen`
+- [ ] `ABBA`
+- [x] `The Rolling Stones`
+
+# Sorting Quiz Beispiel
+In welcher Reihenfolge wurden die folgenden Erfindungen erfunden? (Oben näher am jetzt, unten weiter in der Vergangenheit).
+
+> Siri kam zusammen mit dem iPhone 4S heraus, das erste iPhone ist also älter.
+
+2. `Erstes I-Phone`
+4. `Erster 3D-Drucker`
+3. `Facebook`
+1. `Erster Sprachassistent (Siri)`
+```
+
+Außerdem gibt es **Rechenaufgaben**, bei denen du ein Ergebnis eintippst und mit **Überprüfen** sofort eine Rückmeldung bekommst. Es zählt dabei jede mathematisch gleichwertige Schreibweise, `2*x` ist also genauso richtig wie `x+x`. Wie man Potenzen, Wurzeln usw. eintippt, steht unter **Eingabe-Hilfe**.
+
+```{math-exercise}
+#| label: index-beispiel-rechenaufgabe
+#| caption: Beispiel für eine Rechenaufgabe
+#| vars: x
+Was ergibt $x \cdot x + 3x - x^2$ zusammengefasst? __[3*x]
+```
+
+:::
+
+**Ziel des Tutorials:**  
+Das Tutorial soll dir als nutzende Person, Python ein wenig näher bringen mithilfe des Abitur Themas der Kurvendiskussion.  
+Hierbei werden Schritt für Schritt die Schritte der Kurvendiskussion durchgegangen und jeweils gezeigt, wie diese Schritte mit Python umgesetzt werden können.  
+
+In diesem Tutorial werden oft **Code-Blöcke** wie die folgenden auftauchen, das sind **Pyodide-Python-Blöcke**, sie sind ausführbar mit dem **Pfeilsymbol (▶)** und führen den Code, der in ihnen steht aus.  
+```{pyodide-python}
+#| read-only: true
+#Manche Code-Blöcke kannst du nicht bearbeiten
+print("Hello World!")
+```
+
+```{pyodide-python}
+#Andere Code-Blöcke kannst du bearbeiten
+print("Hello World?")
+#Ändere als Test gerne "Hello World?" zu der Ausgabe deiner Wahl.
+```
+
+In den Code-Blöcken ist eine Python-Umgebung integriert.  
+Das heißt, in ihnen kannst du wie in Python programmieren!  
+
+:::{.callout-tip title="Weiteres zu den Code-Blöcken"}
+**Ausführen und Stoppen:** Neben dem Pfeil kannst du einen Block auch mit **Shift + Enter** ausführen. Python läuft im Hintergrund, die Seite bleibt also bedienbar. Dauert etwas zu lange (zum Beispiel eine Endlosschleife), brichst du es mit **Stopp** ab.
+
+**Rechts in der Leiste** findest du <i class="fa-solid fa-arrows-rotate"></i> (Block auf den ursprünglichen Code zurücksetzen), <i class="fa-regular fa-copy"></i> (Code kopieren) und **+ Codeblock**, mit dem du unter einem Block einen weiteren, leeren Block zum Ausprobieren anhängst.
+
+**Dein Code wird gespeichert:** Was du in bearbeitbaren Blöcken schreibst, wird in diesem Browser gespeichert und beim nächsten Besuch wiederhergestellt (aber nicht automatisch ausgeführt). Neben „Editierbar“ steht dann „💾 Gespeichert“. Mit <i class="fa-solid fa-trash-can"></i> löschst du die gespeicherte Fassung eines Blocks. Im <i class="fa-solid fa-gear"></i>-Menü oben rechts auf jeder Seite kannst du das Speichern abschalten oder alles Gespeicherte löschen, etwa an einem geteilten Computer.
+:::
+
+:::{.callout-note title="KI-Feedback einrichten" collapse="true"}
+Unter bearbeitbaren Blöcken gibt es einen **Feedback**-Knopf. Eine KI schaut sich dann deinen Code und die Ausgabe an und gibt dir einen Hinweis. Mit jedem weiteren Klick auf demselben Block wird der Hinweis konkreter (erst ein Anstoß, dann das Problem konkret benannt, dann der Lösungsweg in Worten). Fertigen Code bekommst du aber nie, selbst programmieren musst du also weiterhin.
+
+Eingerichtet wird das **einmal** über das <i class="fa-solid fa-gear"></i>-Symbol oben rechts auf der Seite, danach gilt es auf allen Seiten und auch beim nächsten Besuch:
+
+- **Ohne Anmeldung:** Wähle als Feedback-Modus **„Prompt kopieren (ohne API-Key)“** und speichere. Ein Klick auf Feedback erzeugt dann einen fertigen Text, den du in ChatGPT, Claude o. Ä. einfügst.
+- **Mit kostenlosem Zugang**, hier am **Beispiel** von OpenRouter (das ist keine Empfehlung der Autor:innen, andere Anbieter funktionieren genauso): Lege bei [OpenRouter](https://openrouter.ai) ein kostenloses Konto an und erstelle unter [openrouter.ai/keys](https://openrouter.ai/keys) einen Schlüssel (API-Key). Wähle im <i class="fa-solid fa-gear"></i>-Menü die **Anbieter-Vorlage „OpenRouter“**, füge den Schlüssel ein und speichere. Mit **Modelle abrufen** kannst du ein anderes Modell auswählen, angezeigt werden standardmäßig nur kostenlose. Der Knopf **ℹ️ Wie komme ich an Zugangsdaten?** erklärt das auch für andere Anbieter.
+
+Dein Schlüssel bleibt in deinem Browser. Beim Klick auf Feedback werden aber dein Code und die Aufgabe an den gewählten Anbieter geschickt.
+
+Die **Rechenaufgaben** haben einen eigenen Feedback-Knopf. Beim ersten Klick öffnet sich dort ein eigenes Einstellungsfenster, in das du dieselben Daten (Anbieter, Schlüssel, Modell) noch einmal einträgst. Auch das gilt danach für alle Seiten. Bei Rechenaufgaben gibt es vier Hinweisstufen, die komplette Lösung erst beim vierten Klick.
+:::
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+# Curve sketching with Python
+
+On this website, you will get to know Python using a topic you are already familiar with.  
+
+:::{.callout-note title="Click here for a few tips on using the tutorial!" collapse="true"}
+*Clickable blocks like this one will appear throughout the tutorial to keep things tidy, or to hide knowledge that some users already have.*  
+<details>
+<summary> Click here! </summary>
+_This kind of clickable block will also appear in the tutorial for similar reasons, but unlike the one above it cannot contain icons._
+</details>
+
+On the **left** you see an overview of the whole tutorial.  
+You can expand and collapse the individual sections.  
+The tutorial is designed to be worked through from top to bottom. If you skip chapters or sections, you may not understand later parts.  
+
+On the **right** you see an overview of the page you are on. There you can see the headings of the current section and jump straight to them.  
+
+At the **top** of the bar you can see several symbols. The <i class="fa-solid fa-magnifying-glass"></i> is the search function, which lets you search the whole tutorial for a term. With the <i class="fa-solid fa-circle-half-stroke"></i> symbol you can switch between light and dark mode. The <i class="fa-solid fa-book-open-reader"></i> symbol activates *reader mode*, which hides the sidebars so you can read without distraction. With the <i class="fa-solid fa-globe"></i> symbol you can switch between German and English; you end up on the same page in the other language.
+
+Every now and then there will also be **quizzes** that let you check whether you have understood the material so far. Some questions have a **hint** button that gives you a nudge without revealing the answer. Try it out right here:
+```quizdown
+---
+locale: en
+---
+
+# Single choice quiz example
+We will we will ____ you! (Queen)
+
+> Think of the stomping and clapping in a stadium.
+
+1. [ ] `sing with`
+1. [ ] `ring`
+1. [ ] `roll`
+1. [x] `rock`
+
+# Multiple choice quiz example
+Classic rock bands of the 60s to 80s are:
+
+> Several answers are correct. One of the bands won the Eurovision Song Contest and is usually counted as pop.
+- [x] `The Beatles`
+- [x] `Queen`
+- [ ] `ABBA`
+- [x] `The Rolling Stones`
+
+# Sorting quiz example
+In which order were the following inventions made? (Top: closer to today, bottom: further in the past.)
+
+> Siri was launched together with the iPhone 4S, so the first iPhone is older.
+
+2. `First iPhone`
+4. `First 3D printer`
+3. `Facebook`
+1. `First voice assistant (Siri)`
+```
+
+There are also **calculation exercises** where you type in a result and get immediate feedback with **Check**. Any mathematically equivalent form counts, so `2*x` is just as correct as `x+x`. How to type powers, roots etc. is explained under **Input help**.
+
+```{math-exercise}
+#| label: index-beispiel-rechenaufgabe-en
+#| caption: Example of a calculation exercise
+#| vars: x
+What is $x \cdot x + 3x - x^2$ simplified? __[3*x]
+```
+
+:::
+
+**Goal of the tutorial:**  
+The tutorial is meant to introduce you to Python using curve sketching, a classic topic of the German Abitur (school-leaving exam).  
+Step by step, we go through the steps of curve sketching and show how each of them can be carried out with Python.  
+
+In this tutorial you will often see **code blocks** like the following. These are **Pyodide Python blocks**; you can run them with the **arrow symbol (▶)**, which executes the code inside them.  
+```{pyodide-python}
+#| read-only: true
+#Some code blocks cannot be edited
+print("Hello World!")
+```
+
+```{pyodide-python}
+#Other code blocks can be edited
+print("Hello World?")
+#As a test, feel free to change "Hello World?" to an output of your choice.
+```
+
+A Python environment is built into the code blocks.  
+This means you can program in them just like in Python!  
+
+:::{.callout-tip title="More about the code blocks"}
+**Running and stopping:** Besides the arrow, you can also run a block with **Shift + Enter**. Python runs in the background, so the page stays usable. If something takes too long (for example an endless loop), you can abort it with **Stop**.
+
+**On the right of the bar** you find <i class="fa-solid fa-arrows-rotate"></i> (reset the block to its original code), <i class="fa-regular fa-copy"></i> (copy the code) and **+ Code block**, which appends another empty block below for trying things out.
+
+**Your code is saved:** Whatever you write in editable blocks is saved in this browser and restored on your next visit (but not run automatically). Next to "Editable" it then says "💾 Saved". With <i class="fa-solid fa-trash-can"></i> you delete the saved version of a block. In the <i class="fa-solid fa-gear"></i> menu at the top right of every page you can turn saving off or delete everything that was saved, e.g. on a shared computer.
+:::
+
+:::{.callout-note title="Setting up AI feedback" collapse="true"}
+Below editable blocks there is a **Feedback** button. An AI then looks at your code and its output and gives you a hint. With every further click on the same block, the hint becomes more concrete (first a nudge, then the problem named concretely, then the solution approach in words). You never get finished code, though, so you still have to do the programming yourself.
+
+You set this up **once** via the <i class="fa-solid fa-gear"></i> symbol at the top right of the page; after that it applies to all pages and to your next visit as well:
+
+- **Without an account:** Choose the feedback mode **"Copy prompt (no API key)"** and save. Clicking Feedback then creates a ready-made text that you paste into ChatGPT, Claude or similar.
+- **With a free account**, using OpenRouter as an **example** (this is not a recommendation by the authors, other providers work just as well): Create a free account at [OpenRouter](https://openrouter.ai) and generate a key (API key) at [openrouter.ai/keys](https://openrouter.ai/keys). In the <i class="fa-solid fa-gear"></i> menu, choose the **provider template "OpenRouter"**, paste the key and save. With **Fetch models** you can pick a different model; by default only free ones are shown. The button **ℹ️ How do I get credentials?** explains this for other providers as well.
+
+Your key stays in your browser. When you click Feedback, however, your code and the exercise are sent to the chosen provider.
+
+The **calculation exercises** have their own Feedback button. On the first click, a separate settings window opens there, in which you enter the same data (provider, key, model) once more. This then also applies to all pages. For calculation exercises there are four hint levels, with the complete solution only on the fourth click.
+:::
+
+::::

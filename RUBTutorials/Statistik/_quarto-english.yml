@@ -1,0 +1,72 @@
+project:
+  output-dir: docs/en
+
+lang: en
+
+crossref:
+  def-title: "Definition"
+  def-prefix: "Definition"
+  exm-title: "Example"
+  exm-prefix: "Example"
+  exr-title: "Exercise"
+  exr-prefix: "Exercise"
+  thm-title: "Theorem"
+  thm-prefix: "Theorem"
+
+format:
+  html:
+    code-summary: "Show code"
+
+website:
+  title: "Statistics Fundamentals with Python"
+  reader-mode: true
+  navbar:
+    search: true
+    right:
+      - icon: github
+        # href: "Link zum GitHub Repository"
+      - icon: globe
+        aria-label: "Sprache wählen / Choose language"
+        menu:
+          - text: "Deutsch"
+            href: "#sprache-de"
+          - text: "English"
+            href: "#sprache-en"
+  sidebar:
+    collapse-level: 1
+    style: "floating"
+    contents:
+      - text: "Home"
+        href: Qmd-Files/index.qmd
+      - text: "Python Basics"
+        href: Qmd-Files/grundlagen.qmd
+      - section: "1. Descriptive Statistics"
+        href: Qmd-Files/Kapitel_1/index.qmd
+        contents:
+          - text: "1.1 A Statistical Study"
+            href: Qmd-Files/Kapitel_1/statistische_untersuchung.qmd
+          - text: "1.2 Frequency Distribution"
+            href: Qmd-Files/Kapitel_1/haeufigkeitsverteilung.qmd
+          - text: "1.3 Graphical Representations"
+            href: Qmd-Files/Kapitel_1/grafische_darstellungen.qmd
+          - text: "1.4 Measures: Location"
+            href: Qmd-Files/Kapitel_1/kennzahlen_lage.qmd
+          - text: "1.5 Measures: Spread, Skewness & Kurtosis"
+            href: Qmd-Files/Kapitel_1/kennzahlen_streuung.qmd
+          - text: "1.6 Bivariate Data Analysis"
+            href: Qmd-Files/Kapitel_1/zweidimensional.qmd
+      - section: "2. Estimation Theory"
+        href: Qmd-Files/Kapitel_2/index.qmd
+        contents:
+          - text: "2.1 Estimators"
+            href: Qmd-Files/Kapitel_2/schaetzer.qmd
+          - text: "2.2 Estimation Methods"
+            href: Qmd-Files/Kapitel_2/schaetzmethoden.qmd
+          - text: "2.3 Quality Criteria for Point Estimators"
+            href: Qmd-Files/Kapitel_2/guetekriterien.qmd
+          - text: "2.4 Confidence Intervals"
+            href: Qmd-Files/Kapitel_2/konfidenzintervalle.qmd
+          - text: "2.5 Statistical Significance & p-Values"
+            href: Qmd-Files/Kapitel_3/signifikanz_p_werte.qmd
+      - text: "Cheat Sheet & Quiz"
+        href: Qmd-Files/cheatsheet.qmd

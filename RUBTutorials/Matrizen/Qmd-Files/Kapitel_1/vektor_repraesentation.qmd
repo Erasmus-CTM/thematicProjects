@@ -1,0 +1,231 @@
+---
+title: "1.6. Vektoren als Datenrepräsentation"
+title-en: "1.6. Vectors as Data Representation"
+format: html
+filters:
+  - ctm-assessment
+  - quizdown
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+## 1.6.1. Vom Pfeil zum Datenpunkt
+
+In den vorherigen Kapiteln haben wir Vektoren als geometrische Objekte (Pfeile) und als geordnete Listen von Zahlen kennengelernt. Wir haben gelernt, wie man sie addiert, skaliert und wie man deren Länge und den Winkel zwischen ihnen berechnet.
+
+Jetzt gehen wir einen entscheidenden Schritt weiter: Wir betrachten Vektoren als eine fundamentale Methode, um **Daten und Konzepte für einen Computer verständlich zu machen**.
+
+Stell dir vor, ein Vektor ist nicht nur ein Pfeil, sondern ein **"numerischer Fingerabdruck"** eines Objekts. Jede Komponente des Vektors beschreibt eine messbare Eigenschaft (ein "Feature") dieses Objekts.
+
+### 1.6.1.1. Beispiele für Darstellungen mithilfe von Vektoren
+
+*   **Ein Haus:** Könnte als Vektor `[Wohnfläche, Anzahl Zimmer, Alter in Jahren, Entfernung zum Zentrum]` dargestellt werden.
+    *   `haus_A = [120, 4, 15, 3.5]`
+    *   `haus_B = [85, 3, 50, 1.2]`
+*   **Ein Kunde im Online-Shop:** `[Alter, gekaufte Artikel, durchschnittlicher Warenkorbwert]`
+*   **Ein Wort in der Textanalyse:** In modernen Verfahren wie *Word2Vec* wird jedes Wort als ein Vektor mit hunderten von Dimensionen repräsentiert, der seine semantische Bedeutung erfasst.
+
+Diese Darstellung wird als **Feature-Vektor** bezeichnet.
+
+## 1.6.2. Warum ist das nützlich? Die Macht der Vektor-Arithmetik
+
+Sobald wir Objekte als Vektoren dargestellt haben, können wir die gesamte Mathematik, die wir gelernt haben, anwenden, um Beziehungen zwischen diesen Objekten zu analysieren:
+
+1.  **Ähnlichkeit messen (Kosinus-Ähnlichkeit):**
+    Der Winkel zwischen zwei Vektoren ist ein hervorragendes Maß für ihre Ähnlichkeit. Ein kleiner Winkel (Kosinus nahe 1) bedeutet, dass die Objekte in ihren Eigenschaften ähnlich ausgerichtet sind, unabhängig von ihrer absoluten Größe.
+    *   Zwei Dokumente können sehr unterschiedlich lang sein, aber wenn sie die gleichen Schlüsselwörter im gleichen Verhältnis enthalten, ist der Winkel zwischen ihren Vektor-Repräsentationen klein.
+    *   **In modernen Sprachmodellen (LLMs):** Die Bedeutung von Wörtern oder Sätzen (Tokens) wird als hochdimensionaler Vektor (Embedding) gespeichert. Die Kosinus-Ähnlichkeit zwischen diesen Vektoren hilft dem Modell, semantische Beziehungen zu verstehen. So haben die Vektoren für "König" und "Königin" eine hohe Ähnlichkeit, während die Vektoren für "König" und "Apfel" eine sehr geringe Ähnlichkeit aufweisen. Dieses Prinzip ist zentral für Aufgaben wie Text-Klassifikation, Übersetzung und das Generieren von kohärentem Text.
+
+2.  **Abstand berechnen (Euklidische Distanz):**
+    Die Länge des Differenzvektors $||\vec{a} - \vec{b}||$ gibt uns den direkten Abstand zwischen zwei Datenpunkten. Dies ist nützlich, um Cluster von ähnlichen Objekten zu finden.
+
+### 1.6.2.1. Beispiel: Ähnlichkeitsrechnung mithilfe von Vektoren
+
+Stellen wir uns vor, wir bewerten Früchte anhand von drei Eigenschaften: Süße, Säure und Knackigkeit (jeweils auf einer Skala von 1 bis 10).
+
+*   `apfel = [8, 3, 9]` (süß, wenig sauer, sehr knackig)
+*   `zitrone = [2, 9, 2]` (wenig süß, sehr sauer, nicht knackig)
+*   `orange = [7, 5, 4]` (ziemlich süß, mittel-sauer, wenig knackig)
+
+Intuitiv ist ein Apfel einer Orange ähnlicher als einer Zitrone. Können wir das mathematisch beweisen? Wir berechnen die Kosinus-Ähnlichkeit, die direkt auf der Winkelberechnung aus dem vorherigen Kapitel basiert.
+
+```{pyodide-python}
+import numpy as np
+
+apfel = np.array([8, 3, 9])
+zitrone = np.array([2, 9, 2])
+orange = np.array([7, 5, 4])
+
+def kosinus_aehnlichkeit(v1, v2):
+  """Berechnet die Kosinus-Ähnlichkeit zwischen zwei Vektoren."""
+  skalarprodukt = np.dot(v1, v2)
+  norm_v1 = np.linalg.norm(v1)
+  norm_v2 = np.linalg.norm(v2)
+
+  # Division durch Null vermeiden
+  if norm_v1 > 0 and norm_v2 > 0:
+    return skalarprodukt / (norm_v1 * norm_v2)
+  else:
+    return 0.0
+
+# Ähnlichkeit berechnen (Wert zwischen -1 und 1, wobei 1 perfekt ähnlich ist)
+aehnlichkeit_apfel_orange = kosinus_aehnlichkeit(apfel, orange)
+aehnlichkeit_apfel_zitrone = kosinus_aehnlichkeit(apfel, zitrone)
+
+print(f"Ähnlichkeit Apfel <-> Orange: {aehnlichkeit_apfel_orange:.4f}")
+print(f"Ähnlichkeit Apfel <-> Zitrone: {aehnlichkeit_apfel_zitrone:.4f}")
+```
+
+Das Ergebnis bestätigt unsere Intuition: Der Ähnlichkeitswert für Apfel-Orange ist deutlich höher (näher an 1) als der für Apfel-Zitrone.
+
+## 1.6.3. Zusammenfassung und Ausblick
+
+Die Vektorrepräsentation ist das Fundament für einen Großteil des maschinellen Lernens, der Datenwissenschaft und der Computergrafik. Sie ermöglicht es uns, komplexe, reale Objekte in eine mathematische Form zu überführen, mit der Computer arbeiten können.
+
+Die Konzepte aus diesem Kapitel sind die Bausteine für komplexere Strukturen. Wenn wir mehrere Vektoren (z.B. die Daten von vielen Häusern oder allen Wörtern eines Textes) zusammenfassen, erhalten wir eine **Matrix**. Matrizen und die Operationen auf ihnen sind das Thema des nächsten [Kapitels](../Kapitel_2/index.qmd).
+
+### Kurzes Quiz
+
+```quizdown
+---
+locale: de
+---
+
+# Welche Rechnung liefert die Ähnlichkeit (Kosinus) zweier Vektoren?
+1. [ ] Die Summe der beiden Vektoren.
+1. [x] Das Skalarprodukt geteilt durch das Produkt der beiden Längen.
+1. [ ] Die Differenz der beiden Längen.
+1. [ ] Das elementweise Produkt der Vektoren.
+
+> $\cos(\varphi) = \frac{\vec{a}\cdot\vec{b}}{||\vec{a}||\cdot||\vec{b}||}$ — so haben wir es in 1.5 gesehen.
+
+# Ein Haus wird durch den Vektor (Fläche, Zimmer, Alter) beschrieben. Was bedeutet ein kleiner Winkel zwischen zwei Haus-Vektoren?
+1. [ ] Die Häuser stehen nah beieinander.
+1. [x] Die Häuser haben ähnliche Eigenschaften (ähnliche Richtung der Vektoren).
+1. [ ] Die Häuser sind gleich alt.
+1. [ ] Ein kleiner Winkel sagt nichts aus.
+
+> Ein kleiner Winkel (Kosinus nahe 1) bedeutet eine ähnliche Richtung und damit ähnliche Merkmalsverhältnisse.
+
+# Wie viele Komponenten hat der Datenvektor eines Hauses mit 4 gemessenen Merkmalen?
+1. [ ] 1
+1. [ ] 2
+1. [x] 4
+1. [ ] Das hängt vom Haus ab.
+
+> Jedes Merkmal ist eine Komponente, also liegt der Vektor im $\mathbb{R}^4$.
+```
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+## 1.6.1. From Arrow to Data Point {#vom-pfeil-zum-datenpunkt}
+
+In the previous sections, we've come to know vectors as geometric objects (arrows) and as ordered lists of numbers. We've learned how to add and scale them, and how to compute their length and the angle between them.
+
+Now we take a decisive step further: we consider vectors as a fundamental way to **make data and concepts understandable to a computer**.
+
+Imagine that a vector is not just an arrow, but a **"numerical fingerprint"** of an object. Each component of the vector describes a measurable property (a "feature") of that object.
+
+### 1.6.1.1. Examples of Representations Using Vectors
+
+*   **A house:** Could be represented as a vector `[living space, number of rooms, age in years, distance to the center]`.
+    *   `house_A = [120, 4, 15, 3.5]`
+    *   `house_B = [85, 3, 50, 1.2]`
+*   **A customer in an online shop:** `[age, items purchased, average shopping cart value]`
+*   **A word in text analysis:** In modern methods such as *Word2Vec*, each word is represented as a vector with hundreds of dimensions that captures its semantic meaning.
+
+This representation is called a **feature vector**.
+
+## 1.6.2. Why is this Useful? The Power of Vector Arithmetic {#warum-ist-das-nützlich-die-macht-der-vektor-arithmetik}
+
+Once we've represented objects as vectors, we can apply all the mathematics we've learned to analyze relationships between these objects:
+
+1.  **Measuring similarity (cosine similarity):**
+    The angle between two vectors is an excellent measure of their similarity. A small angle (cosine close to 1) means that the objects are similarly oriented in their properties, regardless of their absolute size.
+    *   Two documents can be very different in length, but if they contain the same keywords in the same proportions, the angle between their vector representations is small.
+    *   **In modern language models (LLMs):** The meaning of words or sentences (tokens) is stored as a high-dimensional vector (embedding). The cosine similarity between these vectors helps the model understand semantic relationships. For example, the vectors for "king" and "queen" have high similarity, while the vectors for "king" and "apple" have very low similarity. This principle is central to tasks like text classification, translation, and generating coherent text.
+
+2.  **Computing distance (Euclidean distance):**
+    The length of the difference vector $||\vec{a} - \vec{b}||$ gives us the direct distance between two data points. This is useful for finding clusters of similar objects.
+
+### 1.6.2.1. Example: Computing Similarity Using Vectors
+
+Imagine we rate fruits based on three properties: sweetness, acidity, and crunchiness (each on a scale from 1 to 10).
+
+*   `apple = [8, 3, 9]` (sweet, low acidity, very crunchy)
+*   `lemon = [2, 9, 2]` (low sweetness, very acidic, not crunchy)
+*   `orange = [7, 5, 4]` (fairly sweet, medium acidity, slightly crunchy)
+
+Intuitively, an apple is more similar to an orange than to a lemon. Can we prove that mathematically? We compute the cosine similarity, which is based directly on the angle calculation from the previous section.
+
+```{pyodide-python}
+import numpy as np
+
+apple = np.array([8, 3, 9])
+lemon = np.array([2, 9, 2])
+orange = np.array([7, 5, 4])
+
+def cosine_similarity(v1, v2):
+  """Computes the cosine similarity between two vectors."""
+  dot_product = np.dot(v1, v2)
+  norm_v1 = np.linalg.norm(v1)
+  norm_v2 = np.linalg.norm(v2)
+
+  # Avoid division by zero
+  if norm_v1 > 0 and norm_v2 > 0:
+    return dot_product / (norm_v1 * norm_v2)
+  else:
+    return 0.0
+
+# Compute similarity (value between -1 and 1, where 1 is perfectly similar)
+similarity_apple_orange = cosine_similarity(apple, orange)
+similarity_apple_lemon = cosine_similarity(apple, lemon)
+
+print(f"Similarity apple <-> orange: {similarity_apple_orange:.4f}")
+print(f"Similarity apple <-> lemon: {similarity_apple_lemon:.4f}")
+```
+
+The result confirms our intuition: the similarity value for apple-orange is noticeably higher (closer to 1) than for apple-lemon.
+
+## 1.6.3. Summary and Outlook {#zusammenfassung-und-ausblick}
+
+Vector representation is the foundation for much of machine learning, data science, and computer graphics. It allows us to translate complex, real-world objects into a mathematical form that computers can work with.
+
+The concepts from this section are the building blocks for more complex structures. When we combine several vectors (e.g. the data of many houses, or all the words of a text), we get a **matrix**. Matrices and the operations on them are the topic of the next [section](../Kapitel_2/index.qmd).
+
+### Short Quiz
+
+```quizdown
+---
+locale: en
+---
+
+# Which calculation gives the similarity (cosine) of two vectors?
+1. [ ] The sum of the two vectors.
+1. [x] The dot product divided by the product of the two lengths.
+1. [ ] The difference of the two lengths.
+1. [ ] The element-wise product of the vectors.
+
+> $\cos(\varphi) = \frac{\vec{a}\cdot\vec{b}}{||\vec{a}||\cdot||\vec{b}||}$ — as we saw in 1.5.
+
+# A house is described by the vector (area, rooms, age). What does a small angle between two house vectors mean?
+1. [ ] The houses are located close to each other.
+1. [x] The houses have similar properties (similar direction of the vectors).
+1. [ ] The houses have the same age.
+1. [ ] A small angle means nothing.
+
+> A small angle (cosine near 1) means a similar direction and therefore similar feature proportions.
+
+# How many components does the data vector of a house with 4 measured features have?
+1. [ ] 1
+1. [ ] 2
+1. [x] 4
+1. [ ] That depends on the house.
+
+> Each feature is one component, so the vector lives in $\mathbb{R}^4$.
+```
+
+::::

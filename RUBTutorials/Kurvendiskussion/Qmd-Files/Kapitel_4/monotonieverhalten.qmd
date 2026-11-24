@@ -1,0 +1,434 @@
+---
+title: "Monotonieverhalten untersuchen"
+title-en: "Examining Monotonicity"
+format: html
+filters:
+  - ctm-assessment
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+# Monotonie
+
++ Eine Funktion heißt auf einem Abschnitt **monoton steigend**, wenn sie auf diesem Abschnitt dauerhaft eine Steigung $\ge 0$ aufweist.
++ Eine Funktion heißt auf einem Abschnitt **monoton fallend**, wenn sie auf diesem Abschnitt dauerhaft eine Steigung $\le 0$ aufweist.
++ Eine Funktion heißt auf einem Abschnitt ***streng* monoton steigend**, wenn sie auf diesem Abschnitt dauerhaft eine Steigung $\mathbf{>} 0$ aufweist.
++ Eine Funktion heißt auf einem Abschnitt ***streng* monoton fallend**, wenn sie auf diesem Abschnitt dauerhaft eine Steigung $\mathbf{<} 0$ aufweist.
+
+# Monotonieverhalten
+
+Das Monotonieverhalten beschreibt, in welchen Bereichen eine Funktion welche Form der Monotonie aufweist.
+Die Monotonie kann, wie in dem Kapitel **[Ableitungen](ableitungen.qmd)** angedeutet wurde, mithilfe der Ableitung bestimmt werden, da diese an jedem Punkt die Steigung an dieser Stelle darstellt.
+
+Um das Monotonieverhalten einer Funktion zu bestimmen, gehen wir wie folgt vor:
+
+1.  **Erste Ableitung bilden:**  
+Berechne die erste Ableitung $f'(x)$ der Funktion $f(x)$.
+2.  **Nullstellen der Ableitung finden:**   
+Bestimme die Nullstellen der ersten Ableitung, indem du die Gleichung $f'(x) = 0$ löst. Diese Nullstellen markieren die Grenzen der Monotonie-Intervalle.
+3.  **Intervalle aufstellen:**   
+Die Nullstellen von $f'(x)$ teilen den Definitionsbereich in die Intervalle von $-\infty$ bis $x_0$, von $x_0$ bis $x_1$, $\dots$ und von $x_{n-1}$ bis $\infty$, wobei $x_0$ bis $x_{n-1}$ die (sortierten) Nullstellen von $f'(x)$ sind.
+4.  **Vorzeichen von $f'(x)$ prüfen:**   
+Wähle für jedes Intervall einen beliebigen Testwert und setze ihn in die erste Ableitung $f'(x)$ ein. Das Vorzeichen des Ergebnisses verrät dir das Monotonieverhalten in diesem gesamten Intervall:
+    -   $f'(x) > 0 \implies$ $f$ ist streng monoton steigend.
+    -   $f'(x) < 0 \implies$ $f$ ist streng monoton fallend.
+Falls zwei oder mehr aufeinanderfolgende Intervalle steigend/fallend sind, kann man sie zu einem Intervall zusammenfassen. Die Funktion ist dort sogar weiterhin *streng* monoton, denn eine einzelne Stelle mit $f'(x) = 0$ ändert daran nichts: $f(x) = x^3$ ist auf ganz $\mathbb{R}$ streng monoton steigend, obwohl $f'(0) = 0$ gilt.
+
+## Zusammenhang im Bild
+
+Im folgenden Plot siehst du $f(x) = x^3 - 3x^2 + 2$ zusammen mit ihrer Ableitung $f'(x)$. Achte darauf: Überall, wo $f'$ **oberhalb** der $x$-Achse liegt, steigt $f$; wo $f'$ **unterhalb** liegt, fällt $f$. An den Nullstellen von $f'$ wechselt das. Mit der Lupe aus der Werkzeugleiste kannst du die Stellen genauer ansehen.
+
+```{pyodide-python}
+#| read-only: true
+import numpy as np
+import matplotlib.pyplot as plt
+
+x_werte = np.linspace(-1.5, 3.5, 400)
+f_werte = x_werte**3 - 3*x_werte**2 + 2
+f_strich = 3*x_werte**2 - 6*x_werte
+
+plt.plot(x_werte, f_werte, label="f(x)")
+plt.plot(x_werte, f_strich, "--", label="f'(x)")
+plt.axhline(0, color="black", linewidth=0.8)
+plt.fill_between(x_werte, f_strich, 0, where=f_strich > 0, alpha=0.15, color="green", label="f' > 0: f steigt")
+plt.fill_between(x_werte, f_strich, 0, where=f_strich < 0, alpha=0.15, color="red", label="f' < 0: f fällt")
+plt.ylim(-5, 8)
+plt.legend()
+plt.grid(True)
+plt.show()
+```
+
+**Kurz überlegt:** Bevor du das Verfahren automatisierst, einmal von Hand.
+
+```{math-exercise}
+#| label: monotonie-vorcheck
+#| caption: Vorab-Check – Monotonie von Hand
+#| vars: x
+#| field-labels: g'(x), Grenze
+#| partial-credit: true
+Für $g(x)=x^2-4x$ gilt $g'(x)=$ __[2*x-4]. Die Funktion ist streng monoton fallend für $x<$ _[2] und streng monoton steigend für $x>2$.
+```
+
+# Python Implementierung
+
+Nun geht es darum, diesen ganzen Prozess als Python Programm zu automatisieren.
+Zuerst einmal brauchen wir die Erkenntnisse, die du in den **[Nullstellen](../Kapitel_2/nullstellen.qmd)**, sowie **[Ableitungen](ableitungen.qmd)** Kapiteln gelernt hast.
+
+Hier ein Teil des Codes, _der Teil, den du schon kennst_ und eine kleine Anleitung, damit du die Ausgabe mithilfe von Schleifen passend gestalten kannst.
+
+```{pyodide-python}
+#| read-only: true
+
+import sympy
+
+x = sympy.symbols('x')
+
+f = x**3 - 3*x**2 + 2
+
+f_prime = sympy.diff(f, x)
+
+print(f"Die erste Ableitung ist: f'(x) = {f_prime}")
+
+extremstellen = sympy.solve(f_prime, x)
+extremstellen.sort() #sortiert die Nullstellen in aufsteigender Reihenfolge
+
+punkte = [-sympy.oo] + extremstellen + [sympy.oo]
+#Addiert die unterschiedlichen "Listen" zusammen (würde auch mit mehreren Listen funktionieren)
+
+```
+
+Jetzt ist das Programm schon fast fertig. 
+Bitte lies dir einmal in Ruhe den bisherigen Teil durch und versuch alles zu verstehen, was da getan wurde.
+
+## Aufgabe 
+
+Jetzt geht es darum den letzten Schritt des Programms zu schreiben.
+Hierbei ist es hilfreich, entweder eine While-Schleife, oder eine For-Schleife zu verwenden.
+
+<details>
+<summary> While-/For- Schleifen </summary>
+
+#### While-Schleife 
+
+Wenn eine Rechnung/ eine Abfrage mehrfach ausgeführt werden soll, ist dies vereinfacht mit Hilfe von Schleifen möglich.
+`While-Schleifen`wiederholen hierbei den Code solange wie eine gewisse Bedingung erfüllt ist.
+Ein kleines Bsp.:
+```{pyodide-python}
+a = 3
+b = 11
+while a<b: 
+    a = a+1 #ist sehr wichtig, da die Bedingung sonst immer erfüllt bliebe, heißt es wäre eine ENDLOS-Schleife
+    print(a)
+```
+
+#### For-Schleife 
+
+`For-Schleifen` wiederholen sich über ein bestimmtes Intervall. Das Schlüsselwort `range` beschreibt hierbei das Intervall von $a$ bis $b$. Dabei ist $a$ der Start der Iteration, $b$ selbst gehört **nicht** mehr dazu: `range(5, 20)` läuft von 5 bis 19.
+
+```{pyodide-python}
+a = 5 
+b = 20
+for i in range(a,b,2): #a und b sind die Grenzen, 2 die Schrittgröße
+    print(i+1)
+```
+
+</details> 
+
+Wenn du die unterschiedlichen Schleifen verstanden hast (teste gerne auch noch ein wenig herum).  
+Versuch das obige Programm (hier drunter einmal in Kopie) so fortzusetzen, dass es die Liste durchgeht und in jedem Intervall einen Wert testet, dessen Vorzeichen bestimmt (also ob die Funktion steigt/fällt) und das nutzt, um das Monotonieverhalten passend zu bestimmen. 
+
+```{pyodide-python}
+#| label: monotonie-aufgabe
+import sympy
+
+x = sympy.symbols('x')
+
+f = x**3 - 3*x**2 + 2
+
+f_prime = sympy.diff(f, x)
+
+print(f"Die erste Ableitung ist: f'(x) = {f_prime}")
+
+extremstellen = sympy.solve(f_prime, x)
+extremstellen.sort() #sortiert die Nullstellen in aufsteigender Reihenfolge
+
+punkte = [-sympy.oo] + extremstellen + [sympy.oo]
+#Addiert die unterschiedlichen "Listen" zusammen (würde auch mit mehreren Listen funktionieren)
+
+```
+
+Was muss dein Programm für $f(x) = x^3 - 3x^2 + 2$ herausfinden? Trage es zur Kontrolle ein (der Plot oben hilft):
+
+```{math-exercise}
+#| label: monotonie-kontrolle
+#| caption: Kontrolle – Monotonieintervalle
+#| field-labels: Anfang, Ende
+#| partial-credit: true
+$f(x) = x^3 - 3x^2 + 2$ ist streng monoton **fallend** zwischen $x =$ _[0] und $x =$ _[2], sonst streng monoton steigend.
+```
+
+##  Aufgabe 2: als Funktion
+
+Wenn du das hinbekommen hast, verpacke das Verfahren in eine Funktion. Ergänze `monotonie_intervalle(f)`: Sie gibt eine Liste von **Tupeln** `(von, bis, richtung)` zurück, zum Beispiel `(-oo, 0, 'steigend')`. Ein Tupel fasst mehrere Werte zusammen, du hängst es wie jeden anderen Wert mit `append` an eine Liste. Das Gerüst steht, es fehlt der Teil in der Schleife.
+
+```{py-exercise}
+#| label: monotonie-intervalle-funktion
+#| caption: monotonie_intervalle schreiben
+#| show-test-hints: false
+import sympy
+x = sympy.symbols('x')
+
+def monotonie_intervalle(f):
+    f_strich = sympy.diff(f, x)
+    stellen = sorted(sympy.solveset(f_strich, x, sympy.Reals))
+    punkte = [-sympy.oo] + stellen + [sympy.oo]
+    ergebnis = []
+    for i in range(len(punkte) - 1):
+        links, rechts = punkte[i], punkte[i + 1]
+        if links == -sympy.oo and rechts == sympy.oo:
+            test = 0
+        elif links == -sympy.oo:
+            test = rechts - 1
+        elif rechts == sympy.oo:
+            test = links + 1
+        else:
+            test = (links + rechts) / 2
+        # Dein Code hier: Setze test in f_strich ein. Ist der Wert > 0, ist die Richtung 'steigend',
+        # sonst 'fallend'. Hänge dann (links, rechts, richtung) an ergebnis an.
+    return ergebnis
+
+## TESTS ##
+assert monotonie_intervalle(x**3 - 3*x**2 + 2) == [(-sympy.oo, 0, 'steigend'), (0, 2, 'fallend'), (2, sympy.oo, 'steigend')], "f' = 3x²-6x: steigend, fallend, steigend"
+assert monotonie_intervalle(x**2) == [(-sympy.oo, 0, 'fallend'), (0, sympy.oo, 'steigend')], "x**2 fällt bis 0 und steigt danach"
+assert monotonie_intervalle(x**3) == [(-sympy.oo, 0, 'steigend'), (0, sympy.oo, 'steigend')], "x**3 steigt überall (die Intervalle werden hier noch nicht zusammengefasst)"
+assert monotonie_intervalle(x) == [(-sympy.oo, sympy.oo, 'steigend')], "x hat keine Nullstelle von f', also nur ein Intervall"
+```
+
+**Bonus:** Fasse aufeinanderfolgende Intervalle mit gleicher Richtung zu einem zusammen (bei $x^3$ bliebe dann nur $(-\infty,\infty)$). Das ist freiwillig und wird nicht geprüft.
+
+##  Aufgabe 3 (Bonus: schönere Ausgabe)
+
+Wenn du magst, verfeinere das Programm noch ein wenig. 
+Baue in das Programm noch eine Ausgabe ein, welche Nutzenden des Programms ausgibt, was das Monotonieverhalten ist.  
+    
+Hier kannst du an der Ausgabe noch eine Menge Stellschrauben drehen, die die Ausgabe direkter machen. Das heißt, wie oben erwähnt, kannst du Abschnitte, an denen das gleiche Vorzeichen nacheinander vorkommt, zu einem Intervall zusammenfassen (die Funktion bleibt dort streng monoton).  
+
+Probiere das Ganze am besten mit unterschiedlichen Funktionen aus, um zu testen, wie gut dein Programm für sie funktioniert.
+
+Wenn du mit deinem Ergebnis zufrieden bist, geht es weiter in dem Unterkapitel **[Extrempunkte-Sattelpunkte](extrempunkte.qmd)**.
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+# Monotonicity
+
++ A function is called **monotonically increasing** on an interval if its slope on this interval is always $\ge 0$.
++ A function is called **monotonically decreasing** on an interval if its slope on this interval is always $\le 0$.
++ A function is called ***strictly* increasing** on an interval if its slope on this interval is always $\mathbf{>} 0$.
++ A function is called ***strictly* decreasing** on an interval if its slope on this interval is always $\mathbf{<} 0$.
+
+# Monotonic behavior
+
+The monotonic behavior describes on which intervals a function shows which kind of monotonicity.
+As hinted at in the chapter **[Derivatives](ableitungen.qmd)**, monotonicity can be determined with the help of the derivative, since it gives the slope at every point.
+
+To determine the monotonic behavior of a function, we proceed as follows:
+
+1.  **Compute the first derivative:**  
+Compute the first derivative $f'(x)$ of the function $f(x)$.
+2.  **Find the zeros of the derivative:**   
+Determine the zeros of the first derivative by solving the equation $f'(x) = 0$. These zeros mark the boundaries of the monotonicity intervals.
+3.  **Set up the intervals:**   
+The zeros of $f'(x)$ divide the domain into the intervals from $-\infty$ to $x_0$, from $x_0$ to $x_1$, $\dots$ and from $x_{n-1}$ to $\infty$, where $x_0$ to $x_{n-1}$ are the (sorted) zeros of $f'(x)$.
+4.  **Check the sign of $f'(x)$:**   
+For each interval, choose any test value and plug it into the first derivative $f'(x)$. The sign of the result tells you the monotonic behavior on that whole interval:
+    -   $f'(x) > 0 \implies$ $f$ is strictly increasing.
+    -   $f'(x) < 0 \implies$ $f$ is strictly decreasing.
+If two or more consecutive intervals are increasing/decreasing, they can be combined into one interval. The function is even still *strictly* monotonic there, because a single point with $f'(x) = 0$ does not change that: $f(x) = x^3$ is strictly increasing on all of $\mathbb{R}$, although $f'(0) = 0$.
+
+## The connection in a picture
+
+In the following plot you see $f(x) = x^3 - 3x^2 + 2$ together with its derivative $f'(x)$. Pay attention: wherever $f'$ lies **above** the $x$-axis, $f$ increases; where $f'$ lies **below** it, $f$ decreases. This changes at the zeros of $f'$. With the magnifier from the toolbar you can look at these points more closely.
+
+```{pyodide-python}
+#| read-only: true
+import numpy as np
+import matplotlib.pyplot as plt
+
+x_values = np.linspace(-1.5, 3.5, 400)
+f_values = x_values**3 - 3*x_values**2 + 2
+f_prime = 3*x_values**2 - 6*x_values
+
+plt.plot(x_values, f_values, label="f(x)")
+plt.plot(x_values, f_prime, "--", label="f'(x)")
+plt.axhline(0, color="black", linewidth=0.8)
+plt.fill_between(x_values, f_prime, 0, where=f_prime > 0, alpha=0.15, color="green", label="f' > 0: f increases")
+plt.fill_between(x_values, f_prime, 0, where=f_prime < 0, alpha=0.15, color="red", label="f' < 0: f decreases")
+plt.ylim(-5, 8)
+plt.legend()
+plt.grid(True)
+plt.show()
+```
+
+**Quick check:** Before you automate the procedure, do it once by hand.
+
+```{math-exercise}
+#| label: monotonie-vorcheck-en
+#| caption: Pre-check – monotonicity by hand
+#| vars: x
+#| field-labels: g'(x), boundary
+#| partial-credit: true
+For $g(x)=x^2-4x$ we have $g'(x)=$ __[2*x-4]. The function is strictly decreasing for $x<$ _[2] and strictly increasing for $x>2$.
+```
+
+# Python implementation
+
+Now the goal is to automate this whole process as a Python program.
+First of all, we need what you learned in the chapters on **[Zeros](../Kapitel_2/nullstellen.qmd)** and **[Derivatives](ableitungen.qmd)**.
+
+Here is part of the code, _the part you already know_, and a short guide so you can shape the output with the help of loops.
+
+```{pyodide-python}
+#| read-only: true
+
+import sympy
+
+x = sympy.symbols('x')
+
+f = x**3 - 3*x**2 + 2
+
+f_prime = sympy.diff(f, x)
+
+print(f"The first derivative is: f'(x) = {f_prime}")
+
+critical_points = sympy.solve(f_prime, x)
+critical_points.sort() #sorts the zeros in ascending order
+
+points = [-sympy.oo] + critical_points + [sympy.oo]
+#Adds the different "lists" together (would also work with more lists)
+
+```
+
+Now the program is almost finished. 
+Please read through the part so far calmly and try to understand everything that was done.
+
+## Exercise 
+
+Now it is about writing the last step of the program.
+It helps to use either a while loop or a for loop.
+
+<details>
+<summary> While/for loops </summary>
+
+#### While loop 
+
+If a calculation or a check has to be carried out several times, loops make this much easier.
+`While loops` repeat the code as long as a certain condition is met.
+A small example:
+```{pyodide-python}
+a = 3
+b = 11
+while a<b: 
+    a = a+1 #very important, otherwise the condition would always stay true, i.e. it would be an ENDLESS loop
+    print(a)
+```
+
+#### For loop 
+
+`For loops` repeat over a certain range. The keyword `range` describes the range from $a$ to $b$. Here $a$ is the start of the iteration; $b$ itself is **not** included: `range(5, 20)` runs from 5 to 19.
+
+```{pyodide-python}
+a = 5 
+b = 20
+for i in range(a,b,2): #a and b are the bounds, 2 is the step size
+    print(i+1)
+```
+
+</details> 
+
+Once you have understood the different loops (feel free to experiment a bit more), 
+try to continue the program above (copied once more below) so that it goes through the list, tests a value in each interval, determines its sign (i.e. whether the function increases/decreases) and uses that to determine the monotonic behavior. 
+
+```{pyodide-python}
+#| label: monotonie-aufgabe-en
+import sympy
+
+x = sympy.symbols('x')
+
+f = x**3 - 3*x**2 + 2
+
+f_prime = sympy.diff(f, x)
+
+print(f"The first derivative is: f'(x) = {f_prime}")
+
+critical_points = sympy.solve(f_prime, x)
+critical_points.sort() #sorts the zeros in ascending order
+
+points = [-sympy.oo] + critical_points + [sympy.oo]
+#Adds the different "lists" together (would also work with more lists)
+
+```
+
+What must your program find out for $f(x) = x^3 - 3x^2 + 2$? Enter it to check (the plot above helps):
+
+```{math-exercise}
+#| label: monotonie-kontrolle-en
+#| caption: Check – monotonicity intervals
+#| field-labels: start, end
+#| partial-credit: true
+$f(x) = x^3 - 3x^2 + 2$ is strictly **decreasing** between $x =$ _[0] and $x =$ _[2], and strictly increasing otherwise.
+```
+
+##  Exercise 2: as a function
+
+Once you have managed that, wrap the procedure in a function. Complete `monotonic_intervals(f)`: it returns a list of **tuples** `(from, to, direction)`, for example `(-oo, 0, 'increasing')`. A tuple groups several values; you add it to a list with `append` like any other value. The skeleton is given, the part inside the loop is missing.
+
+```{py-exercise}
+#| label: monotonie-intervalle-funktion-en
+#| caption: Write monotonic_intervals
+#| show-test-hints: false
+import sympy
+x = sympy.symbols('x')
+
+def monotonic_intervals(f):
+    f_prime = sympy.diff(f, x)
+    points_x = sorted(sympy.solveset(f_prime, x, sympy.Reals))
+    points = [-sympy.oo] + points_x + [sympy.oo]
+    result = []
+    for i in range(len(points) - 1):
+        left, right = points[i], points[i + 1]
+        if left == -sympy.oo and right == sympy.oo:
+            test = 0
+        elif left == -sympy.oo:
+            test = right - 1
+        elif right == sympy.oo:
+            test = left + 1
+        else:
+            test = (left + right) / 2
+        # Your code here: plug test into f_prime. If the value is > 0 the direction is 'increasing',
+        # otherwise 'decreasing'. Then append (left, right, direction) to result.
+    return result
+
+## TESTS ##
+assert monotonic_intervals(x**3 - 3*x**2 + 2) == [(-sympy.oo, 0, 'increasing'), (0, 2, 'decreasing'), (2, sympy.oo, 'increasing')], "f' = 3x²-6x: increasing, decreasing, increasing"
+assert monotonic_intervals(x**2) == [(-sympy.oo, 0, 'decreasing'), (0, sympy.oo, 'increasing')], "x**2 falls until 0 and rises afterwards"
+assert monotonic_intervals(x**3) == [(-sympy.oo, 0, 'increasing'), (0, sympy.oo, 'increasing')], "x**3 rises everywhere (the intervals are not merged here)"
+assert monotonic_intervals(x) == [(-sympy.oo, sympy.oo, 'increasing')], "x has no zero of f', so only one interval"
+```
+
+**Bonus:** Merge consecutive intervals with the same direction into one (for $x^3$ only $(-\infty,\infty)$ would remain). This is optional and not checked.
+
+##  Exercise 3 (bonus: nicer output)
+
+If you like, refine the program a little more. 
+Add output that tells users of the program what the monotonic behavior is.  
+    
+There are many ways to make the output more direct. As mentioned above, you can combine consecutive intervals with the same sign into one interval (the function stays strictly monotonic there).  
+
+It is best to try the whole thing with different functions to test how well your program works for them.
+
+Once you are happy with your result, continue with the section **[Extrema/Saddle Points](extrempunkte.qmd)**.
+
+::::

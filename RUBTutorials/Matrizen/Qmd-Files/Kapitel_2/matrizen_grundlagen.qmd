@@ -1,0 +1,480 @@
+---
+title: '2.1. Matrizen — Die Grundlagen'
+title-en: '2.1. Matrices — The Basics'
+format: html
+filters:
+  - ctm-assessment
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+Aufbauend auf Kapitel [1](../Kapitel_1/index.qmd) geht es zuerst darum zu klären, was Matrizen überhaupt genau sind.
+
+## 2.1.1. Was sind Matrizen?
+
+Betrachten wir zunächst die mathematische Definition einer Matrix:
+
+Eine Matrix ist eine Funktion:
+$$A:\{1,\dots,m\} \times \{1,\dots,n\} \rightarrow K, \quad (i,j) \mapsto a_{ij}$$
+
+Dabei ist $m$ die Anzahl der Zeilen, $n$ die Anzahl der Spalten und $K$ die Menge, aus der die Einträge stammen (ein Körper, in diesem Tutorial stets die reellen Zahlen $\mathbb{R}$). Das heißt, einem Paar von Indizes $(i,j)$ wird ein Wert $a_{ij} \in K$ zugeordnet.
+$A$, bestehend aus allen $a_{ij}$ nennt man Matrix.
+
+Zur Notation: Die Elemente der Matrix werden üblicherweise mit runden- oder eckigen- Klammern umschlossen. Die Werte $a_{ij}$ werden dabei wie folgt angeordnet:
+
+$$
+A = \begin{pmatrix}
+a_{11} & a_{12} & \dots & a_{1n} \\
+a_{21} & a_{22} & \dots & a_{2n} \\
+\vdots & \vdots & \ddots & \vdots \\
+a_{m1} & a_{m2} & \dots & a_{mn}
+\end{pmatrix}
+\quad \text{oder} \quad
+A = \begin{bmatrix}
+a_{11} & a_{12} & \dots & a_{1n} \\
+a_{21} & a_{22} & \dots & a_{2n} \\
+\vdots & \vdots & \ddots & \vdots \\
+a_{m1} & a_{m2} & \dots & a_{mn}
+\end{bmatrix}
+$$
+
+Ein konkretes Beispiel für eine Matrix mit Zahlenwerten wäre:
+$$
+B = \begin{pmatrix}
+5 & 7 & 2 \\
+1 & 0 & 3
+\end{pmatrix}
+$$
+$$
+\text{mit} \quad b_{11}=5, b_{12}=7, b_{13}=2, b_{21}=1, b_{22}=0, b_{23}=3
+$$
+
+
+## 2.1.2. Was eine Matrix repräsentieren kann
+
+Eine Matrix ist mehr als nur eine Ansammlung von Zahlen; sie kann verschiedenste Arten von Informationen und Beziehungen strukturiert darstellen. Diese Darstellungen unterscheiden sich teilweise gravierend. Hier sind einige vermutlich bekannte Beispiele:
+
+### 2.1.2.1. Lineare Gleichungssysteme (LGS)
+In der Schule lernt man Matrizen oft im Kontext von linearen Gleichungssystemen kennen. Eine Matrix kann die Koeffizienten eines solchen Systems speichern. Das System
+$$
+\begin{align*}
+2x + 3y &= 8 \\
+4x - y &= 2
+\end{align*}
+$$
+kann als Matrixgleichung $A \cdot \vec{x} = \vec{b}$ geschrieben werden:
+$$
+\begin{pmatrix} 2 & 3 \\ 4 & -1 \end{pmatrix}
+\begin{pmatrix} x \\ y \end{pmatrix} =
+\begin{pmatrix} 8 \\ 2 \end{pmatrix}
+$$
+Hier repräsentiert die Matrix $A$ die Beziehungen zwischen den Variablen.
+Häufig auch kurz geschrieben als:
+$$
+\begin{pmatrix} 2 & 3 & 8\\ 4 & -1 & 2 \end{pmatrix}
+$$
+
+### 2.1.2.2. Datenmatrizen
+Im Bereich der Datenanalyse und des maschinellen Lernens (zum Beispiel in LLMs) werden Matrizen verwendet, um Datensätze darzustellen. Typischerweise steht jede Zeile für eine einzelne Beobachtung (ein Schüler, ein Produkt, ein Bild) und jede Spalte für ein bestimmtes Merkmal (Alter, Preis, Pixelfarbe).
+$$
+\text{Schülerdaten} = \begin{pmatrix}
+15 & 165 & 2 \\
+16 & 172 & 1 \\
+15 & 168 & 3
+\end{pmatrix} \quad \begin{matrix} \leftarrow \text{Schüler 1} \\ \leftarrow \text{Schüler 2} \\ \leftarrow \text{Schüler 3} \end{matrix}
+$$
+Die Spalten könnten hier für Alter, Größe (in cm) und Note stehen.
+
+### 2.1.2.3. Übergangsmatrizen (Stochastische Matrizen)
+Diese Matrizen, auch stochastische Matrizen oder Markov-Matrizen genannt, beschreiben die Wahrscheinlichkeiten von Zustandsübergängen in einem System (einem sogenannten Markov-Prozess).
+
+Sei ein System mit $n$ Zuständen $\{S_1, S_2, \dots, S_n\}$ gegeben. Die Übergangsmatrix $P$ ist eine $n \times n$-Matrix, bei der der Eintrag $p_{ij}$ die Wahrscheinlichkeit angibt, vom Zustand $S_i$ in den Zustand $S_j$ zu wechseln.
+
+$$ P = (p_{ij}) \quad \text{mit} \quad p_{ij} = P(X_{t+1} = S_j \mid X_t = S_i) $$
+
+Für eine solche Matrix müssen zwei Bedingungen erfüllt sein:
+
+1.  Alle Einträge sind nicht-negativ: $p_{ij} \ge 0$ für alle $i,j$.
+2.  Die Summe jeder Zeile ist 1: $\sum_{j=1}^n p_{ij} = 1$ für alle $i=1, \dots, n$. Dies stellt sicher, dass von jedem Zustand aus ein Übergang in *irgendeinen* der möglichen Zustände mit Wahrscheinlichkeit 1 erfolgt.
+
+**Beispiel:**
+Betrachten wir ein System mit zwei Zuständen, $S_1$ und $S_2$. Die Übergangsmatrix könnte wie folgt aussehen, wobei die Spalten die Zielzustände $S_1$ und $S_2$ repräsentieren:
+$$
+P = \begin{pmatrix}
+p_{11} & p_{12} \\
+p_{21} & p_{22}
+\end{pmatrix}
+=
+\begin{pmatrix} 0.9 & 0.1 \\ 0.5 & 0.5 \end{pmatrix}
+\quad
+\begin{matrix}
+\leftarrow \text{Von Zustand } S_1 \\
+\leftarrow \text{Von Zustand } S_2
+\end{matrix}
+$$
+Die Matrix besagt:
+
+- Die Wahrscheinlichkeit, von $S_1$ in $S_1$ zu bleiben, ist $p_{11} = 0.9$.
+- Die Wahrscheinlichkeit, von $S_1$ nach $S_2$ zu wechseln, ist $p_{12} = 0.1$.
+- Die Wahrscheinlichkeit, von $S_2$ nach $S_1$ zu wechseln, ist $p_{21} = 0.5$.
+- Die Wahrscheinlichkeit, von $S_2$ in $S_2$ zu bleiben, ist $p_{22} = 0.5$.
+
+### 2.1.2.4. Permutationen und Permutationsmatrizen
+Eine Permutation ist eine Neuanordnung von Elementen. Matrizen können diese auf zwei grundlegend verschiedene Weisen darstellen, die man nicht verwechseln sollte: als *Liste* von Anordnungen oder als *Operator*, der eine Anordnung durchführt.
+
+#### 2.1.2.4.1. Darstellung als Datenmatrix (Liste von Permutationen)
+
+Die einfachste Methode ist, verschiedene Permutationen als Zeilen in einer Matrix aufzulisten. Dies ist im Grunde eine **Datenmatrix**, wie wir sie oben gesehen haben.
+
+Betrachten wir die Elemente $(1, 2, 3)$. Eine Matrix, die einige ihrer Permutationen enthält, könnte so aussehen:
+$$
+\text{Permutationen} = \begin{pmatrix}
+1 & 2 & 3 \\
+2 & 1 & 3 \\
+3 & 1 & 2
+\end{pmatrix} \quad \begin{matrix} \leftarrow \text{Original-Reihenfolge} \\ \leftarrow \text{Permutation 1 (1 und 2 getauscht)} \\ \leftarrow \text{Permutation 2 (zyklische Verschiebung)} \end{matrix}
+$$
+Diese Matrix *beschreibt* die Anordnungen, führt sie aber nicht aus.
+
+#### 2.1.2.4.2. Darstellung als Permutationsmatrix (Operator)
+
+Eine **Permutationsmatrix** ist eine quadratische Matrix, die eine bestimmte Permutation durch Matrixmultiplikation auf einen Vektor anwendet. Sie hat in jeder Zeile und jeder Spalte genau eine 1, ansonsten Nullen.
+
+Nehmen wir die Permutation "3, 1, 2" aus dem Beispiel oben. Sie ordnet das 1. Element an die 2. Stelle, das 2. an die 3. und das 3. an die 1. Stelle. Wie sieht die zugehörige Permutationsmatrix aus, die einen Vektor $(x,y,z)$ entsprechend zu $(z,x,y)$ transformiert?
+
+- Um das **neue erste Element** `z` zu erhalten, muss die erste Zeile der Matrix `(0 0 1)` sein.
+- Um das **neue zweite Element** `x` zu erhalten, muss die zweite Zeile `(1 0 0)` sein.
+- Um das **neue dritte Element** `y` zu erhalten, muss die dritte Zeile `(0 1 0)` sein.
+
+Die Permutation `(3, 1, 2)` wird also durch folgende Matrix repräsentiert:
+$$
+P = \begin{pmatrix} 0 & 0 & 1 \\ 1 & 0 & 0 \\ 0 & 1 & 0 \end{pmatrix}
+$$
+Angewendet auf einen Vektor, führt sie die Permutation aus:
+$$
+\underbrace{\begin{pmatrix} 0 & 0 & 1 \\ 1 & 0 & 0 \\ 0 & 1 & 0 \end{pmatrix}}_{\text{Permutationsmatrix}} \cdot \underbrace{\begin{pmatrix} x \\ y \\ z \end{pmatrix}}_{\text{Original}} = \underbrace{\begin{pmatrix} z \\ x \\ y \end{pmatrix}}_{\text{Permutiert}}
+$$
+
+Zusammenfassend: Die Datenmatrix **zeigt** Permutationen, die Permutationsmatrix **führt sie aus**. Das Verständnis dieses Unterschieds ist entscheidend, da die mathematischen Operationen und der Sinn dahinter völlig verschieden sind.
+
+## 2.1.3. Die Dimension einer Matrix
+
+Die **Dimension** einer Matrix wird durch die Anzahl ihrer Zeilen und Spalten bestimmt. Eine Matrix mit $m$ Zeilen und $n$ Spalten wird als **$m \times n$-Matrix** (gelesen als "m mal n Matrix") bezeichnet.
+
+-   $m$: Anzahl der Zeilen (horizontale Linien)
+-   $n$: Anzahl der Spalten (vertikale Linien)
+$$
+B = \begin{pmatrix}
+5 & 7 & 2 \\
+1 & 0 & 3
+\end{pmatrix}
+$$
+
+Für unsere Beispielmatrix $B$ gilt also:
+
+-   $m = 2$ (zwei Zeilen)
+-   $n = 3$ (drei Spalten)
+Somit ist $B$ eine $2 \times 3$-Matrix.
+
+Die Dimension ist eine der fundamentalsten Eigenschaften einer Matrix, da sie bestimmt, welche mathematischen Operationen (wie Addition oder Multiplikation) mit anderen Matrizen möglich sind.
+
+## 2.1.4. Matrizen in Python erstellen
+
+Nachdem wir die theoretischen Grundlagen kennen, stellt sich die Frage:
+**Wie erstellen wir eine Matrix in Python?**
+Während man verschachtelte Listen (`[[1, 2], [3, 4]]`) verwenden kann, ist der De-facto-Standard für numerische und wissenschaftliche Berechnungen die Bibliothek **NumPy**.
+Wie in Kap [1](../Kapitel_1/index.qmd) beschrieben, ist das effektiver und auch schneller, letzteres konnte leider in Kapitel 1 nicht gezeigt werden.
+
+NumPy bietet uns dafür den Datentyp `ndarray` (n-dimensionales Array), der sich perfekt für Vektoren und Matrizen eignet. Erzeugt wird ein solches Array mit der Funktion `np.array()`.
+
+```{pyodide-python}
+import numpy as np
+
+B = np.array([
+  [5, 7, 2],
+  [1, 0, 3]
+])
+
+print("Unsere Matrix B:")
+print(B)
+```
+
+### 2.1.4.1. Übung
+
+Schreibe eine Funktion `erstelle_studierenden_matrix()`, die als $3 \times 3$-Matrix die Daten aus dem Abschnitt "Datenmatrizen" (Alter, Größe, Note der drei Schüler) zurückgibt. Versteckte Tests prüfen automatisch, ob deine Lösung stimmt — klicke nach dem Ausfüllen auf **Überprüfen**.
+
+**Befehle, die du brauchst:** `np.array()` mit einer Liste von Zeilen, `return`.
+
+```{py-exercise}
+#| label: matrizen-grundlagen-studierenden-matrix
+#| caption: erstelle_studierenden_matrix implementieren
+#| show-test-hints: false
+import numpy as np
+
+def erstelle_studierenden_matrix():
+    # Dein Code hier — gib die 3x3-Matrix aus dem Abschnitt "Datenmatrizen" zurück
+    pass
+
+## TESTS ##
+ergebnis = erstelle_studierenden_matrix()
+assert np.array(ergebnis).shape == (3, 3), "Die Matrix sollte 3 Zeilen und 3 Spalten haben"
+assert np.array_equal(ergebnis, [[15, 165, 2], [16, 172, 1], [15, 168, 3]]), "Die Werte der Matrix stimmen nicht mit den Schülerdaten überein"
+```
+
+::: {.callout-tip title="Tipp" collapse="true"}
+Du kannst die Matrix genauso erstellen wie `B` oben — nur eben innerhalb der Funktion mit `return` statt mit `print()`.
+:::
+
+::: {.callout-caution title="Lösung" collapse="true"}
+```python
+import numpy as np
+
+def erstelle_studierenden_matrix():
+    return np.array([[15, 165, 2],
+                     [16, 172, 1],
+                     [15, 168, 3]])
+```
+:::
+
+
+---
+
+Im nächsten Abschnitt [Matrix-Attribute](matrizen_attribute.qmd) sehen wir uns an, wie wir diese und andere Eigenschaften von Matrizen in Python abfragen können.
+
+::::
+
+:::: {.content-visible when-profile="english"}
+Building on Chapter [1](../Kapitel_1/index.qmd), let's first clarify what matrices actually are.
+
+## 2.1.1. What are Matrices? {#was-sind-matrizen}
+
+Let's start with the mathematical definition of a matrix:
+
+A matrix is a function:
+$$A:\{1,\dots,m\} \times \{1,\dots,n\} \rightarrow K, \quad (i,j) \mapsto a_{ij}$$
+
+Here $m$ is the number of rows, $n$ the number of columns and $K$ the set the entries come from (a field, in this tutorial always the real numbers $\mathbb{R}$). That is, a pair of indices $(i,j)$ is assigned a value $a_{ij} \in K$.
+$A$, consisting of all $a_{ij}$, is called a matrix.
+
+Regarding notation: the elements of a matrix are usually enclosed by round or square brackets. The values $a_{ij}$ are arranged as follows:
+
+$$
+A = \begin{pmatrix}
+a_{11} & a_{12} & \dots & a_{1n} \\
+a_{21} & a_{22} & \dots & a_{2n} \\
+\vdots & \vdots & \ddots & \vdots \\
+a_{m1} & a_{m2} & \dots & a_{mn}
+\end{pmatrix}
+\quad \text{or} \quad
+A = \begin{bmatrix}
+a_{11} & a_{12} & \dots & a_{1n} \\
+a_{21} & a_{22} & \dots & a_{2n} \\
+\vdots & \vdots & \ddots & \vdots \\
+a_{m1} & a_{m2} & \dots & a_{mn}
+\end{bmatrix}
+$$
+
+A concrete example of a matrix with numeric values would be:
+$$
+B = \begin{pmatrix}
+5 & 7 & 2 \\
+1 & 0 & 3
+\end{pmatrix}
+$$
+$$
+\text{with} \quad b_{11}=5, b_{12}=7, b_{13}=2, b_{21}=1, b_{22}=0, b_{23}=3
+$$
+
+
+## 2.1.2. What a Matrix can Represent {#was-eine-matrix-repräsentieren-kann}
+
+A matrix is more than just a collection of numbers; it can structurally represent very different kinds of information and relationships. These representations sometimes differ drastically. Here are a few examples you have probably seen before:
+
+### 2.1.2.1. Systems of Linear Equations
+At school, matrices are often introduced in the context of systems of linear equations. A matrix can store the coefficients of such a system. The system
+$$
+\begin{align*}
+2x + 3y &= 8 \\
+4x - y &= 2
+\end{align*}
+$$
+can be written as the matrix equation $A \cdot \vec{x} = \vec{b}$:
+$$
+\begin{pmatrix} 2 & 3 \\ 4 & -1 \end{pmatrix}
+\begin{pmatrix} x \\ y \end{pmatrix} =
+\begin{pmatrix} 8 \\ 2 \end{pmatrix}
+$$
+Here, the matrix $A$ represents the relationships between the variables.
+Often also written more briefly as:
+$$
+\begin{pmatrix} 2 & 3 & 8\\ 4 & -1 & 2 \end{pmatrix}
+$$
+
+### 2.1.2.2. Data Matrices
+In data analysis and machine learning (for example in LLMs), matrices are used to represent datasets. Typically, each row stands for a single observation (a student, a product, an image) and each column for a specific feature (age, price, pixel color).
+$$
+\text{Student data} = \begin{pmatrix}
+15 & 165 & 2 \\
+16 & 172 & 1 \\
+15 & 168 & 3
+\end{pmatrix} \quad \begin{matrix} \leftarrow \text{Student 1} \\ \leftarrow \text{Student 2} \\ \leftarrow \text{Student 3} \end{matrix}
+$$
+Here, the columns could stand for age, height (in cm), and grade.
+
+### 2.1.2.3. Transition Matrices (Stochastic Matrices)
+These matrices, also called stochastic matrices or Markov matrices, describe the probabilities of state transitions in a system (a so-called Markov process).
+
+Let a system with $n$ states $\{S_1, S_2, \dots, S_n\}$ be given. The transition matrix $P$ is an $n \times n$ matrix, where the entry $p_{ij}$ gives the probability of transitioning from state $S_i$ to state $S_j$.
+
+$$ P = (p_{ij}) \quad \text{with} \quad p_{ij} = P(X_{t+1} = S_j \mid X_t = S_i) $$
+
+Two conditions must hold for such a matrix:
+
+1.  All entries are non-negative: $p_{ij} \ge 0$ for all $i,j$.
+2.  The sum of every row is 1: $\sum_{j=1}^n p_{ij} = 1$ for all $i=1, \dots, n$. This ensures that from every state, a transition to *some* possible state occurs with probability 1.
+
+**Example:**
+Consider a system with two states, $S_1$ and $S_2$. The transition matrix could look like this, where the columns represent the target states $S_1$ and $S_2$:
+$$
+P = \begin{pmatrix}
+p_{11} & p_{12} \\
+p_{21} & p_{22}
+\end{pmatrix}
+=
+\begin{pmatrix} 0.9 & 0.1 \\ 0.5 & 0.5 \end{pmatrix}
+\quad
+\begin{matrix}
+\leftarrow \text{From state } S_1 \\
+\leftarrow \text{From state } S_2
+\end{matrix}
+$$
+The matrix states:
+
+- The probability of staying in $S_1$ from $S_1$ is $p_{11} = 0.9$.
+- The probability of moving from $S_1$ to $S_2$ is $p_{12} = 0.1$.
+- The probability of moving from $S_2$ to $S_1$ is $p_{21} = 0.5$.
+- The probability of staying in $S_2$ from $S_2$ is $p_{22} = 0.5$.
+
+### 2.1.2.4. Permutations and Permutation Matrices
+A permutation is a reordering of elements. Matrices can represent this in two fundamentally different ways that should not be confused: as a *list* of arrangements, or as an *operator* that performs a rearrangement.
+
+#### 2.1.2.4.1. Representation as a Data Matrix (List of Permutations)
+
+The simplest method is to list different permutations as rows in a matrix. This is essentially a **data matrix**, as we saw above.
+
+Consider the elements $(1, 2, 3)$. A matrix containing some of their permutations could look like this:
+$$
+\text{Permutations} = \begin{pmatrix}
+1 & 2 & 3 \\
+2 & 1 & 3 \\
+3 & 1 & 2
+\end{pmatrix} \quad \begin{matrix} \leftarrow \text{Original order} \\ \leftarrow \text{Permutation 1 (1 and 2 swapped)} \\ \leftarrow \text{Permutation 2 (cyclic shift)} \end{matrix}
+$$
+This matrix *describes* the arrangements, but does not perform them.
+
+#### 2.1.2.4.2. Representation as a Permutation Matrix (Operator)
+
+A **permutation matrix** is a square matrix that applies a specific permutation to a vector via matrix multiplication. It has exactly one 1 in every row and every column, and zeros elsewhere.
+
+Take the permutation "3, 1, 2" from the example above. It moves the 1st element to the 2nd position, the 2nd to the 3rd, and the 3rd to the 1st. What does the corresponding permutation matrix look like, which transforms a vector $(x,y,z)$ into $(z,x,y)$?
+
+- To obtain the **new first element** `z`, the first row of the matrix must be `(0 0 1)`.
+- To obtain the **new second element** `x`, the second row must be `(1 0 0)`.
+- To obtain the **new third element** `y`, the third row must be `(0 1 0)`.
+
+So the permutation `(3, 1, 2)` is represented by the following matrix:
+$$
+P = \begin{pmatrix} 0 & 0 & 1 \\ 1 & 0 & 0 \\ 0 & 1 & 0 \end{pmatrix}
+$$
+Applied to a vector, it performs the permutation:
+$$
+\underbrace{\begin{pmatrix} 0 & 0 & 1 \\ 1 & 0 & 0 \\ 0 & 1 & 0 \end{pmatrix}}_{\text{Permutation matrix}} \cdot \underbrace{\begin{pmatrix} x \\ y \\ z \end{pmatrix}}_{\text{Original}} = \underbrace{\begin{pmatrix} z \\ x \\ y \end{pmatrix}}_{\text{Permuted}}
+$$
+
+In summary: the data matrix **shows** permutations, the permutation matrix **carries them out**. Understanding this distinction is crucial, since the mathematical operations and their meaning are completely different.
+
+## 2.1.3. The Dimension of a Matrix {#die-dimension-einer-matrix}
+
+The **dimension** of a matrix is determined by the number of its rows and columns. A matrix with $m$ rows and $n$ columns is called an **$m \times n$ matrix** (read as "m by n matrix").
+
+-   $m$: number of rows (horizontal lines)
+-   $n$: number of columns (vertical lines)
+$$
+B = \begin{pmatrix}
+5 & 7 & 2 \\
+1 & 0 & 3
+\end{pmatrix}
+$$
+
+For our example matrix $B$, we therefore have:
+
+-   $m = 2$ (two rows)
+-   $n = 3$ (three columns)
+So $B$ is a $2 \times 3$ matrix.
+
+The dimension is one of the most fundamental properties of a matrix, as it determines which mathematical operations (such as addition or multiplication) are possible with other matrices.
+
+## 2.1.4. Creating Matrices in Python {#matrizen-in-python-erstellen}
+
+Now that we know the theoretical basics, the question arises:
+**How do we create a matrix in Python?**
+While you can use nested lists (`[[1, 2], [3, 4]]`), the de-facto standard for numerical and scientific computing is the **NumPy** library.
+As described in Chapter [1](../Kapitel_1/index.qmd), this is more efficient and also faster, though the latter could unfortunately not be demonstrated in Chapter 1.
+
+NumPy gives us the data type `ndarray` (n-dimensional array) for this, which is perfectly suited for vectors and matrices. Such an array is created with the function `np.array()`.
+
+```{pyodide-python}
+import numpy as np
+
+B = np.array([
+  [5, 7, 2],
+  [1, 0, 3]
+])
+
+print("Our matrix B:")
+print(B)
+```
+
+### 2.1.4.1. Exercise
+
+Write a function `erstelle_studierenden_matrix()` that returns the $3 \times 3$ matrix with the data from the "Data Matrices" section (age, height, grade of the three students). Hidden tests automatically check whether your solution is correct — click **Check** once you're done.
+
+**Commands you need:** `np.array()` with a list of rows, `return`.
+
+```{py-exercise}
+#| label: matrizen-grundlagen-studierenden-matrix-en
+#| caption: Implement erstelle_studierenden_matrix
+#| show-test-hints: false
+import numpy as np
+
+def erstelle_studierenden_matrix():
+    # Your code here — return the 3x3 matrix from the "Data Matrices" section
+    pass
+
+## TESTS ##
+ergebnis = erstelle_studierenden_matrix()
+assert np.array(ergebnis).shape == (3, 3), "The matrix should have 3 rows and 3 columns"
+assert np.array_equal(ergebnis, [[15, 165, 2], [16, 172, 1], [15, 168, 3]]), "The values of the matrix don't match the student data"
+```
+
+::: {.callout-tip title="Tip" collapse="true"}
+You can create the matrix exactly like `B` above — just do it inside the function with `return` instead of `print()`.
+:::
+
+::: {.callout-caution title="Solution" collapse="true"}
+```python
+import numpy as np
+
+def erstelle_studierenden_matrix():
+    return np.array([[15, 165, 2],
+                     [16, 172, 1],
+                     [15, 168, 3]])
+```
+:::
+
+
+---
+
+In the next section, [Matrix Attributes](matrizen_attribute.qmd), we'll look at how to query these and other properties of matrices in Python.
+
+::::

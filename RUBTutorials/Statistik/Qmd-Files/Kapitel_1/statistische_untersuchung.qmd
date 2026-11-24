@@ -1,0 +1,826 @@
+---
+title: "1.1 Eine statistische Untersuchung"
+title-en: "1.1 A Statistical Study"
+subtitle: "Deskriptive Statistik"
+subtitle-en: "Descriptive Statistics"
+format: html
+filters:
+  - ctm-assessment
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+> **Lernziele:** Am Ende dieses Kapitels kannst du
+>
+> - die grundlegenden Schritte einer statistischen Analyse erläutern.
+> - die Begriffe *Untersuchungseinheit*, *Grundgesamtheit*, *Stichprobe*, *Merkmal* und *Merkmalsausprägungen* erklären und eigene Beispiele nennen.
+> - die Unterschiede zwischen den Merkmalstypen erklären und einem Merkmal den richtigen Typ zuordnen.
+> - quantitative Merkmale klassieren.
+
+---
+
+## Einführung
+
+Statistik hilft uns, aus Daten Informationen zu gewinnen. Das klingt abstrakt – aber du machst das eigentlich jeden Tag:
+
+- Du liest, dass *„60 % der Befragten für Maßnahme X sind"* und fragst dich: Sind das wirklich alle? Oder nur 100 Leute?
+- Du siehst, dass deine Durchschnittsnote gesunken ist und überlegst: In welchem Fach war das?
+- Eine Studie behauptet, Kaffeetrinker leben länger. Du fragst: Haben die das wirklich untersucht, oder liegt es vielleicht an etwas anderem?
+
+Genau das ist Statistik – systematisch, mit Methoden, die wir in diesem Tutorial kennenlernen.
+
+```{mermaid}
+%%| echo: false
+%%| eval: true
+%%| fig-cap: "Daten allein sagen nichts – erst statistische Methoden machen sie informativ."
+flowchart LR
+  A[Daten] --> B(statistische<br>Methoden)
+  B --> C[Informationen]
+```
+
+## Die Schritte einer statistischen Untersuchung
+
+Eine typische statistische Analyse läuft in sechs Schritten ab:
+
+::: {.panel-tabset}
+
+### Schritte
+
+1. **Fragestellung oder Hypothese** formulieren
+2. **Daten erheben oder sammeln**
+3. **Daten aufbereiten** (bereinigen, zusammenführen, fehlende Werte behandeln)
+4. **Deskriptive Analyse** – Daten beschreiben und visualisieren
+5. **Modellbasierte Analyse** – Hypothesen testen, auf Grundgesamtheit schließen
+6. **Bericht oder Präsentation** der Ergebnisse
+
+Diese Schritte können bei Bedarf wiederholt werden.
+
+### Beispiel
+
+**Thema:** Sind Basketballspieler im Schnitt größer als Handballspieler?
+
+1. **Hypothese:** Basketballspieler sind im Mittel größer als Handballspieler.
+
+2. **Daten:** Körpergrößen aus Sportdatenbanken (z.B. Bundesliga-Kader).
+
+3. **Aufbereitung:** Kommen die Daten aus verschiedenen Quellen, müssen sie zusammengeführt werden. Sind alle Größen in cm? Wie gehen wir mit fehlenden Werten um?
+
+4. **Deskriptive Analyse:** Wir berechnen Durchschnitt, Minimum und Maximum für jede Sportart und erstellen Grafiken. Ergebnis in dieser Stichprobe: Basketballspieler ∅ 1,98 m, Handballspieler ∅ 1,95 m.
+
+   ::: {.callout-caution}
+   **Achtung – Störvariable!** Wenn z.B. in der Basketball-Stichprobe 10 % Frauen sind, in der Handball-Stichprobe aber 40 %, dann sehen wir einen Größenunterschied, der nichts mit der Sportart zu tun hat. Deshalb sollte man immer nach Geschlecht trennen!
+   :::
+
+5. **Modellbasierte Analyse:** Hypothesentests prüfen, ob der Unterschied zufällig entstanden sein könnte oder *statistisch signifikant* ist (→ Abschnitt [2.5](../Kapitel_3/signifikanz_p_werte.qmd)).
+
+6. **Bericht:** Methodik erläutern, Ergebnisse interpretieren, Limitationen benennen (z.B.: Wir haben nur Profisport betrachtet).
+
+:::
+
+---
+
+## Grundbegriffe
+
+Für eine statistische Untersuchung brauchen wir zunächst drei zentrale Begriffe:
+
+::: {#def-grundbegriffe}
+### Untersuchungseinheit, Grundgesamtheit und Stichprobe
+
+- Ein einzelnes Objekt oder Individuum heißt **Untersuchungseinheit** (auch: Merkmalsträger).
+- Die Menge *aller* Untersuchungseinheiten heißt **Grundgesamtheit** (oder Population).
+- Eine **Stichprobe** ist eine Teilmenge der Grundgesamtheit, die tatsächlich untersucht wurde. Ihre Größe heißt **Stichprobenumfang** $n$.
+:::
+
+Warum reicht eine Stichprobe? Weil eine **Vollerhebung** – also alle Untersuchungseinheiten zu befragen – meist zu teuer, zu zeitaufwändig oder schlicht unmöglich ist. Statt alle Pinguine des Palmer-Archipels zu fangen, untersucht man 344.
+
+::: {#exm-pinguine-grundbegriffe}
+### Unser Datensatz: Palmer-Pinguine
+
+- **Untersuchungsfrage:** Wie schwer sind Pinguine auf dem Palmer-Archipel?
+- **Untersuchungseinheit:** ein einzelner Pinguin auf dem Palmer-Archipel
+- **Grundgesamtheit:** alle Pinguine auf dem Palmer-Archipel
+- **Stichprobe:** die 344 erfassten Pinguine aus den Jahren 2007–2009
+- **Kriterien** zur Abgrenzung:
+  - *sachlich:* Pinguinart (Adélie, Chinstrap, Gentoo), Geschlecht
+  - *räumlich:* Insel (Biscoe, Dream, Torgersen)
+  - *zeitlich:* Erfassungsjahr (2007, 2008, 2009)
+:::
+
+::: {.callout-tip}
+**Zufallsstichprobe:** Damit Ergebnisse aus der Stichprobe auf die Grundgesamtheit übertragbar sind, sollte jede Untersuchungseinheit die gleiche Chance haben, in die Stichprobe zu gelangen. Man nennt das eine *Zufallsstichprobe*.
+:::
+
+::: {#exr-grundbegriffe}
+### Eigene Fragestellung
+
+Überlege dir eine statistische Fragestellung aus deinem Alltag (z.B. über Schule, Sport, Musik). Benenne dazu:
+
+- die Untersuchungseinheit,
+- die Grundgesamtheit,
+- eine mögliche Stichprobe,
+- je ein sachliches, räumliches und zeitliches Kriterium.
+:::
+
+---
+
+## Merkmale und Merkmalstypen
+
+Uns interessieren nicht die Untersuchungseinheiten an sich, sondern ihre **Eigenschaften** – die sogenannten Merkmale.
+
+::: {#def-merkmale}
+### Merkmal und Merkmalsausprägung
+
+- Ein **Merkmal** ist eine Eigenschaft der Untersuchungseinheiten, die erfasst wird (z.B. Körpergewicht, Pinguinart, Geschlecht).
+- Die möglichen Werte eines Merkmals heißen **Merkmalsausprägungen** (z.B. 3750 g, „Adélie", „weiblich").
+- Merkmale werden mit Großbuchstaben notiert ($X$, $Y$, ...), beobachtete Werte mit Kleinbuchstaben ($x_1, x_2, \dots, x_n$).
+:::
+
+Merkmale werden nach ihrer **Art** eingeteilt – weil unterschiedliche Typen unterschiedliche statistische Methoden erfordern:
+
+::: {#def-skalenniveaus}
+### Skalenniveaus
+
+**Qualitative (kategoriale) Merkmale** bezeichnen Eigenschaften ohne Rechenoperationen:
+
+- **Nominal:** Kategorien ohne natürliche Reihenfolge.
+  *Beispiele:* Pinguinart, Insel, Blutgruppe, Geschlecht
+- **Ordinal:** Kategorien mit sinnvoller Reihenfolge, aber ohne messbaren Abstand.
+  *Beispiele:* Schulnoten, Zufriedenheit (gering/mittel/hoch), Nutri-Score
+
+**Quantitative (metrische) Merkmale** sind Zahlenwerte, mit denen gerechnet werden kann:
+
+- **Kardinal** (auch: metrisch): Ausprägungen können geordnet und ihre Abstände verglichen werden.
+  *Beispiele:* Körpergröße, Gewicht, Temperatur, Alter, Schnabellänge
+:::
+
+Kardinale Merkmale lassen sich nochmals unterteilen:
+
+- **Intervallskala:** Abstände sind interpretierbar, aber es gibt keinen natürlichen Nullpunkt. *Beispiel:* Temperatur in °C (0 °C bedeutet nicht „keine Temperatur").
+- **Verhältnisskala:** Es gibt einen natürlichen Nullpunkt; Verhältnisse sind sinnvoll. *Beispiel:* Gewicht (6000 g ist doppelt so schwer wie 3000 g).
+
+Außerdem unterscheidet man:
+
+- **Diskrete Merkmale:** endlich viele oder abzählbar unendlich viele Ausprägungen (z.B. Anzahl Eier, Schulnote).
+- **Stetige Merkmale:** überabzählbar viele mögliche Werte, z.B. jede reelle Zahl in einem Intervall (z.B. Körpergröße, Gewicht).
+
+::: {.callout-tip}
+**Faustregel:** Kann ich sinnvoll rechnen (Durchschnitt bilden, Differenzen interpretieren)? → kardinal. Gibt es eine natürliche Reihenfolge, aber keine messbaren Abstände? → ordinal. Sonst → nominal.
+:::
+
+```{mermaid}
+%%| echo: false
+%%| eval: true
+%%| fig-cap: "Merkmalstypen im Überblick"
+flowchart TD
+  A(Merkmal) --> B[qualitativ / kategorial]
+  A --> C[quantitativ / metrisch]
+  B --> D[nominal]
+  B --> E[ordinal]
+  C --> F[kardinal]
+  D --> G[diskret]
+  E --> G
+  F --> G
+  F --> H[stetig]
+```
+
+::: {#exm-penguins-merkmale}
+### Merkmale des Pinguin-Datensatzes
+
+| Merkmal | Python-Spalte | Typ | Skala |
+|---------|---------------|-----|-------|
+| Pinguinart | `species` | qualitativ | nominal |
+| Insel | `island` | qualitativ | nominal |
+| Schnabellänge | `bill_length_mm` | quantitativ | kardinal (Verhältnis) |
+| Schnabeltiefe | `bill_depth_mm` | quantitativ | kardinal (Verhältnis) |
+| Flossenlänge | `flipper_length_mm` | quantitativ | kardinal (Verhältnis) |
+| Körpergewicht | `body_mass_g` | quantitativ | kardinal (Verhältnis) |
+| Geschlecht | `sex` | qualitativ | nominal (dichotom) |
+| Jahr | `year` | quantitativ | kardinal (Intervall) |
+:::
+
+::: {.callout-python}
+**Python-Tipp:** `penguins.info()` zeigt dir für jede Spalte den Datentyp (`object` = Text/Kategorien, `float64`/`int64` = Zahlen) und die Anzahl nicht-fehlender Werte.
+:::
+
+```{pyodide-python}
+#| read-only: true
+import pandas as pd
+from pyodide.http import open_url
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+penguins.info()
+```
+
+```{pyodide-python}
+import pandas as pd
+from pyodide.http import open_url
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+
+# Welche Ausprägungen hat das Merkmal "species"?
+print(penguins["species"].unique())
+
+# Und wie viele Pinguine gibt es je Art?
+print(penguins["species"].value_counts())
+```
+
+---
+
+## Klassieren quantitativer Merkmale
+
+Manchmal hat ein quantitatives Merkmal sehr viele verschiedene Ausprägungen. Um einen besseren Überblick zu bekommen, fasst man Werte zu **Klassen** zusammen – man *klassiert* das Merkmal.
+
+::: {#def-klassierung}
+### Klassengrenzen, Klassenbreite und Klassenmitte
+
+Teilt man einen Wertebereich in $l$ Klassen ein mit Grenzen $k_0 < k_1 < \cdots < k_l$, so gehört ein Wert $a$ zur $j$-ten Klasse, wenn $a \in (k_{j-1},\, k_j]$.
+
+- **Klassengrenzen:** $k_{j-1}$ (untere) und $k_j$ (obere Grenze)
+- **Klassenbreite:** $k_j - k_{j-1}$
+- **Klassenmitte:** $\tilde{a}_j = \dfrac{k_{j-1} + k_j}{2}$
+:::
+
+::: {#exm-klassierung-noten}
+### Klausurnoten
+
+Eine Klausur hat 60 Punkte. Die Noten entstehen durch Klassierung:
+
+| Note | Klasse | Klassenbreite | Klassenmitte |
+|------|--------|---------------|--------------|
+| 5 | [0, 20] | 20 | 10 |
+| 4 | (20, 30] | 10 | 25 |
+| 3 | (30, 40] | 10 | 35 |
+| 2 | (40, 50] | 10 | 45 |
+| 1 | (50, 60] | 10 | 55 |
+
+Das klassierte Merkmal (Note) ist **ordinal** skaliert – man kann ordnen, aber Abstände zwischen Noten sind nicht sinnvoll interpretierbar.
+:::
+
+::: {.callout-rechnen}
+**Faustregel:** Eine Klassierung sollte zwischen 5 und 20 Klassen ergeben. Die Klassen müssen *disjunkt* sein (keine Überlappung) und den gesamten Wertebereich abdecken.
+:::
+
+Probiere die Definition einmal aus. Im Code unten ist die Gewichtsklasse „mittel“ das Intervall $(3500,\, 5500]$ (in Gramm):
+
+```{math-exercise}
+#| label: klassierung-breite-mitte
+#| caption: Klassenbreite und Klassenmitte
+#| field-labels: Klassenbreite, Klassenmitte
+Klassenbreite: _[2000] g, Klassenmitte: _[4500] g
+```
+
+Jetzt klassieren wir das Körpergewicht der Pinguine in Python:
+
+::: {.callout-python}
+**Python-Tipp:** `pd.cut()` klassiert eine Spalte direkt. Mit `labels=` gibst du den Klassen Namen.
+:::
+
+```{pyodide-python}
+#| read-only: true
+import pandas as pd
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+
+# Gewicht in drei Klassen einteilen
+penguins["gewichtsklasse"] = pd.cut(
+    penguins["body_mass_g"],
+    bins=[2500, 3500, 5500, 6500],
+    labels=["leicht", "mittel", "schwer"]
+)
+
+# Wie viele Pinguine in jeder Klasse?
+print(penguins["gewichtsklasse"].value_counts().sort_index())
+```
+
+:::: {.theorem .exercise}
+#### Aufgabe: Schnabellänge klassieren
+
+Die Schnabellängen der Pinguine variieren von etwa 32 mm bis 60 mm. Teile dieses Merkmal in drei gleichbreite Klassen ein und zähle, wie viele Pinguine in jede Klasse fallen.
+
+**Aufgabe:**
+
+1. Klassiere `bill_length_mm` in drei Klassen: `"kurz"` = (30, 40], `"mittel"` = (40, 50], `"lang"` = (50, 60], und speichere sie in der neuen Spalte `penguins["schnabelklasse"]`.
+2. Gib die absolute Häufigkeit jeder Klasse aus.
+
+**Überprüfen** testet deine Klassierung.
+
+```{py-exercise}
+#| label: schnabellaenge-klassieren
+#| caption: Schnabellänge klassieren
+#| show-test-hints: false
+import pandas as pd
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+
+# Dein Code hier: penguins["schnabelklasse"] = pd.cut(...)
+
+## TESTS ##
+assert "schnabelklasse" in penguins.columns, "Die Spalte penguins[\"schnabelklasse\"] fehlt noch. Lege sie mit pd.cut(...) an."
+assert "schnabelklasse" in penguins.columns and set(penguins["schnabelklasse"].dropna().astype(str)) <= {"kurz", "mittel", "lang"}, "Die Klassen sollen \"kurz\", \"mittel\" und \"lang\" heißen (labels=...)."
+assert "schnabelklasse" in penguins.columns and penguins["schnabelklasse"].astype(str).value_counts().get("mittel", 0) == 190, "In der Klasse \"mittel\" = (40, 50] sollten 190 Pinguine sein. Stimmen die Grenzen bins=[30, 40, 50, 60]?"
+assert "schnabelklasse" in penguins.columns and penguins["schnabelklasse"].astype(str).value_counts().get("kurz", 0) == 100 and penguins["schnabelklasse"].astype(str).value_counts().get("lang", 0) == 52, "Erwartet: 100 kurz, 190 mittel, 52 lang (2 Pinguine ohne Messwert fallen heraus)."
+```
+
+::: {.callout-tip title="Tipp 1" collapse="true"}
+`pd.cut()` klassiert eine Spalte direkt. Übergib `bins=` als Liste der Klassengrenzen und `labels=` als Liste der Klassennamen.
+:::
+
+::: {.callout-tip title="Tipp 2" collapse="true"}
+Nach der Klassierung kannst du `value_counts().sort_index()` verwenden, um die Häufigkeiten in der richtigen Reihenfolge (kurz → mittel → lang) anzuzeigen.
+:::
+
+::: {.callout-caution title="Minimale Lösung" collapse="true"}
+```python
+import pandas as pd
+from pyodide.http import open_url
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+
+penguins["schnabelklasse"] = pd.cut(
+    penguins["bill_length_mm"],
+    bins=[30, 40, 50, 60],
+    labels=["kurz", "mittel", "lang"]
+)
+print(penguins["schnabelklasse"].value_counts().sort_index())
+```
+:::
+::::
+
+---
+
+## Zusammenfassung
+
+- Statistik gewinnt **Informationen aus Daten** – systematisch, in sechs Schritten.
+- Die **Grundgesamtheit** enthält alle interessierenden Objekte; wir untersuchen meist nur eine **Stichprobe**.
+- **Merkmale** beschreiben Eigenschaften der Untersuchungseinheiten. Je nach **Merkmalstyp** (nominal, ordinal, kardinal) stehen unterschiedliche Methoden zur Verfügung.
+- Quantitative Merkmale können **klassiert** werden, um einen Überblick zu gewinnen – dabei wird aus einem kardinalen ein ordinales Merkmal.
+
+---
+
+## Wissens-Check
+
+```{quizdown}
+---
+locale: de
+---
+
+### Was ist die Grundgesamtheit?
+
+1. [ ] Die Teilmenge der Objekte, die tatsächlich untersucht wurde.
+1. [x] Die Menge aller Objekte, über die man eine Aussage treffen möchte.
+    > Genau! Die Grundgesamtheit enthält alle relevanten Objekte – auch die, die nicht befragt wurden.
+1. [ ] Der Durchschnittswert eines Merkmals.
+1. [ ] Das Ergebnis einer statistischen Analyse.
+
+### Welcher Merkmalstyp beschreibt die Pinguinart (Adélie, Chinstrap, Gentoo)?
+
+1. [x] Nominal
+    > Richtig! Die Pinguinarten lassen sich nicht sinnvoll in eine Rangfolge bringen – es sind Kategorien ohne Ordnung.
+1. [ ] Ordinal
+1. [ ] Kardinal
+1. [ ] Diskret
+
+### Schulnoten (1, 2, 3, 4, 5, 6) sind ein Beispiel für welches Skalenniveau?
+
+1. [ ] Nominal
+1. [x] Ordinal
+    > Richtig! Noten lassen sich ordnen (1 ist besser als 2), aber der Abstand zwischen zwei Noten ist nicht sinnvoll interpretierbar.
+1. [ ] Kardinal
+1. [ ] Verhältnisskala
+
+### Das Körpergewicht der Pinguine (in Gramm) ist...
+
+- [x] kardinal skaliert.
+    > Richtig! Abstände sind sinnvoll (6000 g ist 3000 g mehr als 3000 g) und es gibt einen natürlichen Nullpunkt (Verhältnisskala).
+- [x] stetig (theoretisch).
+    > Auch richtig! Gewicht kann theoretisch jeden reellen Wert annehmen – diskrete Messung durch begrenzte Genauigkeit.
+- [ ] ordinal skaliert.
+- [ ] nominal skaliert.
+
+### Was passiert mit dem Skalenniveau, wenn man ein kardinales Merkmal klassiert?
+
+1. [ ] Es bleibt kardinal.
+1. [x] Es wird ordinal.
+    > Genau! Die Klassen können noch geordnet werden (leicht < mittel < schwer), aber die genauen Abstände gehen verloren.
+1. [ ] Es wird nominal.
+1. [ ] Es wird diskret.
+
+### Ordne die Schritte einer statistischen Untersuchung in die richtige Reihenfolge!
+
+1. Fragestellung formulieren
+2. Daten erheben
+3. Daten aufbereiten
+4. Deskriptive Analyse
+5. Modellbasierte Analyse
+6. Ergebnisse berichten
+```
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+> **Learning objectives:** By the end of this chapter you can
+>
+> - explain the basic steps of a statistical analysis.
+> - explain the terms *observational unit*, *population*, *sample*, *variable* and *values of a variable* and give your own examples.
+> - explain the differences between the types of variables and assign the right type to a variable.
+> - group quantitative variables into classes.
+
+---
+
+## Introduction {#einführung}
+
+Statistics helps us to gain information from data. That sounds abstract – but you actually do it every day:
+
+- You read that *"60% of respondents are in favor of measure X"* and ask yourself: Is that really everyone? Or just 100 people?
+- You see that your grade average has dropped and wonder: in which subject was that?
+- A study claims that coffee drinkers live longer. You ask: Did they really examine that, or could it be due to something else?
+
+That is exactly what statistics is – systematic, with methods that we get to know in this tutorial.
+
+```{mermaid}
+%%| echo: false
+%%| eval: true
+%%| fig-cap: "Data alone says nothing – only statistical methods make it informative."
+flowchart LR
+  A[Data] --> B(statistical<br>methods)
+  B --> C[Information]
+```
+
+## The steps of a statistical study {#die-schritte-einer-statistischen-untersuchung}
+
+A typical statistical analysis proceeds in six steps:
+
+::: {.panel-tabset}
+
+### Steps
+
+1. Formulate a **question or hypothesis**
+2. **Collect or gather data**
+3. **Prepare the data** (clean, merge, handle missing values)
+4. **Descriptive analysis** – describe and visualize the data
+5. **Model-based analysis** – test hypotheses, infer to the population
+6. **Report or presentation** of the results
+
+These steps can be repeated if necessary.
+
+### Example
+
+**Topic:** Are basketball players taller on average than handball players?
+
+1. **Hypothesis:** Basketball players are taller on average than handball players.
+
+2. **Data:** Body heights from sports databases (e.g. Bundesliga squads).
+
+3. **Preparation:** If the data come from different sources, they have to be merged. Are all heights in cm? How do we deal with missing values?
+
+4. **Descriptive analysis:** We compute the average, minimum and maximum for each sport and create graphics. Result in this sample: basketball players ∅ 1.98 m, handball players ∅ 1.95 m.
+
+   ::: {.callout-caution}
+   **Watch out – confounders!** If, for example, 10% of the basketball sample are women but 40% of the handball sample, then we see a height difference that has nothing to do with the sport. That is why you should always separate by sex!
+   :::
+
+5. **Model-based analysis:** Hypothesis tests check whether the difference could have arisen by chance or is *statistically significant* (→ section [2.5](../Kapitel_3/signifikanz_p_werte.qmd)).
+
+6. **Report:** Explain the methodology, interpret the results, name the limitations (e.g.: we only looked at professional sport).
+
+:::
+
+---
+
+## Basic terms {#grundbegriffe}
+
+For a statistical study we first need three central terms:
+
+::: {#def-grundbegriffe}
+### Observational unit, population and sample
+
+- A single object or individual is called an **observational unit** (also: statistical unit).
+- The set of *all* observational units is called the **population**.
+- A **sample** is a subset of the population that was actually examined. Its size is called the **sample size** $n$.
+:::
+
+Why is a sample enough? Because a **census** – surveying all observational units – is usually too expensive, too time-consuming or simply impossible. Instead of catching all the penguins of the Palmer Archipelago, you examine 344.
+
+::: {#exm-pinguine-grundbegriffe}
+### Our dataset: Palmer penguins
+
+- **Research question:** How heavy are penguins on the Palmer Archipelago?
+- **Observational unit:** a single penguin on the Palmer Archipelago
+- **Population:** all penguins on the Palmer Archipelago
+- **Sample:** the 344 recorded penguins from the years 2007–2009
+- **Criteria** for delimitation:
+  - *factual:* penguin species (Adélie, Chinstrap, Gentoo), sex
+  - *spatial:* island (Biscoe, Dream, Torgersen)
+  - *temporal:* year of recording (2007, 2008, 2009)
+:::
+
+::: {.callout-tip}
+**Random sample:** For results from the sample to be transferable to the population, every observational unit should have the same chance of getting into the sample. This is called a *random sample*.
+:::
+
+::: {#exr-grundbegriffe}
+### Your own research question
+
+Think of a statistical question from your everyday life (e.g. about school, sport, music). Name:
+
+- the observational unit,
+- the population,
+- a possible sample,
+- one factual, one spatial and one temporal criterion each.
+:::
+
+---
+
+## Variables and types of variables {#merkmale-und-merkmalstypen}
+
+We are not interested in the observational units themselves, but in their **properties** – the so-called variables.
+
+::: {#def-merkmale}
+### Variable and value of a variable
+
+- A **variable** is a property of the observational units that is recorded (e.g. body weight, penguin species, sex).
+- The possible values of a variable are called its **values** or categories (e.g. 3750 g, "Adélie", "female").
+- Variables are written with capital letters ($X$, $Y$, ...), observed values with lowercase letters ($x_1, x_2, \dots, x_n$).
+:::
+
+Variables are classified by their **kind** – because different types require different statistical methods:
+
+::: {#def-skalenniveaus}
+### Levels of measurement
+
+**Qualitative (categorical) variables** describe properties without arithmetic operations:
+
+- **Nominal:** categories without a natural order.
+  *Examples:* penguin species, island, blood type, sex
+- **Ordinal:** categories with a meaningful order, but without a measurable distance.
+  *Examples:* school grades, satisfaction (low/medium/high), Nutri-Score
+
+**Quantitative (metric) variables** are numerical values that you can calculate with:
+
+- **Cardinal** (also: metric): values can be ordered and their distances compared.
+  *Examples:* body height, weight, temperature, age, bill length
+:::
+
+Cardinal variables can be subdivided further:
+
+- **Interval scale:** distances can be interpreted, but there is no natural zero point. *Example:* temperature in °C (0 °C does not mean "no temperature").
+- **Ratio scale:** there is a natural zero point; ratios are meaningful. *Example:* weight (6000 g is twice as heavy as 3000 g).
+
+In addition, one distinguishes:
+
+- **Discrete variables:** finitely many or countably infinitely many values (e.g. number of eggs, school grade).
+- **Continuous variables:** uncountably many possible values, e.g. every real number in an interval (e.g. body height, weight).
+
+::: {.callout-tip}
+**Rule of thumb:** Can I calculate meaningfully (take an average, interpret differences)? → cardinal. Is there a natural order but no measurable distances? → ordinal. Otherwise → nominal.
+:::
+
+```{mermaid}
+%%| echo: false
+%%| eval: true
+%%| fig-cap: "Types of variables at a glance"
+flowchart TD
+  A(Variable) --> B[qualitative / categorical]
+  A --> C[quantitative / metric]
+  B --> D[nominal]
+  B --> E[ordinal]
+  C --> F[cardinal]
+  D --> G[discrete]
+  E --> G
+  F --> G
+  F --> H[continuous]
+```
+
+::: {#exm-penguins-merkmale}
+### Variables of the penguin dataset
+
+| Variable | Python column | Type | Scale |
+|---------|---------------|-----|-------|
+| Penguin species | `species` | qualitative | nominal |
+| Island | `island` | qualitative | nominal |
+| Bill length | `bill_length_mm` | quantitative | cardinal (ratio) |
+| Bill depth | `bill_depth_mm` | quantitative | cardinal (ratio) |
+| Flipper length | `flipper_length_mm` | quantitative | cardinal (ratio) |
+| Body weight | `body_mass_g` | quantitative | cardinal (ratio) |
+| Sex | `sex` | qualitative | nominal (dichotomous) |
+| Year | `year` | quantitative | cardinal (interval) |
+:::
+
+::: {.callout-python}
+**Python tip:** `penguins.info()` shows you the data type of each column (`object` = text/categories, `float64`/`int64` = numbers) and the number of non-missing values.
+:::
+
+```{pyodide-python}
+#| read-only: true
+import pandas as pd
+from pyodide.http import open_url
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+penguins.info()
+```
+
+```{pyodide-python}
+import pandas as pd
+from pyodide.http import open_url
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+
+# Which values does the variable "species" have?
+print(penguins["species"].unique())
+
+# And how many penguins are there per species?
+print(penguins["species"].value_counts())
+```
+
+---
+
+## Grouping quantitative variables into classes {#klassieren-quantitativer-merkmale}
+
+Sometimes a quantitative variable has a great many different values. To get a better overview, you combine values into **classes** – you *group* (bin) the variable.
+
+::: {#def-klassierung}
+### Class boundaries, class width and class midpoint
+
+If you divide a range of values into $l$ classes with boundaries $k_0 < k_1 < \cdots < k_l$, a value $a$ belongs to the $j$-th class if $a \in (k_{j-1},\, k_j]$.
+
+- **Class boundaries:** $k_{j-1}$ (lower) and $k_j$ (upper boundary)
+- **Class width:** $k_j - k_{j-1}$
+- **Class midpoint:** $\tilde{a}_j = \dfrac{k_{j-1} + k_j}{2}$
+:::
+
+::: {#exm-klassierung-noten}
+### Exam grades
+
+An exam has 60 points. The grades are created by grouping into classes (German grades, 1 is best):
+
+| Grade | Class | Class width | Class midpoint |
+|------|--------|---------------|--------------|
+| 5 | [0, 20] | 20 | 10 |
+| 4 | (20, 30] | 10 | 25 |
+| 3 | (30, 40] | 10 | 35 |
+| 2 | (40, 50] | 10 | 45 |
+| 1 | (50, 60] | 10 | 55 |
+
+The grouped variable (grade) is **ordinal** – you can order it, but distances between grades cannot be interpreted meaningfully.
+:::
+
+::: {.callout-rechnen}
+**Rule of thumb:** A grouping should result in between 5 and 20 classes. The classes must be *disjoint* (no overlap) and cover the entire range of values.
+:::
+
+Try the definition. In the code below, the weight class "medium" is the interval $(3500,\, 5500]$ (in grams):
+
+```{math-exercise}
+#| label: klassierung-breite-mitte-en
+#| caption: Class width and class midpoint
+#| field-labels: class width, class midpoint
+Class width: _[2000] g, class midpoint: _[4500] g
+```
+
+Now we group the body weight of the penguins into classes in Python:
+
+::: {.callout-python}
+**Python tip:** `pd.cut()` groups a column directly. With `labels=` you give the classes names.
+:::
+
+```{pyodide-python}
+#| read-only: true
+import pandas as pd
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+
+# Divide weight into three classes
+penguins["weight_class"] = pd.cut(
+    penguins["body_mass_g"],
+    bins=[2500, 3500, 5500, 6500],
+    labels=["light", "medium", "heavy"]
+)
+
+# How many penguins are in each class?
+print(penguins["weight_class"].value_counts().sort_index())
+```
+
+:::: {.theorem .exercise}
+#### Exercise: Grouping bill length into classes
+
+The bill lengths of the penguins vary from about 32 mm to 60 mm. Divide this variable into three classes of equal width and count how many penguins fall into each class.
+
+**Task:**
+
+1. Group `bill_length_mm` into three classes: `"short"` = (30, 40], `"medium"` = (40, 50], `"long"` = (50, 60], and store them in the new column `penguins["bill_class"]`.
+2. Print the absolute frequency of each class.
+
+**Check** tests your grouping.
+
+```{py-exercise}
+#| label: schnabellaenge-klassieren-en
+#| caption: Grouping bill length into classes
+#| show-test-hints: false
+import pandas as pd
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+
+# Your code here: penguins["bill_class"] = pd.cut(...)
+
+## TESTS ##
+assert "bill_class" in penguins.columns, "The column penguins[\"bill_class\"] is still missing. Create it with pd.cut(...)."
+assert "bill_class" in penguins.columns and set(penguins["bill_class"].dropna().astype(str)) <= {"short", "medium", "long"}, "The classes should be called \"short\", \"medium\" and \"long\" (labels=...)."
+assert "bill_class" in penguins.columns and penguins["bill_class"].astype(str).value_counts().get("medium", 0) == 190, "The class \"medium\" = (40, 50] should contain 190 penguins. Are the boundaries bins=[30, 40, 50, 60]?"
+assert "bill_class" in penguins.columns and penguins["bill_class"].astype(str).value_counts().get("short", 0) == 100 and penguins["bill_class"].astype(str).value_counts().get("long", 0) == 52, "Expected: 100 short, 190 medium, 52 long (2 penguins without a measurement drop out)."
+```
+
+::: {.callout-tip title="Hint 1" collapse="true"}
+`pd.cut()` groups a column directly. Pass `bins=` as a list of the class boundaries and `labels=` as a list of the class names.
+:::
+
+::: {.callout-tip title="Hint 2" collapse="true"}
+After grouping you can use `value_counts().sort_index()` to show the frequencies in the right order (short → medium → long).
+:::
+
+::: {.callout-caution title="Minimal solution" collapse="true"}
+```python
+import pandas as pd
+from pyodide.http import open_url
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+
+penguins["bill_class"] = pd.cut(
+    penguins["bill_length_mm"],
+    bins=[30, 40, 50, 60],
+    labels=["short", "medium", "long"]
+)
+print(penguins["bill_class"].value_counts().sort_index())
+```
+:::
+::::
+
+---
+
+## Summary {#zusammenfassung}
+
+- Statistics gains **information from data** – systematically, in six steps.
+- The **population** contains all objects of interest; we usually only examine a **sample**.
+- **Variables** describe properties of the observational units. Depending on the **type of variable** (nominal, ordinal, cardinal), different methods are available.
+- Quantitative variables can be **grouped into classes** to gain an overview – this turns a cardinal variable into an ordinal one.
+
+---
+
+## Knowledge check {#wissens-check}
+
+```{quizdown}
+---
+locale: en
+---
+
+### What is the population?
+
+1. [ ] The subset of objects that was actually examined.
+1. [x] The set of all objects about which you want to make a statement.
+    > Exactly! The population contains all relevant objects – including those that were not surveyed.
+1. [ ] The average value of a variable.
+1. [ ] The result of a statistical analysis.
+
+### Which type of variable describes the penguin species (Adélie, Chinstrap, Gentoo)?
+
+1. [x] Nominal
+    > Correct! The penguin species cannot be meaningfully ranked – they are categories without an order.
+1. [ ] Ordinal
+1. [ ] Cardinal
+1. [ ] Discrete
+
+### School grades (1, 2, 3, 4, 5, 6) are an example of which level of measurement?
+
+1. [ ] Nominal
+1. [x] Ordinal
+    > Correct! Grades can be ordered (1 is better than 2), but the distance between two grades cannot be interpreted meaningfully.
+1. [ ] Cardinal
+1. [ ] Ratio scale
+
+### The body weight of the penguins (in grams) is...
+
+- [x] cardinal.
+    > Correct! Distances are meaningful (6000 g is 3000 g more than 3000 g) and there is a natural zero point (ratio scale).
+- [x] continuous (in theory).
+    > Also correct! Weight can theoretically take any real value – the measurement is discrete only because of limited precision.
+- [ ] ordinal.
+- [ ] nominal.
+
+### What happens to the level of measurement when you group a cardinal variable into classes?
+
+1. [ ] It stays cardinal.
+1. [x] It becomes ordinal.
+    > Exactly! The classes can still be ordered (light < medium < heavy), but the exact distances are lost.
+1. [ ] It becomes nominal.
+1. [ ] It becomes discrete.
+
+### Put the steps of a statistical study in the right order!
+
+1. Formulate a question
+2. Collect data
+3. Prepare data
+4. Descriptive analysis
+5. Model-based analysis
+6. Report results
+```
+
+::::

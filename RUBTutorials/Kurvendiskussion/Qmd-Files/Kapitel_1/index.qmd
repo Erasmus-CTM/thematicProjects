@@ -1,0 +1,233 @@
+---
+title: "Definitionsbereich und Wertebereich"
+title-en: "Domain and Range"
+format: html
+filters:
+  - ctm-assessment
+  - quizdown
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+# Der Definitionsbereich
+
+Der **[Definitionsbereich](definitionsbereich.qmd)** (auch Definitionsmenge genannt) einer Funktion **$f$** ist die Menge aller Werte, für die die Funktion definiert ist, das heißt für die ein gültiger Funktionswert berechnet werden kann.
+Mit Python und der Bibliothek `SymPy` können wir versuchen, den Definitionsbereich für verschiedene Arten von Funktionen zu bestimmen. `SymPy` erlaubt uns, mit mathematischen Symbolen und Ausdrücken zu arbeiten. Also um Gleichungen zu lösen.
+
+Es gibt zwei Gründe, warum eine Funktion eine Definitionslücke hat, beide hängen von den jeweiligen Begrenzungen unserer Begriffe ab.  
+Zum einen **[gebrochen-rationale Funktionen](definitionsbereich.qmd#gebrochen-rationale-funktionen)** bzw. Brüche. Die Division durch Null ist nicht definiert, daher hat jede Funktion eine Definitionslücke, wenn sonst durch 0 geteilt werden würde an der Stelle.  
+Zum anderen **[Funktionen mit Wurzeln](definitionsbereich.qmd#funktionen-mit-wurzeln)** gerade Wurzeln (2.,4.,$\dots$ Wurzel) sind für negative Zahlen nicht definiert (Es sei denn man befindet sich in ℂ). Da negative Werte innerhalb einer Wurzel nicht definiert sind, gibt es auch hier eine Definitionslücke, für alle Werte an denen die Funktion einen negativen Wert der Wurzel wiedergeben würde.
+
+Wir betrachten die unterschiedlichen Untersuchungen getrennt, natürlich können die beiden Untersuchungen auch in einem Python-Programm abgearbeitet werden.
+
+# Der Wertebereich
+
+Der **[Wertebereich](wertebereich.qmd)** (auch Wertemenge genannt) einer Funktion **$f$** ist die Menge aller Werte, die diese Funktion annehmen kann, das heißt die Menge aller Werte welche durch Einsetzen aller Elemente aus dem Definitionsbereich bestimmt werden.
+Der Wertebereich einer Funktion kann aus verschiedenen Gründen eingeschränkt sein, es gibt den trivialen Fall, der auch untersucht werden kann, den wir hier aber der Übersichtlichkeit wegen wegfallen lassen. 
+Obendrein wird empfohlen erst die anderen Kapitel durchzuarbeiten, da für das Kapitel Wertebereich unter anderem **[Extremwerte](../Kapitel_4/extrempunkte.qmd)** wichtig sind, aber auch **[Asymptoten](../Kapitel_3/asymptoten.qmd)** und **[Verhalten der Funktion an Grenzen oder im Unendlichen](../Kapitel_3/globalverhalten.qmd)** beinhaltet.  
+
+Es gibt zum einen **strukturelle Eigenschaften der Funktion** welche den Wertebereich einschränken können. 
+Darunter fällt das Vorhandensein von **globalen Extremwerten** und **natürliche Wertegrenzen bestimmter Funktionstypen** (Exponentialfunktionen, Wurzelfunktionen, Betragsfunktionen, Trigonometrische Funktion, Periodische Funktionen)
+Auch spielt das **Verhalten der Funktion an Grenzen oder im Unendlichen** eine Rolle, dies bezieht sich vor allem auf **horizontale Asymptoten**, denen sich die Funktion annähert und die deshalb oft eine Grenze des Wertebereichs bilden. 
+
+# Quiz über Python Grundlagen
+
+```quizdown
+---
+locale: de
+---
+
+# Was gibt der folgende Python-Code aus?
+~~~python
+a = 10
+b = 2
+print(a / b)
+~~~
+- [x] 5.0
+- [ ] 5
+- [ ] 20
+- [ ] Error
+> Hinweis: Denk daran, was bei einer Division in Python immer passiert (Datentyp Float).
+
+# Wir haben eine Liste `zahlen = [10, 20, 30, 40]`. Wie greifst du auf den ersten Eintrag (10) zu?
+- [x] `zahlen[0]`
+- [ ] `zahlen[1]`
+- [ ] `zahlen(0)`
+- [ ] `zahlen.first()`
+> Hinweis: Python beginnt beim Zählen immer bei 0.
+
+# Was passiert hier mit der Liste?
+~~~python
+werte = [1, 2, 3]
+werte[1] = 99
+print(werte)
+~~~
+- [x] `[1, 99, 3]`
+- [ ] `[1, 2, 3, 99]`
+- [ ] `[99, 2, 3]`
+- [ ] Error
+> Hinweis: Wir überschreiben den Eintrag an Index 1 (das ist die zweite Zahl).
+
+# Bringe den Code in die richtige Reihenfolge, um SymPy zu importieren und x als Symbol zu definieren.
+1. import sympy
+2. x = sympy.symbols('x')
+3. f = x**2 + 1
+> Hinweis: Erst die Bibliothek laden, dann die Variable definieren.
+
+# Welche mathematische Operation wird hier durchgeführt: `y = x**3`?
+- [x] $x$ hoch 3 (Potenz)
+- [ ] $x$ mal 3 (Multiplikation)
+- [ ] $x$ plus 3 (Addition)
+- [ ] Wurzel aus $x$
+
+# Bringe die Zeilen in die richtige Reihenfolge, um eine einfache Funktion zu definieren.
+1. def meine_funktion(x):
+2.     ergebnis = x + 5
+3.     return ergebnis
+> Hinweis: Denk an den Funktionskopf (`def`), den Körper und die Rückgabe (`return`).
+
+# Welche zwei Gründe führen typischerweise zu einer Definitionslücke (in den reellen Zahlen)?
+- [x] Division durch Null
+- [x] Negative Zahl unter einer geraden Wurzel
+- [ ] Multiplikation mit Null
+- [ ] $x$ ist negativ bei einer Parabel
+
+# Was gibt dieser Code aus (Fallunterscheidung)?
+~~~python
+x = -5
+if x < 0:
+    print("Negativ")
+else:
+    print("Positiv")
+~~~
+- [x] "Negativ"
+- [ ] "Positiv"
+- [ ] Nichts
+- [ ] Error
+
+# Wie fügt man einer bestehenden Liste in Python ein Element hinzu?
+~~~python
+liste = [1, 2]
+# Was fehlt hier?
+print(liste) # Soll [1, 2, 3] sein
+~~~
+- [x] `liste.append(3)`
+- [ ] `liste.add(3)`
+- [ ] `liste + 3`
+- [ ] `liste.insert(3)`
+```
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+# The domain
+
+The **[domain](definitionsbereich.qmd)** of a function **$f$** is the set of all values for which the function is defined, i.e. for which a valid function value can be calculated.
+With Python and the library `SymPy`, we can try to determine the domain for different kinds of functions. `SymPy` lets us work with mathematical symbols and expressions, for example to solve equations.
+
+There are two reasons why a function can have a gap in its domain; both come from the limits of the operations involved.  
+First, **[rational functions](definitionsbereich.qmd#rational-functions)**, i.e. fractions. Division by zero is not defined, so a function has a gap wherever it would otherwise divide by 0.  
+Second, **[functions with roots](definitionsbereich.qmd#functions-with-roots)**: even roots (square root, 4th root, $\dots$) are not defined for negative numbers (unless you work in ℂ). Since negative values inside such a root are not defined, there is a gap here as well, for all values at which the expression under the root would be negative.
+
+We look at the two kinds of analysis separately; of course, both can also be carried out in one Python program.
+
+# The range
+
+The **[range](wertebereich.qmd)** (also called the image) of a function **$f$** is the set of all values the function can take, i.e. the set of all values obtained by plugging in every element of the domain.
+The range of a function can be restricted for various reasons. There is also the trivial case, which could be examined too, but we leave it out here to keep things clear. 
+In addition, we recommend working through the other chapters first, since the chapter on the range relies on **[extrema](../Kapitel_4/extrempunkte.qmd)**, but also on **[asymptotes](../Kapitel_3/asymptoten.qmd)** and the **[behavior of the function at boundaries or at infinity](../Kapitel_3/globalverhalten.qmd)**.  
+
+On the one hand, there are **structural properties of the function** that can restrict the range. 
+These include the existence of **global extrema** and **natural bounds of certain types of functions** (exponential functions, root functions, absolute value functions, trigonometric functions, periodic functions).
+The **behavior of the function at boundaries or at infinity** also plays a role, mainly because of **horizontal asymptotes**, which the function approaches and which therefore often form a bound of the range. 
+
+# Quiz on Python basics
+
+```quizdown
+---
+locale: en
+---
+
+# What does the following Python code print?
+~~~python
+a = 10
+b = 2
+print(a / b)
+~~~
+- [x] 5.0
+- [ ] 5
+- [ ] 20
+- [ ] Error
+> Hint: Remember what always happens with a division in Python (data type float).
+
+# We have a list `numbers = [10, 20, 30, 40]`. How do you access the first entry (10)?
+- [x] `numbers[0]`
+- [ ] `numbers[1]`
+- [ ] `numbers(0)`
+- [ ] `numbers.first()`
+> Hint: Python always starts counting at 0.
+
+# What happens to the list here?
+~~~python
+values = [1, 2, 3]
+values[1] = 99
+print(values)
+~~~
+- [x] `[1, 99, 3]`
+- [ ] `[1, 2, 3, 99]`
+- [ ] `[99, 2, 3]`
+- [ ] Error
+> Hint: We overwrite the entry at index 1 (that is the second number).
+
+# Put the code in the right order to import SymPy and define x as a symbol.
+1. import sympy
+2. x = sympy.symbols('x')
+3. f = x**2 + 1
+> Hint: First load the library, then define the variable.
+
+# Which mathematical operation is performed here: `y = x**3`?
+- [x] $x$ to the power of 3 (power)
+- [ ] $x$ times 3 (multiplication)
+- [ ] $x$ plus 3 (addition)
+- [ ] square root of $x$
+
+# Put the lines in the right order to define a simple function.
+1. def my_function(x):
+2.     result = x + 5
+3.     return result
+> Hint: Think of the function header (`def`), the body and the return (`return`).
+
+# Which two reasons typically lead to a gap in the domain (in the real numbers)?
+- [x] Division by zero
+- [x] A negative number under an even root
+- [ ] Multiplication by zero
+- [ ] $x$ is negative in a parabola
+
+# What does this code print (conditional)?
+~~~python
+x = -5
+if x < 0:
+    print("Negative")
+else:
+    print("Positive")
+~~~
+- [x] "Negative"
+- [ ] "Positive"
+- [ ] Nothing
+- [ ] Error
+
+# How do you add an element to an existing list in Python?
+~~~python
+my_list = [1, 2]
+# What is missing here?
+print(my_list) # should be [1, 2, 3]
+~~~
+- [x] `my_list.append(3)`
+- [ ] `my_list.add(3)`
+- [ ] `my_list + 3`
+- [ ] `my_list.insert(3)`
+```
+
+::::

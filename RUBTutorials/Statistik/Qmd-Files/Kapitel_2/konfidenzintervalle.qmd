@@ -1,0 +1,1433 @@
+---
+title: "2.4 Konfidenzintervalle"
+title-en: "2.4 Confidence Intervals"
+execute:
+  eval: false
+  echo: true
+  warning: false
+filters:
+  - ctm-assessment
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+```{python}
+#| include: true
+#| echo: false
+#| eval: true
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib
+import pandas as pd
+from scipy import stats
+
+matplotlib.rcParams['figure.dpi'] = 110
+matplotlib.rcParams['font.size'] = 11
+
+try:
+    from palmerpenguins import load_penguins
+    penguins = load_penguins()
+except Exception:
+    url = "https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"
+    penguins = pd.read_csv(url)
+```
+
+## Lernziele {.unnumbered}
+
+Am Ende dieses Unterkapitels kannst du:
+
+- erklären, was ein Konfidenzintervall ist – und was es **nicht** ist.
+- ein Konfidenzintervall für den Erwartungswert bei **bekannter** Varianz (z-Intervall) berechnen.
+- ein Konfidenzintervall für den Erwartungswert bei **unbekannter** Varianz (t-Intervall) berechnen.
+- die Einflüsse von Stichprobengröße $n$ und Konfidenzniveau $1-\alpha$ auf die Intervallbreite
+  beschreiben.
+
+---
+
+## Das Problem der Punktschätzung
+
+Ein Schätzwert allein sagt uns wenig. Wenn wir berechnen, dass das mittlere Körpergewicht der
+Adélie-Pinguine in unserem Datensatz $\bar{x} = 3700{,}7$ g beträgt, wissen wir noch nicht, wie
+weit dieser Wert vom **wahren** Mittelwert $\mu$ aller Adélie-Pinguine auf dem Palmer-Archipel entfernt ist.
+
+Was wir brauchen: ein **Intervall** um den Schätzwert, das zeigt, wie genau er ist. Es soll von einem
+Verfahren stammen, das den wahren Parameter in den allermeisten Fällen einfängt.
+
+---
+
+## Was ist ein Konfidenzintervall?
+
+::: {.callout-note icon=false}
+## Definition: Konfidenzintervall
+
+Ein **$(1-\alpha)$-Konfidenzintervall** (KI) für den Parameter $\theta$ ist ein zufälliges
+Intervall $[\hat{\theta}_u, \hat{\theta}_o]$, das den wahren Parameter mit Wahrscheinlichkeit
+$1-\alpha$ überdeckt:
+$$P(\hat{\theta}_u \leq \theta \leq \hat{\theta}_o) = 1-\alpha$$
+
+Die Größe $1-\alpha$ heißt **Konfidenzniveau** (z.B. 0,95 = 95 %).
+Die Größe $\alpha$ heißt **Irrtumswahrscheinlichkeit**.
+:::
+
+### Die richtige Interpretation
+
+Das Konfidenzintervall wird oft falsch interpretiert. Hier ist der entscheidende Unterschied:
+
+::: {.callout-caution}
+## Häufiges Missverständnis
+
+**Falsch:** "Mit 95 % Wahrscheinlichkeit liegt der wahre Parameter $\mu$ im Intervall $[a, b]$."
+
+**Warum falsch:** $\mu$ ist eine feste Größe, keine Zufallsvariable. Entweder liegt $\mu$ in $[a, b]$
+oder nicht – aber nach der Berechnung ist das kein Zufallsvorgang mehr.
+
+**Richtig:** "Das Verfahren, das dieses Intervall erzeugt, liefert bei 95 % aller möglichen
+Stichproben ein Intervall, das den wahren Parameter enthält."
+:::
+
+```{python}
+#| echo: false
+#| eval: true
+np.random.seed(42)
+true_mu = 3700.0
+true_sigma = 460.0
+n = 30
+alpha = 0.05
+m = 40  # Anzahl simulierter Stichproben
+
+fig, ax = plt.subplots(figsize=(10, 7))
+
+hits = 0
+for i in range(m):
+    sample = np.random.normal(true_mu, true_sigma, n)
+    x_bar = sample.mean()
+    se = true_sigma / np.sqrt(n)
+    z = stats.norm.ppf(1 - alpha/2)
+    lo, hi = x_bar - z*se, x_bar + z*se
+    contains = lo <= true_mu <= hi
+    if contains:
+        hits += 1
+    color = '#0a9396' if contains else '#ae2012'
+    ax.hlines(i, lo, hi, color=color, lw=2, alpha=0.8)
+    ax.plot(x_bar, i, 'o', color=color, ms=5)
+
+ax.axvline(true_mu, color='k', lw=2.5, ls='--', label=f'Wahrer Wert μ = {true_mu:.0f} g', zorder=5)
+ax.set_xlabel('Körpermasse (g)', fontsize=11)
+ax.set_ylabel('Stichprobe Nr.')
+ax.set_title(f'95%-Konfidenzintervalle für μ: {hits}/{m} = {hits/m*100:.0f}% enthalten μ\n'
+             f'(n = {n} je Stichprobe, σ bekannt)', fontsize=11)
+from matplotlib.lines import Line2D
+legend_elements = [
+    Line2D([0],[0], color='#0a9396', lw=2, label='KI enthält μ'),
+    Line2D([0],[0], color='#ae2012', lw=2, label='KI verfehlt μ'),
+    Line2D([0],[0], color='k', lw=2, ls='--', label='Wahrer Wert μ'),
+]
+ax.legend(handles=legend_elements, fontsize=9)
+plt.tight_layout()
+plt.show()
+```
+
+Jede der 40 Stichproben ergibt ein anderes Konfidenzintervall. Etwa 95 % davon (türkise Linien)
+enthalten den wahren Parameter – ein paar (rote Linien) verfehlen ihn.
+
+---
+
+## KI für den Erwartungswert: Varianz bekannt (z-Intervall)
+
+### Herleitung
+
+Nehmen wir an, die Daten $X_1, \ldots, X_n$ sind normalverteilt mit bekannter Varianz $\sigma^2$.
+Das Stichprobenmittel ist dann ebenfalls normalverteilt:
+$$\overline{X}_n \sim \mathcal{N}\!\left(\mu, \frac{\sigma^2}{n}\right)$$
+
+Durch **Standardisierung** erhalten wir eine Größe mit bekannter Standardnormalverteilung:
+$$Z = \frac{\overline{X}_n - \mu}{\sigma/\sqrt{n}} \sim \mathcal{N}(0, 1)$$
+
+Für ein symmetrisches Intervall um 0 gilt mit dem $(1-\alpha/2)$-Quantil $z_{1-\alpha/2}$:
+$$P\!\left(-z_{1-\alpha/2} \leq Z \leq z_{1-\alpha/2}\right) = 1-\alpha$$
+
+Einsetzen und Umformen nach $\mu$ ergibt das Konfidenzintervall:
+
+::: {.callout-note icon=false}
+## z-Konfidenzintervall für $\mu$ (Varianz $\sigma^2$ bekannt)
+
+$$\left[\overline{X}_n - z_{1-\alpha/2} \cdot \frac{\sigma}{\sqrt{n}},\;
+         \overline{X}_n + z_{1-\alpha/2} \cdot \frac{\sigma}{\sqrt{n}}\right]$$
+
+Wichtige Quantile: $z_{0{,}975} = 1{,}960$ (für 95%-KI) und $z_{0{,}995} = 2{,}576$ (für 99%-KI).
+:::
+
+### Beispiel: Schnabellänge der Pinguine
+
+Wir schätzen die mittlere Schnabellänge aller Adélie-Pinguine. Wir nehmen an, dass $\sigma = 2{,}5$ mm bekannt ist.
+
+```{pyodide-python}
+import pandas as pd
+from scipy import stats
+import numpy as np
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+bill = penguins[penguins['species'] == 'Adelie']['bill_length_mm'].dropna()
+
+n = len(bill)
+x_bar = bill.mean()
+sigma = 2.5       # angenommene bekannte Standardabweichung
+alpha = 0.05      # Irrtumswahrscheinlichkeit für 95%-KI
+
+z = stats.norm.ppf(1 - alpha/2)   # z_{0.975} = 1.96
+margin = z * sigma / np.sqrt(n)
+
+lo, hi = x_bar - margin, x_bar + margin
+
+print(f"n = {n},  x̄ = {x_bar:.2f} mm")
+print(f"z = {z:.3f}")
+print(f"Halbbreite Δ = {margin:.2f} mm")
+print(f"95%-KI: [{lo:.2f}, {hi:.2f}] mm")
+```
+
+```{pyodide-python}
+import pandas as pd
+from scipy import stats
+import numpy as np
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+bill = penguins[penguins['species'] == 'Adelie']['bill_length_mm'].dropna()
+
+# Alternativ: scipy.stats.norm.interval
+n = len(bill)
+x_bar = bill.mean()
+sigma = 2.5
+
+lo, hi = stats.norm.interval(confidence=0.95, loc=x_bar, scale=sigma/np.sqrt(n))
+print(f"95%-KI: [{lo:.2f}, {hi:.2f}] mm")
+```
+
+### Von Hand
+
+Eine Stichprobe von $n = 25$ Adélie-Pinguinen hat die mittlere Schnabellänge $\bar{x} = 38{,}8$ mm, die Standardabweichung $\sigma = 2{,}5$ mm sei bekannt. Berechne Standardfehler, Halbbreite $\Delta$ und das 95%-KI (auf zwei Nachkommastellen). Wie viele Tiere braucht man mindestens, damit die Halbbreite höchstens $0{,}5$ mm beträgt?
+
+```{math-exercise}
+#| label: ki-hand
+#| caption: z-Konfidenzintervall von Hand
+#| mode: numeric
+#| tolerance: 0.011
+#| partial-credit: true
+#| field-labels: SE, Δ, untere Grenze, obere Grenze, n
+$\text{SE} =$ _[0.5] mm, $\Delta =$ _[0.98] mm, 95%-KI: $[$ _[37.82] $,$ _[39.78] $]$ mm, $n \geq$ _[97]
+```
+
+::: {.callout-tip collapse="true" title="Lösungsweg"}
+- $\text{SE} = \sigma/\sqrt{n} = 2{,}5/5 = 0{,}5$ mm
+- $\Delta = z_{0{,}975} \cdot \text{SE} = 1{,}96 \cdot 0{,}5 = 0{,}98$ mm
+- KI: $38{,}8 \pm 0{,}98 = [37{,}82;\ 39{,}78]$ mm
+- $1{,}96 \cdot 2{,}5/\sqrt{n} \leq 0{,}5 \iff \sqrt{n} \geq 9{,}8 \iff n \geq 96{,}04$, also mindestens $97$ Tiere (aufrunden, sonst wird die Bedingung knapp verfehlt)
+:::
+
+---
+
+## KI für den Erwartungswert: Varianz unbekannt (t-Intervall)
+
+### Das Problem
+
+In der Praxis kennen wir $\sigma$ meistens **nicht**. Wir müssen $\sigma$ durch $s$ (die
+Stichprobenstandardabweichung) ersetzen. Aber dann ist die standardisierte Größe **nicht mehr**
+standardnormalverteilt:
+$$T = \frac{\overline{X}_n - \mu}{s/\sqrt{n}} \sim t_{n-1}$$
+
+Sie folgt einer **t-Verteilung mit $n-1$ Freiheitsgraden**. Das berücksichtigt die zusätzliche
+Unsicherheit durch das Schätzen von $\sigma$.
+
+### Die t-Verteilung
+
+```{python}
+#| echo: false
+#| eval: true
+x = np.linspace(-5, 5, 500)
+
+fig, ax = plt.subplots(figsize=(8, 4))
+for df, col, lab in [(3,'#ca6702',f't(3)'), (10,'#0a9396',f't(10)'),
+                      (30,'#005f73','t(30)'), (np.inf,'#ae2012','N(0,1)')]:
+    if df == np.inf:
+        y = stats.norm.pdf(x)
+    else:
+        y = stats.t.pdf(x, df)
+    ax.plot(x, y, color=col, lw=2, label=lab)
+
+ax.set_xlabel('t'); ax.set_ylabel('Dichte')
+ax.set_title('t-Verteilungen im Vergleich zur Standardnormalverteilung')
+ax.legend(); ax.set_xlim(-5, 5)
+plt.tight_layout()
+plt.show()
+```
+
+Die t-Verteilung hat **schwerere Ränder** als die Normalverteilung – das KI wird etwas breiter.
+Je mehr Freiheitsgrade ($= n-1$), desto näher liegt die t-Verteilung an der Normalverteilung.
+Ab $n \geq 30$ ist der Unterschied meist klein.
+
+::: {.callout-note icon=false}
+## t-Konfidenzintervall für $\mu$ (Varianz $\sigma^2$ unbekannt)
+
+$$\left[\overline{X}_n - t_{n-1;\,1-\alpha/2} \cdot \frac{s}{\sqrt{n}},\;
+         \overline{X}_n + t_{n-1;\,1-\alpha/2} \cdot \frac{s}{\sqrt{n}}\right]$$
+
+Dabei ist $t_{n-1;\,1-\alpha/2}$ das $(1-\alpha/2)$-Quantil der t-Verteilung mit $n-1$
+Freiheitsgraden.
+:::
+
+::: {.callout-tip}
+## Wann z, wann t?
+
+| Situation | Verfahren |
+|-----------|-----------|
+| $\sigma$ bekannt, Normalverteilung | z-Intervall |
+| $\sigma$ unbekannt, Normalverteilung | t-Intervall |
+| $\sigma$ unbekannt, großes $n$ ($\geq 30$) | t-Intervall (≈ z-Intervall) |
+| Kleine Stichprobe, starke Abweichung von Normalverteilung | Nichtparametrische Methoden (hier nicht behandelt) |
+
+**In der Praxis:** Fast immer wird das t-Intervall verwendet, da $\sigma$ selten bekannt ist.
+:::
+
+### Beispiel: Körpermasse aller Pinguine
+
+```{pyodide-python}
+import pandas as pd
+from scipy import stats
+import numpy as np
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+masse = penguins['body_mass_g'].dropna()
+
+n = len(masse)
+x_bar = masse.mean()
+s = masse.std()        # Stichproben-SD (mit n-1)
+alpha = 0.05           # 95%-KI
+
+t_crit = stats.t.ppf(1 - alpha/2, df=n-1)
+margin = t_crit * s / np.sqrt(n)
+
+print(f"n = {n},  x̄ = {x_bar:.1f} g,  s = {s:.1f} g")
+print(f"t-Quantil (df={n-1}): {t_crit:.4f}")
+print(f"Halbbreite Δ = {margin:.1f} g")
+print(f"95%-KI: [{x_bar - margin:.1f}, {x_bar + margin:.1f}] g")
+```
+
+```{pyodide-python}
+import pandas as pd
+from scipy import stats
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+masse = penguins['body_mass_g'].dropna()
+
+# Direkt mit scipy.stats.t.interval
+lo, hi = stats.t.interval(confidence=0.95, df=len(masse)-1,
+                           loc=masse.mean(), scale=masse.sem())
+print(f"95%-KI für das mittlere Körpergewicht aller Pinguine: [{lo:.1f}, {hi:.1f}] g")
+```
+
+::: {.callout-python appearance="minimal"}
+**Python-Tipp:** `masse.sem()` berechnet direkt den geschätzten Standardfehler
+$\hat{\text{SE}} = s/\sqrt{n}$.
+:::
+
+---
+
+## Einflüsse auf die Intervallbreite
+
+Die Breite eines Konfidenzintervalls hängt von drei Faktoren ab:
+
+$$\text{Breite} = 2 \cdot t_{n-1;\,1-\alpha/2} \cdot \frac{s}{\sqrt{n}}$$
+
+```{python}
+#| echo: false
+#| eval: true
+np.random.seed(99)
+true_mu = 3700.0
+true_sigma = 460.0
+
+fig, axes = plt.subplots(1, 3, figsize=(12, 4.5))
+
+# 1. Stichprobengröße
+ax = axes[0]
+ns = [10, 20, 30, 50, 100, 200]
+widths = []
+for n in ns:
+    t = stats.t.ppf(0.975, df=n-1)
+    w = 2 * t * true_sigma / np.sqrt(n)
+    widths.append(w)
+ax.plot(ns, widths, 'o-', color='#0a9396', lw=2)
+ax.set_xlabel('Stichprobenumfang n')
+ax.set_ylabel('KI-Breite (g)')
+ax.set_title('Einfluss von n\n(α = 0,05, σ = 460 g fest)')
+ax.grid(True, alpha=0.3)
+
+# 2. Konfidenzniveau
+ax2 = axes[1]
+alphas = [0.20, 0.10, 0.05, 0.02, 0.01]
+conf_levels = [1 - a for a in alphas]
+widths2 = [2 * stats.norm.ppf(1 - a/2) * true_sigma / np.sqrt(50) for a in alphas]
+ax2.plot([cl*100 for cl in conf_levels], widths2, 'o-', color='#ae2012', lw=2)
+ax2.set_xlabel('Konfidenzniveau (1−α) in %')
+ax2.set_ylabel('KI-Breite (g)')
+ax2.set_title('Einfluss des Konfidenzniveaus\n(n = 50, σ = 460 g fest)')
+ax2.grid(True, alpha=0.3)
+
+# 3. Standardabweichung (Datenvariabilität)
+ax3 = axes[2]
+sigmas = [100, 200, 300, 400, 500, 600]
+widths3 = [2 * stats.norm.ppf(0.975) * s / np.sqrt(50) for s in sigmas]
+ax3.plot(sigmas, widths3, 'o-', color='#ca6702', lw=2)
+ax3.set_xlabel('Standardabweichung σ (g)')
+ax3.set_ylabel('KI-Breite (g)')
+ax3.set_title('Einfluss der Datenvariabilität\n(n = 50, α = 0,05 fest)')
+ax3.grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.show()
+```
+
+| Einfluss | Wirkung auf KI-Breite |
+|----------|----------------------|
+| Größeres $n$ | Schmaleres KI (Faktor $1/\sqrt{n}$) |
+| Höheres Konfidenzniveau $1-\alpha$ | Breiteres KI (größeres Quantil) |
+| Größere Streuung $\sigma$ | Breiteres KI (direkt proportional) |
+
+---
+
+## Simulation: Viele Konfidenzintervalle
+
+### Konfidenzintervalle zum Anfassen {.unnumbered}
+
+Jede Zeile ist eine Stichprobe von $n$ Pinguinen aus einer Population mit $\mu = 3700$ g und bekanntem $\sigma = 460$ g, dazu ihr z-Konfidenzintervall. Türkis heißt: Das Intervall enthält $\mu$, rot: Es verfehlt $\mu$. Mit den Schiebereglern stellst du $n$ und das Konfidenzniveau $1-\alpha$ ein, der Knopf zieht 50 neue Stichproben.
+
+```{.jsxgraph width="100" height="90" unit="%" style="border:1px solid #ccc; border-radius:8px;"}
+document.body.style.background = '#fff';
+const board = JXG.JSXGraph.initBoard(BOARDID, {
+  boundingbox: [2400, 68, 5000, -5], axis: false, showCopyright: false,
+  showNavigation: false, pan: {enabled: false}, zoom: {enabled: false}
+});
+board.create('axis', [[0, -0.5], [1, -0.5]], {
+  ticks: {insertTicks: false, ticksDistance: 500, minorTicks: 4, label: {offset: [-14, -14]}}
+});
+const fmt = (x, d) => x.toFixed(d).replace('.', ',');
+// Zufallszahlen mit festem Startwert: Beim Laden sehen alle dieselben 50 Stichproben
+let seed = 20242;
+const rnd = () => {
+  seed = (seed + 0x6D2B79F5) | 0;
+  let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+};
+const normal = () => Math.sqrt(-2 * Math.log(1 - rnd())) * Math.cos(2 * Math.PI * rnd());
+// Verteilungsfunktion und Quantil der Standardnormalverteilung
+const erf = x => {
+  const v = Math.sign(x), a = Math.abs(x), t = 1 / (1 + 0.3275911 * a);
+  return v * (1 - ((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-a * a));
+};
+const Phi = x => 0.5 * (1 + erf(x / Math.SQRT2));
+const quantil = p => { let a = 0, b = 6; for (let k = 0; k < 50; k++) { const m = (a + b) / 2; if (Phi(m) < p) a = m; else b = m; } return (a + b) / 2; };
+
+const MU = 3700, SIGMA = 460, M = 50;
+let Z = Array.from({length: M}, normal);   // Abstand von x̄ zu μ in Standardfehlern
+const sl = {withLabel: false, snapWidth: 1, fillColor: '#ae2012', strokeColor: '#ae2012',
+  baseline: {strokeColor: '#999'}, highline: {strokeColor: '#ae2012'}};
+const nS = board.create('slider', [[2750, 64], [3550, 64], [5, 30, 100]], sl);
+const nv = board.create('slider', [[2750, 60], [3550, 60], [80, 95, 99]], sl);
+const text = {fixed: true, highlight: false, fontSize: 14, anchorY: 'middle'};
+board.create('text', [2450, 64, 'n'], text);
+board.create('text', [2450, 60, '1−α'], text);
+board.create('text', [3620, 64, () => fmt(nS.Value(), 0)], text);
+board.create('text', [3620, 60, () => fmt(nv.Value(), 0) + ' %'], text);
+
+const zcache = {};
+const zq = () => { const v = nv.Value(); if (!(v in zcache)) zcache[v] = quantil(0.5 + v / 200); return zcache[v]; };
+const se = () => SIGMA / Math.sqrt(nS.Value());
+const xq = i => MU + Z[i] * se();
+const treffer = i => Math.abs(Z[i]) <= zq();
+for (let i = 0; i < M; i++) {
+  const farbe = () => treffer(i) ? '#0a9396' : '#ae2012';
+  board.create('segment', [[() => xq(i) - zq() * se(), i + 1], [() => xq(i) + zq() * se(), i + 1]],
+    {strokeColor: farbe, strokeWidth: 2, fixed: true, highlight: false});
+  board.create('point', [() => xq(i), i + 1],
+    {name: '', size: 1.5, strokeColor: farbe, fillColor: farbe, fixed: true, highlight: false, showInfobox: false});
+}
+board.create('segment', [[MU, 0], [MU, M + 1]],
+  {strokeColor: '#000', dash: 2, strokeWidth: 2, fixed: true, highlight: false});
+board.create('text', [MU, M + 2.3, 'μ = 3700 g'], Object.assign({}, text, {anchorX: 'middle', fontSize: 13}));
+const anzahl = () => Z.filter((_, i) => treffer(i)).length;
+board.create('text', [2450, 56, () => 'Treffer: ' + anzahl() + ' von ' + M + ' (' + 2 * anzahl() + ' %)'],
+  Object.assign({}, text, {color: '#0a9396'}));
+board.create('button', [3950, 64, 'Neue Stichproben', () => { Z = Array.from({length: M}, normal); board.update(); }]);
+board.update();
+```
+
+Probiere aus:
+
+- Drücke mehrmals auf „Neue Stichproben“. Um welchen Wert schwankt die Trefferzahl?
+- Schiebe $n$ von 30 auf 100. Was passiert mit den Intervallen, was mit der Trefferzahl?
+- Stelle das Niveau auf 80 % und dann auf 99 %.
+
+::: {.callout-tip collapse="true" title="Was dahintersteckt"}
+Bei 95 % sind im Mittel $47{,}5$ von 50 Intervallen Treffer. Mal sind es 50, mal 45, das ist Zufall. Ein größeres $n$ macht alle Intervalle schmaler, ändert die Trefferzahl aber **nicht**: Die Mittelwerte rücken im selben Maß ($\sqrt{n}$) an $\mu$ heran, wie die Intervalle schrumpfen. Die Trefferquote hängt nur vom Niveau ab. Ein höheres Niveau macht jedes Intervall breiter, dafür verfehlen weniger. Mehr Sicherheit kostet also Genauigkeit, und nur mehr Daten helfen gegen beides.
+:::
+
+Dasselbe als Python-Code zum Verändern:
+
+```{pyodide-python}
+import numpy as np
+from scipy import stats
+import matplotlib.pyplot as plt
+
+# Experiment: 50 simulierte Stichproben, jedes KI prüfen
+np.random.seed(42)
+true_mu = 3700.0    # wahres Mittelgewicht (Simulation)
+true_sigma = 460.0  # wahre Streuung (bekannt)
+n = 30              # Stichprobengröße
+alpha = 0.05        # 95%-KI
+m = 50              # Anzahl der Stichproben
+
+fig, ax = plt.subplots(figsize=(10, 7))
+hits = 0
+
+for i in range(m):
+    sample = np.random.normal(true_mu, true_sigma, n)
+    x_bar = sample.mean()
+    lo, hi = stats.norm.interval(0.95, loc=x_bar, scale=true_sigma/np.sqrt(n))
+    contains = (lo <= true_mu <= hi)
+    if contains: hits += 1
+    col = '#0a9396' if contains else '#ae2012'
+    ax.hlines(i, lo, hi, color=col, lw=2, alpha=0.85)
+    ax.plot(x_bar, i, 'o', color=col, ms=5)
+
+ax.axvline(true_mu, color='k', lw=2, ls='--', label=f'μ = {true_mu:.0f} g')
+ax.set_xlabel('Körpermasse (g)')
+ax.set_title(f'95%-KIs: {hits}/{m} ({hits/m*100:.0f}%) enthalten μ')
+ax.legend()
+plt.show()
+```
+
+---
+
+## Praxisbeispiel: Konfidenzintervalle nach Pinguinart
+
+```{pyodide-python}
+import pandas as pd
+from scipy import stats
+import numpy as np
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+
+print(f"{'Art':<12} {'n':>5} {'x̄ (g)':>10} {'SE':>8} {'95%-KI':>25}")
+print("-" * 65)
+
+for species in ['Adelie', 'Chinstrap', 'Gentoo']:
+    masse = penguins[penguins['species'] == species]['body_mass_g'].dropna()
+    n = len(masse)
+    x_bar = masse.mean()
+    se = masse.sem()   # s / sqrt(n)
+    lo, hi = stats.t.interval(0.95, df=n-1, loc=x_bar, scale=se)
+    print(f"{species:<12} {n:>5} {x_bar:>10.1f} {se:>8.1f}  [{lo:>7.1f}, {hi:>7.1f}]")
+```
+
+```{python}
+#| echo: false
+#| eval: true
+fig, ax = plt.subplots(figsize=(7, 4))
+
+species_list = ['Adelie', 'Chinstrap', 'Gentoo']
+colors = ['#0a9396', '#ae2012', '#ca6702']
+
+for i, (spec, col) in enumerate(zip(species_list, colors)):
+    masse = penguins[penguins['species'] == spec]['body_mass_g'].dropna()
+    n = len(masse)
+    x_bar = masse.mean()
+    se = masse.sem()
+    lo, hi = stats.t.interval(0.95, df=n-1, loc=x_bar, scale=se)
+    ax.errorbar(x_bar, i, xerr=x_bar-lo, fmt='o', color=col, capsize=6,
+                ms=8, lw=2, label=f'{spec} (n={n})')
+
+ax.set_yticks(range(3))
+ax.set_yticklabels(species_list)
+ax.set_xlabel('Körpermasse (g)')
+ax.set_title('95%-Konfidenzintervalle für die mittlere Körpermasse\nder drei Pinguinarten')
+ax.legend(fontsize=9)
+ax.grid(True, axis='x', alpha=0.3)
+plt.tight_layout()
+plt.show()
+```
+
+Das Intervall der Gentoo-Pinguine liegt weit rechts und überschneidet sich mit keinem anderen:
+Gentoos sind im Mittel deutlich schwerer. Die Intervalle von Adelie ($[3627;\ 3774]$ g) und
+Chinstrap ($[3640;\ 3826]$ g) überschneiden sich dagegen stark. Einen Unterschied zwischen diesen
+beiden Arten geben die Daten nicht her. Wie man Unterschiede formal prüft, zeigen die
+Hypothesentests (ab 2.5).
+
+::: {.callout-caution}
+## Vorsicht beim Umkehrschluss
+
+Überschneiden sich zwei Konfidenzintervalle **nicht**, ist das ein starkes Indiz für einen echten
+Unterschied. Überschneiden sie sich **leicht**, kann der Unterschied trotzdem signifikant sein.
+Für die Differenz zweier Mittelwerte braucht man ein eigenes Intervall oder einen Test.
+:::
+
+:::: {.theorem .exercise}
+#### Aufgabe: Konfidenzintervall für die Schnabellänge
+
+Berechne ein Konfidenzintervall für die mittlere Schnabellänge der Gentoo-Pinguine und untersuche, wie das Konfidenzniveau die Intervallbreite beeinflusst.
+
+**Aufgabe:**
+
+1. Berechne das 95%-Konfidenzintervall für die mittlere Schnabellänge (`bill_length_mm`) der Gentoo-Pinguine und speichere es als `ki95 = (untere Grenze, obere Grenze)`.
+2. Berechne die Breite des 90%- und des 99%-Intervalls und speichere sie in `breite90` und `breite99`. Wie verändert sich die Breite?
+3. (ohne Test) Wie würde sich das 95%-KI verändern, wenn du den Stichprobenumfang verdoppelst?
+
+**Überprüfen** testet `ki95`, `breite90` und `breite99`.
+
+```{py-exercise}
+#| label: ki-gentoo
+#| caption: Konfidenzintervall für die Schnabellänge
+#| show-test-hints: false
+import numpy as np
+import pandas as pd
+from scipy import stats
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+gentoo_bill = penguins[penguins['species'] == 'Gentoo']['bill_length_mm'].dropna()
+n = len(gentoo_bill)
+
+ki95 = None       # Dein Code hier: (untere Grenze, obere Grenze)
+breite90 = None
+breite99 = None
+print(ki95, breite90, breite99)
+
+## TESTS ##
+assert ki95 is not None and hasattr(ki95, '__len__') and len(ki95) == 2, "ki95 sollte zwei Zahlen enthalten: (untere Grenze, obere Grenze)."
+assert ki95 is None or not hasattr(ki95, '__len__') or len(ki95) != 2 or abs(float(ki95[1]) - float(ki95[0]) - 12.20) > 0.1, "Dieses Intervall ist viel zu breit: Als scale gehört der Standardfehler s/√n hinein, nicht die Standardabweichung s."
+assert ki95 is not None and hasattr(ki95, '__len__') and len(ki95) == 2 and abs(float(ki95[0]) - 46.955) < 0.003 and abs(float(ki95[1]) - 48.055) < 0.003, "ki95 stimmt nicht: Erwartet ist etwa [46,95; 48,05] mm (t-Intervall mit n − 1 Freiheitsgraden)."
+assert breite90 is not None and breite99 is not None, "Berechne auch breite90 und breite99 (jeweils obere minus untere Grenze)."
+assert breite99 is None or abs(float(breite99) - 1.4316) > 0.003, "breite99 passt zum z-Intervall. σ ist hier unbekannt, also gehört die t-Verteilung mit n − 1 Freiheitsgraden hinein."
+assert breite90 is not None and breite99 is not None and abs(float(breite90) - 0.9211) < 0.003 and abs(float(breite99) - 1.4543) < 0.003, "Die Breiten stimmen nicht: Erwartet sind etwa 0,92 mm (90 %) und 1,45 mm (99 %)."
+```
+
+::: {.callout-tip title="Tipp 1" collapse="true"}
+Da σ unbekannt ist, verwende das t-Intervall: `stats.t.interval(confidence=0.95, df=n-1, loc=x_bar, scale=se)` mit `se = gentoo_bill.sem()` (Standardfehler). Ändere `confidence=` auf 0.90 bzw. 0.99 für die anderen Niveaus. Die Intervallbreite = `hi - lo`.
+:::
+
+::: {.callout-tip title="Tipp 2" collapse="true"}
+Um den Effekt des Stichprobenumfangs zu sehen: Berechne die KI-Breite theoretisch mit $\text{Breite} = 2 \cdot t_{n-1;\,0{,}975} \cdot s/\sqrt{n}$. Bei doppeltem $n$ wird der Nenner um Faktor $\sqrt{2} \approx 1{,}41$ größer – das KI wird schmaler, aber nicht halb so breit.
+:::
+
+::: {.callout-caution title="Lösung" collapse="true"}
+```python
+x_bar, se = gentoo_bill.mean(), gentoo_bill.sem()
+
+ki95 = stats.t.interval(confidence=0.95, df=n-1, loc=x_bar, scale=se)
+lo, hi = stats.t.interval(confidence=0.90, df=n-1, loc=x_bar, scale=se)
+breite90 = hi - lo
+lo, hi = stats.t.interval(confidence=0.99, df=n-1, loc=x_bar, scale=se)
+breite99 = hi - lo
+```
+
+95%-KI: $[46{,}95;\ 48{,}05]$ mm (Breite $1{,}10$ mm), 90 %: $0{,}92$ mm, 99 %: $1{,}45$ mm. Mehr Sicherheit, breiteres Intervall. Bei doppeltem $n$ wird das 95%-KI etwa um den Faktor $\sqrt{2}$ schmaler, also rund $1{,}10/1{,}41 \approx 0{,}78$ mm breit.
+:::
+::::
+
+---
+
+## Zusammenfassung
+
+| Methode | Voraussetzung | Formel |
+|---------|---------------|--------|
+| **z-Intervall** | $\sigma$ bekannt, Normalverteilung | $\bar{x} \pm z_{1-\alpha/2} \cdot \sigma/\sqrt{n}$ |
+| **t-Intervall** | $\sigma$ unbekannt, Normalverteilung | $\bar{x} \pm t_{n-1;\,1-\alpha/2} \cdot s/\sqrt{n}$ |
+
+**Korrekte Interpretation:** Ein 95%-Konfidenzintervall bedeutet, dass das Verfahren bei 95 % aller
+möglichen Stichproben ein Intervall liefert, das den wahren Parameter enthält. Für ein konkretes
+realisiertes Intervall $[a, b]$ kann man keine Wahrscheinlichkeitsaussage mehr machen.
+
+---
+
+## Wissensüberprüfung
+
+```{quizdown}
+---
+locale: de
+primaryColor: '#0a9396'
+shuffleQuestions: false
+shuffleAnswers: true
+---
+
+### Welche Aussage beschreibt die korrekte Interpretation eines 95%-Konfidenzintervalls?
+
+1. [ ] Mit 95% Wahrscheinlichkeit liegt der wahre Parameter im berechneten Intervall.
+1. [x] Bei 95% aller Stichproben, die mit diesem Verfahren ausgewertet werden, enthält das resultierende Intervall den wahren Parameter.
+    > Richtig! Der Parameter ist fest – der Zufall liegt im Verfahren, nicht im Parameter.
+1. [ ] 95% der Daten liegen innerhalb des Intervalls.
+1. [ ] Das Intervall ist zu 95% korrekt berechnet worden.
+
+### Wann verwendet man das t-Intervall statt des z-Intervalls?
+
+1. [x] Wenn die Populationsvarianz σ² unbekannt ist und durch s² geschätzt werden muss.
+    > Richtig! Die zusätzliche Unsicherheit durch das Schätzen von σ führt zur t-Verteilung.
+1. [ ] Wenn der Stichprobenumfang sehr groß ist.
+1. [ ] Wenn die Daten nicht normalverteilt sind.
+1. [ ] Wenn man genauere Ergebnisse erhalten möchte.
+
+### Ein 95%-KI für μ hat die Breite 20 g. Wie breit ist das 99%-KI (bei sonst gleichen Bedingungen)?
+
+1. [ ] Schmaler als 20 g.
+1. [ ] Ebenfalls 20 g.
+1. [x] Breiter als 20 g.
+    > Richtig! Ein höheres Konfidenzniveau erfordert ein breiteres Intervall, da man mehr Parameterwerte einschließen muss. Beim z-Intervall sind es genau $20 \cdot 2{,}576/1{,}96 \approx 26{,}3$ g.
+1. [ ] Genau 40 g (doppelt so breit).
+
+### Was passiert mit einem 95%-Konfidenzintervall, wenn man den Stichprobenumfang vervierfacht?
+
+1. [ ] Das Intervall wird viermal so schmal.
+1. [x] Das Intervall halbiert sich (wird halb so breit).
+    > Richtig! Die Breite ist proportional zu 1/√n. √(4n) = 2√n → halbierte Breite.
+1. [ ] Das Intervall bleibt gleich breit.
+1. [ ] Das Intervall wird viermal so breit.
+
+### Ein Forscher berechnet für eine Stichprobe das 95%-KI [100, 120]. Er behauptet: "Der wahre Parameter liegt mit 95% Wahrscheinlichkeit zwischen 100 und 120." Was ist daran falsch?
+
+1. [ ] Das Intervall ist falsch berechnet.
+1. [ ] Ein 95%-KI kann keine solche Aussage erlauben.
+1. [x] Nach der Berechnung ist das Intervall [100, 120] deterministisch – entweder liegt μ darin oder nicht. Die 95% beziehen sich auf das Verfahren, nicht auf das realisierte Intervall.
+    > Richtig! Die Wahrscheinlichkeitsaussage gilt vor der Berechnung für das zufällige Intervall.
+1. [ ] Man müsste das t-Intervall statt das z-Intervall verwenden.
+
+### Die t-Verteilung unterscheidet sich von der Standardnormalverteilung durch:
+
+1. [ ] Einen anderen Mittelwert (nicht 0).
+1. [x] Schwerere Ränder (mehr Wahrscheinlichkeitsmasse in den Extrembereichen), was bei kleinen n zu breiteren Konfidenzintervallen führt.
+    > Richtig! Die t-Verteilung hat schwerere Ränder, die mit wachsendem n (Freiheitsgraden) gegen die Normalverteilung konvergieren.
+1. [ ] Eine andere Skalierung auf der x-Achse.
+1. [ ] Keine Symmetrie.
+
+### Zwei Pinguinarten haben 95%-Konfidenzintervalle, die sich nicht überschneiden. Was lässt sich daraus schließen?
+
+1. [ ] Gar nichts – KIs erlauben keine Gruppenvergleiche.
+1. [x] Die wahren Mittelwerte der beiden Gruppen unterscheiden sich wahrscheinlich statistisch signifikant.
+    > Richtig! Nicht-überschneidende KIs sind ein starkes Indiz für statistisch signifikante Unterschiede. Umgekehrt gilt das nicht: Leicht überschneidende KIs schließen einen signifikanten Unterschied nicht aus. Genaueres liefern Hypothesentests (ab 2.5).
+1. [ ] Die Stichproben sind zu klein für einen Vergleich.
+1. [ ] Es gibt keine Unterschiede zwischen den Gruppen.
+```
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+```{python}
+#| include: true
+#| echo: false
+#| eval: true
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib
+import pandas as pd
+from scipy import stats
+
+matplotlib.rcParams['figure.dpi'] = 110
+matplotlib.rcParams['font.size'] = 11
+
+try:
+    from palmerpenguins import load_penguins
+    penguins = load_penguins()
+except Exception:
+    url = "https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"
+    penguins = pd.read_csv(url)
+```
+
+## Learning objectives {.unnumbered #lernziele}
+
+By the end of this section you can:
+
+- explain what a confidence interval is – and what it is **not**.
+- compute a confidence interval for the expected value with **known** variance (z-interval).
+- compute a confidence interval for the expected value with **unknown** variance (t-interval).
+- describe how the sample size $n$ and the confidence level $1-\alpha$ affect the width of the
+  interval.
+
+---
+
+## The problem with point estimates {#das-problem-der-punktschätzung}
+
+An estimate on its own tells us little. If we compute that the mean body mass of the Adélie
+penguins in our dataset is $\bar{x} = 3700.7$ g, we still do not know how far this value is from
+the **true** mean $\mu$ of all Adélie penguins on the Palmer Archipelago.
+
+What we need: an **interval** around the estimate that shows how precise it is. It should come
+from a procedure that captures the true parameter in the vast majority of cases.
+
+---
+
+## What is a confidence interval? {#was-ist-ein-konfidenzintervall}
+
+::: {.callout-note icon=false}
+## Definition: confidence interval
+
+A **$(1-\alpha)$ confidence interval** (CI) for the parameter $\theta$ is a random interval
+$[\hat{\theta}_l, \hat{\theta}_u]$ that covers the true parameter with probability $1-\alpha$:
+$$P(\hat{\theta}_l \leq \theta \leq \hat{\theta}_u) = 1-\alpha$$
+
+The quantity $1-\alpha$ is called the **confidence level** (e.g. 0.95 = 95 %).
+The quantity $\alpha$ is called the **error probability**.
+:::
+
+### The correct interpretation {#die-richtige-interpretation}
+
+The confidence interval is often misinterpreted. Here is the crucial difference:
+
+::: {.callout-caution}
+## Common misconception
+
+**Wrong:** "With 95 % probability the true parameter $\mu$ lies in the interval $[a, b]$."
+
+**Why it is wrong:** $\mu$ is a fixed quantity, not a random variable. Either $\mu$ lies in
+$[a, b]$ or it does not – once the interval has been computed, nothing random is left.
+
+**Right:** "The procedure that produces this interval yields, for 95 % of all possible samples,
+an interval that contains the true parameter."
+:::
+
+```{python}
+#| echo: false
+#| eval: true
+np.random.seed(42)
+true_mu = 3700.0
+true_sigma = 460.0
+n = 30
+alpha = 0.05
+m = 40  # number of simulated samples
+
+fig, ax = plt.subplots(figsize=(10, 7))
+
+hits = 0
+for i in range(m):
+    sample = np.random.normal(true_mu, true_sigma, n)
+    x_bar = sample.mean()
+    se = true_sigma / np.sqrt(n)
+    z = stats.norm.ppf(1 - alpha/2)
+    lo, hi = x_bar - z*se, x_bar + z*se
+    contains = lo <= true_mu <= hi
+    if contains:
+        hits += 1
+    color = '#0a9396' if contains else '#ae2012'
+    ax.hlines(i, lo, hi, color=color, lw=2, alpha=0.8)
+    ax.plot(x_bar, i, 'o', color=color, ms=5)
+
+ax.axvline(true_mu, color='k', lw=2.5, ls='--', label=f'True value μ = {true_mu:.0f} g', zorder=5)
+ax.set_xlabel('Body mass (g)', fontsize=11)
+ax.set_ylabel('Sample no.')
+ax.set_title(f'95% confidence intervals for μ: {hits}/{m} = {hits/m*100:.0f}% contain μ\n'
+             f'(n = {n} per sample, σ known)', fontsize=11)
+from matplotlib.lines import Line2D
+legend_elements = [
+    Line2D([0],[0], color='#0a9396', lw=2, label='CI contains μ'),
+    Line2D([0],[0], color='#ae2012', lw=2, label='CI misses μ'),
+    Line2D([0],[0], color='k', lw=2, ls='--', label='True value μ'),
+]
+ax.legend(handles=legend_elements, fontsize=9)
+plt.tight_layout()
+plt.show()
+```
+
+Each of the 40 samples gives a different confidence interval. About 95 % of them (teal lines)
+contain the true parameter – a few (red lines) miss it.
+
+---
+
+## CI for the expected value: variance known (z-interval) {#ki-für-den-erwartungswert-varianz-bekannt-z-intervall}
+
+### Derivation {#herleitung}
+
+Suppose the data $X_1, \ldots, X_n$ are normally distributed with known variance $\sigma^2$.
+Then the sample mean is normally distributed as well:
+$$\overline{X}_n \sim \mathcal{N}\!\left(\mu, \frac{\sigma^2}{n}\right)$$
+
+**Standardizing** gives a quantity with a known standard normal distribution:
+$$Z = \frac{\overline{X}_n - \mu}{\sigma/\sqrt{n}} \sim \mathcal{N}(0, 1)$$
+
+For a symmetric interval around 0, with the $(1-\alpha/2)$ quantile $z_{1-\alpha/2}$:
+$$P\!\left(-z_{1-\alpha/2} \leq Z \leq z_{1-\alpha/2}\right) = 1-\alpha$$
+
+Substituting and solving for $\mu$ gives the confidence interval:
+
+::: {.callout-note icon=false}
+## z confidence interval for $\mu$ (variance $\sigma^2$ known)
+
+$$\left[\overline{X}_n - z_{1-\alpha/2} \cdot \frac{\sigma}{\sqrt{n}},\;
+         \overline{X}_n + z_{1-\alpha/2} \cdot \frac{\sigma}{\sqrt{n}}\right]$$
+
+Important quantiles: $z_{0.975} = 1.960$ (for a 95% CI) and $z_{0.995} = 2.576$ (for a 99% CI).
+:::
+
+### Example: bill length of the penguins {#beispiel-schnabellänge-der-pinguine}
+
+We estimate the mean bill length of all Adélie penguins. We assume that $\sigma = 2.5$ mm is known.
+
+```{pyodide-python}
+import pandas as pd
+from scipy import stats
+import numpy as np
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+bill = penguins[penguins['species'] == 'Adelie']['bill_length_mm'].dropna()
+
+n = len(bill)
+x_bar = bill.mean()
+sigma = 2.5       # assumed known standard deviation
+alpha = 0.05      # error probability for a 95% CI
+
+z = stats.norm.ppf(1 - alpha/2)   # z_{0.975} = 1.96
+margin = z * sigma / np.sqrt(n)
+
+lo, hi = x_bar - margin, x_bar + margin
+
+print(f"n = {n},  x̄ = {x_bar:.2f} mm")
+print(f"z = {z:.3f}")
+print(f"Half-width Δ = {margin:.2f} mm")
+print(f"95% CI: [{lo:.2f}, {hi:.2f}] mm")
+```
+
+```{pyodide-python}
+import pandas as pd
+from scipy import stats
+import numpy as np
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+bill = penguins[penguins['species'] == 'Adelie']['bill_length_mm'].dropna()
+
+# Alternative: scipy.stats.norm.interval
+n = len(bill)
+x_bar = bill.mean()
+sigma = 2.5
+
+lo, hi = stats.norm.interval(confidence=0.95, loc=x_bar, scale=sigma/np.sqrt(n))
+print(f"95% CI: [{lo:.2f}, {hi:.2f}] mm")
+```
+
+### By hand {#von-hand}
+
+A sample of $n = 25$ Adélie penguins has a mean bill length of $\bar{x} = 38.8$ mm, and the standard deviation $\sigma = 2.5$ mm is assumed known. Compute the standard error, the half-width $\Delta$ and the 95% CI (to two decimal places). How many animals do you need at least so that the half-width is at most $0.5$ mm?
+
+```{math-exercise}
+#| label: ki-hand-en
+#| caption: z confidence interval by hand
+#| mode: numeric
+#| tolerance: 0.011
+#| partial-credit: true
+#| field-labels: SE, Δ, lower bound, upper bound, n
+$\text{SE} =$ _[0.5] mm, $\Delta =$ _[0.98] mm, 95% CI: $[$ _[37.82] $,$ _[39.78] $]$ mm, $n \geq$ _[97]
+```
+
+::: {.callout-tip collapse="true" title="Solution steps"}
+- $\text{SE} = \sigma/\sqrt{n} = 2.5/5 = 0.5$ mm
+- $\Delta = z_{0.975} \cdot \text{SE} = 1.96 \cdot 0.5 = 0.98$ mm
+- CI: $38.8 \pm 0.98 = [37.82,\ 39.78]$ mm
+- $1.96 \cdot 2.5/\sqrt{n} \leq 0.5 \iff \sqrt{n} \geq 9.8 \iff n \geq 96.04$, so at least $97$ animals (round up, otherwise the condition is narrowly missed)
+:::
+
+---
+
+## CI for the expected value: variance unknown (t-interval) {#ki-für-den-erwartungswert-varianz-unbekannt-t-intervall}
+
+### The problem {#das-problem}
+
+In practice we usually do **not** know $\sigma$. We have to replace $\sigma$ by $s$ (the sample
+standard deviation). But then the standardized quantity is **no longer** standard normally
+distributed:
+$$T = \frac{\overline{X}_n - \mu}{s/\sqrt{n}} \sim t_{n-1}$$
+
+It follows a **t-distribution with $n-1$ degrees of freedom**. This accounts for the additional
+uncertainty from estimating $\sigma$.
+
+### The t-distribution {#die-t-verteilung}
+
+```{python}
+#| echo: false
+#| eval: true
+x = np.linspace(-5, 5, 500)
+
+fig, ax = plt.subplots(figsize=(8, 4))
+for df, col, lab in [(3,'#ca6702',f't(3)'), (10,'#0a9396',f't(10)'),
+                      (30,'#005f73','t(30)'), (np.inf,'#ae2012','N(0,1)')]:
+    if df == np.inf:
+        y = stats.norm.pdf(x)
+    else:
+        y = stats.t.pdf(x, df)
+    ax.plot(x, y, color=col, lw=2, label=lab)
+
+ax.set_xlabel('t'); ax.set_ylabel('Density')
+ax.set_title('t-distributions compared with the standard normal distribution')
+ax.legend(); ax.set_xlim(-5, 5)
+plt.tight_layout()
+plt.show()
+```
+
+The t-distribution has **heavier tails** than the normal distribution – the CI becomes somewhat
+wider. The more degrees of freedom ($= n-1$), the closer the t-distribution is to the normal
+distribution. From $n \geq 30$ on, the difference is usually small.
+
+::: {.callout-note icon=false}
+## t confidence interval for $\mu$ (variance $\sigma^2$ unknown)
+
+$$\left[\overline{X}_n - t_{n-1;\,1-\alpha/2} \cdot \frac{s}{\sqrt{n}},\;
+         \overline{X}_n + t_{n-1;\,1-\alpha/2} \cdot \frac{s}{\sqrt{n}}\right]$$
+
+Here $t_{n-1;\,1-\alpha/2}$ is the $(1-\alpha/2)$ quantile of the t-distribution with $n-1$
+degrees of freedom.
+:::
+
+::: {.callout-tip}
+## When z, when t?
+
+| Situation | Method |
+|-----------|--------|
+| $\sigma$ known, normal distribution | z-interval |
+| $\sigma$ unknown, normal distribution | t-interval |
+| $\sigma$ unknown, large $n$ ($\geq 30$) | t-interval (≈ z-interval) |
+| Small sample, strong departure from normality | Nonparametric methods (not covered here) |
+
+**In practice:** The t-interval is used almost always, since $\sigma$ is rarely known.
+:::
+
+### Example: body mass of all penguins {#beispiel-körpermasse-aller-pinguine}
+
+```{pyodide-python}
+import pandas as pd
+from scipy import stats
+import numpy as np
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+mass = penguins['body_mass_g'].dropna()
+
+n = len(mass)
+x_bar = mass.mean()
+s = mass.std()         # sample SD (with n-1)
+alpha = 0.05           # 95% CI
+
+t_crit = stats.t.ppf(1 - alpha/2, df=n-1)
+margin = t_crit * s / np.sqrt(n)
+
+print(f"n = {n},  x̄ = {x_bar:.1f} g,  s = {s:.1f} g")
+print(f"t quantile (df={n-1}): {t_crit:.4f}")
+print(f"Half-width Δ = {margin:.1f} g")
+print(f"95% CI: [{x_bar - margin:.1f}, {x_bar + margin:.1f}] g")
+```
+
+```{pyodide-python}
+import pandas as pd
+from scipy import stats
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+mass = penguins['body_mass_g'].dropna()
+
+# Directly with scipy.stats.t.interval
+lo, hi = stats.t.interval(confidence=0.95, df=len(mass)-1,
+                           loc=mass.mean(), scale=mass.sem())
+print(f"95% CI for the mean body mass of all penguins: [{lo:.1f}, {hi:.1f}] g")
+```
+
+::: {.callout-python appearance="minimal"}
+**Python tip:** `mass.sem()` directly computes the estimated standard error
+$\hat{\text{SE}} = s/\sqrt{n}$.
+:::
+
+---
+
+## What affects the width of the interval {#einflüsse-auf-die-intervallbreite}
+
+The width of a confidence interval depends on three factors:
+
+$$\text{Width} = 2 \cdot t_{n-1;\,1-\alpha/2} \cdot \frac{s}{\sqrt{n}}$$
+
+```{python}
+#| echo: false
+#| eval: true
+np.random.seed(99)
+true_mu = 3700.0
+true_sigma = 460.0
+
+fig, axes = plt.subplots(1, 3, figsize=(12, 4.5))
+
+# 1. Sample size
+ax = axes[0]
+ns = [10, 20, 30, 50, 100, 200]
+widths = []
+for n in ns:
+    t = stats.t.ppf(0.975, df=n-1)
+    w = 2 * t * true_sigma / np.sqrt(n)
+    widths.append(w)
+ax.plot(ns, widths, 'o-', color='#0a9396', lw=2)
+ax.set_xlabel('Sample size n')
+ax.set_ylabel('CI width (g)')
+ax.set_title('Effect of n\n(α = 0.05, σ = 460 g fixed)')
+ax.grid(True, alpha=0.3)
+
+# 2. Confidence level
+ax2 = axes[1]
+alphas = [0.20, 0.10, 0.05, 0.02, 0.01]
+conf_levels = [1 - a for a in alphas]
+widths2 = [2 * stats.norm.ppf(1 - a/2) * true_sigma / np.sqrt(50) for a in alphas]
+ax2.plot([cl*100 for cl in conf_levels], widths2, 'o-', color='#ae2012', lw=2)
+ax2.set_xlabel('Confidence level (1−α) in %')
+ax2.set_ylabel('CI width (g)')
+ax2.set_title('Effect of the confidence level\n(n = 50, σ = 460 g fixed)')
+ax2.grid(True, alpha=0.3)
+
+# 3. Standard deviation (variability of the data)
+ax3 = axes[2]
+sigmas = [100, 200, 300, 400, 500, 600]
+widths3 = [2 * stats.norm.ppf(0.975) * s / np.sqrt(50) for s in sigmas]
+ax3.plot(sigmas, widths3, 'o-', color='#ca6702', lw=2)
+ax3.set_xlabel('Standard deviation σ (g)')
+ax3.set_ylabel('CI width (g)')
+ax3.set_title('Effect of data variability\n(n = 50, α = 0.05 fixed)')
+ax3.grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.show()
+```
+
+| Factor | Effect on CI width |
+|----------|----------------------|
+| Larger $n$ | Narrower CI (factor $1/\sqrt{n}$) |
+| Higher confidence level $1-\alpha$ | Wider CI (larger quantile) |
+| Larger spread $\sigma$ | Wider CI (directly proportional) |
+
+---
+
+## Simulation: many confidence intervals {#simulation-viele-konfidenzintervalle}
+
+### Confidence intervals hands-on {.unnumbered #konfidenzintervalle-zum-anfassen}
+
+Each row is a sample of $n$ penguins from a population with $\mu = 3700$ g and known $\sigma = 460$ g, together with its z confidence interval. Teal means the interval contains $\mu$, red means it misses $\mu$. Use the sliders to set $n$ and the confidence level $1-\alpha$; the button draws 50 new samples.
+
+```{.jsxgraph width="100" height="90" unit="%" style="border:1px solid #ccc; border-radius:8px;"}
+document.body.style.background = '#fff';
+const board = JXG.JSXGraph.initBoard(BOARDID, {
+  boundingbox: [2400, 68, 5000, -5], axis: false, showCopyright: false,
+  showNavigation: false, pan: {enabled: false}, zoom: {enabled: false}
+});
+board.create('axis', [[0, -0.5], [1, -0.5]], {
+  ticks: {insertTicks: false, ticksDistance: 500, minorTicks: 4, label: {offset: [-14, -14]}}
+});
+const fmt = (x, d) => x.toFixed(d).replace('.', '.');
+// Zufallszahlen mit festem Startwert: Beim Laden sehen alle dieselben 50 Stichproben
+let seed = 20242;
+const rnd = () => {
+  seed = (seed + 0x6D2B79F5) | 0;
+  let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+};
+const normal = () => Math.sqrt(-2 * Math.log(1 - rnd())) * Math.cos(2 * Math.PI * rnd());
+// Verteilungsfunktion und Quantil der Standardnormalverteilung
+const erf = x => {
+  const v = Math.sign(x), a = Math.abs(x), t = 1 / (1 + 0.3275911 * a);
+  return v * (1 - ((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-a * a));
+};
+const Phi = x => 0.5 * (1 + erf(x / Math.SQRT2));
+const quantil = p => { let a = 0, b = 6; for (let k = 0; k < 50; k++) { const m = (a + b) / 2; if (Phi(m) < p) a = m; else b = m; } return (a + b) / 2; };
+
+const MU = 3700, SIGMA = 460, M = 50;
+let Z = Array.from({length: M}, normal);   // Abstand von x̄ zu μ in Standardfehlern
+const sl = {withLabel: false, snapWidth: 1, fillColor: '#ae2012', strokeColor: '#ae2012',
+  baseline: {strokeColor: '#999'}, highline: {strokeColor: '#ae2012'}};
+const nS = board.create('slider', [[2750, 64], [3550, 64], [5, 30, 100]], sl);
+const nv = board.create('slider', [[2750, 60], [3550, 60], [80, 95, 99]], sl);
+const text = {fixed: true, highlight: false, fontSize: 14, anchorY: 'middle'};
+board.create('text', [2450, 64, 'n'], text);
+board.create('text', [2450, 60, '1−α'], text);
+board.create('text', [3620, 64, () => fmt(nS.Value(), 0)], text);
+board.create('text', [3620, 60, () => fmt(nv.Value(), 0) + ' %'], text);
+
+const zcache = {};
+const zq = () => { const v = nv.Value(); if (!(v in zcache)) zcache[v] = quantil(0.5 + v / 200); return zcache[v]; };
+const se = () => SIGMA / Math.sqrt(nS.Value());
+const xq = i => MU + Z[i] * se();
+const treffer = i => Math.abs(Z[i]) <= zq();
+for (let i = 0; i < M; i++) {
+  const farbe = () => treffer(i) ? '#0a9396' : '#ae2012';
+  board.create('segment', [[() => xq(i) - zq() * se(), i + 1], [() => xq(i) + zq() * se(), i + 1]],
+    {strokeColor: farbe, strokeWidth: 2, fixed: true, highlight: false});
+  board.create('point', [() => xq(i), i + 1],
+    {name: '', size: 1.5, strokeColor: farbe, fillColor: farbe, fixed: true, highlight: false, showInfobox: false});
+}
+board.create('segment', [[MU, 0], [MU, M + 1]],
+  {strokeColor: '#000', dash: 2, strokeWidth: 2, fixed: true, highlight: false});
+board.create('text', [MU, M + 2.3, 'μ = 3700 g'], Object.assign({}, text, {anchorX: 'middle', fontSize: 13}));
+const anzahl = () => Z.filter((_, i) => treffer(i)).length;
+board.create('text', [2450, 56, () => 'Hits: ' + anzahl() + ' of ' + M + ' (' + 2 * anzahl() + ' %)'],
+  Object.assign({}, text, {color: '#0a9396'}));
+board.create('button', [3950, 64, 'New samples', () => { Z = Array.from({length: M}, normal); board.update(); }]);
+board.update();
+```
+
+Try it out:
+
+- Press "New samples" several times. Around which value does the number of hits fluctuate?
+- Move $n$ from 30 to 100. What happens to the intervals, and what to the number of hits?
+- Set the level to 80 % and then to 99 %.
+
+::: {.callout-tip collapse="true" title="What is behind it"}
+At 95 %, on average $47.5$ of 50 intervals are hits. Sometimes it is 50, sometimes 45 – that is chance. A larger $n$ makes all intervals narrower but does **not** change the number of hits: the means move closer to $\mu$ at the same rate ($\sqrt{n}$) at which the intervals shrink. The hit rate depends only on the level. A higher level makes every interval wider, and in return fewer of them miss. More certainty therefore costs precision, and only more data helps with both.
+:::
+
+The same as Python code you can change:
+
+```{pyodide-python}
+import numpy as np
+from scipy import stats
+import matplotlib.pyplot as plt
+
+# Experiment: 50 simulated samples, check each CI
+np.random.seed(42)
+true_mu = 3700.0    # true mean mass (simulation)
+true_sigma = 460.0  # true spread (known)
+n = 30              # sample size
+alpha = 0.05        # 95% CI
+m = 50              # number of samples
+
+fig, ax = plt.subplots(figsize=(10, 7))
+hits = 0
+
+for i in range(m):
+    sample = np.random.normal(true_mu, true_sigma, n)
+    x_bar = sample.mean()
+    lo, hi = stats.norm.interval(0.95, loc=x_bar, scale=true_sigma/np.sqrt(n))
+    contains = (lo <= true_mu <= hi)
+    if contains: hits += 1
+    col = '#0a9396' if contains else '#ae2012'
+    ax.hlines(i, lo, hi, color=col, lw=2, alpha=0.85)
+    ax.plot(x_bar, i, 'o', color=col, ms=5)
+
+ax.axvline(true_mu, color='k', lw=2, ls='--', label=f'μ = {true_mu:.0f} g')
+ax.set_xlabel('Body mass (g)')
+ax.set_title(f'95% CIs: {hits}/{m} ({hits/m*100:.0f}%) contain μ')
+ax.legend()
+plt.show()
+```
+
+---
+
+## Practical example: confidence intervals by penguin species {#praxisbeispiel-konfidenzintervalle-nach-pinguinart}
+
+```{pyodide-python}
+import pandas as pd
+from scipy import stats
+import numpy as np
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+
+print(f"{'Species':<12} {'n':>5} {'x̄ (g)':>10} {'SE':>8} {'95% CI':>25}")
+print("-" * 65)
+
+for species in ['Adelie', 'Chinstrap', 'Gentoo']:
+    mass = penguins[penguins['species'] == species]['body_mass_g'].dropna()
+    n = len(mass)
+    x_bar = mass.mean()
+    se = mass.sem()   # s / sqrt(n)
+    lo, hi = stats.t.interval(0.95, df=n-1, loc=x_bar, scale=se)
+    print(f"{species:<12} {n:>5} {x_bar:>10.1f} {se:>8.1f}  [{lo:>7.1f}, {hi:>7.1f}]")
+```
+
+```{python}
+#| echo: false
+#| eval: true
+fig, ax = plt.subplots(figsize=(7, 4))
+
+species_list = ['Adelie', 'Chinstrap', 'Gentoo']
+colors = ['#0a9396', '#ae2012', '#ca6702']
+
+for i, (spec, col) in enumerate(zip(species_list, colors)):
+    mass = penguins[penguins['species'] == spec]['body_mass_g'].dropna()
+    n = len(mass)
+    x_bar = mass.mean()
+    se = mass.sem()
+    lo, hi = stats.t.interval(0.95, df=n-1, loc=x_bar, scale=se)
+    ax.errorbar(x_bar, i, xerr=x_bar-lo, fmt='o', color=col, capsize=6,
+                ms=8, lw=2, label=f'{spec} (n={n})')
+
+ax.set_yticks(range(3))
+ax.set_yticklabels(species_list)
+ax.set_xlabel('Body mass (g)')
+ax.set_title('95% confidence intervals for the mean body mass\nof the three penguin species')
+ax.legend(fontsize=9)
+ax.grid(True, axis='x', alpha=0.3)
+plt.tight_layout()
+plt.show()
+```
+
+The interval of the Gentoo penguins lies far to the right and overlaps with neither of the others:
+Gentoos are clearly heavier on average. The intervals of Adelie ($[3627, 3774]$ g) and
+Chinstrap ($[3640, 3826]$ g), on the other hand, overlap strongly. The data do not show a
+difference between these two species. How to test differences formally is shown by the
+hypothesis tests (from 2.5 on).
+
+::: {.callout-caution}
+## Careful with the reverse conclusion
+
+If two confidence intervals do **not** overlap, that is strong evidence of a real difference.
+If they overlap **slightly**, the difference can still be significant. For the difference of
+two means you need an interval of its own or a test.
+:::
+
+:::: {.theorem .exercise}
+#### Exercise: confidence interval for bill length {#aufgabe-konfidenzintervall-für-die-schnabellänge}
+
+Compute a confidence interval for the mean bill length of the Gentoo penguins and investigate how the confidence level affects the width of the interval.
+
+**Task:**
+
+1. Compute the 95% confidence interval for the mean bill length (`bill_length_mm`) of the Gentoo penguins and store it as `ci95 = (lower bound, upper bound)`.
+2. Compute the width of the 90% and the 99% interval and store them in `width90` and `width99`. How does the width change?
+3. (not tested) How would the 95% CI change if you doubled the sample size?
+
+**Check** tests `ci95`, `width90` and `width99`.
+
+```{py-exercise}
+#| label: ki-gentoo-en
+#| caption: Confidence interval for bill length
+#| show-test-hints: false
+import numpy as np
+import pandas as pd
+from scipy import stats
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+gentoo_bill = penguins[penguins['species'] == 'Gentoo']['bill_length_mm'].dropna()
+n = len(gentoo_bill)
+
+ci95 = None       # your code here: (lower bound, upper bound)
+width90 = None
+width99 = None
+print(ci95, width90, width99)
+
+## TESTS ##
+assert ci95 is not None and hasattr(ci95, '__len__') and len(ci95) == 2, "ci95 should contain two numbers: (lower bound, upper bound)."
+assert ci95 is None or not hasattr(ci95, '__len__') or len(ci95) != 2 or abs(float(ci95[1]) - float(ci95[0]) - 12.20) > 0.1, "This interval is far too wide: the scale must be the standard error s/√n, not the standard deviation s."
+assert ci95 is not None and hasattr(ci95, '__len__') and len(ci95) == 2 and abs(float(ci95[0]) - 46.955) < 0.003 and abs(float(ci95[1]) - 48.055) < 0.003, "ci95 is not correct: expected is about [46.95, 48.05] mm (t-interval with n − 1 degrees of freedom)."
+assert width90 is not None and width99 is not None, "Also compute width90 and width99 (upper minus lower bound in each case)."
+assert width99 is None or abs(float(width99) - 1.4316) > 0.003, "width99 matches the z-interval. σ is unknown here, so the t-distribution with n − 1 degrees of freedom is needed."
+assert width90 is not None and width99 is not None and abs(float(width90) - 0.9211) < 0.003 and abs(float(width99) - 1.4543) < 0.003, "The widths are not correct: expected are about 0.92 mm (90 %) and 1.45 mm (99 %)."
+```
+
+::: {.callout-tip title="Hint 1" collapse="true"}
+Since σ is unknown, use the t-interval: `stats.t.interval(confidence=0.95, df=n-1, loc=x_bar, scale=se)` with `se = gentoo_bill.sem()` (standard error). Change `confidence=` to 0.90 or 0.99 for the other levels. The width of the interval = `hi - lo`.
+:::
+
+::: {.callout-tip title="Hint 2" collapse="true"}
+To see the effect of the sample size, compute the CI width theoretically with $\text{Width} = 2 \cdot t_{n-1;\,0.975} \cdot s/\sqrt{n}$. With twice the $n$, the denominator grows by a factor of $\sqrt{2} \approx 1.41$ – the CI becomes narrower, but not half as wide.
+:::
+
+::: {.callout-caution title="Solution" collapse="true"}
+```python
+x_bar, se = gentoo_bill.mean(), gentoo_bill.sem()
+
+ci95 = stats.t.interval(confidence=0.95, df=n-1, loc=x_bar, scale=se)
+lo, hi = stats.t.interval(confidence=0.90, df=n-1, loc=x_bar, scale=se)
+width90 = hi - lo
+lo, hi = stats.t.interval(confidence=0.99, df=n-1, loc=x_bar, scale=se)
+width99 = hi - lo
+```
+
+95% CI: $[46.95,\ 48.05]$ mm (width $1.10$ mm), 90 %: $0.92$ mm, 99 %: $1.45$ mm. More certainty, wider interval. With twice the $n$, the 95% CI becomes narrower by about a factor of $\sqrt{2}$, i.e. roughly $1.10/1.41 \approx 0.78$ mm wide.
+:::
+::::
+
+---
+
+## Summary {#zusammenfassung}
+
+| Method | Assumption | Formula |
+|---------|---------------|--------|
+| **z-interval** | $\sigma$ known, normal distribution | $\bar{x} \pm z_{1-\alpha/2} \cdot \sigma/\sqrt{n}$ |
+| **t-interval** | $\sigma$ unknown, normal distribution | $\bar{x} \pm t_{n-1;\,1-\alpha/2} \cdot s/\sqrt{n}$ |
+
+**Correct interpretation:** A 95% confidence interval means that the procedure yields, for 95 % of
+all possible samples, an interval that contains the true parameter. For a concrete, realized
+interval $[a, b]$ no probability statement can be made any more.
+
+---
+
+## Check your understanding {#wissensüberprüfung}
+
+```{quizdown}
+---
+locale: en
+primaryColor: '#0a9396'
+shuffleQuestions: false
+shuffleAnswers: true
+---
+
+### Which statement describes the correct interpretation of a 95% confidence interval?
+
+1. [ ] With 95% probability the true parameter lies in the computed interval.
+1. [x] For 95% of all samples evaluated with this procedure, the resulting interval contains the true parameter.
+    > Correct! The parameter is fixed – the randomness lies in the procedure, not in the parameter.
+1. [ ] 95% of the data lie within the interval.
+1. [ ] The interval has been computed 95% correctly.
+
+### When do you use the t-interval instead of the z-interval?
+
+1. [x] When the population variance σ² is unknown and has to be estimated by s².
+    > Correct! The additional uncertainty from estimating σ leads to the t-distribution.
+1. [ ] When the sample size is very large.
+1. [ ] When the data are not normally distributed.
+1. [ ] When you want more precise results.
+
+### A 95% CI for μ has a width of 20 g. How wide is the 99% CI (all else being equal)?
+
+1. [ ] Narrower than 20 g.
+1. [ ] Also 20 g.
+1. [x] Wider than 20 g.
+    > Correct! A higher confidence level requires a wider interval, since more parameter values have to be included. For the z-interval it is exactly $20 \cdot 2.576/1.96 \approx 26.3$ g.
+1. [ ] Exactly 40 g (twice as wide).
+
+### What happens to a 95% confidence interval if you quadruple the sample size?
+
+1. [ ] The interval becomes four times narrower.
+1. [x] The interval is halved (becomes half as wide).
+    > Correct! The width is proportional to 1/√n. √(4n) = 2√n → half the width.
+1. [ ] The interval stays equally wide.
+1. [ ] The interval becomes four times wider.
+
+### A researcher computes the 95% CI [100, 120] for a sample. They claim: "The true parameter lies between 100 and 120 with 95% probability." What is wrong with that?
+
+1. [ ] The interval was computed incorrectly.
+1. [ ] A 95% CI cannot allow any such statement.
+1. [x] After the computation, the interval [100, 120] is deterministic – either μ lies in it or not. The 95% refer to the procedure, not to the realized interval.
+    > Correct! The probability statement holds before the computation, for the random interval.
+1. [ ] They should have used the t-interval instead of the z-interval.
+
+### The t-distribution differs from the standard normal distribution by:
+
+1. [ ] A different mean (not 0).
+1. [x] Heavier tails (more probability mass in the extreme regions), which leads to wider confidence intervals for small n.
+    > Correct! The t-distribution has heavier tails, which converge to the normal distribution as n (the degrees of freedom) grows.
+1. [ ] A different scaling of the x-axis.
+1. [ ] No symmetry.
+
+### Two penguin species have 95% confidence intervals that do not overlap. What can you conclude?
+
+1. [ ] Nothing at all – CIs do not allow group comparisons.
+1. [x] The true means of the two groups probably differ statistically significantly.
+    > Correct! Non-overlapping CIs are strong evidence of statistically significant differences. The reverse does not hold: slightly overlapping CIs do not rule out a significant difference. Hypothesis tests (from 2.5 on) give more detail.
+1. [ ] The samples are too small for a comparison.
+1. [ ] There are no differences between the groups.
+```
+
+::::

@@ -1,0 +1,126 @@
+# Everything that depends on the LANGUAGE (Svenska): UI language, title, navbar and sidebar
+# labels. Which pages are rendered is set in _quarto-<level>.yml.
+lang: sv
+
+website:
+  title: "Quarto-handledning"
+  reader-mode: true
+  navbar:
+    search: true
+    left:
+      # placeholders, build.py fills in the target in the current language
+      - text: "Exempelsida"
+        href: "#niveau-beg"
+      - text: "Kom igång"
+        href: "#niveau-int"
+      - text: "Tips & tricks"
+        href: "#niveau-exp"
+    right:
+      - icon: github
+        href: "https://github.com/Erasmus-CTM/Quarto-Tutorial"
+      - icon: globe
+        aria-label: "Sprache wählen / Choose language"
+        menu:
+          - text: "Deutsch"
+            href: "#sprache-de"
+          - text: "English"
+            href: "#sprache-en"
+          - text: "Svenska"
+            href: "#sprache-sv"
+          - text: "Norsk"
+            href: "#sprache-no"
+          - text: "Dansk"
+            href: "#sprache-da"
+  # Sidebars of ALL levels. Quarto shows on each page only the one that lists it.
+  # Pages of another level are not rendered in this run; that does no harm.
+  sidebar:
+    - id: example-sidebar
+      title: "Exempelsidor"
+      style: floating
+      contents:
+        - text: "Översikt"
+          href: "Qmd Files/Example Page/index_beg.qmd"
+        - text: "Layout & formatering"
+          href: "Qmd Files/Example Page/ep_layout.qmd"
+        - text: "Kod"
+          href: "Qmd Files/Example Page/ep_code.qmd"
+        - text: "Visualiseringar"
+          href: "Qmd Files/Example Page/ep_visuals.qmd"
+        - text: "Uppgifter"
+          href: "Qmd Files/Example Page/ep_tasks.qmd"
+        - text: "Quiz"
+          href: "Qmd Files/Example Page/ep_quiz.qmd"
+        - text: "Källor"
+          href: "Qmd Files/Example Page/ep_references.qmd"
+    - id: getting-started-sidebar
+      style: floating
+      collapse-level: 1
+      contents:
+        - text: "Översikt"
+          href: "Qmd Files/Getting Started/getting_started.qmd"
+        - section: "Skapa en Quarto-webbplats"
+          contents:
+            - text: "Vad du behöver"
+              href: "Qmd Files/Getting Started/beg_website_1.qmd"
+            - text: "Skapa en webbplats"
+              href: "Qmd Files/Getting Started/beg_website_2.qmd"
+            - text: "Publicera webbplatsen"
+              href: "Qmd Files/Getting Started/beg_website_3.qmd"
+            - text: "📄 Lathund (PDF)"
+              href: "Qmd Files/Getting Started/beg_website_cheatsheet.qmd"
+        - section: "Skapa ett övningsblad med Quarto"
+          contents:
+            - text: "Vad du behöver"
+              href: "Qmd Files/Getting Started/beg_exercise_1.qmd"
+            - text: "Skapa ett övningsblad"
+              href: "Qmd Files/Getting Started/beg_exercise_2.qmd"
+            - text: "Andra utdataformat"
+              href: "Qmd Files/Getting Started/beg_exercise_3.qmd"
+            - text: "📄 Lathund (PDF)"
+              href: "Qmd Files/Getting Started/beg_exercise_cheatsheet.qmd"
+        - section: "Skapa en Quarto-bok"
+          contents:
+            - text: "Vad du behöver"
+              href: "Qmd Files/Getting Started/beg_book_1.qmd"
+            - text: "Skapa en bok"
+              href: "Qmd Files/Getting Started/beg_book_2.qmd"
+            - text: "📄 Lathund (PDF)"
+              href: "Qmd Files/Getting Started/beg_book_cheatsheet.qmd"
+        - section: "Interaktiv kod"
+          contents:
+            - text: "Interaktiv Python med Pyodide"
+              href: "Qmd Files/Getting Started/beg_extensions.qmd"
+            - text: "Uppgift med automatisk kontroll"
+              href: "Qmd Files/Getting Started/beg_check.qmd"
+            - text: "📄 Lathund Pyodide (PDF)"
+              href: "Qmd Files/Getting Started/beg_extensions_cheatsheet.qmd"
+            - text: "📄 Lathund uppgifter (PDF)"
+              href: "Qmd Files/Getting Started/beg_check_cheatsheet.qmd"
+    - id: tips-sidebar
+      style: floating
+      contents:
+        - text: "Vad som tas upp & vad du redan bör kunna"
+          href: "Qmd Files/Tipps and Tricks/index_exp.qmd"
+        - text: "YML-filen"
+          href: "Qmd Files/Tipps and Tricks/exp_yml.qmd"
+        - text: "QMD-filen"
+          href: "Qmd Files/Tipps and Tricks/exp_qmd.qmd"
+        - section: "Tillägg"
+          href: "Qmd Files/Tipps and Tricks/exp_extensions.qmd"
+          contents:
+            - text: "quizdown"
+              href: "Qmd Files/Tipps and Tricks/exp_ext_quizdown.qmd"
+            - text: "Python i webbläsaren"
+              href: "Qmd Files/Tipps and Tricks/exp_ext_python.qmd"
+            - text: "py-exercise"
+              href: "Qmd Files/Tipps and Tricks/exp_ext_pyexercise.qmd"
+            - text: "math-exercise"
+              href: "Qmd Files/Tipps and Tricks/exp_ext_mathexercise.qmd"
+            - text: "JSXGraph"
+              href: "Qmd Files/Tipps and Tricks/exp_ext_jsxgraph.qmd"
+            - text: "AI-feedback och sparande"
+              href: "Qmd Files/Tipps and Tricks/exp_ext_feedback.qmd"
+        - text: "Flerspråkiga projekt"
+          href: "Qmd Files/Tipps and Tricks/exp_multilanguage.qmd"
+        - text: "Cheatsheet"
+          href: "Qmd Files/Tipps and Tricks/exp_cheatsheet.qmd"

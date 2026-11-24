@@ -1,0 +1,122 @@
+---
+title: "2. Schätztheorie"
+title-en: "2. Estimation Theory"
+filters:
+  - ctm-assessment
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+## Was dich erwartet {.unnumbered}
+
+In der deskriptiven Statistik haben wir gelernt, Daten zu beschreiben – einen Datensatz
+zusammenzufassen, zu visualisieren und Kennzahlen zu berechnen. Das war alles **Beschreiben, was
+wir bereits sehen**.
+
+Aber in der Praxis sehen wir fast nie alles. Wir beobachten eine **Stichprobe** und wollen daraus
+Schlüsse über die **Grundgesamtheit** ziehen, die wir nicht vollständig kennen. Genau das ist die
+Aufgabe der **schließenden** (oder **induktiven**) **Statistik**, zu der die Schätztheorie gehört.
+
+Dieses Kapitel besteht aus fünf Unterkapiteln:
+
+| | Thema | Kernfrage |
+|-|-------|-----------|
+| **2.1** | [Schätzer](schaetzer.qmd) | *Was bedeutet "schätzen" mathematisch?* |
+| **2.2** | [Schätzmethoden](schaetzmethoden.qmd) | *Wie findet man einen guten Schätzer?* |
+| **2.3** | [Gütekriterien](guetekriterien.qmd) | *Wann ist ein Schätzer wirklich gut?* |
+| **2.4** | [Konfidenzintervalle](konfidenzintervalle.qmd) | *Wie genau ist unsere Schätzung?* |
+| **2.5** | [Statistische Signifikanz & p-Werte](../Kapitel_3/signifikanz_p_werte.qmd) | *Was bedeutet ein Ergebnis statistisch?* |
+
+## Lernziele {.unnumbered}
+
+Am Ende dieses Kapitels kannst du:
+
+- erklären, was ein Schätzer ist und den Unterschied zwischen Schätzfunktion, Schätzer und
+  Schätzwert beschreiben.
+- einfache Schätzer mit der Momentenmethode und dem Plausibilitätsprinzip bestimmen.
+- Gütekriterien (Erwartungstreue, Standardfehler, Konsistenz) erläutern und anwenden.
+- Konfidenzintervalle für einen Erwartungswert berechnen – sowohl bei bekannter als auch bei
+  unbekannter Varianz – und das Ergebnis korrekt interpretieren.
+- den Begriff der statistischen Signifikanz erklären, p-Werte korrekt interpretieren und den
+  Unterschied zwischen statistischer und praktischer Bedeutsamkeit benennen.
+
+## Voraussetzungen {.unnumbered}
+
+Dieses Kapitel setzt Kapitel 1 (Deskriptive Statistik) voraus, insbesondere die Begriffe
+arithmetisches Mittel, Varianz, Standardabweichung und Normalverteilung. Python-Grundlagen
+findest du auf der [Python-Grundlagen Seite](../grundlagen.qmd).
+
+## Unser Datensatz {.unnumbered}
+
+Wir arbeiten weiterhin mit dem **Palmer-Pinguins-Datensatz**. Diesmal interessieren wir uns aber
+nicht mehr nur für die 344 Pinguine im Datensatz selbst, sondern für **alle Pinguine dieser
+Arten auf dem Palmer-Archipel** – die Stichprobe soll uns etwas über die Grundgesamtheit verraten.
+
+```{pyodide-python}
+#| read-only: true
+import pandas as pd
+from pyodide.http import open_url
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+print(penguins.head())
+print(f"\n{penguins.shape[0]} Pinguine, {penguins.shape[1]} Merkmale")
+```
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+## What to expect {.unnumbered #was-dich-erwartet}
+
+In descriptive statistics we learned to describe data – to summarize a dataset, visualize it and
+compute measures. All of that was **describing what we can already see**.
+
+In practice, however, we almost never see everything. We observe a **sample** and want to draw
+conclusions about the **population**, which we do not know completely. That is exactly the task
+of **inferential** (or **inductive**) **statistics**, to which estimation theory belongs.
+
+This chapter consists of five sections:
+
+| | Topic | Key question |
+|-|-------|-----------|
+| **2.1** | [Estimators](schaetzer.qmd) | *What does "estimating" mean mathematically?* |
+| **2.2** | [Estimation methods](schaetzmethoden.qmd) | *How do you find a good estimator?* |
+| **2.3** | [Quality criteria](guetekriterien.qmd) | *When is an estimator really good?* |
+| **2.4** | [Confidence intervals](konfidenzintervalle.qmd) | *How precise is our estimate?* |
+| **2.5** | [Statistical significance & p-values](../Kapitel_3/signifikanz_p_werte.qmd) | *What does a result mean statistically?* |
+
+## Learning objectives {.unnumbered #lernziele}
+
+By the end of this chapter you can:
+
+- explain what an estimator is and describe the difference between estimating function, estimator
+  and estimate.
+- determine simple estimators with the method of moments and the maximum likelihood principle.
+- explain and apply quality criteria (unbiasedness, standard error, consistency).
+- compute confidence intervals for an expected value – with known as well as unknown variance –
+  and interpret the result correctly.
+- explain the concept of statistical significance, interpret p-values correctly and name the
+  difference between statistical and practical significance.
+
+## Prerequisites {.unnumbered #voraussetzungen}
+
+This chapter requires chapter 1 (descriptive statistics), in particular the concepts of arithmetic
+mean, variance, standard deviation and normal distribution. You can find the Python basics on the
+[Python basics page](../grundlagen.qmd).
+
+## Our dataset {.unnumbered #unser-datensatz}
+
+We continue to work with the **Palmer penguins dataset**. This time, however, we are no longer
+only interested in the 344 penguins in the dataset itself, but in **all penguins of these
+species on the Palmer Archipelago** – the sample should tell us something about the population.
+
+```{pyodide-python}
+#| read-only: true
+import pandas as pd
+from pyodide.http import open_url
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+print(penguins.head())
+print(f"\n{penguins.shape[0]} penguins, {penguins.shape[1]} variables")
+```
+
+::::

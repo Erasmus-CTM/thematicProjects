@@ -1,0 +1,269 @@
+---
+title: "Symmetrieverhalten untersuchen"
+title-en: "Examining Symmetry"
+format: html
+filters:
+  - ctm-assessment
+  - quizdown
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+In diesem Kapitel des Tutorials sollst du lernen, wie du mithilfe von Python das Symmetrieverhalten einer Funktion untersuchen kannst.  
+_Die Programme auf dieser Seite haben eine Stelle, an der du die zu untersuchende Funktion direkt in den Code schreibst. Das ist beim Ausprobieren meist am schnellsten. Wie ein Programm stattdessen mit `input()` nach der Funktion fragt, hast du beim [Definitionsbereich](../Kapitel_1/definitionsbereich.qmd) gesehen._
+
+# Welche Formen von Symmetrie gibt es?
+
+Im Allgemeinen wird zwischen **Punkt- und Achsensymmetrie** unterschieden.
+In diesem Tutorial wird, ähnlich wie in der Schule, vor allem die Achsensymmetrie zur Y-Achse und die Punktsymmetrie zum Ursprung behandelt.
+Wichtig ist zu beachten, dass nicht jede Funktion eine Form von Symmetrie aufzeigt.
+Es gibt Funktionen, die achsensymmetrisch sind, deren Symmetrieachse aber nicht die Y-Achse ist (z.B. verschobene Parabeln wie $f(x) = (x-1)^2$).
+Es gibt auch Funktionen, die punktsymmetrisch sind, aber nicht punktsymmetrisch zum Ursprung.
+
+Eine kleine Erinnerung an die Symmetrieformen die in diesem Tutorial betrachtet werden:
+
+1.  **Achsensymmetrie zur Y-Achse:**  
+Eine Funktion $f(x)$ ist achsensymmetrisch zur Y-Achse, wenn für alle $x$ im Definitionsbereich gilt: $f(x) = f(-x)$.
+
+2.  **Punktsymmetrie zum Ursprung:**   
+Eine Funktion $f(x)$ ist punktsymmetrisch zum Ursprung, wenn für alle $x$ im Definitionsbereich gilt: $f(-x) = -f(x)$ (oder analog $-f(-x) = f(x)$). 
+
+**Kurz überlegt:** Der ganze Test beruht darauf, $-x$ statt $x$ einzusetzen. Sitzt das?
+
+```{math-exercise}
+#| label: symmetrie-vorcheck
+#| caption: Vorab-Check – f(-x) bilden
+#| vars: x
+Für $f(x)=x^4-3x^2$ ist $f(-x)=$ __[x**4-3*x**2]. Für $g(x)=x^3+x$ ist $g(-x)=$ __[-x**3-x]. Vergleiche jeweils mit $f(x)$ bzw. $-g(x)$.
+```
+
+## Wie teste ich eine Funktion auf Achsensymmetrie zur Y-Achse?
+
+Die Grundidee ist ähnlich wie in anderen Kapiteln. 
+Wir nutzen `sympy`. Mit dieser Bibliothek können wir Funktionen als mathematische Objekte betrachten, deren Eigenschaften wir untersuchen können.
+Zuvor müssen wir unsere Variable als **Symbol** definieren, damit das Programm diese Variable anders als andere Python-Variablen nutzt.
+
+```{pyodide-python}
+#| label: symmetrie-beispiel-achse
+import sympy
+x = sympy.symbols('x')
+
+# Funktion hier eingeben:
+f1 = x**2 + 4
+
+def pruefe_achsensymmetrie(funktion_f):
+    # Ersetze jedes Vorkommen von x in der Funktion durch -x
+    f_minus_x = funktion_f.subs(x, -x)
+    if sympy.simplify(funktion_f - f_minus_x) == 0:
+        return True
+    else:
+        return False
+
+ist_symmetrisch = pruefe_achsensymmetrie(f1)
+
+print(f"Die Funktion f(x) = {f1} wird auf Achsensymmetrie zur Y-Achse untersucht ...")
+
+if ist_symmetrisch:
+    print("Ergebnis: Die Funktion ist achsensymmetrisch zur Y-Achse.")
+else:
+    print("Ergebnis: Die Funktion ist NICHT achsensymmetrisch zur Y-Achse.")
+
+
+```
+
+## Wie teste ich eine Funktion auf Punktsymmetrie zum Ursprung?
+
+Da der Code für diesem Test sehr ähnlich ist, ist das eine Aufgabe für dich.
+Schreibe eine Funktion `pruefe_punktsymmetrie(funktion_f)`, die `True` zurückgibt, wenn die Funktion punktsymmetrisch zum Ursprung ist, und sonst `False`. Die Funktion `pruefe_achsensymmetrie` von oben ist eine gute Vorlage.
+
+Versteckte Tests prüfen deine Funktion mit mehreren Beispielen, wenn du auf **Überprüfen** klickst.
+
+```{py-exercise}
+#| label: symmetrie-punktsymmetrie
+#| caption: pruefe_punktsymmetrie schreiben
+import sympy
+x = sympy.symbols('x')
+
+def pruefe_punktsymmetrie(funktion_f):
+    # Dein Code hier
+    pass
+
+## TESTS ##
+assert pruefe_punktsymmetrie(x**3) == True, "x**3 ist punktsymmetrisch zum Ursprung"
+assert pruefe_punktsymmetrie(x**3 - 2*x) == True, "x**3 - 2*x ist punktsymmetrisch zum Ursprung"
+assert pruefe_punktsymmetrie(sympy.sin(x)) == True, "sin(x) ist punktsymmetrisch zum Ursprung"
+assert pruefe_punktsymmetrie(x**2 + 4) == False, "x**2 + 4 ist NICHT punktsymmetrisch (sondern achsensymmetrisch)"
+assert pruefe_punktsymmetrie(x**3 + 1) == False, "x**3 + 1 ist NICHT punktsymmetrisch (die +1 verschiebt den Graphen)"
+```
+
+::: {.callout-tip title="Tipp" collapse="true"}
+Für Punktsymmetrie muss $f(-x) = -f(x)$ gelten. Anders gesagt: $f(-x) + f(x)$ muss sich zu $0$ vereinfachen lassen.
+:::
+
+# Ein Test für zwei Arten von Symmetrie
+
+Nachdem bekannt ist, wie eine Funktion auf Achsensymmetrie zur Y-Achse oder Punktsymmetrie zum Ursprung untersucht werden kann, gilt es nun, sich zu überlegen, wie ein Programm geschrieben werden kann, welches beide Tests auf einmal durchführt.
+
+``` {pyodide-python}
+#| label: symmetrie-beide-tests
+#Versuche in diesem Block die beiden If-Abfragen zusammen zu führen.
+```
+
+Teste dein Programm mit $f(x)=x^4-3x^2$, $g(x)=x^5+x$ und $h(x)=x^2+x$. Stimmt es mit deinen Antworten im folgenden Quiz überein?
+
+```quizdown
+---
+locale: de
+---
+
+# Welche Symmetrie hat $f(x)=x^4-3x^2$?
+- [x] achsensymmetrisch zur y-Achse
+- [ ] punktsymmetrisch zum Ursprung
+- [ ] keine der beiden
+> Hinweis: Nur gerade Exponenten.
+
+# Welche Symmetrie hat $g(x)=x^5+x$?
+- [ ] achsensymmetrisch zur y-Achse
+- [x] punktsymmetrisch zum Ursprung
+- [ ] keine der beiden
+> Hinweis: Nur ungerade Exponenten ($x = x^1$).
+
+# Welche Symmetrie hat $h(x)=x^2+x$?
+- [ ] achsensymmetrisch zur y-Achse
+- [ ] punktsymmetrisch zum Ursprung
+- [x] keine der beiden
+> Hinweis: Gerade und ungerade Exponenten gemischt. Trotzdem ist der Graph eine Parabel und damit achsensymmetrisch, nur eben nicht zur y-Achse.
+```
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+In this chapter of the tutorial, you will learn how to examine the symmetry of a function with the help of Python.  
+_The programs on this page have a place where you write the function to be examined directly into the code. That is usually the quickest way when trying things out. You saw how a program can instead ask for the function with `input()` in the chapter on the [domain](../Kapitel_1/definitionsbereich.qmd)._
+
+# What kinds of symmetry are there?
+
+In general, we distinguish between **point symmetry and axis symmetry**.
+In this tutorial, as at school, we mainly deal with symmetry about the y-axis and point symmetry about the origin.
+It is important to note that not every function shows some form of symmetry.
+There are functions that are axis-symmetric but whose axis of symmetry is not the y-axis (e.g. shifted parabolas like $f(x) = (x-1)^2$).
+There are also functions that are point-symmetric, but not about the origin.
+
+A small reminder of the forms of symmetry considered in this tutorial:
+
+1.  **Symmetry about the y-axis:**  
+A function $f(x)$ is symmetric about the y-axis if for all $x$ in the domain: $f(x) = f(-x)$.
+
+2.  **Point symmetry about the origin:**   
+A function $f(x)$ is point-symmetric about the origin if for all $x$ in the domain: $f(-x) = -f(x)$ (or equivalently $-f(-x) = f(x)$). 
+
+**Quick check:** The whole test rests on plugging in $-x$ instead of $x$. Is that clear?
+
+```{math-exercise}
+#| label: symmetrie-vorcheck-en
+#| caption: Pre-check – forming f(-x)
+#| vars: x
+For $f(x)=x^4-3x^2$ we have $f(-x)=$ __[x**4-3*x**2]. For $g(x)=x^3+x$ we have $g(-x)=$ __[-x**3-x]. Compare with $f(x)$ and $-g(x)$ respectively.
+```
+
+## How do I test a function for symmetry about the y-axis?
+
+The basic idea is similar to other chapters. 
+We use `sympy`. With this library, we can treat functions as mathematical objects whose properties we can examine.
+Before that, we have to define our variable as a **symbol**, so that the program treats this variable differently from other Python variables.
+
+```{pyodide-python}
+#| label: symmetrie-beispiel-achse-en
+import sympy
+x = sympy.symbols('x')
+
+# Enter the function here:
+f1 = x**2 + 4
+
+def check_axis_symmetry(function_f):
+    # Replace every occurrence of x in the function with -x
+    f_minus_x = function_f.subs(x, -x)
+    if sympy.simplify(function_f - f_minus_x) == 0:
+        return True
+    else:
+        return False
+
+is_symmetric = check_axis_symmetry(f1)
+
+print(f"The function f(x) = {f1} is checked for symmetry about the y-axis ...")
+
+if is_symmetric:
+    print("Result: The function is symmetric about the y-axis.")
+else:
+    print("Result: The function is NOT symmetric about the y-axis.")
+
+
+```
+
+## How do I test a function for point symmetry about the origin?
+
+Since the code for this test is very similar, this is an exercise for you.
+Write a function `check_point_symmetry(function_f)` that returns `True` if the function is point-symmetric about the origin, and `False` otherwise. The function `check_axis_symmetry` from above is a good template.
+
+Hidden tests check your function with several examples when you click **Check**.
+
+```{py-exercise}
+#| label: symmetrie-punktsymmetrie-en
+#| caption: Write check_point_symmetry
+import sympy
+x = sympy.symbols('x')
+
+def check_point_symmetry(function_f):
+    # Your code here
+    pass
+
+## TESTS ##
+assert check_point_symmetry(x**3) == True, "x**3 is point-symmetric about the origin"
+assert check_point_symmetry(x**3 - 2*x) == True, "x**3 - 2*x is point-symmetric about the origin"
+assert check_point_symmetry(sympy.sin(x)) == True, "sin(x) is point-symmetric about the origin"
+assert check_point_symmetry(x**2 + 4) == False, "x**2 + 4 is NOT point-symmetric (it is axis-symmetric)"
+assert check_point_symmetry(x**3 + 1) == False, "x**3 + 1 is NOT point-symmetric (the +1 shifts the graph)"
+```
+
+::: {.callout-tip title="Tip" collapse="true"}
+For point symmetry, $f(-x) = -f(x)$ must hold. In other words: $f(-x) + f(x)$ must simplify to $0$.
+:::
+
+# One test for two kinds of symmetry
+
+Now that you know how to test a function for symmetry about the y-axis or point symmetry about the origin, the next step is to think about how to write a program that performs both tests at once.
+
+``` {pyodide-python}
+#| label: symmetrie-beide-tests-en
+#Try to combine the two if statements in this block.
+```
+
+Test your program with $f(x)=x^4-3x^2$, $g(x)=x^5+x$ and $h(x)=x^2+x$. Does it agree with your answers in the following quiz?
+
+```quizdown
+---
+locale: en
+---
+
+# What symmetry does $f(x)=x^4-3x^2$ have?
+- [x] symmetric about the y-axis
+- [ ] point-symmetric about the origin
+- [ ] neither
+> Hint: Only even exponents.
+
+# What symmetry does $g(x)=x^5+x$ have?
+- [ ] symmetric about the y-axis
+- [x] point-symmetric about the origin
+- [ ] neither
+> Hint: Only odd exponents ($x = x^1$).
+
+# What symmetry does $h(x)=x^2+x$ have?
+- [ ] symmetric about the y-axis
+- [ ] point-symmetric about the origin
+- [x] neither
+> Hint: Even and odd exponents mixed. The graph is still a parabola and therefore axis-symmetric, just not about the y-axis.
+```
+
+::::

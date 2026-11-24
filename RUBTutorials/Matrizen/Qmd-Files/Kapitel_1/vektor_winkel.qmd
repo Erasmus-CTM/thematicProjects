@@ -1,0 +1,266 @@
+---
+title: "1.5. Winkel zwischen zwei Vektoren"
+title-en: "1.5. Angle between Two Vectors"
+format: html
+filters:
+  - ctm-assessment
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+::: {.callout-note title="Zellen der Reihe nach ausführen"}
+Die Code-Zellen dieser Seite bauen aufeinander auf: Importe, Variablen und Funktionen aus einer Zelle gelten auch in allen späteren Zellen und werden dort nicht wiederholt. Führe die Zellen deshalb von oben nach unten aus. Meldet Python einen `NameError`, hast du meist eine frühere Zelle noch nicht ausgeführt.
+:::
+
+Mit dem Wissen über das [Skalarprodukt](vektor_skalarprodukt.qmd) und die [Länge eines Vektors](vektor_laenge.qmd) können wir nun eine weitere fundamentale Eigenschaft berechnen: den **Winkel zwischen zwei Vektoren**.
+
+Diese Berechnung ist in vielen Bereichen wie der Physik, der Computergrafik oder dem maschinellen Lernen von großer Bedeutung. Sie ermöglicht es uns, die "Richtung" eines Vektors im Verhältnis zu einem anderen zu quantifizieren und Konzepte wie Orthogonalität (rechter Winkel) zu definieren.
+
+## 1.5.1. Mathematische Grundlagen
+
+Die Formel zur Berechnung des Winkels $\theta$ zwischen zwei Vektoren $\vec{a}$ und $\vec{b}$ leitet sich direkt aus der geometrischen Definition des Skalarprodukts ab:
+
+$$ \vec{a} \cdot \vec{b} = ||\vec{a}|| \cdot ||\vec{b}|| \cdot \cos(\theta) $$
+
+Durch Umstellen dieser Formel erhalten wir den Kosinus des Winkels:
+
+$$ \cos(\theta) = \frac{\vec{a} \cdot \vec{b}}{||\vec{a}|| \cdot ||\vec{b}||} $$
+
+Um den eigentlichen Winkel $\theta$ zu erhalten, wenden wir die Umkehrfunktion des Kosinus, den Arkuskosinus (`arccos`), an:
+
+$$ \theta = \arccos\left(\frac{\vec{a} \cdot \vec{b}}{||\vec{a}|| \cdot ||\vec{b}||}\right) $$
+
+Wie du siehst, benötigen wir für die Berechnung genau die beiden Konzepte, die wir in den vorherigen Kapiteln behandelt haben: das Skalarprodukt im Zähler und die Längen (Normen) der beiden Vektoren im Nenner.
+
+## 1.5.2. Winkel in NumPy berechnen
+
+Mit NumPy ist diese Berechnung sehr geradlinig, da wir die Funktionen der vorherigen Kapitel einfach kombinieren können.
+
+```{pyodide-python}
+import numpy as np
+
+# Zwei Vektoren, die im 90-Grad-Winkel zueinander stehen
+a_np = np.array([1, 0])
+b_np = np.array([0, 1])
+
+# 1. Skalarprodukt berechnen
+skalarprodukt = np.dot(a_np, b_np)
+
+# 2. Längen der Vektoren berechnen
+laenge_a = np.linalg.norm(a_np)
+laenge_b = np.linalg.norm(b_np)
+
+# 3. Kosinus des Winkels berechnen
+# Wir fügen eine kleine Sicherheitsprüfung hinzu, um eine Division durch Null zu vermeiden,
+# falls einer der Vektoren ein Nullvektor ist.
+if laenge_a > 0 and laenge_b > 0:
+    # np.clip stellt sicher, dass der Wert für arccos im gültigen Bereich [-1, 1] bleibt,
+    # um Rundungsfehler zu vermeiden, die zu einem Wert wie 1.0000000000000002 führen können.
+    cos_theta = np.clip(skalarprodukt / (laenge_a * laenge_b), -1.0, 1.0)
+else:
+    cos_theta = np.nan # Mit dem Nullvektor ist kein Winkel definiert, das Ergebnis wird nan (not a number)
+
+# 4. Winkel in Bogenmaß (Radian) mit arccos berechnen
+winkel_rad = np.arccos(cos_theta)
+
+# 5. Winkel in Grad umrechnen
+winkel_grad = np.degrees(winkel_rad)
+
+print(f"Das Skalarprodukt ist: {skalarprodukt}")
+print(f"Der Winkel in Bogenmaß (Radian) ist: {winkel_rad}")
+print(f"Der Winkel in Grad ist: {winkel_grad}°")
+```
+
+Wie erwartet, ist das Skalarprodukt der beiden orthogonalen (senkrecht aufeinander stehenden) Vektoren `0`, und der Winkel beträgt `90` Grad.
+
+### 1.5.2.1 Aufgabe: Winkel mit Listen berechnen
+
+Prüfe zuerst per Hand, was das Skalarprodukt über den Winkel verrät:
+
+```{math-exercise}
+#| label: winkel-check-1
+#| caption: Orthogonalität erkennen
+Die Vektoren $\vec{a} = (1, 0)$ und $\vec{b} = (0, 5)$ stehen im rechten Winkel zueinander. Wie groß ist ihr Skalarprodukt? _[0]
+```
+
+**Aufgabe**:
+Schreibe eine Funktion `winkel_grad(a, b)`, die den Winkel zwischen zwei Vektoren (Listen) in Grad berechnet, **ohne NumPy**. Du kannst `sqrt`, `acos` und `degrees` aus dem `math`-Modul verwenden. Versteckte Tests prüfen automatisch, ob deine Lösung stimmt. Beispiel: `winkel_grad([1, 0], [1, 1])` ergibt ca. `45.0`.
+
+**Befehle, die du brauchst:** `for`-Schleifen (oder `sum()`), `math.sqrt()`, `math.acos()`, `math.degrees()`, `return`.
+
+```{py-exercise}
+#| label: vektor-winkel
+#| caption: winkel_grad implementieren
+#| show-test-hints: false
+import math
+
+def winkel_grad(a, b):
+    # 1. Skalarprodukt berechnen
+    # 2. Längen von a und b berechnen
+    # 3. cos(Winkel) = Skalarprodukt / (Länge a * Länge b)
+    # 4. Mit math.acos() und math.degrees() in Grad umrechnen
+    pass
+
+## TESTS ##
+assert abs(winkel_grad([1, 0], [1, 1]) - 45.0) < 1e-6, "Falsches Ergebnis für [1,0] und [1,1] (erwartet 45°)"
+assert abs(winkel_grad([1, 0], [0, 5]) - 90.0) < 1e-6, "Falsches Ergebnis für [1,0] und [0,5] (erwartet 90°)"
+assert abs(winkel_grad([2, 0], [-3, 0]) - 180.0) < 1e-6, "Falsches Ergebnis für entgegengesetzte Vektoren (erwartet 180°)"
+assert abs(winkel_grad([1, 1, 0], [1, 1, 0]) - 0.0) < 1e-3, "Gleiche Vektoren haben den Winkel 0°"
+```
+
+::: {.callout-tip collapse="true" title="Tipps"}
+*   Kombiniere die Logik aus den Aufgaben der beiden vorherigen Kapitel (Skalarprodukt und Länge).
+*   Setze die berechneten Werte in die Formel `acos(skalarprodukt / (laenge_a * laenge_b))` ein.
+*   Wandle das Ergebnis von Bogenmaß (Radian) in Grad mit `math.degrees()` um.
+*   Rundungsfehler können dazu führen, dass der Wert für `math.acos()` minimal außerhalb von `[-1.0, 1.0]` liegt. Beschränke ihn daher z.B. mit `max(-1.0, min(1.0, wert))`.
+:::
+
+::: {.callout-caution collapse="true" title="Lösung"}
+```python
+def winkel_grad(a, b):
+    skalarprodukt = sum(x * y for x, y in zip(a, b))
+    laenge_a = math.sqrt(sum(x**2 for x in a))
+    laenge_b = math.sqrt(sum(x**2 for x in b))
+    cos_theta = skalarprodukt / (laenge_a * laenge_b)
+    cos_theta = max(-1.0, min(1.0, cos_theta))   # Rundungsfehler abfangen
+    return math.degrees(math.acos(cos_theta))
+```
+
+Ohne das Beschränken auf `[-1, 1]` würde `math.acos` bei gleich- oder entgegengesetzt gerichteten Vektoren manchmal einen Fehler melden. Außerdem ergibt `winkel_grad([1, 0], [1, 1])` ungerundet `45.00000000000001`. Das ist ein klassischer Rundungsfehler bei Fließkomma-Berechnungen (und wird unter anderem in der Numerik untersucht!).
+:::
+
+Das Berechnen des Winkels ist ein sehr hilfreiches Werkzeug. Es erlaubt uns, die Ähnlichkeit zwischen Vektoren zu messen (ein kleiner Winkel bedeutet eine ähnliche Richtung), dies ist eine Kernidee in vielen Suchalgorithmen und Empfehlungssystemen (zum Beispiel Kosinus-Ähnlichkeit).
+
+Im nächsten Abschnitt fassen wir die bisherigen Konzepte zusammen und schauen uns an, wie Vektoren als grundlegende Datenrepräsentation dienen.
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+::: {.callout-note title="Run the cells in order"}
+The code cells on this page build on each other: imports, variables and functions from one cell are also available in all later cells and are not repeated there. So run the cells from top to bottom. If Python reports a `NameError`, you most likely have not run an earlier cell yet.
+:::
+
+With what you know about the [dot product](vektor_skalarprodukt.qmd) and the [length of a vector](vektor_laenge.qmd), we can now compute another fundamental property: the **angle between two vectors**.
+
+This calculation is important in many fields such as physics, computer graphics, or machine learning. It allows us to quantify the "direction" of a vector relative to another and to define concepts like orthogonality (a right angle).
+
+## 1.5.1. Mathematical Foundations {#mathematische-grundlagen}
+
+The formula for computing the angle $\theta$ between two vectors $\vec{a}$ and $\vec{b}$ follows directly from the geometric definition of the dot product:
+
+$$ \vec{a} \cdot \vec{b} = ||\vec{a}|| \cdot ||\vec{b}|| \cdot \cos(\theta) $$
+
+Rearranging this formula gives us the cosine of the angle:
+
+$$ \cos(\theta) = \frac{\vec{a} \cdot \vec{b}}{||\vec{a}|| \cdot ||\vec{b}||} $$
+
+To get the actual angle $\theta$, we apply the inverse function of cosine, the arccosine (`arccos`):
+
+$$ \theta = \arccos\left(\frac{\vec{a} \cdot \vec{b}}{||\vec{a}|| \cdot ||\vec{b}||}\right) $$
+
+As you can see, the calculation needs exactly the two concepts covered in the previous sections: the dot product in the numerator and the lengths (norms) of both vectors in the denominator.
+
+## 1.5.2. Calculating Angles in NumPy {#winkel-in-numpy-berechnen}
+
+With NumPy, this calculation is very straightforward, since we can simply combine the functions from the previous sections.
+
+```{pyodide-python}
+import numpy as np
+
+# Two vectors at a 90-degree angle to each other
+a_np = np.array([1, 0])
+b_np = np.array([0, 1])
+
+# 1. Compute the dot product
+dot_product = np.dot(a_np, b_np)
+
+# 2. Compute the lengths of the vectors
+length_a = np.linalg.norm(a_np)
+length_b = np.linalg.norm(b_np)
+
+# 3. Compute the cosine of the angle
+# We add a small safety check to avoid division by zero,
+# in case one of the vectors is a zero vector.
+if length_a > 0 and length_b > 0:
+    # np.clip ensures the value for arccos stays within the valid range [-1, 1],
+    # to avoid rounding errors that could produce a value like 1.0000000000000002.
+    cos_theta = np.clip(dot_product / (length_a * length_b), -1.0, 1.0)
+else:
+    cos_theta = np.nan # No angle is defined with the zero vector, the result becomes nan (not a number)
+
+# 4. Compute the angle in radians with arccos
+angle_rad = np.arccos(cos_theta)
+
+# 5. Convert the angle to degrees
+angle_deg = np.degrees(angle_rad)
+
+print(f"The dot product is: {dot_product}")
+print(f"The angle in radians is: {angle_rad}")
+print(f"The angle in degrees is: {angle_deg}°")
+```
+
+As expected, the dot product of the two orthogonal (perpendicular) vectors is `0`, and the angle is `90` degrees.
+
+### 1.5.2.1 Exercise: Computing the Angle with Lists
+
+First check by hand what the dot product tells you about the angle:
+
+```{math-exercise}
+#| label: winkel-check-1-en
+#| caption: Recognizing orthogonality
+The vectors $\vec{a} = (1, 0)$ and $\vec{b} = (0, 5)$ are at a right angle to each other. What is their dot product? _[0]
+```
+
+**Exercise**:
+Write a function `angle_deg(a, b)` that computes the angle between two vectors (lists) in degrees, **without NumPy**. You can use `sqrt`, `acos` and `degrees` from the `math` module. Hidden tests check your solution automatically. Example: `angle_deg([1, 0], [1, 1])` gives about `45.0`.
+
+**Commands you need:** `for` loops (or `sum()`), `math.sqrt()`, `math.acos()`, `math.degrees()`, `return`.
+
+```{py-exercise}
+#| label: vektor-winkel-en
+#| caption: Implement angle_deg
+#| show-test-hints: false
+import math
+
+def angle_deg(a, b):
+    # 1. Compute the dot product
+    # 2. Compute the lengths of a and b
+    # 3. cos(angle) = dot product / (length a * length b)
+    # 4. Convert to degrees with math.acos() and math.degrees()
+    pass
+
+## TESTS ##
+assert abs(angle_deg([1, 0], [1, 1]) - 45.0) < 1e-6, "Wrong result for [1,0] and [1,1] (expected 45°)"
+assert abs(angle_deg([1, 0], [0, 5]) - 90.0) < 1e-6, "Wrong result for [1,0] and [0,5] (expected 90°)"
+assert abs(angle_deg([2, 0], [-3, 0]) - 180.0) < 1e-6, "Wrong result for opposite vectors (expected 180°)"
+assert abs(angle_deg([1, 1, 0], [1, 1, 0]) - 0.0) < 1e-3, "Equal vectors have an angle of 0°"
+```
+
+::: {.callout-tip collapse="true" title="Tips"}
+*   Combine the logic from the exercises of the two previous sections (dot product and length).
+*   Insert the computed values into the formula `acos(dot_product / (length_a * length_b))`.
+*   Convert the result from radians to degrees with `math.degrees()`.
+*   Rounding errors can push the value for `math.acos()` slightly outside `[-1.0, 1.0]`. Clamp it, e.g., with `max(-1.0, min(1.0, value))`.
+:::
+
+::: {.callout-caution collapse="true" title="Solution"}
+```python
+def angle_deg(a, b):
+    dot = sum(x * y for x, y in zip(a, b))
+    length_a = math.sqrt(sum(x**2 for x in a))
+    length_b = math.sqrt(sum(x**2 for x in b))
+    cos_theta = dot / (length_a * length_b)
+    cos_theta = max(-1.0, min(1.0, cos_theta))   # guard against rounding errors
+    return math.degrees(math.acos(cos_theta))
+```
+
+Without clamping to `[-1, 1]`, `math.acos` would sometimes raise an error for vectors pointing in the same or opposite direction. Also, `angle_deg([1, 0], [1, 1])` gives `45.00000000000001` unrounded. This is a classic rounding error of floating-point calculations (and is studied in numerical analysis, among other fields!).
+:::
+
+Computing the angle is a very useful tool. It lets us measure the similarity between vectors (a small angle means a similar direction), which is a core idea in many search algorithms and recommendation systems (for example, cosine similarity).
+
+In the next section, we'll summarize the concepts covered so far and look at how vectors serve as a fundamental data representation.
+
+::::

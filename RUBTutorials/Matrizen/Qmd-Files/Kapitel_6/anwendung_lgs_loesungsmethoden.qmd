@@ -1,0 +1,412 @@
+---
+title: "6.2. Lösungsmethoden für lineare Gleichungssysteme"
+title-en: "6.2. Solution Methods for Systems of Linear Equations"
+format: html
+filters:
+  - ctm-assessment
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+::: {.callout-note title="Zellen der Reihe nach ausführen"}
+Die Code-Zellen dieser Seite bauen aufeinander auf: Importe, Variablen und Funktionen aus einer Zelle gelten auch in allen späteren Zellen und werden dort nicht wiederholt. Führe die Zellen deshalb von oben nach unten aus. Meldet Python einen `NameError`, hast du meist eine frühere Zelle noch nicht ausgeführt. Aufgaben mit **Überprüfen** laufen für sich allein: Dort gilt nur, was in der Zelle selbst steht.
+:::
+
+## 6.2.1. Überblick über die Lösungsmethoden
+
+Lineare Gleichungssysteme (LGS) sind das Herzstück vieler technischer und mathematischer Probleme. Es gibt verschiedene Wege, diese zu lösen, abhängig davon, ob man sie mit Stift und Papier oder mit dem Computer berechnet.
+
+### 6.2.1.1. Schriftlich durchführbare Methoden (analytisch)
+
+Diese Methoden eignen sich hervorragend für kleine Systeme (z. B. $2 \times 2$ oder $3 \times 3$), um das Verständnis zu schärfen. Bei größeren Systemen werden sie jedoch schnell extrem aufwendig und fehleranfällig.
+
+::: {.callout-note title="Der Klassiker: Gaußsches Eliminationsverfahren"}
+Das **Gauß-Verfahren** ist die universellste Methode.
+Ziel ist es, das Gleichungssystem durch Äquivalenzumformungen (Zeilen tauschen, addieren, multiplizieren) in eine **Zeilenstufenform** (Dreiecksmatrix) zu bringen. Danach kann man die Variablen durch Rückwärtseinsetzen (Rücksubstitution) einfach berechnen.
+:::
+
+::: {.callout-tip title="Cramersche Regel"}
+Die **Cramersche Regel** nutzt Determinanten zur Lösung.
+Für jede Variable wird eine Determinante berechnet, bei der eine Spalte der Koeffizientenmatrix durch den Ergebnisvektor ersetzt wird.
+*Vorteil:* Man erhält eine explizite Formel für jede Unbekannte.
+*Nachteil:* Berechnet man die Determinanten per Laplace-Entwicklung, steigt der Rechenaufwand faktoriell ($n!$). Für $n > 3$ per Hand kaum machbar.
+:::
+
+::: {.callout-important title="Einsetzungs- und Additionsverfahren"}
+Diese Verfahren sind oft die ersten, die man in der Schule lernt. Man löst eine Gleichung nach einer Variablen auf und setzt sie in die anderen ein. Dies ist im Grunde eine weniger strukturierte Form des Gauß-Verfahrens und eignet sich meist nur für sehr kleine Systeme.
+:::
+
+### 6.2.1.2. Computer-Algorithmen (numerisch)
+
+Computer rechnen anders als Menschen. Sie haben Probleme mit Rundungsfehlern (Gleitkommaarithmetik) und müssen effizient mit Speicher und Rechenzeit umgehen. Daher nutzt man hier oft Zerlegungen oder iterative Verfahren.
+
+::: {.callout-note title="LR-Zerlegung (LU-Decomposition)"}
+Dies ist der Standard für dichte Matrizen in der Numerik.
+Die Matrix $A$ wird in eine untere Dreiecksmatrix ($L$ für Lower) und eine obere Dreiecksmatrix ($U$ für Upper) zerlegt, sodass $A = L \cdot U$.
+*Vorteil:* Hat man die Zerlegung einmal, kann man das LGS für verschiedene Ergebnisvektoren $b$ sehr schnell lösen, ohne alles neu zu berechnen.
+:::
+
+::: {.callout-warning title="Iterative Verfahren (Jacobi, Gauß-Seidel)"}
+Bei riesigen Gleichungssystemen (z. B. Millionen von Gleichungen), die aber "dünn besetzt" sind (viele Nullen, z. B. bei Simulationen), sind direkte Verfahren zu speicherintensiv.
+Iterative Verfahren raten eine Lösung und verbessern diese schrittweise, bis der Fehler klein genug ist. Sie liefern keine exakte Lösung, aber eine hinreichend genaue Näherung.
+:::
+
+---
+
+## 6.2.2. Implementierung der Lösungsmethoden
+
+Wir wollen nun zwei Ansätze in Python implementieren.
+
+### 6.2.2.1. Ansatz A: Der "naive" Gauß-Algorithmus (Einfach)
+
+Dieser Code setzt das schulische Gauß-Verfahren direkt um. Er ist gut lesbar, aber numerisch instabil (anfällig für Rundungsfehler) und nicht auf Geschwindigkeit optimiert.
+
+```{pyodide-python}
+import numpy as np
+
+def naive_gauss_solve(A, b):
+    """
+    Löst Ax = b mittels naiver Gauß-Elimination.
+    Achtung: Keine Pivotisierung (kann durch 0 teilen)!
+    """
+    n = len(b)
+    # Erweitere Matrix A um Vektor b
+    M = np.hstack([A, b.reshape(-1, 1)]).astype(float)
+    
+    # 1. Vorwärtselimination (Stufenform herstellen)
+    for i in range(n):
+        # Normiere die aktuelle Zeile, sodass M[i,i] = 1 wird
+        factor = M[i, i]
+        M[i] = M[i] / factor
+        
+        # Ziehe diese Zeile von allen darunterliegenden ab
+        for j in range(i + 1, n):
+            M[j] = M[j] - M[j, i] * M[i]
+            
+    # 2. Rückwärtssubstitution
+    x = np.zeros(n)
+    for i in range(n - 1, -1, -1):
+        sum_ax = sum(M[i, j] * x[j] for j in range(i + 1, n))
+        x[i] = M[i, n] - sum_ax
+        
+    return x
+
+# Testsystem
+A_test = np.array([[2, 1], [1, -3]])
+B_test = np.array([5, -1])
+
+print("Lösung (Naiv):", naive_gauss_solve(A_test, B_test))
+```
+
+### 6.2.2.2. Ansatz B: Die robuste `numpy`-Lösung (Praxis)
+
+Für die Praxis gilt: **Erfinde das Rad nicht neu!**
+Bibliotheken wie `NumPy` haben hochoptimierte und numerisch stabile Algorithmen schon fix und fertig an Bord. Diese sind oft (wie bei `numpy.linalg.solve`) auf robusten Verfahren wie der LR-Zerlegung basierend und sind sehr effizient und schnell in der Durchführung. Die Funktion `numpy.linalg.solve` ist daher der absolute Standardweg.
+
+*   **Stabil:** Nutzt intern Tricks wie die *Pivotisierung*, um eine Division durch (nahezu) Null zu vermeiden. Das macht den Algorithmus robust.
+*   **Schnell:** Greift auf hochoptimierte, kompilierte Mathe-Bibliotheken (BLAS/LAPACK) zurück. Schneller geht's kaum.
+*   **Einfach:** Die Anwendung ist super simpel, wie du gleich sehen wirst.
+
+```{pyodide-python}
+# Wir verwenden das gleiche Testsystem von oben
+C_test = np.array([[2, 1], [1, -3]])
+D_test = np.array([5, -1])
+
+# Die professionelle und stabile Lösung mit NumPy
+x_numpy = np.linalg.solve(C_test, D_test)
+print("Lösung (NumPy):", x_numpy)
+```
+
+### 6.2.2.3. Warum Pivotisierung wichtig ist
+
+Der naive Gauß teilt jede Zeile durch ihr Diagonalelement. Steht dort eine $0$, geht das schief, obwohl das System eine ganz normale Lösung hat. Ein Beispiel:
+
+$$\begin{align*}
+0x + 1y &= 2 \\
+1x + 1y &= 3
+\end{align*}$$
+
+Von Hand würdest du einfach die beiden Zeilen tauschen. Genau das ist *Pivotisierung*. Führe zuerst die Zelle von Ansatz A aus, damit `naive_gauss_solve` bekannt ist, und vergleiche dann:
+
+```{pyodide-python}
+A_pivot = np.array([[0, 1], [1, 1]])
+b_pivot = np.array([2, 3])
+
+try:
+    with np.errstate(divide="ignore", invalid="ignore"):
+        print("Naiver Gauß:", naive_gauss_solve(A_pivot, b_pivot))
+except NameError:
+    print("Führe zuerst die Zelle von Ansatz A aus.")
+
+print("NumPy:      ", np.linalg.solve(A_pivot, b_pivot))
+```
+
+`nan` steht für *not a number*: Der naive Algorithmus hat durch $0$ geteilt. `np.linalg.solve` tauscht die Zeilen intern und findet $x = 1$, $y = 2$.
+
+---
+
+## 6.2.3. Übungsaufgabe: Jetzt bist du dran!
+
+Jetzt bist du dran! Gegeben ist das folgende Gleichungssystem:
+
+$$
+\begin{align*}
+2x_1 + 4x_2 - 2x_3 &= 2 \\
+4x_1 + 9x_2 - 3x_3 &= 8 \\
+-2x_1 - 3x_2 + 7x_3 &= 10
+\end{align*}
+$$
+
+**Deine Aufgabe:** Schreib den Python-Code, um dieses LGS zu lösen. Du kannst dafür entweder unsere `naive_gauss_solve`-Funktion von oben nehmen (dann musst du sie in diese Zelle kopieren) oder direkt die Profi-Lösung `np.linalg.solve` verwenden. Du hast die Wahl! Speichere die Lösung in `x`, dann prüft **Überprüfen** dein Ergebnis.
+
+**Befehle, die du brauchst:** `np.array()`, `np.linalg.solve()`, `print()`.
+
+```{py-exercise}
+#| label: lgs-uebung
+#| caption: LGS lösen
+#| show-test-hints: false
+import numpy as np
+
+A = None  # Koeffizientenmatrix
+b = None  # Ergebnisvektor
+x = None  # Lösung
+
+print("x =", x)
+
+## TESTS ##
+assert A is not None and np.shape(A) == (3, 3), "A sollte eine 3×3-Matrix sein: drei Gleichungen, drei Unbekannte."
+assert A is not None and np.shape(A) == (3, 3) and np.allclose(A, [[2, 4, -2], [4, 9, -3], [-2, -3, 7]]), "Die Koeffizienten in A passen noch nicht. Jede Zeile von A ist eine Gleichung."
+assert b is not None and np.size(b) == 3 and np.allclose(np.ravel(b), [2, 8, 10]), "b passt noch nicht: Das sind die Zahlen rechts vom Gleichheitszeichen."
+assert x is not None and np.size(x) == 3 and np.allclose(np.ravel(x), [-1, 2, 2]), "x löst das System noch nicht. Berechne x z.B. mit np.linalg.solve(A, b). Probe: A @ x sollte b ergeben."
+```
+
+:::{.callout-tip title="Tipp 1" collapse="true"}
+Denk daran, wie du die Koeffizientenmatrix `A` und den Ergebnisvektor `b` mit `np.array()` erstellst. Die Matrix `A` ist eine Liste von Listen (jede innere Liste ist eine Zeile).
+:::
+
+:::{.callout-tip title="Tipp 2" collapse="true"}
+Nachdem du `A` und `b` hast, kannst du sie einfach an eine der beiden Lösungsfunktionen übergeben, z.B. `x = np.linalg.solve(A, b)`. Zur Probe kannst du `print(A @ x)` ausgeben: Das sollte wieder `b` sein.
+:::
+
+::: {.callout-caution title="Lösung" collapse="true"}
+```python
+import numpy as np
+
+A = np.array([[2, 4, -2],
+              [4, 9, -3],
+              [-2, -3, 7]])
+b = np.array([2, 8, 10])
+x = np.linalg.solve(A, b)
+
+print("x =", x)
+print("Probe A @ x =", A @ x)
+```
+:::
+
+
+Im nächsten und letzten Kapitel geht es um [Eigenwerte und Eigenvektoren](../Kapitel_7/index.qmd): eine kleine Auffrischung, was das ist, wofür man es braucht und wie man es mit Python berechnet.
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+::: {.callout-note title="Run the cells in order"}
+The code cells on this page build on each other: imports, variables and functions from one cell are also available in all later cells and are not repeated there. So run the cells from top to bottom. If Python reports a `NameError`, you most likely have not run an earlier cell yet. Exercises with **Check** run on their own: only what is written in the cell itself counts there.
+:::
+
+## 6.2.1. Overview of the solution methods {#überblick-über-die-lösungsmethoden}
+
+Systems of linear equations are at the heart of many technical and mathematical problems. There are various ways to solve them, depending on whether you compute with pen and paper or with a computer.
+
+### 6.2.1.1. Methods for pen and paper (analytical)
+
+These methods are excellent for small systems (e.g. $2 \times 2$ or $3 \times 3$) to sharpen your understanding. For larger systems, however, they quickly become extremely laborious and error-prone.
+
+::: {.callout-note title="The classic: Gaussian elimination"}
+**Gaussian elimination** is the most universal method.
+The goal is to bring the system into **row echelon form** (triangular matrix) through equivalence transformations (swapping, adding, multiplying rows). After that, the variables can be computed easily by back substitution.
+:::
+
+::: {.callout-tip title="Cramer's rule"}
+**Cramer's rule** uses determinants to solve the system.
+For each variable a determinant is computed in which one column of the coefficient matrix is replaced by the right-hand side vector.
+*Advantage:* You get an explicit formula for each unknown.
+*Disadvantage:* If the determinants are computed by Laplace expansion, the effort grows factorially ($n!$). For $n > 3$ hardly feasible by hand.
+:::
+
+::: {.callout-important title="Substitution and elimination (addition) method"}
+These methods are often the first ones you learn at school. You solve one equation for one variable and substitute it into the others. This is basically a less structured form of Gaussian elimination and is usually only suitable for very small systems.
+:::
+
+### 6.2.1.2. Computer algorithms (numerical)
+
+Computers compute differently from humans. They have problems with rounding errors (floating-point arithmetic) and have to handle memory and computing time efficiently. That is why decompositions or iterative methods are often used here.
+
+::: {.callout-note title="LU decomposition"}
+This is the standard for dense matrices in numerical analysis.
+The matrix $A$ is decomposed into a lower triangular matrix ($L$ for lower) and an upper triangular matrix ($U$ for upper), so that $A = L \cdot U$.
+*Advantage:* Once you have the decomposition, you can solve the system very quickly for different right-hand sides $b$ without recomputing everything.
+:::
+
+::: {.callout-warning title="Iterative methods (Jacobi, Gauss-Seidel)"}
+For huge systems (e.g. millions of equations) that are "sparse" (many zeros, e.g. in simulations), direct methods need too much memory.
+Iterative methods guess a solution and improve it step by step until the error is small enough. They do not give an exact solution, but a sufficiently accurate approximation.
+:::
+
+---
+
+## 6.2.2. Implementing the solution methods {#implementierung-der-lösungsmethoden}
+
+We now want to implement two approaches in Python.
+
+### 6.2.2.1. Approach A: the "naive" Gauss algorithm (simple)
+
+This code implements the school version of Gaussian elimination directly. It is easy to read, but numerically unstable (prone to rounding errors) and not optimized for speed.
+
+```{pyodide-python}
+import numpy as np
+
+def naive_gauss_solve(A, b):
+    """
+    Solves Ax = b using naive Gaussian elimination.
+    Caution: no pivoting (may divide by 0)!
+    """
+    n = len(b)
+    # Extend matrix A by vector b
+    M = np.hstack([A, b.reshape(-1, 1)]).astype(float)
+
+    # 1. Forward elimination (create row echelon form)
+    for i in range(n):
+        # Normalize the current row so that M[i,i] = 1
+        factor = M[i, i]
+        M[i] = M[i] / factor
+
+        # Subtract this row from all rows below
+        for j in range(i + 1, n):
+            M[j] = M[j] - M[j, i] * M[i]
+
+    # 2. Back substitution
+    x = np.zeros(n)
+    for i in range(n - 1, -1, -1):
+        sum_ax = sum(M[i, j] * x[j] for j in range(i + 1, n))
+        x[i] = M[i, n] - sum_ax
+
+    return x
+
+# Test system
+A_test = np.array([[2, 1], [1, -3]])
+B_test = np.array([5, -1])
+
+print("Solution (naive):", naive_gauss_solve(A_test, B_test))
+```
+
+### 6.2.2.2. Approach B: the robust `numpy` solution (practice)
+
+In practice: **don't reinvent the wheel!**
+Libraries like `NumPy` already come with highly optimized and numerically stable algorithms. These are often based on robust methods such as LU decomposition (as with `numpy.linalg.solve`) and are very efficient and fast. The function `numpy.linalg.solve` is therefore the absolute standard way.
+
+*   **Stable:** Internally uses tricks like *pivoting* to avoid division by (almost) zero. This makes the algorithm robust.
+*   **Fast:** Relies on highly optimized, compiled math libraries (BLAS/LAPACK). It hardly gets faster than that.
+*   **Simple:** Using it is super simple, as you will see in a moment.
+
+```{pyodide-python}
+# We use the same test system as above
+C_test = np.array([[2, 1], [1, -3]])
+D_test = np.array([5, -1])
+
+# The professional and stable solution with NumPy
+x_numpy = np.linalg.solve(C_test, D_test)
+print("Solution (NumPy):", x_numpy)
+```
+
+### 6.2.2.3. Why pivoting matters
+
+The naive Gauss algorithm divides each row by its diagonal element. If there is a $0$ there, it fails, even though the system has a perfectly normal solution. An example:
+
+$$\begin{align*}
+0x + 1y &= 2 \\
+1x + 1y &= 3
+\end{align*}$$
+
+By hand you would simply swap the two rows. That is exactly what *pivoting* is. First run the cell of approach A so that `naive_gauss_solve` is known, then compare:
+
+```{pyodide-python}
+A_pivot = np.array([[0, 1], [1, 1]])
+b_pivot = np.array([2, 3])
+
+try:
+    with np.errstate(divide="ignore", invalid="ignore"):
+        print("Naive Gauss:", naive_gauss_solve(A_pivot, b_pivot))
+except NameError:
+    print("First run the cell of approach A.")
+
+print("NumPy:      ", np.linalg.solve(A_pivot, b_pivot))
+```
+
+`nan` stands for *not a number*: the naive algorithm divided by $0$. `np.linalg.solve` swaps the rows internally and finds $x = 1$, $y = 2$.
+
+---
+
+## 6.2.3. Exercise: now it's your turn! {#übungsaufgabe-jetzt-bist-du-dran}
+
+Now it's your turn! The following system of equations is given:
+
+$$
+\begin{align*}
+2x_1 + 4x_2 - 2x_3 &= 2 \\
+4x_1 + 9x_2 - 3x_3 &= 8 \\
+-2x_1 - 3x_2 + 7x_3 &= 10
+\end{align*}
+$$
+
+**Your task:** Write the Python code to solve this system. You can either use our `naive_gauss_solve` function from above (then you need to copy it into this cell) or directly use the professional solution `np.linalg.solve`. Your choice! Store the solution in `x`, then **Check** tests your result.
+
+**Commands you need:** `np.array()`, `np.linalg.solve()`, `print()`.
+
+```{py-exercise}
+#| label: lgs-uebung-en
+#| caption: Solving a system of linear equations
+#| show-test-hints: false
+import numpy as np
+
+A = None  # coefficient matrix
+b = None  # right-hand side vector
+x = None  # solution
+
+print("x =", x)
+
+## TESTS ##
+assert A is not None and np.shape(A) == (3, 3), "A should be a 3×3 matrix: three equations, three unknowns."
+assert A is not None and np.shape(A) == (3, 3) and np.allclose(A, [[2, 4, -2], [4, 9, -3], [-2, -3, 7]]), "The coefficients in A are not right yet. Each row of A is one equation."
+assert b is not None and np.size(b) == 3 and np.allclose(np.ravel(b), [2, 8, 10]), "b is not right yet: these are the numbers to the right of the equals sign."
+assert x is not None and np.size(x) == 3 and np.allclose(np.ravel(x), [-1, 2, 2]), "x does not solve the system yet. Compute x e.g. with np.linalg.solve(A, b). Check: A @ x should give b."
+```
+
+:::{.callout-tip title="Hint 1" collapse="true"}
+Remember how to create the coefficient matrix `A` and the right-hand side vector `b` with `np.array()`. The matrix `A` is a list of lists (each inner list is a row).
+:::
+
+:::{.callout-tip title="Hint 2" collapse="true"}
+Once you have `A` and `b`, you can simply pass them to one of the two solution functions, e.g. `x = np.linalg.solve(A, b)`. As a check you can print `A @ x`: this should be `b` again.
+:::
+
+::: {.callout-caution title="Solution" collapse="true"}
+```python
+import numpy as np
+
+A = np.array([[2, 4, -2],
+              [4, 9, -3],
+              [-2, -3, 7]])
+b = np.array([2, 8, 10])
+x = np.linalg.solve(A, b)
+
+print("x =", x)
+print("Check A @ x =", A @ x)
+```
+:::
+
+
+The next and last chapter is about [eigenvalues and eigenvectors](../Kapitel_7/index.qmd): a short refresher on what they are, what they are needed for and how to compute them with Python.
+
+::::

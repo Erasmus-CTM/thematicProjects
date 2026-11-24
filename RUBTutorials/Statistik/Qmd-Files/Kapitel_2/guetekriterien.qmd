@@ -1,0 +1,979 @@
+---
+title: "2.3 Gütekriterien für Punktschätzer"
+title-en: "2.3 Quality Criteria for Point Estimators"
+execute:
+  eval: false
+  echo: true
+  warning: false
+filters:
+  - ctm-assessment
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+```{python}
+#| include: true
+#| echo: false
+#| eval: true
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib
+import pandas as pd
+from scipy import stats
+
+matplotlib.rcParams['figure.dpi'] = 110
+matplotlib.rcParams['font.size'] = 11
+
+try:
+    from palmerpenguins import load_penguins
+    penguins = load_penguins()
+except Exception:
+    url = "https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"
+    penguins = pd.read_csv(url)
+```
+
+## Lernziele {.unnumbered}
+
+Am Ende dieses Unterkapitels kannst du:
+
+- die drei wichtigsten Gütekriterien für Schätzer (Erwartungstreue, Effizienz, Konsistenz)
+  erläutern und visuell interpretieren.
+- den Bias eines Schätzers berechnen und erklären, warum $s^2$ mit $1/(n-1)$ erwartungstreu ist.
+- den Standardfehler des Stichprobenmittels $\sigma/\sqrt{n}$ interpretieren und berechnen.
+- Konsistenz anhand von Simulationen erkennen.
+
+---
+
+## Einführung: Was macht einen guten Schätzer aus?
+
+Wie wir in Kapitel 2.1 gesehen haben, liefert ein Schätzer bei jeder neuen Stichprobe einen
+anderen Schätzwert. Wann ist ein Schätzer **gut**?
+
+Ein anschauliches Bild: Stell dir einen Bogenschützen vor, der auf eine Zielscheibe schießt.
+Das Zentrum der Scheibe ist der wahre Parameter $\theta$. Jeder Pfeil ist ein Schätzwert aus
+einer zufälligen Stichprobe.
+
+```{python}
+#| echo: false
+#| eval: true
+np.random.seed(42)
+
+def zielscheibe(ax, mu, sigma, title, n=80):
+    pts = np.random.normal(mu, sigma, (n, 2))
+    # Ringe von außen nach innen zeichnen, sonst verdeckt der größte Kreis alle anderen
+    for r, c in [(4,'#adb5bd'),(3,'#ced4da'),(2,'#dee2e6'),(1,'#e9ecef')]:
+        circle = plt.Circle((0, 0), r, color=c, fill=True)
+        ax.add_patch(circle)
+    ax.set_xlim(-5, 5); ax.set_ylim(-5, 5)
+    ax.set_aspect('equal')
+    ax.plot(*([0],[0]), 'k+', ms=12, mew=2.5, zorder=5)
+    ax.scatter(pts[:,0], pts[:,1], s=20, color='#ae2012', alpha=0.7, zorder=4)
+    # Schwerpunkt
+    ax.plot(pts[:,0].mean(), pts[:,1].mean(), 'o', ms=10, color='#0a9396',
+            markeredgecolor='white', markeredgewidth=1.5, zorder=6,
+            label=f'Mittelpunkt der Treffer')
+    ax.set_xticks([]); ax.set_yticks([])
+    ax.set_title(title, fontsize=10)
+
+fig, axes = plt.subplots(1, 4, figsize=(12, 3.5))
+
+zielscheibe(axes[0], mu=[0,0], sigma=0.8, title='Erwartungstreu\n& effizient')
+zielscheibe(axes[1], mu=[0,0], sigma=2.0, title='Erwartungstreu\n& ineffizient')
+zielscheibe(axes[2], mu=[2,1], sigma=0.8, title='Nicht erw.treu\n& effizient (Bias!)')
+zielscheibe(axes[3], mu=[2,1], sigma=2.0, title='Nicht erw.treu\n& ineffizient')
+
+for ax in axes:
+    ax.legend(loc='lower right', fontsize=7, framealpha=0.8)
+
+plt.suptitle('Vier Schätzer im Vergleich: Zielscheiben-Metapher', y=1.02, fontsize=11)
+plt.tight_layout()
+plt.show()
+```
+
+Wir wollen einen Schätzer, der:
+
+1. **Im Mittel** den wahren Wert trifft (Erwartungstreue),
+2. Wenig **streut** (Effizienz),
+3. Für mehr Daten immer **genauer** wird (Konsistenz).
+
+---
+
+## Erwartungstreue (Bias)
+
+::: {.callout-note icon=false}
+## Definition: Bias und Erwartungstreue
+
+Der **Bias** (oder die Verzerrung) eines Schätzers $\hat{\theta}$ für den Parameter $\theta$ ist
+der systematische Schätzfehler:
+$$\text{Bias}(\hat{\theta}) = E(\hat{\theta}) - \theta$$
+
+Ein Schätzer heißt **erwartungstreu** (oder **unverzerrt**), wenn sein Bias null ist:
+$$E(\hat{\theta}) = \theta$$
+:::
+
+### Das Stichprobenmittel ist erwartungstreu
+
+Für unabhängige, identisch verteilte Werte mit Erwartungswert $\mu$ gilt:
+$$E(\overline{X}_n) = E\left(\frac{1}{n}\sum_{i=1}^n X_i\right) = \frac{1}{n}\sum_{i=1}^n E(X_i) = \mu$$
+
+Das Stichprobenmittel ist ein **erwartungstreuer** Schätzer für $\mu$.
+
+### Warum $s^2$ den Faktor $1/(n-1)$ braucht
+
+Wenn man die Varianz mit $1/n$ berechnet:
+$$\tilde{s}^2 = \frac{1}{n}\sum_{i=1}^n (x_i - \bar{x})^2$$
+
+dann gilt $E(\tilde{s}^2) = \frac{n-1}{n} \sigma^2 < \sigma^2$ – der Schätzer **unterschätzt**
+systematisch die wahre Varianz $\sigma^2$. Mit dem Faktor $1/(n-1)$ hingegen gilt:
+$$E(s^2) = \sigma^2 \quad \text{(erwartungstreu!)}$$
+
+::: {.callout-caution}
+## Häufiger Fehler: numpy vs. pandas Varianz
+
+In Python berechnen `numpy` und `pandas` die Varianz unterschiedlich:
+
+```python
+import numpy as np, pandas as pd
+
+x = [2, 4, 6, 8]
+np.var(x)       # 1/n → NICHT erwartungstreu (= 5.0)
+np.var(x, ddof=1)  # 1/(n-1) → erwartungstreu (= 6.667)
+pd.Series(x).var()  # 1/(n-1) → erwartungstreu (= 6.667)
+```
+
+Für Schätzung der **Populations**varianz immer `ddof=1` verwenden!
+:::
+
+### Simulation: Bias sichtbar machen
+
+```{python}
+#| echo: false
+#| eval: true
+np.random.seed(1)
+sigma2_true = 4.0
+N_sims = 2000
+ns = [5, 10, 20, 50, 100]
+
+biased_means = []
+unbiased_means = []
+
+for n in ns:
+    # beide Schätzer auf dieselben Stichproben anwenden
+    samples = np.random.normal(0, 2, (N_sims, n))
+    biased_means.append(np.var(samples, axis=1).mean())
+    unbiased_means.append(np.var(samples, axis=1, ddof=1).mean())
+
+fig, ax = plt.subplots(figsize=(7, 4))
+ax.plot(ns, biased_means, 'o-', color='#ae2012', lw=2, label='$\\tilde{s}^2$ (mit $1/n$) – verzerrt')
+ax.plot(ns, unbiased_means, 's-', color='#0a9396', lw=2, label='$s^2$ (mit $1/(n-1)$) – erwartungstreu')
+ax.axhline(sigma2_true, color='k', ls='--', lw=1.5, label=f'Wahrer Wert $\\sigma^2 = {sigma2_true}$')
+ax.set_xlabel('Stichprobenumfang $n$')
+ax.set_ylabel('Mittlerer Schätzwert (aus 2000 Stichproben)')
+ax.set_title('Bias-Vergleich der beiden Varianz-Schätzer')
+ax.legend(fontsize=9)
+plt.tight_layout()
+plt.show()
+```
+
+Bei kleinen Stichproben ($n = 5$) schätzt $\tilde{s}^2$ die Varianz deutlich zu klein.
+Der Unterschied wird mit wachsendem $n$ kleiner.
+
+---
+
+## Effizienz und Standardfehler
+
+Ein Schätzer ist **effizient**, wenn er wenig streut. Das zentrale Maß dafür ist der
+**Standardfehler**.
+
+::: {.callout-note icon=false}
+## Definition: Standardfehler
+
+Der **Standardfehler** eines Schätzers $\hat{\theta}$ ist seine Standardabweichung:
+$$\text{SE}(\hat{\theta}) = \sqrt{\text{Var}(\hat{\theta})}$$
+
+Er misst, wie stark die Schätzwerte zwischen verschiedenen Stichproben streuen.
+:::
+
+### Standardfehler des Stichprobenmittels
+
+Für unabhängige, identisch verteilte Werte mit Varianz $\sigma^2$ gilt:
+$$\text{SE}(\overline{X}_n) = \frac{\sigma}{\sqrt{n}}$$
+
+::: {.callout-rechnen appearance="minimal"}
+**Herleitung:**
+$$\text{Var}(\overline{X}_n) = \text{Var}\!\left(\frac{1}{n}\sum_{i=1}^n X_i\right)
+= \frac{1}{n^2}\sum_{i=1}^n \text{Var}(X_i) = \frac{n \cdot \sigma^2}{n^2} = \frac{\sigma^2}{n}$$
+:::
+
+```{python}
+#| echo: false
+#| eval: true
+np.random.seed(3)
+true_mu = 3700
+true_sigma = 460
+
+fig, axes = plt.subplots(1, 3, figsize=(11, 3.8))
+ns_plot = [10, 30, 100]
+colors = ['#ca6702', '#0a9396', '#005f73']
+
+for ax, n, col in zip(axes, ns_plot, colors):
+    estimates = [np.mean(np.random.normal(true_mu, true_sigma, n)) for _ in range(500)]
+    ax.hist(estimates, bins=25, color=col, edgecolor='white', alpha=0.8, density=True)
+    se = true_sigma / np.sqrt(n)
+    xr = np.linspace(true_mu - 4*se, true_mu + 4*se, 300)
+    ax.plot(xr, stats.norm.pdf(xr, true_mu, se), 'k', lw=2)
+    ax.axvline(true_mu, color='#ae2012', lw=2, ls='--')
+    ax.set_title(f'n = {n}\nSE = σ/√n = {se:.1f} g', fontsize=10)
+    ax.set_xlabel('x̄ (g)')
+    ax.set_xlim(2800, 4600)
+    if ax == axes[0]:
+        ax.set_ylabel('Dichte')
+
+plt.suptitle('Verteilung von $\\bar{X}_n$ für verschiedene Stichprobengrößen', y=1.02, fontsize=11)
+plt.tight_layout()
+plt.show()
+```
+
+**Fazit:** Mit $k$-mal so vielen Daten wird der Standardfehler nicht $k$-mal kleiner, sondern nur
+um den Faktor $\sqrt{k}$. Um die Genauigkeit zu verdoppeln, braucht man die **vierfache** Datenmenge!
+
+### Standardfehler in Python schätzen
+
+Da $\sigma$ in der Praxis unbekannt ist, schätzt man den Standardfehler durch:
+$$\widehat{\text{SE}}(\overline{X}_n) = \frac{s}{\sqrt{n}}$$
+
+```{pyodide-python}
+import pandas as pd
+import numpy as np
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+masse = penguins[penguins['species'] == 'Adelie']['body_mass_g'].dropna()
+
+n = len(masse)
+s = masse.std()           # Stichproben-Standardabweichung (mit n-1)
+se = s / np.sqrt(n)       # geschätzter Standardfehler
+
+print(f"n = {n}")
+print(f"s = {s:.1f} g")
+print(f"Geschätzter Standardfehler SE = s/√n = {se:.1f} g")
+```
+
+### Von Hand
+
+Die Körpermasse streut mit $\sigma = 460$ g. Wie groß ist der Standardfehler von $\overline{X}_n$ bei $n = 25$ Tieren? Wie viele Tiere braucht man, damit er nur noch halb so groß ist? Und: Bei $\sigma^2 = 4$ und $n = 5$, welchen Erwartungswert und welchen Bias hat $\tilde{s}^2$?
+
+```{math-exercise}
+#| label: guete-hand
+#| caption: Standardfehler und Bias von Hand
+#| mode: numeric
+#| tolerance: 1%
+#| partial-credit: true
+#| field-labels: SE, n, E(s̃²), Bias
+$\text{SE} =$ _[92] g, $n =$ _[100], $E(\tilde{s}^2) =$ _[3.2], $\text{Bias}(\tilde{s}^2) =$ _[-0.8]
+```
+
+::: {.callout-tip collapse="true" title="Lösungsweg"}
+- $\text{SE} = 460/\sqrt{25} = 460/5 = 92$ g
+- Halber Standardfehler heißt $\sqrt{n}$ doppelt so groß, also $n$ viermal so groß: $4 \cdot 25 = 100$
+- $E(\tilde{s}^2) = \frac{n-1}{n}\sigma^2 = \frac{4}{5} \cdot 4 = 3{,}2$, also $\text{Bias} = 3{,}2 - 4 = -0{,}8$
+:::
+
+:::: {.theorem .exercise}
+#### Aufgabe: Standardfehler je Pinguinart
+
+Berechne den geschätzten Standardfehler $s/\sqrt{n}$ des Mittelwerts der Körpermasse für jede Pinguinart und speichere ihn in `se_art` (ein Wert je Art). Bei welcher Art ist der Mittelwert am ungenauesten geschätzt, und warum, obwohl ihre Standardabweichung die kleinste ist?
+
+**Überprüfen** testet `se_art`.
+
+```{py-exercise}
+#| label: se-arten
+#| caption: Standardfehler je Pinguinart
+#| show-test-hints: false
+import numpy as np
+import pandas as pd
+from pyodide.http import open_url
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+
+se_art = None   # Dein Code hier
+print(se_art)
+
+## TESTS ##
+assert se_art is not None and hasattr(se_art, '__len__') and len(se_art) == 3, "se_art sollte genau einen Wert je Art enthalten (3 Arten). Tipp: groupby('species')."
+assert se_art is None or not hasattr(se_art, '__len__') or len(se_art) != 3 or 'Chinstrap' not in se_art or abs(float(se_art['Chinstrap']) - 384.34) > 1, "Das ist die Standardabweichung. Der Standardfehler teilt sie noch durch √n."
+assert se_art is not None and hasattr(se_art, '__len__') and len(se_art) == 3 and 'Chinstrap' in se_art and 'Adelie' in se_art and abs(float(se_art['Chinstrap']) - 46.61) < 0.05 and abs(float(se_art['Adelie']) - 37.32) < 0.05, "se_art stimmt nicht: Erwartet sind etwa 37,3 g (Adelie), 46,6 g (Chinstrap), 45,5 g (Gentoo)."
+```
+
+::: {.callout-tip title="Tipp" collapse="true"}
+`penguins.groupby('species')['body_mass_g'].sem()` liefert $s/\sqrt{n}$ direkt. Zu Fuß: `.std()` und `.count()` je Art, dann teilen.
+:::
+
+::: {.callout-caution title="Lösung" collapse="true"}
+```python
+se_art = penguins.groupby('species')['body_mass_g'].sem()
+```
+
+Adelie $37{,}3$ g, Chinstrap $46{,}6$ g, Gentoo $45{,}5$ g. Chinstrap hat mit $s \approx 384$ g die kleinste Standardabweichung, aber nur $n = 68$ Tiere. Weil der Standardfehler durch $\sqrt{n}$ teilt, gewinnt hier der kleine Stichprobenumfang.
+:::
+::::
+
+---
+
+## Konsistenz
+
+::: {.callout-note icon=false}
+## Definition: Konsistenz
+
+Eine Folge von Schätzern $(\hat{\theta}_n)_{n \in \mathbb{N}}$ heißt **konsistent**, wenn die
+Schätzwerte für wachsenden Stichprobenumfang $n$ gegen den wahren Parameterwert konvergieren:
+
+$$\hat{\theta}_n \xrightarrow{n \to \infty} \theta \quad \text{(stochastisch)}$$
+
+Anschaulich: Bei genug Daten wird die Schätzung beliebig genau.
+:::
+
+Das Stichprobenmittel ist konsistent, denn $\text{SE}(\overline{X}_n) = \sigma/\sqrt{n} \to 0$
+für $n \to \infty$. Das ist eine Folgerung aus dem **Gesetz der großen Zahlen**.
+
+### Simulation: Konvergenz des Stichprobenmittels
+
+```{python}
+#| echo: false
+#| eval: true
+np.random.seed(5)
+true_mu = 3700.0
+true_sigma = 460.0
+
+max_n = 300
+running_means = np.cumsum(np.random.normal(true_mu, true_sigma, max_n)) / np.arange(1, max_n + 1)
+
+fig, ax = plt.subplots(figsize=(9, 4))
+ns = np.arange(1, max_n + 1)
+ax.plot(ns, running_means, '#0a9396', lw=1.8, label='laufender Mittelwert $\\bar{x}_n$')
+ax.axhline(true_mu, color='#ae2012', lw=2, ls='--', label=f'Wahrer Wert μ = {true_mu:.0f} g')
+
+se = true_sigma / np.sqrt(ns)
+ax.fill_between(ns, true_mu - 2*se, true_mu + 2*se, alpha=0.15, color='#ae2012',
+                label='±2·SE Band')
+
+ax.set_xlabel('Stichprobenumfang n')
+ax.set_ylabel('x̄ (g)')
+ax.set_title('Konsistenz: $\\bar{X}_n$ konvergiert gegen μ für $n \\to \\infty$')
+ax.legend(fontsize=9)
+ax.set_xlim(1, max_n)
+plt.tight_layout()
+plt.show()
+```
+
+Das Stichprobenmittel pendelt zunächst stark, nähert sich dann aber immer enger dem wahren
+Wert an. Das ±2·SE-Band zeigt, wie sich die Unsicherheit mit $1/\sqrt{n}$ verringert.
+
+---
+
+## Der MSE: Bias und Varianz zusammen
+
+Der **mittlere quadratische Fehler** (MSE) vereint Bias und Varianz in einer Größe:
+
+$$\text{MSE}(\hat{\theta}) = \text{Var}(\hat{\theta}) + \text{Bias}(\hat{\theta})^2$$
+
+Das nennt sich die **Bias-Varianz-Zerlegung**. Ein guter Schätzer hat sowohl kleinen Bias als
+auch kleine Varianz – beide Terme tragen zum Gesamtfehler bei.
+
+```{python}
+#| echo: false
+#| eval: true
+ns = np.arange(5, 101)
+
+# Verzerrter (1/n) vs. erwartungstreuer (1/(n-1)) Schätzer für σ² = 4, Normalverteilung
+sigma2 = 4.0
+
+# Bias²: E(~s²) = (n-1)/n * σ², also Bias = -σ²/n
+bias_sq = (sigma2 / ns)**2
+var_biased = 2 * (ns - 1) * sigma2**2 / ns**2  # Var(~s²) = 2(n-1)σ⁴/n²
+var_unbiased = 2 * sigma2**2 / (ns - 1)        # Var(s²)  = 2σ⁴/(n-1)
+
+mse_biased = bias_sq + var_biased
+mse_unbiased = var_unbiased  # bias=0
+
+fig, axes = plt.subplots(1, 2, figsize=(10, 3.8))
+
+ax = axes[0]
+ax.plot(ns, bias_sq, '#ae2012', lw=2, label='Bias²')
+ax.plot(ns, var_biased, '#0a9396', lw=2, label='Varianz')
+ax.plot(ns, mse_biased, 'k', lw=2, ls='--', label='MSE = Bias² + Varianz')
+ax.set_title('Verzerrt: $\\tilde{s}^2$ (mit $1/n$)', fontsize=10)
+ax.set_xlabel('n'); ax.set_ylabel('Fehler'); ax.legend(fontsize=8); ax.set_xlim(5, 100); ax.set_ylim(0, 8.5)
+
+ax2 = axes[1]
+ax2.plot(ns, np.zeros_like(ns), '#ae2012', lw=2, label='Bias² = 0')
+ax2.plot(ns, var_unbiased, '#0a9396', lw=2, label='Varianz = MSE')
+ax2.plot(ns, mse_biased, color='#999', lw=1.5, ls='--', label='MSE von $\\tilde{s}^2$ (zum Vergleich)')
+ax2.set_title('Erwartungstreu: $s^2$ (mit $1/(n-1)$)', fontsize=10)
+ax2.set_xlabel('n'); ax2.legend(fontsize=8); ax2.set_xlim(5, 100); ax2.set_ylim(0, 8.5)
+
+plt.suptitle('MSE-Zerlegung der beiden Varianz-Schätzer ($\\sigma^2 = 4$, Normalverteilung)', fontsize=11, y=1.02)
+plt.tight_layout()
+plt.show()
+```
+
+Überraschend: $\tilde{s}^2$ hat zwar einen Bias, streut aber weniger als $s^2$. Bei normalverteilten Daten ist sein MSE für **jedes** $n$ kleiner (gestrichelte Linie rechts). Erwartungstreue ist also nicht automatisch das Wichtigste. Man verwendet $s^2$ trotzdem meist, weil es im Mittel richtig liegt und weil die Formeln für Konfidenzintervalle und Tests (Kapitel 2.4 und 2.5) darauf aufbauen.
+
+---
+
+## Zusammenfassung
+
+| Kriterium | Was wird bewertet? | Formel / Bedingung |
+|-----------|--------------------|--------------------|
+| **Erwartungstreue** | Systematischer Fehler | $E(\hat{\theta}) = \theta$ (Bias = 0) |
+| **Standardfehler** | Streuung der Schätzwerte | $\text{SE} = \sqrt{\text{Var}(\hat{\theta})}$ |
+| **Konsistenz** | Verhalten für $n \to \infty$ | $\hat{\theta}_n \to \theta$ |
+| **MSE** | Gesamtfehler | $\text{MSE} = \text{Var} + \text{Bias}^2$ |
+
+Für die Praxis gilt: Die Standardschätzer $\overline{X}_n$ (für $\mu$) und $s^2$ (für $\sigma^2$)
+sind erwartungstreu und konsistent. Der Standardfehler des Mittelwerts beträgt $\sigma/\sqrt{n}$.
+
+---
+
+## Wissensüberprüfung
+
+```{quizdown}
+---
+locale: de
+primaryColor: '#0a9396'
+shuffleQuestions: false
+shuffleAnswers: true
+---
+
+### Ein Schätzer hat einen Bias von –2. Was bedeutet das?
+
+1. [ ] Der Schätzer schätzt immer um 2 zu hoch.
+1. [x] Der Schätzer unterschätzt den wahren Parameter im Mittel um 2.
+    > Richtig! Ein negativer Bias bedeutet systematische Unterschätzung.
+1. [ ] Die Standardabweichung des Schätzers ist 2.
+1. [ ] Der Schätzer ist in 2% der Fälle falsch.
+
+### Warum verwendet die Stichprobenvarianz $s^2$ den Faktor $1/(n-1)$ und nicht $1/n$?
+
+1. [ ] Damit die Berechnung einfacher wird.
+1. [x] Weil $\tilde{s}^2$ mit $1/n$ die Populationsvarianz systematisch unterschätzt, und $1/(n-1)$ diesen Bias korrigiert.
+    > Richtig! Nur mit n-1 im Nenner ist der Schätzer erwartungstreu für σ².
+1. [ ] Weil man immer einen Datenpunkt "verliert", wenn man den Mittelwert berechnet.
+    > Das ist die richtige Intuition, aber die entscheidende Eigenschaft ist die Erwartungstreue.
+1. [ ] Wegen des zentralen Grenzwertsatzes.
+
+### Der Standardfehler des Stichprobenmittels beträgt σ/√n. Was passiert, wenn man den Stichprobenumfang vervierfacht?
+
+1. [ ] Der Standardfehler viertelt sich (wird durch 4 geteilt).
+1. [x] Der Standardfehler halbiert sich (wird durch √4 = 2 geteilt).
+    > Richtig! SE = σ/√n → σ/√(4n) = σ/(2√n) = SE/2.
+1. [ ] Der Standardfehler wird viermal so groß.
+1. [ ] Der Standardfehler ändert sich nicht.
+
+### Was beschreibt die Konsistenz eines Schätzers?
+
+1. [ ] Dass der Schätzer immer denselben Wert liefert.
+1. [ ] Dass der Schätzer keinen Bias hat.
+1. [x] Dass der Schätzer für wachsenden Stichprobenumfang gegen den wahren Parameter konvergiert.
+    > Richtig! Bei genug Daten wird ein konsistenter Schätzer beliebig genau.
+1. [ ] Dass der Schätzer den MSE minimiert.
+
+### Die Bias-Varianz-Zerlegung lautet: MSE = Bias² + Varianz. Ist ein verzerrter (biased) Schätzer immer schlechter als ein unverzerrter?
+
+1. [ ] Ja, ein erwartungstreuer Schätzer ist immer besser.
+1. [x] Nein – ein verzerrter Schätzer mit sehr kleiner Varianz kann einen niedrigeren MSE haben als ein unverzerrter Schätzer mit großer Varianz.
+    > Richtig! Es gibt einen Bias-Varianz-Tradeoff: manchmal ist etwas Bias akzeptabel, wenn die Varianz stark sinkt. Beispiel von oben: $\tilde{s}^2$ hat bei normalverteilten Daten einen kleineren MSE als $s^2$.
+1. [ ] Nein, aber nur wenn n > 100.
+1. [ ] Ja, weil Bias² immer größer ist als die Varianz.
+```
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+```{python}
+#| include: true
+#| echo: false
+#| eval: true
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib
+import pandas as pd
+from scipy import stats
+
+matplotlib.rcParams['figure.dpi'] = 110
+matplotlib.rcParams['font.size'] = 11
+
+try:
+    from palmerpenguins import load_penguins
+    penguins = load_penguins()
+except Exception:
+    url = "https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"
+    penguins = pd.read_csv(url)
+```
+
+## Learning objectives {.unnumbered #lernziele}
+
+By the end of this section you can:
+
+- explain the three most important quality criteria for estimators (unbiasedness, efficiency,
+  consistency) and interpret them visually.
+- compute the bias of an estimator and explain why $s^2$ with $1/(n-1)$ is unbiased.
+- interpret and compute the standard error of the sample mean $\sigma/\sqrt{n}$.
+- recognize consistency from simulations.
+
+---
+
+## Introduction: what makes a good estimator? {#einführung-was-macht-einen-guten-schätzer-aus}
+
+As we saw in section 2.1, an estimator gives a different estimate for every new sample. When is
+an estimator **good**?
+
+A vivid picture: imagine an archer shooting at a target. The center of the target is the true
+parameter $\theta$. Every arrow is an estimate from a random sample.
+
+```{python}
+#| echo: false
+#| eval: true
+np.random.seed(42)
+
+def target(ax, mu, sigma, title, n=80):
+    pts = np.random.normal(mu, sigma, (n, 2))
+    # draw rings from the outside in, otherwise the largest circle hides all others
+    for r, c in [(4,'#adb5bd'),(3,'#ced4da'),(2,'#dee2e6'),(1,'#e9ecef')]:
+        circle = plt.Circle((0, 0), r, color=c, fill=True)
+        ax.add_patch(circle)
+    ax.set_xlim(-5, 5); ax.set_ylim(-5, 5)
+    ax.set_aspect('equal')
+    ax.plot(*([0],[0]), 'k+', ms=12, mew=2.5, zorder=5)
+    ax.scatter(pts[:,0], pts[:,1], s=20, color='#ae2012', alpha=0.7, zorder=4)
+    # center of the hits
+    ax.plot(pts[:,0].mean(), pts[:,1].mean(), 'o', ms=10, color='#0a9396',
+            markeredgecolor='white', markeredgewidth=1.5, zorder=6,
+            label=f'Center of the hits')
+    ax.set_xticks([]); ax.set_yticks([])
+    ax.set_title(title, fontsize=10)
+
+fig, axes = plt.subplots(1, 4, figsize=(12, 3.5))
+
+target(axes[0], mu=[0,0], sigma=0.8, title='Unbiased\n& efficient')
+target(axes[1], mu=[0,0], sigma=2.0, title='Unbiased\n& inefficient')
+target(axes[2], mu=[2,1], sigma=0.8, title='Biased\n& efficient (bias!)')
+target(axes[3], mu=[2,1], sigma=2.0, title='Biased\n& inefficient')
+
+for ax in axes:
+    ax.legend(loc='lower right', fontsize=7, framealpha=0.8)
+
+plt.suptitle('Four estimators compared: the target metaphor', y=1.02, fontsize=11)
+plt.tight_layout()
+plt.show()
+```
+
+We want an estimator that:
+
+1. hits the true value **on average** (unbiasedness),
+2. **spreads** little (efficiency),
+3. becomes ever more **precise** with more data (consistency).
+
+---
+
+## Unbiasedness (bias) {#erwartungstreue-bias}
+
+::: {.callout-note icon=false}
+## Definition: bias and unbiasedness
+
+The **bias** of an estimator $\hat{\theta}$ for the parameter $\theta$ is the systematic
+estimation error:
+$$\text{Bias}(\hat{\theta}) = E(\hat{\theta}) - \theta$$
+
+An estimator is called **unbiased** if its bias is zero:
+$$E(\hat{\theta}) = \theta$$
+:::
+
+### The sample mean is unbiased {#das-stichprobenmittel-ist-erwartungstreu}
+
+For independent, identically distributed values with expected value $\mu$:
+$$E(\overline{X}_n) = E\left(\frac{1}{n}\sum_{i=1}^n X_i\right) = \frac{1}{n}\sum_{i=1}^n E(X_i) = \mu$$
+
+The sample mean is an **unbiased** estimator for $\mu$.
+
+### Why $s^2$ needs the factor $1/(n-1)$ {#warum-s2-den-faktor-1n-1-braucht}
+
+If you compute the variance with $1/n$:
+$$\tilde{s}^2 = \frac{1}{n}\sum_{i=1}^n (x_i - \bar{x})^2$$
+
+then $E(\tilde{s}^2) = \frac{n-1}{n} \sigma^2 < \sigma^2$ – the estimator systematically
+**underestimates** the true variance $\sigma^2$. With the factor $1/(n-1)$, on the other hand:
+$$E(s^2) = \sigma^2 \quad \text{(unbiased!)}$$
+
+::: {.callout-caution}
+## Common mistake: numpy vs. pandas variance
+
+In Python, `numpy` and `pandas` compute the variance differently:
+
+```python
+import numpy as np, pandas as pd
+
+x = [2, 4, 6, 8]
+np.var(x)       # 1/n → NOT unbiased (= 5.0)
+np.var(x, ddof=1)  # 1/(n-1) → unbiased (= 6.667)
+pd.Series(x).var()  # 1/(n-1) → unbiased (= 6.667)
+```
+
+To estimate the **population** variance, always use `ddof=1`!
+:::
+
+### Simulation: making the bias visible {#simulation-bias-sichtbar-machen}
+
+```{python}
+#| echo: false
+#| eval: true
+np.random.seed(1)
+sigma2_true = 4.0
+N_sims = 2000
+ns = [5, 10, 20, 50, 100]
+
+biased_means = []
+unbiased_means = []
+
+for n in ns:
+    # apply both estimators to the same samples
+    samples = np.random.normal(0, 2, (N_sims, n))
+    biased_means.append(np.var(samples, axis=1).mean())
+    unbiased_means.append(np.var(samples, axis=1, ddof=1).mean())
+
+fig, ax = plt.subplots(figsize=(7, 4))
+ax.plot(ns, biased_means, 'o-', color='#ae2012', lw=2, label='$\\tilde{s}^2$ (with $1/n$) – biased')
+ax.plot(ns, unbiased_means, 's-', color='#0a9396', lw=2, label='$s^2$ (with $1/(n-1)$) – unbiased')
+ax.axhline(sigma2_true, color='k', ls='--', lw=1.5, label=f'True value $\\sigma^2 = {sigma2_true}$')
+ax.set_xlabel('Sample size $n$')
+ax.set_ylabel('Mean estimate (from 2000 samples)')
+ax.set_title('Bias comparison of the two variance estimators')
+ax.legend(fontsize=9)
+plt.tight_layout()
+plt.show()
+```
+
+For small samples ($n = 5$), $\tilde{s}^2$ clearly underestimates the variance. The difference
+becomes smaller as $n$ grows.
+
+---
+
+## Efficiency and standard error {#effizienz-und-standardfehler}
+
+An estimator is **efficient** if it spreads little. The central measure for this is the
+**standard error**.
+
+::: {.callout-note icon=false}
+## Definition: standard error
+
+The **standard error** of an estimator $\hat{\theta}$ is its standard deviation:
+$$\text{SE}(\hat{\theta}) = \sqrt{\text{Var}(\hat{\theta})}$$
+
+It measures how much the estimates vary between different samples.
+:::
+
+### Standard error of the sample mean {#standardfehler-des-stichprobenmittels}
+
+For independent, identically distributed values with variance $\sigma^2$:
+$$\text{SE}(\overline{X}_n) = \frac{\sigma}{\sqrt{n}}$$
+
+::: {.callout-rechnen appearance="minimal"}
+**Derivation:**
+$$\text{Var}(\overline{X}_n) = \text{Var}\!\left(\frac{1}{n}\sum_{i=1}^n X_i\right)
+= \frac{1}{n^2}\sum_{i=1}^n \text{Var}(X_i) = \frac{n \cdot \sigma^2}{n^2} = \frac{\sigma^2}{n}$$
+:::
+
+```{python}
+#| echo: false
+#| eval: true
+np.random.seed(3)
+true_mu = 3700
+true_sigma = 460
+
+fig, axes = plt.subplots(1, 3, figsize=(11, 3.8))
+ns_plot = [10, 30, 100]
+colors = ['#ca6702', '#0a9396', '#005f73']
+
+for ax, n, col in zip(axes, ns_plot, colors):
+    estimates = [np.mean(np.random.normal(true_mu, true_sigma, n)) for _ in range(500)]
+    ax.hist(estimates, bins=25, color=col, edgecolor='white', alpha=0.8, density=True)
+    se = true_sigma / np.sqrt(n)
+    xr = np.linspace(true_mu - 4*se, true_mu + 4*se, 300)
+    ax.plot(xr, stats.norm.pdf(xr, true_mu, se), 'k', lw=2)
+    ax.axvline(true_mu, color='#ae2012', lw=2, ls='--')
+    ax.set_title(f'n = {n}\nSE = σ/√n = {se:.1f} g', fontsize=10)
+    ax.set_xlabel('x̄ (g)')
+    ax.set_xlim(2800, 4600)
+    if ax == axes[0]:
+        ax.set_ylabel('Density')
+
+plt.suptitle('Distribution of $\\bar{X}_n$ for different sample sizes', y=1.02, fontsize=11)
+plt.tight_layout()
+plt.show()
+```
+
+**Conclusion:** With $k$ times as much data, the standard error does not become $k$ times smaller,
+but only smaller by the factor $\sqrt{k}$. To double the precision you need **four times** as
+much data!
+
+### Estimating the standard error in Python {#standardfehler-in-python-schätzen}
+
+Since $\sigma$ is unknown in practice, the standard error is estimated by:
+$$\widehat{\text{SE}}(\overline{X}_n) = \frac{s}{\sqrt{n}}$$
+
+```{pyodide-python}
+import pandas as pd
+import numpy as np
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+mass = penguins[penguins['species'] == 'Adelie']['body_mass_g'].dropna()
+
+n = len(mass)
+s = mass.std()            # sample standard deviation (with n-1)
+se = s / np.sqrt(n)       # estimated standard error
+
+print(f"n = {n}")
+print(f"s = {s:.1f} g")
+print(f"Estimated standard error SE = s/√n = {se:.1f} g")
+```
+
+### By hand {#von-hand}
+
+Body mass varies with $\sigma = 460$ g. How large is the standard error of $\overline{X}_n$ for
+$n = 25$ animals? How many animals do you need for it to be only half as large? And: for
+$\sigma^2 = 4$ and $n = 5$, what expected value and what bias does $\tilde{s}^2$ have?
+
+```{math-exercise}
+#| label: guete-hand-en
+#| caption: Standard error and bias by hand
+#| mode: numeric
+#| tolerance: 1%
+#| partial-credit: true
+#| field-labels: SE, n, E(s̃²), Bias
+$\text{SE} =$ _[92] g, $n =$ _[100], $E(\tilde{s}^2) =$ _[3.2], $\text{Bias}(\tilde{s}^2) =$ _[-0.8]
+```
+
+::: {.callout-tip collapse="true" title="Solution steps"}
+- $\text{SE} = 460/\sqrt{25} = 460/5 = 92$ g
+- Half the standard error means $\sqrt{n}$ twice as large, so $n$ four times as large: $4 \cdot 25 = 100$
+- $E(\tilde{s}^2) = \frac{n-1}{n}\sigma^2 = \frac{4}{5} \cdot 4 = 3.2$, so $\text{Bias} = 3.2 - 4 = -0.8$
+:::
+
+:::: {.theorem .exercise}
+#### Exercise: standard error per penguin species
+
+Compute the estimated standard error $s/\sqrt{n}$ of the mean body mass for each penguin species
+and store it in `se_by_species` (one value per species). For which species is the mean estimated
+least precisely, and why, although its standard deviation is the smallest?
+
+**Check** tests `se_by_species`.
+
+```{py-exercise}
+#| label: se-arten-en
+#| caption: Standard error per penguin species
+#| show-test-hints: false
+import numpy as np
+import pandas as pd
+from pyodide.http import open_url
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+
+se_by_species = None   # your code here
+print(se_by_species)
+
+## TESTS ##
+assert se_by_species is not None and hasattr(se_by_species, '__len__') and len(se_by_species) == 3, "se_by_species should contain exactly one value per species (3 species). Hint: groupby('species')."
+assert se_by_species is None or not hasattr(se_by_species, '__len__') or len(se_by_species) != 3 or 'Chinstrap' not in se_by_species or abs(float(se_by_species['Chinstrap']) - 384.34) > 1, "That is the standard deviation. The standard error additionally divides it by √n."
+assert se_by_species is not None and hasattr(se_by_species, '__len__') and len(se_by_species) == 3 and 'Chinstrap' in se_by_species and 'Adelie' in se_by_species and abs(float(se_by_species['Chinstrap']) - 46.61) < 0.05 and abs(float(se_by_species['Adelie']) - 37.32) < 0.05, "se_by_species is not correct: expected are about 37.3 g (Adelie), 46.6 g (Chinstrap), 45.5 g (Gentoo)."
+```
+
+::: {.callout-tip title="Hint" collapse="true"}
+`penguins.groupby('species')['body_mass_g'].sem()` gives $s/\sqrt{n}$ directly. By hand: `.std()`
+and `.count()` per species, then divide.
+:::
+
+::: {.callout-caution title="Solution" collapse="true"}
+```python
+se_by_species = penguins.groupby('species')['body_mass_g'].sem()
+```
+
+Adelie $37.3$ g, Chinstrap $46.6$ g, Gentoo $45.5$ g. Chinstrap has the smallest standard
+deviation with $s \approx 384$ g, but only $n = 68$ animals. Because the standard error divides by
+$\sqrt{n}$, the small sample size wins here.
+:::
+::::
+
+---
+
+## Consistency {#konsistenz}
+
+::: {.callout-note icon=false}
+## Definition: consistency
+
+A sequence of estimators $(\hat{\theta}_n)_{n \in \mathbb{N}}$ is called **consistent** if the
+estimates converge to the true parameter value as the sample size $n$ grows:
+
+$$\hat{\theta}_n \xrightarrow{n \to \infty} \theta \quad \text{(in probability)}$$
+
+Intuitively: with enough data the estimate becomes arbitrarily precise.
+:::
+
+The sample mean is consistent, because $\text{SE}(\overline{X}_n) = \sigma/\sqrt{n} \to 0$ for
+$n \to \infty$. This is a consequence of the **law of large numbers**.
+
+### Simulation: convergence of the sample mean {#simulation-konvergenz-des-stichprobenmittels}
+
+```{python}
+#| echo: false
+#| eval: true
+np.random.seed(5)
+true_mu = 3700.0
+true_sigma = 460.0
+
+max_n = 300
+running_means = np.cumsum(np.random.normal(true_mu, true_sigma, max_n)) / np.arange(1, max_n + 1)
+
+fig, ax = plt.subplots(figsize=(9, 4))
+ns = np.arange(1, max_n + 1)
+ax.plot(ns, running_means, '#0a9396', lw=1.8, label='running mean $\\bar{x}_n$')
+ax.axhline(true_mu, color='#ae2012', lw=2, ls='--', label=f'True value μ = {true_mu:.0f} g')
+
+se = true_sigma / np.sqrt(ns)
+ax.fill_between(ns, true_mu - 2*se, true_mu + 2*se, alpha=0.15, color='#ae2012',
+                label='±2·SE band')
+
+ax.set_xlabel('Sample size n')
+ax.set_ylabel('x̄ (g)')
+ax.set_title('Consistency: $\\bar{X}_n$ converges to μ for $n \\to \\infty$')
+ax.legend(fontsize=9)
+ax.set_xlim(1, max_n)
+plt.tight_layout()
+plt.show()
+```
+
+The sample mean fluctuates strongly at first, but then gets ever closer to the true value. The
+±2·SE band shows how the uncertainty decreases with $1/\sqrt{n}$.
+
+---
+
+## MSE: bias and variance together {#der-mse-bias-und-varianz-zusammen}
+
+The **mean squared error** (MSE) combines bias and variance in one quantity:
+
+$$\text{MSE}(\hat{\theta}) = \text{Var}(\hat{\theta}) + \text{Bias}(\hat{\theta})^2$$
+
+This is called the **bias-variance decomposition**. A good estimator has both small bias and
+small variance – both terms contribute to the total error.
+
+```{python}
+#| echo: false
+#| eval: true
+ns = np.arange(5, 101)
+
+# Biased (1/n) vs. unbiased (1/(n-1)) estimator for σ² = 4, normal distribution
+sigma2 = 4.0
+
+# Bias²: E(~s²) = (n-1)/n * σ², so Bias = -σ²/n
+bias_sq = (sigma2 / ns)**2
+var_biased = 2 * (ns - 1) * sigma2**2 / ns**2  # Var(~s²) = 2(n-1)σ⁴/n²
+var_unbiased = 2 * sigma2**2 / (ns - 1)        # Var(s²)  = 2σ⁴/(n-1)
+
+mse_biased = bias_sq + var_biased
+mse_unbiased = var_unbiased  # bias=0
+
+fig, axes = plt.subplots(1, 2, figsize=(10, 3.8))
+
+ax = axes[0]
+ax.plot(ns, bias_sq, '#ae2012', lw=2, label='Bias²')
+ax.plot(ns, var_biased, '#0a9396', lw=2, label='Variance')
+ax.plot(ns, mse_biased, 'k', lw=2, ls='--', label='MSE = Bias² + Variance')
+ax.set_title('Biased: $\\tilde{s}^2$ (with $1/n$)', fontsize=10)
+ax.set_xlabel('n'); ax.set_ylabel('Error'); ax.legend(fontsize=8); ax.set_xlim(5, 100); ax.set_ylim(0, 8.5)
+
+ax2 = axes[1]
+ax2.plot(ns, np.zeros_like(ns), '#ae2012', lw=2, label='Bias² = 0')
+ax2.plot(ns, var_unbiased, '#0a9396', lw=2, label='Variance = MSE')
+ax2.plot(ns, mse_biased, color='#999', lw=1.5, ls='--', label='MSE of $\\tilde{s}^2$ (for comparison)')
+ax2.set_title('Unbiased: $s^2$ (with $1/(n-1)$)', fontsize=10)
+ax2.set_xlabel('n'); ax2.legend(fontsize=8); ax2.set_xlim(5, 100); ax2.set_ylim(0, 8.5)
+
+plt.suptitle('MSE decomposition of the two variance estimators ($\\sigma^2 = 4$, normal distribution)', fontsize=11, y=1.02)
+plt.tight_layout()
+plt.show()
+```
+
+Surprisingly, $\tilde{s}^2$ is biased but spreads less than $s^2$. For normally distributed data
+its MSE is smaller for **every** $n$ (dashed line on the right). So unbiasedness is not
+automatically the most important thing. $s^2$ is still usually used, because it is right on
+average and because the formulas for confidence intervals and tests (sections 2.4 and 2.5) build
+on it.
+
+---
+
+## Summary {#zusammenfassung}
+
+| Criterion | What is assessed? | Formula / condition |
+|-----------|--------------------|--------------------|
+| **Unbiasedness** | Systematic error | $E(\hat{\theta}) = \theta$ (Bias = 0) |
+| **Standard error** | Spread of the estimates | $\text{SE} = \sqrt{\text{Var}(\hat{\theta})}$ |
+| **Consistency** | Behavior for $n \to \infty$ | $\hat{\theta}_n \to \theta$ |
+| **MSE** | Total error | $\text{MSE} = \text{Var} + \text{Bias}^2$ |
+
+In practice: the standard estimators $\overline{X}_n$ (for $\mu$) and $s^2$ (for $\sigma^2$) are
+unbiased and consistent. The standard error of the mean is $\sigma/\sqrt{n}$.
+
+---
+
+## Check your knowledge {#wissensüberprüfung}
+
+```{quizdown}
+---
+primaryColor: '#0a9396'
+shuffleQuestions: false
+shuffleAnswers: true
+locale: en
+---
+
+### An estimator has a bias of –2. What does that mean?
+
+1. [ ] The estimator always estimates 2 too high.
+1. [x] On average, the estimator underestimates the true parameter by 2.
+    > Correct! A negative bias means systematic underestimation.
+1. [ ] The standard deviation of the estimator is 2.
+1. [ ] The estimator is wrong in 2% of cases.
+
+### Why does the sample variance $s^2$ use the factor $1/(n-1)$ and not $1/n$?
+
+1. [ ] To make the computation easier.
+1. [x] Because $\tilde{s}^2$ with $1/n$ systematically underestimates the population variance, and $1/(n-1)$ corrects this bias.
+    > Correct! Only with n-1 in the denominator is the estimator unbiased for σ².
+1. [ ] Because you always "lose" a data point when you compute the mean.
+    > That is the right intuition, but the decisive property is unbiasedness.
+1. [ ] Because of the central limit theorem.
+
+### The standard error of the sample mean is σ/√n. What happens if you quadruple the sample size?
+
+1. [ ] The standard error is quartered (divided by 4).
+1. [x] The standard error is halved (divided by √4 = 2).
+    > Correct! SE = σ/√n → σ/√(4n) = σ/(2√n) = SE/2.
+1. [ ] The standard error becomes four times as large.
+1. [ ] The standard error does not change.
+
+### What does the consistency of an estimator describe?
+
+1. [ ] That the estimator always gives the same value.
+1. [ ] That the estimator has no bias.
+1. [x] That the estimator converges to the true parameter as the sample size grows.
+    > Correct! With enough data a consistent estimator becomes arbitrarily precise.
+1. [ ] That the estimator minimizes the MSE.
+
+### The bias-variance decomposition is: MSE = Bias² + Variance. Is a biased estimator always worse than an unbiased one?
+
+1. [ ] Yes, an unbiased estimator is always better.
+1. [x] No – a biased estimator with very small variance can have a lower MSE than an unbiased estimator with large variance.
+    > Correct! There is a bias-variance trade-off: sometimes some bias is acceptable if the variance drops a lot. Example from above: for normally distributed data $\tilde{s}^2$ has a smaller MSE than $s^2$.
+1. [ ] No, but only if n > 100.
+1. [ ] Yes, because Bias² is always larger than the variance.
+```
+
+::::

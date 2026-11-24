@@ -1,0 +1,206 @@
+---
+title: "1.3. Skalarprodukt"
+title-en: "1.3. Dot Product"
+format: html
+filters:
+  - ctm-assessment
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+::: {.callout-note title="Zellen der Reihe nach ausführen"}
+Die Code-Zellen dieser Seite bauen aufeinander auf: Importe, Variablen und Funktionen aus einer Zelle gelten auch in allen späteren Zellen und werden dort nicht wiederholt. Führe die Zellen deshalb von oben nach unten aus. Meldet Python einen `NameError`, hast du meist eine frühere Zelle noch nicht ausgeführt.
+:::
+
+Nachdem du nun die grundlegenden Vektor-Operationen kennengelernt hast, geht es in diesem Kapitel um das **Skalarprodukt**.
+Diese wichtige Operation bildet aus zwei Vektoren gleicher Dimension einen einzelnen Skalar, also einen Wert. Das Skalarprodukt ist fundamental, um später Konzepte wie die Länge eines Vektors oder den Winkel zwischen zwei Vektoren zu verstehen.
+
+## 1.3.1. Mathematische Grundlagen
+
+Mathematisch ist das Skalarprodukt (auch inneres Produkt genannt) die Summe der Produkte der entsprechenden Komponenten zweier Vektoren. Für $\vec{a} = (a_1, a_2, \dots, a_n)$ und $\vec{b} = (b_1, b_2, \dots, b_n)$ ist
+
+$$ \vec{a} \cdot \vec{b} = \sum_{i=1}^{n} a_i b_i = a_1b_1 + a_2b_2 + \dots + a_nb_n $$
+
+Wie bei der Addition und der elementweisen Multiplikation müssen die beiden Vektoren auch für das Skalarprodukt dieselbe Dimension (also die gleiche Anzahl von Elementen) haben.
+
+In `numpy` gibt es für diese Berechnung optimierte und einfach zu anzuwendende Funktionen.
+
+```{pyodide-python}
+import numpy as np
+
+a_np = np.array([1, 2, 3])
+b_np = np.array([4, 5, 6])
+
+# Methode 1: Die Funktion np.dot()
+skalarprodukt_dot = np.dot(a_np, b_np)
+print(f"Skalarprodukt mit np.dot(): {skalarprodukt_dot}")
+
+# Methode 2: Der @-Operator (Matrixmultiplikations-Operator)
+# Für 1D-Arrays (Vektoren) entspricht dies dem Skalarprodukt.
+skalarprodukt_at = a_np @ b_np
+print(f"Skalarprodukt mit dem @-Operator: {skalarprodukt_at}")
+
+# Zur Kontrolle: 1*4 + 2*5 + 3*6 = 4 + 10 + 18 = 32
+```
+
+### 1.3.1.1. Aufgabe: Skalarprodukt mit Listen
+
+Berechne zuerst ein Skalarprodukt per Kopfrechnen/auf Papier, ohne Python:
+
+```{math-exercise}
+#| label: skalarprodukt-check-1
+#| caption: Skalarprodukt von Hand berechnen
+Wie groß ist das Skalarprodukt der Vektoren $\vec{a} = (2, 3)$ und $\vec{b} = (4, -1)$? _[2*4 + 3*(-1)]
+```
+
+**Aufgabe**:
+Schreibe eine Funktion `skalarprodukt(a, b)`, die das Skalarprodukt zweier gleich langer Listen ohne NumPy berechnet. Versteckte Tests prüfen automatisch, ob deine Lösung stimmt. Beispiel: `skalarprodukt([1, 2, 3], [4, 5, 6])` ergibt `32`.
+
+**Befehle, die du brauchst:** eine `for`-Schleife mit `range()` und `len()`, der Indexzugriff `a[i]`, die Rechenzeichen `*` und `+`, `return`.
+
+```{py-exercise}
+#| label: vektor-skalarprodukt
+#| caption: skalarprodukt implementieren
+#| show-test-hints: false
+def skalarprodukt(a, b):
+    # Dein Code hier
+    pass
+
+## TESTS ##
+assert skalarprodukt([1, 2, 3], [4, 5, 6]) == 32, "Falsches Ergebnis für [1,2,3] · [4,5,6]"
+assert skalarprodukt([2, 3], [4, -1]) == 5, "Falsches Ergebnis für [2,3] · [4,-1]"
+assert skalarprodukt([1, 0], [0, 5]) == 0, "Orthogonale Vektoren haben das Skalarprodukt 0"
+```
+
+::: {.callout-tip collapse="true" title="Tipps"}
+*   Du benötigst eine Variable, in der du die Summe der Produkte speicherst. Initialisiere sie mit `0`.
+*   Iteriere mit einer `for`-Schleife über die Indizes der Listen (zum Beispiel mit `range(len(a))`).
+*   In jedem Schleifendurchlauf multiplizierst du die Elemente der beiden Listen am aktuellen Index (`a[i] * b[i]`).
+*   Addiere dieses Produkt zu deiner Summen-Variable.
+:::
+
+::: {.callout-caution collapse="true" title="Lösung"}
+Mit einer `for`-Schleife:
+
+```python
+def skalarprodukt(a, b):
+    ergebnis = 0
+    for i in range(len(a)):
+        ergebnis += a[i] * b[i]
+    return ergebnis
+```
+
+::: {.callout-caution collapse="true" title="Elegante Lösung"}
+Kompakter geht es mit `zip()` und `sum()`. `zip()` fasst die entsprechenden Elemente der beiden Listen zu Paaren zusammen: (1, 4), (2, 5), (3, 6).
+
+```python
+def skalarprodukt(a, b):
+    return sum(x * y for x, y in zip(a, b))
+```
+:::
+
+:::
+
+Im nächsten Abschnitt lernst du, die [Länge eines Vektors](vektor_laenge.qmd) mithilfe von Python zu berechnen.
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+::: {.callout-note title="Run the cells in order"}
+The code cells on this page build on each other: imports, variables and functions from one cell are also available in all later cells and are not repeated there. So run the cells from top to bottom. If Python reports a `NameError`, you most likely have not run an earlier cell yet.
+:::
+
+Now that you've learned the basic vector operations, this chapter is about the **dot product**.
+This important operation turns two vectors of equal dimension into a single scalar, i.e. a single value. The dot product is fundamental for understanding later concepts such as the length of a vector or the angle between two vectors.
+
+## 1.3.1. Mathematical Foundations {#mathematische-grundlagen}
+
+Mathematically, the dot product (also called the inner product) is the sum of the products of the corresponding components of two vectors. For $\vec{a} = (a_1, a_2, \dots, a_n)$ and $\vec{b} = (b_1, b_2, \dots, b_n)$ it is
+
+$$ \vec{a} \cdot \vec{b} = \sum_{i=1}^{n} a_i b_i = a_1b_1 + a_2b_2 + \dots + a_nb_n $$
+
+As with addition and element-wise multiplication, both vectors must have the same dimension (i.e. the same number of elements) for the dot product as well.
+
+`numpy` provides optimized, easy-to-use functions for this calculation.
+
+```{pyodide-python}
+import numpy as np
+
+a_np = np.array([1, 2, 3])
+b_np = np.array([4, 5, 6])
+
+# Method 1: The np.dot() function
+dot_product_dot = np.dot(a_np, b_np)
+print(f"Dot product with np.dot(): {dot_product_dot}")
+
+# Method 2: The @ operator (matrix multiplication operator)
+# For 1D arrays (vectors), this corresponds to the dot product.
+dot_product_at = a_np @ b_np
+print(f"Dot product with the @ operator: {dot_product_at}")
+
+# Check: 1*4 + 2*5 + 3*6 = 4 + 10 + 18 = 32
+```
+
+### 1.3.1.1. Exercise: Dot Product with Lists
+
+First compute a dot product in your head or on paper, without Python:
+
+```{math-exercise}
+#| label: skalarprodukt-check-1-en
+#| caption: Compute the dot product by hand
+What is the dot product of the vectors $\vec{a} = (2, 3)$ and $\vec{b} = (4, -1)$? _[2*4 + 3*(-1)]
+```
+
+**Exercise**:
+Write a function `dot_product(a, b)` that computes the dot product of two lists of equal length without NumPy. Hidden tests check your solution automatically. Example: `dot_product([1, 2, 3], [4, 5, 6])` gives `32`.
+
+**Commands you need:** a `for` loop with `range()` and `len()`, the index access `a[i]`, the operators `*` and `+`, `return`.
+
+```{py-exercise}
+#| label: vektor-skalarprodukt-en
+#| caption: Implement dot_product
+#| show-test-hints: false
+def dot_product(a, b):
+    # Your code here
+    pass
+
+## TESTS ##
+assert dot_product([1, 2, 3], [4, 5, 6]) == 32, "Wrong result for [1,2,3] · [4,5,6]"
+assert dot_product([2, 3], [4, -1]) == 5, "Wrong result for [2,3] · [4,-1]"
+assert dot_product([1, 0], [0, 5]) == 0, "Orthogonal vectors have dot product 0"
+```
+
+::: {.callout-tip collapse="true" title="Tips"}
+*   You need a variable to store the sum of the products. Initialize it with `0`.
+*   Iterate with a `for` loop over the indices of the lists (for example with `range(len(a))`).
+*   In each iteration, multiply the elements of the two lists at the current index (`a[i] * b[i]`).
+*   Add this product to your sum variable.
+:::
+
+::: {.callout-caution collapse="true" title="Solution"}
+With a `for` loop:
+
+```python
+def dot_product(a, b):
+    result = 0
+    for i in range(len(a)):
+        result += a[i] * b[i]
+    return result
+```
+
+::: {.callout-caution collapse="true" title="Elegant Solution"}
+It is more compact with `zip()` and `sum()`. `zip()` combines the corresponding elements of the two lists into pairs: (1, 4), (2, 5), (3, 6).
+
+```python
+def dot_product(a, b):
+    return sum(x * y for x, y in zip(a, b))
+```
+:::
+
+:::
+
+In the next section, you'll learn how to compute the [length of a vector](vektor_laenge.qmd) using Python.
+
+::::

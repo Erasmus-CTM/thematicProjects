@@ -1,0 +1,427 @@
+---
+title: "Extremstellen berechnen"
+title-en: "Finding Extrema"
+format: html
+filters:
+  - ctm-assessment
+  - quizdown
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+# Was ist ein Extrempunkt/Sattelpunkt?
+
+Als **Extrempunkt** oder auch **Extremum** wird ein Punkt bezeichnet, der "tiefer,höher" als alle anderen Punkte im Umfeld liegt. Als Analogie können ein Berg, bzw. ein Tal betrachtet werden.  
+
+* Die Spitze des Bergs ist ein *Hochpunkt*, also ein Extrempunkt, der höher ist als nebenliegende Funktionswerte.  
+* Die tiefste Stelle ist ein *Tiefpunkt*, also ein Extrempunkt, der niedriger ist als nebenliegende Funktionswerte.  
+_Im weiteren Verlauf dieses Kapitels wird die Benennung Minimum = Tiefpunkt und Maximum = Hochpunkt genutzt._
+
+## Lokale vs. Globale Extrema
+Die Differenzierung zwischen *lokalen und globalen Extrempunkten* ist nicht so leicht zu verstehen.  
+Eine Funktion kann mehrere *lokale Extrema* haben, jedoch *höchstens einen globalen Maximalwert und höchstens einen globalen Minimalwert* (dieser kann aber an mehreren Stellen angenommen werden, z.B. bei $\sin(x)$).   
+Eine Funktion hat an der Stelle $x$ **sicher ein Extremum**, wenn die folgenden **zwei Bedingungen** erfüllt sind. Die erste ist notwendig (ohne sie gibt es kein Extremum), beide zusammen sind hinreichend.
+
+1.  $f'(x)=0$ Das bedeutet, dass an der Stelle die Steigung Null ist, der Wert nicht weiter ansteigt/abfällt.  
+2.  $f''(x) \neq 0$ Das bedeutet, dass an der Stelle die **[Krümmung](kruemmungsverhalten.qmd)** entweder positiv, oder negativ ist. Dies sorgt dafür, dass sich das Monotonieverhalten ändert. Ist $f''(x) = 0$, kann trotzdem ein Extremum vorliegen (siehe Hinweis-Kasten unten).  
+
+_Der 2. Punkt kann auch anders geprüft werden. Falls die zweite Ableitung nicht bestimmt werden soll, kann ein Wert minimal kleiner und minimal größer als $x$ in die Ableitung eingesetzt werden, wenn sich die Vorzeichen unterscheiden, so ist dort ein Extremum.  
+Falls für den kleineren $x$-Wert das Vorzeichen Minus, und für den größeren Plus ist, handelt es sich um einen **Tiefpunkt**,   
+Falls für den kleineren $x$-Wert das Vorzeichen Plus und für den größeren Minus ist, handelt es sich um einen **Hochpunkt**._  
+
+
+### Globale Extrema 
+Damit ein *lokales Maximum/Minimum* ein *globales Maximum/Minimum* ist, muss eine weitere Bedingung gelten:  
+Für ein *globales Maximum* $x_{max}$ gilt, $f(x_{max}) \ge f(x) \forall x \in Def.Bereich$  
+Für ein *globales Minimum* $x_{min}$ gilt, $f(x_{min}) \le f(x) \forall x \in Def.Bereich$  
+
+## Sattelpunkte
+
+Als **Sattelpunkt** wird ein potentielles Extremum bezeichnet, welches jedoch keines ist.  
+Potentiell insoweit, als dass für einen Sattelpunkt **gilt, dass:** $f'(x_{sat})=0$ **aber** im Gegensatz zum Extremum muss für die zweite Ableitung gelten, dass $f''(x_{sat})=0$.  
+Ein *Sattelpunkt* ist also ein Punkt in einer Funktion an dem die Steigung Null ist, sich vorher und nachher in der Ausrichtung der Funktion jedoch nichts ändert.
+
+::: {.callout-warning title="Vorsicht bei $f''(x) = 0$"}
+$f''(x) = 0$ allein reicht noch nicht für einen Sattelpunkt. Beispiel: $f(x) = x^4$ hat bei $x=0$ sowohl $f'(0)=0$ als auch $f''(0)=0$, trotzdem ist dort ein **Tiefpunkt**. Andersherum heißt das auch: Die Bedingung $f''(x)\neq 0$ oben ist *hinreichend* für ein Extremum, aber nicht *notwendig*.
+
+Sicher bist du auf zwei Wegen:
+
+- mit der **dritten Ableitung**: Gilt $f'(x)=0$, $f''(x)=0$ **und** $f'''(x)\neq 0$, dann ist es ein Sattelpunkt.
+- mit dem **Vorzeichenwechsel** von $f'$ (siehe Aufgabe 2 unten): Wechselt $f'$ das Vorzeichen, ist es ein Extremum, sonst ein Sattelpunkt.
+:::
+
+**Kurz überlegt:** Bevor du programmierst, rechne einmal von Hand. Sitzt das Vorgehen (Ableiten, Nullsetzen, zweite Ableitung einsetzen)?
+
+```{math-exercise}
+#| label: extrempunkte-vorcheck
+#| caption: Vorab-Check – Extremum von Hand
+#| vars: x
+#| field-labels: f'(x), Stelle x, f''(x)
+#| partial-credit: true
+Für $g(x)=x^2-4x$ gilt $g'(x)=$ __[2*x-4]. Die Ableitung ist null bei $x=$ _[2] und die zweite Ableitung ist dort $g''(x)=$ _[2]. Da $g''>0$ ist, liegt dort ein Tiefpunkt.
+```
+
+# Python Implementierung
+
+Nachdem dir nun klar sein sollte, was noch mal ein Extrempunkt/Sattelpunkt ist, wird die Implementierung in Python betrachtet.
+
+```{pyodide-python}
+#| read-only: true
+import sympy
+x = sympy.symbols('x')
+f = x**3 - 3*x**2 + 2
+print(f"f(x) = {f}")
+
+f_prime = sympy.diff(f, x) #Erste Ableitung
+print(f"f'(x) = {f_prime}")
+
+critical_points = sympy.solve(f_prime, x) #Nullstellen der ersten Ableitung
+print(f"Die Nullstellen der ersten Ableitung sind: {critical_points}")
+
+f_double_prime = sympy.diff(f_prime, x) # Zweite Ableitung
+print(f"f''(x) = {f_double_prime}")
+
+print("\n--- Test für potentielle Extrema ---")
+for cp in critical_points: #Die Liste der Punkte in critical_points wird durchlaufen, mit cp als Laufindex
+    f_double_prime_at_cp = f_double_prime.subs(x, cp)
+    y_value = f.subs(x, cp) #setzt cp in ursprüngliche Funktion f ein
+
+    if f_double_prime_at_cp > 0:
+        print(f"Bei x = {cp} ,y = {y_value} liegt ein Tiefpunkt vor (f''({cp}) = {f_double_prime_at_cp} > 0).")
+    elif f_double_prime_at_cp < 0: #elif bedeutet Else If, also "falls nicht, wenn, dann...""
+        print(f"Bei x = {cp} ,y = {y_value} liegt ein Hochpunkt vor (f''({cp}) = {f_double_prime_at_cp} < 0).")
+```
+
+Kontrolliere, ob du die Ausgabe richtig liest: Welche Punkte hat das Programm gefunden?
+
+```{math-exercise}
+#| label: extrempunkte-kontrolle
+#| caption: Kontrolle – Hoch- und Tiefpunkt
+#| field-labels: Hochpunkt x, Hochpunkt y, Tiefpunkt x, Tiefpunkt y
+#| partial-credit: true
+$f(x) = x^3 - 3x^2 + 2$ hat einen Hochpunkt bei $H($_[0]$\,|\,$_[2]$)$ und einen Tiefpunkt bei $T($_[2]$\,|\,$_[-2]$)$.
+```
+
+## Aufgabe: Bestimmung Sattelpunkt
+
+Eine leichte Aufgabe zum Reinkommen.  
+Mithilfe der Erklärung oben sollte es hoffentlich nicht allzu schwer sein einen Code zu verfassen, welcher eine Funktion testet, ob sie einen Sattelpunkt hat.  
+_Ideal wäre natürlich ein Code, der nach Hochpunkt/Tiefpunkt und Sattelpunkt überprüft_
+
+```{pyodide-python}
+#| label: extrempunkte-aufgabe-sattel
+#Gib hier deinen Code an
+```
+
+Pack deine Lösung anschließend in eine Funktion `sattelstellen(funktion_f)`, die eine **Liste der $x$-Werte** aller Sattelpunkte zurückgibt (leere Liste, wenn es keine gibt). Die versteckten Tests enthalten auch $f(x)=x^4$, denk also an den Hinweis-Kasten oben.
+
+```{py-exercise}
+#| label: extrempunkte-sattelstellen
+#| caption: sattelstellen(funktion_f) schreiben
+#| show-test-hints: false
+import sympy
+x = sympy.symbols('x')
+
+def sattelstellen(funktion_f):
+    # Dein Code hier
+    pass
+
+print(sattelstellen(x**3))
+
+## TESTS ##
+assert sattelstellen(x**3) == [0], "x**3 hat bei x=0 einen Sattelpunkt"
+assert sattelstellen((x - 1)**3 + 2) == [1], "(x-1)**3 + 2 hat bei x=1 einen Sattelpunkt"
+assert sattelstellen(x**3 - 3*x) == [], "x**3 - 3*x hat keinen Sattelpunkt (nur Hoch- und Tiefpunkt)"
+assert sattelstellen(x**4) == [], "x**4 hat bei x=0 KEINEN Sattelpunkt, sondern einen Tiefpunkt (siehe Hinweis-Kasten)"
+```
+
+## Aufgabe2: Bestimmung Extrema ohne 2. Ableitung
+
+Nach der Einstiegsaufgabe nun eine etwas kniffligere Aufgabe.  
+Wie in dem Erklärtext bereits erklärt wurde, gibt es nicht nur die bereits gecodete Variante der Extrema-Prüfung, sondern noch mindestens eine weitere, welche keine 2. Ableitung benötigt.  
+Ergänze die Funktion `extremstellen_vzw(funktion_f)`. Sie soll die $x$-Werte aller Extrema als **aufsteigend sortierte Liste** zurückgeben, und zwar ohne die 2. Ableitung: Du prüfst, ob $f'$ **links und rechts** neben der Nullstelle ein **anderes Vorzeichen** hat.
+
+```{py-exercise}
+#| label: extrempunkte-vzw-funktion
+#| caption: extremstellen_vzw schreiben
+#| show-test-hints: false
+import sympy
+x = sympy.symbols('x')
+
+def extremstellen_vzw(funktion_f):
+    f_strich = sympy.diff(funktion_f, x)
+    ergebnis = []
+    for k in sympy.solve(f_strich, x):
+        if not k.is_real:
+            continue                       # komplexe Lösungen überspringen
+        links = f_strich.subs(x, k - sympy.Rational(1, 100))    # f' knapp links von k
+        rechts = f_strich.subs(x, k + sympy.Rational(1, 100))   # f' knapp rechts von k
+        # Dein Code hier: Hänge k an ergebnis an, falls links und rechts ein anderes Vorzeichen haben
+    return sorted(ergebnis)
+
+## TESTS ##
+assert extremstellen_vzw(x**2) == [0], "x**2 hat bei 0 einen Tiefpunkt"
+assert extremstellen_vzw(x**3 - 3*x) == [-1, 1], "x**3-3x hat bei -1 und 1 Extrema"
+assert extremstellen_vzw(x**3) == [], "x**3 hat bei 0 nur einen Sattelpunkt, kein Extremum"
+assert extremstellen_vzw(x**4) == [0], "x**4 hat bei 0 einen Tiefpunkt, obwohl f''(0) = 0 ist"
+assert extremstellen_vzw(x**3 + x) == [], "f' hat hier keine reellen Nullstellen"
+```
+
+::: {.callout-note title="Tipp:" collapse="true"}
+Zwei Zahlen haben genau dann verschiedene Vorzeichen, wenn ihr **Produkt negativ** ist: `if links * rechts < 0:`
+:::
+
+_Teste dein Programm auch mit $f(x)=x^4$: Hier findet der Vorzeichenwechsel den Tiefpunkt, an dem der Test mit der 2. Ableitung scheitert._
+
+## Abschluss-Quiz
+
+```quizdown
+---
+locale: de
+shuffleQuestions: true
+---
+
+# Es gilt $f'(x_0)=0$ und $f''(x_0)=-2$. Was liegt bei $x_0$ vor?
+- [x] ein Hochpunkt
+- [ ] ein Tiefpunkt
+- [ ] ein Sattelpunkt
+> Hinweis: $f''<0$ bedeutet Rechtskrümmung (nach unten geöffnet), also ein Gipfel.
+
+# Es gilt $f'(x_0)=0$, $f''(x_0)=0$ und $f'''(x_0)=6$. Was liegt vor?
+- [ ] ein Hochpunkt
+- [ ] ein Tiefpunkt
+- [x] ein Sattelpunkt
+> Hinweis: Die dritte Ableitung ist ungleich null.
+
+# $f'$ ist links von $x_0$ negativ und rechts positiv. Was liegt bei $x_0$ vor?
+- [ ] ein Hochpunkt
+- [x] ein Tiefpunkt
+- [ ] ein Sattelpunkt
+> Hinweis: Erst fällt die Funktion, dann steigt sie.
+
+# Was gibt `sympy.solve(3*x**2 - 12, x)` aus (mit `x = sympy.symbols('x')`)?
+- [ ] `[2]`
+- [x] `[-2, 2]`
+- [ ] `[4]`
+> Hinweis: $3x^2=12$ ergibt $x^2=4$, also $x=\pm 2$.
+
+# $f(x)=x^4$ hat $f''(0)=0$. Was liegt bei $x=0$ vor?
+- [ ] ein Sattelpunkt
+- [x] ein Tiefpunkt
+- [ ] kein Extremum
+> Hinweis: $f'(x)=4x^3$ wechselt bei $0$ von negativ zu positiv.
+```
+
+Wenn Du damit fertig bist, geht es weiter mit **[Krümmungsverhalten](kruemmungsverhalten.qmd)**.
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+# What is an extremum/saddle point?
+
+An **extreme point** or **extremum** is a point that lies "lower/higher" than all other points in its neighborhood. Think of a mountain or a valley.  
+
+* The top of the mountain is a *maximum*, i.e. an extreme point that is higher than the neighboring function values.  
+* The lowest point of the valley is a *minimum*, i.e. an extreme point that is lower than the neighboring function values.  
+_In the rest of this chapter, we use the terms minimum = low point and maximum = high point._
+
+## Local vs. global extrema
+The distinction between *local and global extrema* is not that easy to understand.  
+A function can have several *local extrema*, but *at most one global maximum value and at most one global minimum value* (which can, however, be attained at several points, e.g. for $\sin(x)$).   
+A function **definitely has an extremum** at the point $x$ if the following **two conditions** are met. The first one is necessary (without it there is no extremum); together they are sufficient.
+
+1.  $f'(x)=0$ This means that the slope at this point is zero; the value does not keep rising/falling.  
+2.  $f''(x) \neq 0$ This means that the **[concavity](kruemmungsverhalten.qmd)** at this point is either positive or negative. This makes the monotonic behavior change. If $f''(x) = 0$, there can still be an extremum (see the box below).  
+
+_The 2nd point can also be checked differently. If you do not want to compute the second derivative, you can plug a value slightly smaller and slightly larger than $x$ into the derivative; if the signs differ, there is an extremum.  
+If the sign is minus for the smaller $x$-value and plus for the larger one, it is a **minimum**;   
+if the sign is plus for the smaller $x$-value and minus for the larger one, it is a **maximum**._  
+
+
+### Global extrema 
+For a *local maximum/minimum* to be a *global maximum/minimum*, a further condition must hold:  
+For a *global maximum* $x_{max}$: $f(x_{max}) \ge f(x) \forall x \in \text{domain}$  
+For a *global minimum* $x_{min}$: $f(x_{min}) \le f(x) \forall x \in \text{domain}$  
+
+## Saddle points
+
+A **saddle point** is a potential extremum that turns out not to be one.  
+Potential in the sense that for a saddle point **it holds that:** $f'(x_{sat})=0$, **but** unlike an extremum, the second derivative must satisfy $f''(x_{sat})=0$.  
+So a *saddle point* is a point of a function where the slope is zero, but the direction of the function does not change before and after it.
+
+::: {.callout-warning title="Careful with $f''(x) = 0$"}
+$f''(x) = 0$ alone is not enough for a saddle point. Example: $f(x) = x^4$ has both $f'(0)=0$ and $f''(0)=0$ at $x=0$, yet there is a **minimum** there. Conversely, this also means: the condition $f''(x)\neq 0$ above is *sufficient* for an extremum, but not *necessary*.
+
+You are on the safe side in two ways:
+
+- with the **third derivative**: if $f'(x)=0$, $f''(x)=0$ **and** $f'''(x)\neq 0$, it is a saddle point.
+- with the **sign change** of $f'$ (see exercise 2 below): if $f'$ changes sign, it is an extremum, otherwise a saddle point.
+:::
+
+**Quick check:** Before you program, calculate once by hand. Is the procedure solid (differentiate, set to zero, plug into the second derivative)?
+
+```{math-exercise}
+#| label: extrempunkte-vorcheck-en
+#| caption: Pre-check – extremum by hand
+#| vars: x
+#| field-labels: f'(x), point x, f''(x)
+#| partial-credit: true
+For $g(x)=x^2-4x$ we have $g'(x)=$ __[2*x-4]. The derivative is zero at $x=$ _[2] and the second derivative there is $g''(x)=$ _[2]. Since $g''>0$, there is a minimum.
+```
+
+# Python implementation
+
+Now that it should be clear to you again what an extremum/saddle point is, let's look at the implementation in Python.
+
+```{pyodide-python}
+#| read-only: true
+import sympy
+x = sympy.symbols('x')
+f = x**3 - 3*x**2 + 2
+print(f"f(x) = {f}")
+
+f_prime = sympy.diff(f, x) #first derivative
+print(f"f'(x) = {f_prime}")
+
+critical_points = sympy.solve(f_prime, x) #zeros of the first derivative
+print(f"The zeros of the first derivative are: {critical_points}")
+
+f_double_prime = sympy.diff(f_prime, x) #second derivative
+print(f"f''(x) = {f_double_prime}")
+
+print("\n--- Test for potential extrema ---")
+for cp in critical_points: #the list of points in critical_points is traversed, with cp as the loop variable
+    f_double_prime_at_cp = f_double_prime.subs(x, cp)
+    y_value = f.subs(x, cp) #plugs cp into the original function f
+
+    if f_double_prime_at_cp > 0:
+        print(f"At x = {cp}, y = {y_value} there is a minimum (f''({cp}) = {f_double_prime_at_cp} > 0).")
+    elif f_double_prime_at_cp < 0: #elif means else if, i.e. "if not, then if..."
+        print(f"At x = {cp}, y = {y_value} there is a maximum (f''({cp}) = {f_double_prime_at_cp} < 0).")
+```
+
+Check whether you read the output correctly: which points did the program find?
+
+```{math-exercise}
+#| label: extrempunkte-kontrolle-en
+#| caption: Check – maximum and minimum
+#| field-labels: maximum x, maximum y, minimum x, minimum y
+#| partial-credit: true
+$f(x) = x^3 - 3x^2 + 2$ has a maximum at $H($_[0]$\,|\,$_[2]$)$ and a minimum at $T($_[2]$\,|\,$_[-2]$)$.
+```
+
+## Exercise: finding saddle points
+
+An easy exercise to get started.  
+With the explanation above, it should hopefully not be too hard to write code that tests whether a function has a saddle point.  
+_Ideally, of course, code that checks for maxima/minima and saddle points_
+
+```{pyodide-python}
+#| label: extrempunkte-aufgabe-sattel-en
+#Enter your code here
+```
+
+Then wrap your solution in a function `saddle_points(function_f)` that returns a **list of the $x$-values** of all saddle points (an empty list if there are none). The hidden tests also include $f(x)=x^4$, so remember the warning box above.
+
+```{py-exercise}
+#| label: extrempunkte-sattelstellen-en
+#| caption: Write saddle_points(function_f)
+#| show-test-hints: false
+import sympy
+x = sympy.symbols('x')
+
+def saddle_points(function_f):
+    # Your code here
+    pass
+
+print(saddle_points(x**3))
+
+## TESTS ##
+assert saddle_points(x**3) == [0], "x**3 has a saddle point at x=0"
+assert saddle_points((x - 1)**3 + 2) == [1], "(x-1)**3 + 2 has a saddle point at x=1"
+assert saddle_points(x**3 - 3*x) == [], "x**3 - 3*x has no saddle point (only a maximum and a minimum)"
+assert saddle_points(x**4) == [], "x**4 has NO saddle point at x=0 but a minimum (see the warning box)"
+```
+
+## Exercise 2: finding extrema without the 2nd derivative
+
+After the warm-up, here is a somewhat trickier exercise.  
+As already explained in the text, there is not only the variant of checking for extrema that we have already coded, but at least one more that does not need the 2nd derivative.  
+Complete the function `extrema_sign_change(function_f)`. It should return the $x$-values of all extrema as an **ascending sorted list**, without the 2nd derivative: you check whether $f'$ has a **different sign to the left and to the right** of the zero.
+
+```{py-exercise}
+#| label: extrempunkte-vzw-funktion-en
+#| caption: Write extrema_sign_change
+#| show-test-hints: false
+import sympy
+x = sympy.symbols('x')
+
+def extrema_sign_change(function_f):
+    f_prime = sympy.diff(function_f, x)
+    result = []
+    for k in sympy.solve(f_prime, x):
+        if not k.is_real:
+            continue                       # skip complex solutions
+        left = f_prime.subs(x, k - sympy.Rational(1, 100))    # f' just left of k
+        right = f_prime.subs(x, k + sympy.Rational(1, 100))   # f' just right of k
+        # Your code here: append k to result if left and right have different signs
+    return sorted(result)
+
+## TESTS ##
+assert extrema_sign_change(x**2) == [0], "x**2 has a minimum at 0"
+assert extrema_sign_change(x**3 - 3*x) == [-1, 1], "x**3-3x has extrema at -1 and 1"
+assert extrema_sign_change(x**3) == [], "x**3 only has a saddle point at 0, no extremum"
+assert extrema_sign_change(x**4) == [0], "x**4 has a minimum at 0 even though f''(0) = 0"
+assert extrema_sign_change(x**3 + x) == [], "f' has no real zeros here"
+```
+
+::: {.callout-note title="Tip:" collapse="true"}
+Two numbers have different signs exactly when their **product is negative**: `if left * right < 0:`
+:::
+
+_Also test your program with $f(x)=x^4$: here the sign change finds the minimum where the test with the 2nd derivative fails._
+
+## Final quiz
+
+```quizdown
+---
+locale: en
+shuffleQuestions: true
+---
+
+# $f'(x_0)=0$ and $f''(x_0)=-2$. What is at $x_0$?
+- [x] a maximum
+- [ ] a minimum
+- [ ] a saddle point
+> Hint: $f''<0$ means concave down, so a peak.
+
+# $f'(x_0)=0$, $f''(x_0)=0$ and $f'''(x_0)=6$. What is at $x_0$?
+- [ ] a maximum
+- [ ] a minimum
+- [x] a saddle point
+> Hint: The third derivative is not zero.
+
+# $f'$ is negative to the left of $x_0$ and positive to the right. What is at $x_0$?
+- [ ] a maximum
+- [x] a minimum
+- [ ] a saddle point
+> Hint: First the function falls, then it rises.
+
+# What does `sympy.solve(3*x**2 - 12, x)` return (with `x = sympy.symbols('x')`)?
+- [ ] `[2]`
+- [x] `[-2, 2]`
+- [ ] `[4]`
+> Hint: $3x^2=12$ gives $x^2=4$, so $x=\pm 2$.
+
+# $f(x)=x^4$ has $f''(0)=0$. What is at $x=0$?
+- [ ] a saddle point
+- [x] a minimum
+- [ ] no extremum
+> Hint: $f'(x)=4x^3$ changes from negative to positive at $0$.
+```
+
+When you are done, continue with **[Concavity](kruemmungsverhalten.qmd)**.
+
+::::

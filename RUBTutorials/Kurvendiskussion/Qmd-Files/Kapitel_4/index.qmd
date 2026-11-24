@@ -1,0 +1,325 @@
+---
+title: "Monotonie- und Krümmungsverhalten"
+title-en: "Monotonicity and Concavity"
+format: html
+filters:
+  - ctm-assessment
+  - quizdown
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+# Kapitelübersicht
+
+In diesem Kapitel geht es um den Hauptteil der schulischen Kurvendiskussionsuntersuchung.  
+Es geht um die Bestimmung von Extrem-, Sattel- und Wendepunkten.  
+
+
+*   **[Ableitungen](ableitungen.qmd)**
+    * Eine kurze Wiederholung der Ableitungsregeln und wie man Ableitungen mit `sympy.diff` berechnet. Alle weiteren Abschnitte dieses Kapitels bauen darauf auf.
+
+---
+
+*   **[Monotonieverhalten](monotonieverhalten.qmd)**
+    * In diesem Abschnitt geht es zuerst einmal darum, den Begriff der Monotonie zu erklären und zu erklären, wie man diese überhaupt untersucht.
+    Es wird auch der Bezug zur Ableitung hergestellt sowie gezeigt, wie man eine Untersuchung in Python durchführen kann.
+
+---
+
+*   **[Extrempunkte](extrempunkte.qmd)**  
+    * In diesem Abschnitt wird das Wissen aus dem ersten Abschnitt genutzt, um zusammen mit der Definition von Extrempunkten, die hier gegeben wird, eine Untersuchungsmethode für Extrema zu bestimmen.  
+    Bei der Implementierung in Python werden unterschiedliche Möglichkeiten der Bestimmung von Hoch- und Tiefpunkten mit einbezogen.
+
+---
+
+*   **[Krümmungsverhalten](kruemmungsverhalten.qmd)**  
+    * In diesem Abschnitt des Tutorials wird der Begriff Krümmungsverhalten mit Inhalt gefüllt, so wie die Differenzierung zwischen Links- und Rechtskrümmung erklärt. Abgesehen davon wird in diesem Kapitel natürlich auch die mögliche Nutzung von Python zur effizienteren Bestimmung von Krümmungsverhalten beschrieben.
+
+---
+
+*   **[Wendepunkte](wendepunkte.qmd)**
+    * Im letzten Abschnitt des Kapitels geht es darum, die Ergebnisse des Abschnittes zum Krümmungsverhalten zu nutzen, um damit herauszufinden wie Wendepunkte mit Hilfe von Python bestimmt werden können.
+
+---
+
+# Quiz: Alles bisher gelernte 
+
+Also Python Grundlagen, Definitionsbereich & Wertebereich, Symmetrie & Achsenschnittpunkte und Globalverhalten & Asymptoten
+
+```quizdown
+---
+locale: de
+---
+
+# Welche Aussagen zu "senkrechten Asymptoten" (Polstellen) sind wahr? 
+- [x] Sie treten häufig auf, wo der Nenner eines Bruchs Null wird.
+- [x] Der Funktionswert nähert sich dort $\pm \infty$.
+- [ ] Der Funktionsgraph schneidet dort die x-Achse.
+- [ ] Sie treten auf, wenn $x \to \infty$ geht.
+
+> Hinweis: Denk an die Funktion $1/x$ bei $x=0$.
+
+# Mit welchem Befehl berechnest du in SymPy den Grenzwert für $x$ gegen Unendlich?
+1. [x] `sympy.limit(f, x, sympy.oo)`
+1. [ ] `sympy.solve(f, x, sympy.oo)`
+1. [ ] `sympy.diff(f, x)`
+1. [ ] `f.subs(x, 999999)`
+
+> Hinweis: Wir suchen den "Limes".
+
+# Bringe den Code in die richtige Reihenfolge, um eine horizontale Asymptote zu prüfen.
+1. import sympy
+2. f = (2*x)/(x+1)
+3. grenzwert = sympy.limit(f, x, sympy.oo)
+4. print(grenzwert)
+
+# Welche dieser Funktionen sind achsensymmetrisch zur y-Achse? 
+- [x] $f(x) = x^2$
+- [x] $f(x) = x^4 + 2$
+- [x] $f(x) = \cos(x)$
+- [ ] $f(x) = x^3$
+- [ ] $f(x) = \sin(x)$
+
+> Hinweis: Achsensymmetrie liegt vor bei geraden Exponenten und beim Cosinus.
+
+# Was bedeutet das Ergebnis `AccumulationBounds(-1, 1)` bei einer Grenzwertberechnung?
+1. [x] Die Funktion pendelt (oszilliert) im Unendlichen zwischen -1 und 1.
+1. [ ] Der Grenzwert ist 0.
+1. [ ] Die Funktion ist dort nicht definiert (Error).
+
+> Hinweis: Das passiert oft bei trigonometrischen Funktionen im Unendlichen.
+
+# Was berechnet der Befehl `sympy.solveset(f, x)`? 
+- [x] Die Nullstellen der Funktion.
+- [x] Die Schnittpunkte des Graphen mit der x-Achse.
+- [ ] Den Schnittpunkt mit der y-Achse.
+- [ ] Die Ableitung.
+
+> Hinweis: Nullstellen und x-Achsenschnittpunkte sind geometrisch das Gleiche.
+
+# Bringe die Schritte zur Bestimmung einer Definitionslücke (Nenner = 0) in die richtige Reihenfolge.
+1. nenner = x**2 - 4
+2. kritische_stellen = sympy.solveset(nenner, x)
+3. print(f"Definitionslücken bei: {kritische_stellen}")
+
+# Welche mathematischen Operationen sind in den reellen Zahlen "verboten" und schränken den Definitionsbereich ein? 
+- [x] Teilen durch 0.
+- [x] Wurzelziehen aus negativen Zahlen (bei geraden Wurzeln).
+- [ ] Logarithmus aus positiven Zahlen.
+- [x] Logarithmus aus 0 oder negativen Zahlen.
+- [ ] Rechnen mit Kommazahlen.
+
+# Welcher Python-Operator prüft auf Gleichheit (z.B. in einer `if`-Bedingung)?
+1. [x] `==`
+1. [ ] `=`
+1. [ ] `!=`
+1. [ ] `is equal`
+
+> Hinweis: Ein einfaches Gleichheitszeichen ist für Zuweisungen.
+
+# Welche Aussagen zum y-Achsenabschnitt sind richtig? 
+- [x] Man berechnet ihn durch Einsetzen von $x=0$.
+- [x] Es gibt maximal einen y-Achsenabschnitt pro Funktion (bei Funktionen im engeren Sinn).
+- [ ] Man berechnet ihn mit `solveset(f, x)`.
+- [ ] Er existiert bei jeder Funktion (z.B. $1/x$).
+
+> Hinweis: Eine Funktion ordnet jedem x nur ein y zu. Aber ist x=0 immer erlaubt?
+
+# Was passiert mathematisch bei $f(x) = \frac{x^2}{x^2+1}$ für $x \to \infty$?
+1. [x] Die Funktion nähert sich der 1 an (waagerechte Asymptote).
+1. [ ] Die Funktion geht gegen $\infty$.
+1. [ ] Die Funktion geht gegen 0.
+
+> Hinweis: Zähler und Nenner wachsen gleich schnell (gleicher Grad).
+
+# Welche Schritte sind notwendig, um Symmetrie in Python sicher zu prüfen? 
+- [x] Substituieren von $x$ mit $-x$ (`f.subs`).
+- [x] Vereinfachen des Terms (`sympy.simplify`).
+- [ ] Ableiten der Funktion.
+- [x] Vergleich mit der Originalfunktion.
+
+# Bringe die Zeilen in die richtige Reihenfolge, um den Wertebereich von $f(x) = x^2$ zu bestimmen.
+1. import sympy
+2. x = sympy.symbols('x')
+3. f = x**2
+4. print(sympy.calculus.util.function_range(f, x, sympy.S.Reals))
+
+> Hinweis: Jede Zeile braucht etwas, das in der Zeile davor erst angelegt wird.
+
+# Wie lautet die Bedingung für Punktsymmetrie zum Ursprung?
+1. [x] $f(-x) = -f(x)$
+1. [ ] $f(-x) = f(x)$
+1. [ ] $f(x) = 0$
+
+> Hinweis: Doppelte Spiegelung (x und y werden negiert).
+
+# Was benötigst du, um den Wertebereich mit Python zu bestimmen? 
+- [x] `import sympy`
+- [x] `from sympy.calculus.util import function_range`
+- [ ] `import matplotlib`
+- [ ] `import random`
+
+> Hinweis: Die Funktion versteckt sich in einem Untermodul.
+
+```
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+# Chapter overview
+
+This chapter covers the main part of curve sketching as done at school.  
+It is about determining extrema, saddle points and inflection points.  
+
+
+*   **[Derivatives](ableitungen.qmd)**
+    * A short review of the rules of differentiation and how to compute derivatives with `sympy.diff`. All further sections of this chapter build on it.
+
+---
+
+*   **[Monotonicity](monotonieverhalten.qmd)**
+    * This section first explains the concept of monotonicity and how to examine it in the first place.
+    It also establishes the connection to the derivative and shows how to carry out such an examination in Python.
+
+---
+
+*   **[Extrema](extrempunkte.qmd)**  
+    * This section uses the knowledge from the first section, together with the definition of extrema given here, to develop a method for finding extrema.  
+    The Python implementation includes different ways of determining maxima and minima.
+
+---
+
+*   **[Concavity](kruemmungsverhalten.qmd)**  
+    * This section of the tutorial fills the term concavity with meaning and explains the difference between curving to the left (convex) and to the right (concave). Apart from that, this chapter of course also describes how Python can be used to determine concavity more efficiently.
+
+---
+
+*   **[Inflection points](wendepunkte.qmd)**
+    * The last section of the chapter uses the results of the section on concavity to find out how inflection points can be determined with the help of Python.
+
+---
+
+# Quiz: everything learned so far 
+
+That is, Python basics, domain & range, symmetry & intercepts and end behavior & asymptotes
+
+```quizdown
+---
+locale: en
+---
+
+# Which statements about "vertical asymptotes" (poles) are true? 
+- [x] They often occur where the denominator of a fraction becomes zero.
+- [x] The function value approaches $\pm \infty$ there.
+- [ ] The graph of the function crosses the x-axis there.
+- [ ] They occur when $x \to \infty$.
+
+> Hint: Think of the function $1/x$ at $x=0$.
+
+# Which command calculates the limit for $x$ towards infinity in SymPy?
+1. [x] `sympy.limit(f, x, sympy.oo)`
+1. [ ] `sympy.solve(f, x, sympy.oo)`
+1. [ ] `sympy.diff(f, x)`
+1. [ ] `f.subs(x, 999999)`
+
+> Hint: We are looking for the "limit".
+
+# Put the code in the right order to check for a horizontal asymptote.
+1. import sympy
+2. f = (2*x)/(x+1)
+3. limit_value = sympy.limit(f, x, sympy.oo)
+4. print(limit_value)
+
+# Which of these functions are symmetric about the y-axis? 
+- [x] $f(x) = x^2$
+- [x] $f(x) = x^4 + 2$
+- [x] $f(x) = \cos(x)$
+- [ ] $f(x) = x^3$
+- [ ] $f(x) = \sin(x)$
+
+> Hint: Axis symmetry occurs with even exponents and with the cosine.
+
+# What does the result `AccumulationBounds(-1, 1)` mean in a limit calculation?
+1. [x] The function oscillates between -1 and 1 at infinity.
+1. [ ] The limit is 0.
+1. [ ] The function is not defined there (error).
+
+> Hint: This often happens with trigonometric functions at infinity.
+
+# What does the command `sympy.solveset(f, x)` calculate? 
+- [x] The zeros of the function.
+- [x] The intersections of the graph with the x-axis.
+- [ ] The intersection with the y-axis.
+- [ ] The derivative.
+
+> Hint: Zeros and x-intercepts are geometrically the same thing.
+
+# Put the steps for finding a gap in the domain (denominator = 0) in the right order.
+1. denominator = x**2 - 4
+2. critical_points = sympy.solveset(denominator, x)
+3. print(f"Gaps in the domain at: {critical_points}")
+
+# Which mathematical operations are "forbidden" in the real numbers and restrict the domain? 
+- [x] Dividing by 0.
+- [x] Taking roots of negative numbers (for even roots).
+- [ ] Logarithm of positive numbers.
+- [x] Logarithm of 0 or negative numbers.
+- [ ] Calculating with decimal numbers.
+
+# Which Python operator checks for equality (e.g. in an `if` condition)?
+1. [x] `==`
+1. [ ] `=`
+1. [ ] `!=`
+1. [ ] `is equal`
+
+> Hint: A single equals sign is for assignments.
+
+# Which statements about the y-intercept are correct? 
+- [x] You calculate it by plugging in $x=0$.
+- [x] There is at most one y-intercept per function (for functions in the strict sense).
+- [ ] You calculate it with `solveset(f, x)`.
+- [ ] It exists for every function (e.g. $1/x$).
+
+> Hint: A function assigns only one y to each x. But is x=0 always allowed?
+
+# What happens mathematically with $f(x) = \frac{x^2}{x^2+1}$ for $x \to \infty$?
+1. [x] The function approaches 1 (horizontal asymptote).
+1. [ ] The function tends to $\infty$.
+1. [ ] The function tends to 0.
+
+> Hint: Numerator and denominator grow equally fast (same degree).
+
+# Which steps are necessary to reliably check symmetry in Python? 
+- [x] Substituting $x$ with $-x$ (`f.subs`).
+- [x] Simplifying the term (`sympy.simplify`).
+- [ ] Differentiating the function.
+- [x] Comparing with the original function.
+
+# Put the lines in the right order to determine the range of $f(x) = x^2$.
+1. import sympy
+2. x = sympy.symbols('x')
+3. f = x**2
+4. print(sympy.calculus.util.function_range(f, x, sympy.S.Reals))
+
+> Hint: Each line needs something that is only created in the line before it.
+
+# What is the condition for point symmetry about the origin?
+1. [x] $f(-x) = -f(x)$
+1. [ ] $f(-x) = f(x)$
+1. [ ] $f(x) = 0$
+
+> Hint: Double reflection (x and y are negated).
+
+# What do you need to determine the range with Python? 
+- [x] `import sympy`
+- [x] `from sympy.calculus.util import function_range`
+- [ ] `import matplotlib`
+- [ ] `import random`
+
+> Hint: The function is hidden in a submodule.
+
+```
+
+::::

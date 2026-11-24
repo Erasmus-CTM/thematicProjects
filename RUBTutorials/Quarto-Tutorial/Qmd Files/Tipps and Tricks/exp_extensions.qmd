@@ -1,0 +1,493 @@
+---
+title: "Extensions"
+title-en: "Extensions"
+title-sv: "Tillägg"
+title-no: "Utvidelser"
+title-da: "Udvidelser"
+sidebar: tips-sidebar
+---
+
+:::: {.content-visible when-profile="deutsch"}
+Extensions erweitern Quarto um Dinge, die Quarto allein nicht kann: Quizze, Python im Browser, Aufgaben mit automatischer Prüfung. Dieses Tutorial benutzt zwei Quellen:
+
+- **CTM Assessment**: ein Paket mit allem für interaktive Aufgaben (Python-Zellen, `py-exercise`, `math-exercise`, JSXGraph, KI-Feedback). Du installierst es mit **einem** Befehl.
+- **quizdown**: Quizze. Das kommt getrennt dazu.
+
+| Was du brauchst | Wo es steht |
+|---|---|
+| Quizze mit Einfach-, Mehrfachauswahl und Reihenfolge | [quizdown](exp_ext_quizdown.qmd) |
+| Veränderbare Python-Zellen, die im Browser laufen | [Python im Browser](exp_ext_python.qmd) |
+| Programmieraufgaben mit versteckten Tests | [py-exercise](exp_ext_pyexercise.qmd) |
+| Mathematische Antworten, geprüft mit SymPy | [math-exercise](exp_ext_mathexercise.qmd) |
+| Interaktive Grafiken, auch als Antwort auf eine Aufgabe | [JSXGraph](exp_ext_jsxgraph.qmd) |
+| KI-Feedback, Antworten speichern, Datenschutz | [KI-Feedback & Speichern](exp_ext_feedback.qmd) |
+
+Zum ersten Ausprobieren führt dich die Seite [Aufgabe mit automatischer Prüfung](../../../int/Qmd Files/Getting Started/beg_check.html) Schritt für Schritt durch eine eigene Aufgabe.
+
+## CTM Assessment installieren
+
+Einmal je Projekt, im Projektordner:
+
+::: {.panel-tabset}
+### Windows
+```{.bash}
+quarto add https://erasmus-ctm.github.io/ctm-assessment/ctm-assessment.zip
+```
+
+### macOS / Linux
+```{.bash}
+quarto add https://erasmus-ctm.github.io/ctm-assessment/ctm-assessment.tar.gz
+```
+:::
+
+Dann einschalten, für das ganze Projekt oder je Seite:
+
+```{.yaml filename="_quarto.yml oder Kopf der Seite"}
+filters:
+  - ctm-assessment
+```
+
+- `_extensions/` gehört mit ins Git-Repository. Zum Aktualisieren denselben Befehl noch einmal ausführen.
+- Alte Einzelinstallationen unter `_extensions/Erasmus-CTM/` löschen, das Paket ersetzt sie.
+- Braucht Quarto **1.8.27 oder neuer**. Ab Quarto 1.10 brauchen Seiten mit Aufgaben `engine: markdown` im Kopf, siehe [Python im Browser](exp_ext_python.qmd).
+
+### quizdown
+
+quizdown ist nicht Teil des Pakets und wird getrennt installiert und eingeschaltet:
+
+```{.bash}
+quarto add parmsam/quizdown
+```
+
+```{.yaml filename="seite.qmd"}
+filters:
+  - parmsam/quizdown
+  - ctm-assessment
+```
+
+### Sprache der Oberfläche
+
+Knöpfe und Meldungen der Aufgaben richten sich nach `ctm-assessment: lang:` oder nach Quartos eigenem `lang:`. Ein mehrsprachiges Projekt braucht also keine zusätzliche Einstellung, siehe [Mehrsprachige Projekte](exp_multilanguage.qmd).
+
+```{.yaml filename="_quarto.yml"}
+ctm-assessment:
+  lang: de
+```
+
+| Teil | Sprachen |
+|---|---|
+| gemeinsame Knöpfe, `math-exercise`, `py-exercise` | Englisch, Deutsch, Norwegisch (Bokmål) |
+| Speicher und Einstellungen | zusätzlich Nynorsk |
+| KI-Feedback | zusätzlich Spanisch |
+| Python-Zellen | Englisch, Deutsch, Bokmål, Schwedisch, Dänisch |
+
+Andere Sprachen zeigen Englisch.
+
+::: {.callout-note}
+## STACK-Aufgaben
+Das Paket enthält auch STACK-Fragen (`{.stack-question}`). Sie brauchen beim Bauen SymPy 1.13.3 für das Python, das Quarto benutzt. Dieses Tutorial geht darauf nicht weiter ein.
+:::
+
+## Häufige Stolperstellen
+
+| Was passiert | Ursache und Abhilfe |
+|---|---|
+| Der Build bricht bei einer Seite mit Aufgaben mit einem Jupyter-Fehler ab | Quarto 1.10 oder neuer: `engine: markdown` in den Kopf dieser Seite |
+| `{python}`-Abbildungen fehlen auf einer Seite mit `engine: markdown` | Die Engine schaltet `{python}` ab. Entweder `engine: markdown` weglassen (Jupyter läuft dann, Python muss installiert sein) oder die Abbildungen als Bilddateien einbinden |
+| Auf einem anderen Rechner fehlen die Aufgaben | `_extensions/` wurde nicht mit in Git aufgenommen |
+| `quarto add` bricht unter Windows ab | die `.zip`-Adresse benutzen, siehe oben |
+| `input()` geht in Moodle nicht | Moodle blockiert Service Worker. Das ist eine Grenze der Plattform, siehe [Python im Browser](exp_ext_python.qmd) |
+| Der Build bricht wegen eines Schlüssels ab | In einem CTM-Abschnitt steht `api-key`, `token` oder Ähnliches. Raus damit, siehe [KI-Feedback & Speichern](exp_ext_feedback.qmd) |
+
+## Beispiele aus echten Kursen
+
+Weitere Projekte, die mit diesen Extensions gebaut werden, findest du im Repository [thematicProjects](https://github.com/Erasmus-CTM/thematicProjects). Dort siehst du, wie vollständige Kurse mit Aufgaben, Quizzen und Grafiken aufgebaut sind.
+::::
+
+:::: {.content-visible when-profile="english"}
+Extensions teach Quarto things it cannot do on its own: quizzes, Python in the browser, exercises with automatic checking. This tutorial uses two sources:
+
+- **CTM Assessment**: one package with everything for interactive exercises (Python cells, `py-exercise`, `math-exercise`, JSXGraph, AI feedback). You install it with **one** command.
+- **quizdown**: quizzes. It is added separately.
+
+| What you need | Where it is |
+|---|---|
+| Quizzes with single choice, multiple choice and ordering | [quizdown](exp_ext_quizdown.qmd) |
+| Editable Python cells that run in the browser | [Python in the browser](exp_ext_python.qmd) |
+| Coding exercises with hidden tests | [py-exercise](exp_ext_pyexercise.qmd) |
+| Mathematical answers checked with SymPy | [math-exercise](exp_ext_mathexercise.qmd) |
+| Interactive graphs, also as the answer to an exercise | [JSXGraph](exp_ext_jsxgraph.qmd) |
+| AI feedback, saving answers, privacy | [AI feedback & saving](exp_ext_feedback.qmd) |
+
+To try it for the first time, the page [An exercise with automatic checking](../../../int/Qmd Files/Getting Started/beg_check.html) walks you through your own exercise step by step.
+
+## Installing CTM Assessment
+
+Once per project, in the project folder:
+
+::: {.panel-tabset}
+### Windows
+```{.bash}
+quarto add https://erasmus-ctm.github.io/ctm-assessment/ctm-assessment.zip
+```
+
+### macOS / Linux
+```{.bash}
+quarto add https://erasmus-ctm.github.io/ctm-assessment/ctm-assessment.tar.gz
+```
+:::
+
+Then enable it for the whole project or per page:
+
+```{.yaml filename="_quarto.yml or page header"}
+filters:
+  - ctm-assessment
+```
+
+- `_extensions/` belongs in the Git repository. To update, run the same command again.
+- Delete old single installs under `_extensions/Erasmus-CTM/`; the package replaces them.
+- Requires Quarto **1.8.27 or newer**. From Quarto 1.10, pages with exercises need `engine: markdown` in their header, see [Python in the browser](exp_ext_python.qmd).
+
+### quizdown
+
+quizdown is not part of the package and is installed and enabled separately:
+
+```{.bash}
+quarto add parmsam/quizdown
+```
+
+```{.yaml filename="page.qmd"}
+filters:
+  - parmsam/quizdown
+  - ctm-assessment
+```
+
+### Interface language
+
+Buttons and messages of the exercises follow `ctm-assessment: lang:` or Quarto's own `lang:`. A multilingual project therefore needs no extra setting, see [Multilanguage Projects](exp_multilanguage.qmd).
+
+```{.yaml filename="_quarto.yml"}
+ctm-assessment:
+  lang: en
+```
+
+| Part | Languages |
+|---|---|
+| shared buttons, `math-exercise`, `py-exercise` | English, German, Norwegian (Bokmål) |
+| storage and settings | also Nynorsk |
+| AI feedback | also Spanish |
+| Python cells | English, German, Bokmål, Swedish, Danish |
+
+Other languages show English.
+
+::: {.callout-note}
+## STACK questions
+The package also contains STACK questions (`{.stack-question}`). They need SymPy 1.13.3 for the Python that Quarto uses at build time. This tutorial does not go into them.
+:::
+
+## Common pitfalls
+
+| What happens | Cause and fix |
+|---|---|
+| The build stops with a Jupyter error on a page with exercises | Quarto 1.10 or newer: put `engine: markdown` into the header of that page |
+| `{python}` figures are missing on a page with `engine: markdown` | The engine switches `{python}` off. Either leave `engine: markdown` out (Jupyter then runs, and Python has to be installed) or include the figures as image files |
+| The exercises are missing on another machine | `_extensions/` was not added to Git |
+| `quarto add` stops on Windows | use the `.zip` address, see above |
+| `input()` does not work in Moodle | Moodle blocks service workers. That is a limit of the platform, see [Python in the browser](exp_ext_python.qmd) |
+| The build stops because of a key | A CTM section contains `api-key`, `token` or the like. Remove it, see [AI feedback & saving](exp_ext_feedback.qmd) |
+
+## Examples from real courses
+
+More projects built with these extensions are in the repository [thematicProjects](https://github.com/Erasmus-CTM/thematicProjects). There you can see how complete courses with exercises, quizzes and graphs are put together.
+::::
+
+:::: {.content-visible when-profile="svenska"}
+Tillägg lär Quarto sådant som Quarto inte kan på egen hand: frågesporter, Python i webbläsaren, uppgifter med automatisk kontroll. Den här handledningen använder två källor:
+
+- **CTM Assessment**: ett paket med allt för interaktiva uppgifter (Python-celler, `py-exercise`, `math-exercise`, JSXGraph, AI-feedback). Du installerar det med **ett** kommando.
+- **quizdown**: frågesporter. Det läggs till separat.
+
+| Vad du behöver | Var det står |
+|---|---|
+| Frågesporter med enkelval, flerval och ordningsföljd | [quizdown](exp_ext_quizdown.qmd) |
+| Redigerbara Python-celler som körs i webbläsaren | [Python i webbläsaren](exp_ext_python.qmd) |
+| Programmeringsuppgifter med dolda tester | [py-exercise](exp_ext_pyexercise.qmd) |
+| Matematiska svar som kontrolleras med SymPy | [math-exercise](exp_ext_mathexercise.qmd) |
+| Interaktiva grafer, också som svar på en uppgift | [JSXGraph](exp_ext_jsxgraph.qmd) |
+| AI-feedback, sparade svar, integritet | [AI-feedback och sparande](exp_ext_feedback.qmd) |
+
+För att prova själv leder sidan [Uppgift med automatisk kontroll](../../../int/Qmd Files/Getting Started/beg_check.html) dig steg för steg genom en egen uppgift.
+
+## Installera CTM Assessment
+
+En gång per projekt, i projektmappen:
+
+::: {.panel-tabset}
+### Windows
+```{.bash}
+quarto add https://erasmus-ctm.github.io/ctm-assessment/ctm-assessment.zip
+```
+
+### macOS / Linux
+```{.bash}
+quarto add https://erasmus-ctm.github.io/ctm-assessment/ctm-assessment.tar.gz
+```
+:::
+
+Aktivera det sedan för hela projektet eller per sida:
+
+```{.yaml filename="_quarto.yml eller sidans huvud"}
+filters:
+  - ctm-assessment
+```
+
+- `_extensions/` hör hemma i Git-repot. För att uppdatera kör du samma kommando igen.
+- Ta bort gamla enskilda installationer under `_extensions/Erasmus-CTM/`, paketet ersätter dem.
+- Kräver Quarto **1.8.27 eller senare**. Från Quarto 1.10 behöver sidor med uppgifter `engine: markdown` i huvudet, se [Python i webbläsaren](exp_ext_python.qmd).
+
+### quizdown
+
+quizdown ingår inte i paketet och installeras och slås på separat:
+
+```{.bash}
+quarto add parmsam/quizdown
+```
+
+```{.yaml filename="sida.qmd"}
+filters:
+  - parmsam/quizdown
+  - ctm-assessment
+```
+
+### Gränssnittets språk
+
+Knappar och meddelanden i uppgifterna följer `ctm-assessment: lang:` eller Quartos eget `lang:`. Ett flerspråkigt projekt behöver alltså ingen extra inställning, se [Flerspråkiga projekt](exp_multilanguage.qmd).
+
+```{.yaml filename="_quarto.yml"}
+ctm-assessment:
+  lang: sv
+```
+
+| Del | Språk |
+|---|---|
+| gemensamma knappar, `math-exercise`, `py-exercise` | engelska, tyska, norska (bokmål) |
+| lagring och inställningar | dessutom nynorska |
+| AI-feedback | dessutom spanska |
+| Python-celler | engelska, tyska, bokmål, svenska, danska |
+
+Andra språk visar engelska.
+
+::: {.callout-note}
+## STACK-uppgifter
+Paketet innehåller också STACK-frågor (`{.stack-question}`). De kräver SymPy 1.13.3 för den Python som Quarto använder vid bygget. Den här handledningen går inte närmare in på dem.
+:::
+
+## Vanliga fallgropar
+
+| Vad som händer | Orsak och åtgärd |
+|---|---|
+| Bygget avbryts med ett Jupyter-fel på en sida med uppgifter | Quarto 1.10 eller senare: skriv `engine: markdown` i huvudet på sidan |
+| `{python}`-figurer saknas på en sida med `engine: markdown` | Motorn stänger av `{python}`. Antingen utelämnar du `engine: markdown` (Jupyter körs då, och Python måste vara installerat) eller så lägger du in figurerna som bildfiler |
+| Uppgifterna saknas på en annan dator | `_extensions/` har inte lagts till i Git |
+| `quarto add` avbryts i Windows | använd `.zip`-adressen, se ovan |
+| `input()` fungerar inte i Moodle | Moodle blockerar service workers. Det är en begränsning i plattformen, se [Python i webbläsaren](exp_ext_python.qmd) |
+| Bygget avbryts på grund av en nyckel | En CTM-sektion innehåller `api-key`, `token` eller liknande. Ta bort den, se [AI-feedback och sparande](exp_ext_feedback.qmd) |
+
+## Exempel från riktiga kurser
+
+Fler projekt som är byggda med de här tilläggen finns i repositoriet [thematicProjects](https://github.com/Erasmus-CTM/thematicProjects). Där ser du hur kompletta kurser med uppgifter, frågesporter och grafer är uppbyggda.
+::::
+
+:::: {.content-visible when-profile="norsk"}
+Utvidelser lærer Quarto ting som Quarto ikke kan på egen hånd: quizer, Python i nettleseren, oppgaver med automatisk kontroll. Denne veiledningen bruker to kilder:
+
+- **CTM Assessment**: en pakke med alt for interaktive oppgaver (Python-celler, `py-exercise`, `math-exercise`, JSXGraph, KI-tilbakemelding). Du installerer den med **én** kommando.
+- **quizdown**: quizer. Det legges til separat.
+
+| Hva du trenger | Hvor det står |
+|---|---|
+| Quizer med enkeltvalg, flervalg og rekkefølge | [quizdown](exp_ext_quizdown.qmd) |
+| Redigerbare Python-celler som kjører i nettleseren | [Python i nettleseren](exp_ext_python.qmd) |
+| Programmeringsoppgaver med skjulte tester | [py-exercise](exp_ext_pyexercise.qmd) |
+| Matematiske svar kontrollert med SymPy | [math-exercise](exp_ext_mathexercise.qmd) |
+| Interaktive grafer, også som svar på en oppgave | [JSXGraph](exp_ext_jsxgraph.qmd) |
+| KI-tilbakemelding, lagring av svar, personvern | [KI-tilbakemelding og lagring](exp_ext_feedback.qmd) |
+
+For å prøve selv leder siden [Oppgave med automatisk kontroll](../../../int/Qmd Files/Getting Started/beg_check.html) deg steg for steg gjennom en egen oppgave.
+
+## Installere CTM Assessment
+
+Én gang per prosjekt, i prosjektmappen:
+
+::: {.panel-tabset}
+### Windows
+```{.bash}
+quarto add https://erasmus-ctm.github.io/ctm-assessment/ctm-assessment.zip
+```
+
+### macOS / Linux
+```{.bash}
+quarto add https://erasmus-ctm.github.io/ctm-assessment/ctm-assessment.tar.gz
+```
+:::
+
+Slå den deretter på for hele prosjektet eller per side:
+
+```{.yaml filename="_quarto.yml eller sidehodet"}
+filters:
+  - ctm-assessment
+```
+
+- `_extensions/` hører hjemme i Git-repoet. For å oppdatere kjører du samme kommando igjen.
+- Slett gamle enkeltinstallasjoner under `_extensions/Erasmus-CTM/`, pakken erstatter dem.
+- Krever Quarto **1.8.27 eller nyere**. Fra Quarto 1.10 trenger sider med oppgaver `engine: markdown` i hodet, se [Python i nettleseren](exp_ext_python.qmd).
+
+### quizdown
+
+quizdown er ikke en del av pakken og installeres og slås på separat:
+
+```{.bash}
+quarto add parmsam/quizdown
+```
+
+```{.yaml filename="side.qmd"}
+filters:
+  - parmsam/quizdown
+  - ctm-assessment
+```
+
+### Språk i grensesnittet
+
+Knapper og meldinger i oppgavene følger `ctm-assessment: lang:` eller Quartos eget `lang:`. Et flerspråklig prosjekt trenger altså ingen ekstra innstilling, se [Flerspråklige prosjekter](exp_multilanguage.qmd).
+
+```{.yaml filename="_quarto.yml"}
+ctm-assessment:
+  lang: nb
+```
+
+| Del | Språk |
+|---|---|
+| felles knapper, `math-exercise`, `py-exercise` | engelsk, tysk, norsk (bokmål) |
+| lagring og innstillinger | i tillegg nynorsk |
+| KI-tilbakemelding | i tillegg spansk |
+| Python-celler | engelsk, tysk, bokmål, svensk, dansk |
+
+Andre språk viser engelsk.
+
+::: {.callout-note}
+## STACK-oppgaver
+Pakken inneholder også STACK-spørsmål (`{.stack-question}`). De krever SymPy 1.13.3 for Python-installasjonen Quarto bruker under bygging. Denne veiledningen går ikke nærmere inn på dem.
+:::
+
+## Vanlige snublesteiner
+
+| Hva som skjer | Årsak og løsning |
+|---|---|
+| Byggingen stopper med en Jupyter-feil på en side med oppgaver | Quarto 1.10 eller nyere: skriv `engine: markdown` i hodet på siden |
+| `{python}`-figurer mangler på en side med `engine: markdown` | Motoren slår av `{python}`. Enten utelater du `engine: markdown` (Jupyter kjører da, og Python må være installert) eller du legger inn figurene som bildefiler |
+| Oppgavene mangler på en annen maskin | `_extensions/` ble ikke tatt med i Git |
+| `quarto add` stopper i Windows | bruk `.zip`-adressen, se over |
+| `input()` fungerer ikke i Moodle | Moodle blokkerer service workers. Det er en begrensning i plattformen, se [Python i nettleseren](exp_ext_python.qmd) |
+| Byggingen stopper på grunn av en nøkkel | En CTM-seksjon inneholder `api-key`, `token` eller lignende. Fjern den, se [KI-tilbakemelding og lagring](exp_ext_feedback.qmd) |
+
+## Eksempler fra ekte kurs
+
+Flere prosjekter som er bygget med disse utvidelsene, finner du i repositoriet [thematicProjects](https://github.com/Erasmus-CTM/thematicProjects). Der ser du hvordan komplette kurs med oppgaver, quizer og grafer er bygget opp.
+::::
+
+:::: {.content-visible when-profile="dansk"}
+Udvidelser lærer Quarto ting, som Quarto ikke kan på egen hånd: quizzer, Python i browseren, opgaver med automatisk kontrol. Denne vejledning bruger to kilder:
+
+- **CTM Assessment**: en pakke med alt til interaktive opgaver (Python-celler, `py-exercise`, `math-exercise`, JSXGraph, AI-feedback). Du installerer den med **én** kommando.
+- **quizdown**: quizzer. Den tilføjes separat.
+
+| Hvad du har brug for | Hvor det står |
+|---|---|
+| Quizzer med enkeltvalg, flervalg og rækkefølge | [quizdown](exp_ext_quizdown.qmd) |
+| Redigerbare Python-celler, der kører i browseren | [Python i browseren](exp_ext_python.qmd) |
+| Programmeringsopgaver med skjulte test | [py-exercise](exp_ext_pyexercise.qmd) |
+| Matematiske svar kontrolleret med SymPy | [math-exercise](exp_ext_mathexercise.qmd) |
+| Interaktive grafer, også som svar på en opgave | [JSXGraph](exp_ext_jsxgraph.qmd) |
+| AI-feedback, lagring af svar, privatliv | [AI-feedback og lagring](exp_ext_feedback.qmd) |
+
+Vil du prøve det selv, fører siden [Opgave med automatisk kontrol](../../../int/Qmd Files/Getting Started/beg_check.html) dig trin for trin gennem en egen opgave.
+
+## Installér CTM Assessment
+
+Én gang pr. projekt, i projektmappen:
+
+::: {.panel-tabset}
+### Windows
+```{.bash}
+quarto add https://erasmus-ctm.github.io/ctm-assessment/ctm-assessment.zip
+```
+
+### macOS / Linux
+```{.bash}
+quarto add https://erasmus-ctm.github.io/ctm-assessment/ctm-assessment.tar.gz
+```
+:::
+
+Slå den derefter til for hele projektet eller pr. side:
+
+```{.yaml filename="_quarto.yml eller sidens hoved"}
+filters:
+  - ctm-assessment
+```
+
+- `_extensions/` hører med i Git-repositoriet. For at opdatere kører du den samme kommando igen.
+- Slet gamle enkeltinstallationer under `_extensions/Erasmus-CTM/`, pakken erstatter dem.
+- Kræver Quarto **1.8.27 eller nyere**. Fra Quarto 1.10 skal sider med opgaver have `engine: markdown` i hovedet, se [Python i browseren](exp_ext_python.qmd).
+
+### quizdown
+
+quizdown er ikke en del af pakken og installeres og slås til separat:
+
+```{.bash}
+quarto add parmsam/quizdown
+```
+
+```{.yaml filename="side.qmd"}
+filters:
+  - parmsam/quizdown
+  - ctm-assessment
+```
+
+### Grænsefladens sprog
+
+Knapper og meddelelser i opgaverne følger `ctm-assessment: lang:` eller Quartos eget `lang:`. Et flersproget projekt behøver altså ingen ekstra indstilling, se [Flersprogede projekter](exp_multilanguage.qmd).
+
+```{.yaml filename="_quarto.yml"}
+ctm-assessment:
+  lang: da
+```
+
+| Del | Sprog |
+|---|---|
+| fælles knapper, `math-exercise`, `py-exercise` | engelsk, tysk, norsk (bokmål) |
+| lagring og indstillinger | desuden nynorsk |
+| AI-feedback | desuden spansk |
+| Python-celler | engelsk, tysk, bokmål, svensk, dansk |
+
+Andre sprog viser engelsk.
+
+::: {.callout-note}
+## STACK-opgaver
+Pakken indeholder også STACK-spørgsmål (`{.stack-question}`). De kræver SymPy 1.13.3 til den Python, Quarto bruger under bygningen. Denne vejledning går ikke nærmere ind på dem.
+:::
+
+## Almindelige faldgruber
+
+| Hvad der sker | Årsag og løsning |
+|---|---|
+| Bygningen stopper med en Jupyter-fejl på en side med opgaver | Quarto 1.10 eller nyere: skriv `engine: markdown` i hovedet på siden |
+| `{python}`-figurer mangler på en side med `engine: markdown` | Motoren slår `{python}` fra. Enten udelader du `engine: markdown` (Jupyter kører så, og Python skal være installeret) eller du indsætter figurerne som billedfiler |
+| Opgaverne mangler på en anden computer | `_extensions/` blev ikke taget med i Git |
+| `quarto add` stopper i Windows | brug `.zip`-adressen, se ovenfor |
+| `input()` virker ikke i Moodle | Moodle blokerer service workers. Det er en begrænsning i platformen, se [Python i browseren](exp_ext_python.qmd) |
+| Bygningen stopper på grund af en nøgle | En CTM-sektion indeholder `api-key`, `token` eller lignende. Fjern den, se [AI-feedback og lagring](exp_ext_feedback.qmd) |
+
+## Eksempler fra rigtige kurser
+
+Flere projekter, der er bygget med disse udvidelser, finder du i repositoriet [thematicProjects](https://github.com/Erasmus-CTM/thematicProjects). Dér kan du se, hvordan komplette kurser med opgaver, quizzer og grafer er bygget op.
+::::

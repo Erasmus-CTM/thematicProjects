@@ -1,0 +1,503 @@
+---
+title: "Graphen erstellen"
+title-en: "Creating Graphs"
+format: html
+filters:
+  - ctm-assessment
+  - quizdown
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+# Graphen erstellen
+
+In diesem Abschnitt sollst du lernen wie du mit Hilfe von Python einen Graphen darstellen (plotten) kannst.  
+Hierbei gibt es mehrere Aspekte, die für uns weiterhin wichtig sein werden.  
+
+1. Das Grundgerüst
+2. Einen Graphen plotten
+3. Mehrere Funktionen auf einmal plotten
+4. Wie kann man Punkte in einen Graphen plotten
+5. Wie kann man Einzelheiten einstellen (Farbe, Strichstil etc.)
+
+_In diesem Abschnitt wird es keine Aufgaben als solche geben, jeder Code kann dafür bearbeitet werden, also teste gerne am Code herum, verändere Dinge und guck was passiert!_
+
+## 1. Das Grundgerüst
+
+Zuerst benötigen wir das Grundgerüst, um eine Funktion überhaupt zeichnen zu können. Dazu importieren wir die `matplotlib.pyplot`-Bibliothek, mithilfe dieser können Graphen geplottet werden.  
+Wir importieren die Bibliothek als `plt`, damit können Funktionen deutlich kürzer geschrieben werden.  
+
+```{pyodide-python}
+import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots()
+
+# Hier wird später der Code zum Plotten eingefügt
+
+# Zeige den Graphen an
+plt.show()
+```
+
+::: {.callout-tip collapse="true" title="Erklärungen zum Grundgerüst"}
+*   `fig, ax = plt.subplots()` erzeugt eine neue, leere Abbildung und gibt uns direkten Zugriff auf das Koordinatensystem `ax`. Damit zeichnest du gezielt in genau dieses Koordinatensystem, was spätestens bei mehreren Diagrammen nebeneinander viel übersichtlicher ist. 
+*   `fig` beschreibt die gesamte Abbildung (das Fenster) 
+*   `ax` ist der eigentliche Graph (das Koordinatensystem), auf dem wir zeichnen.
+*   `plt.subplots` ist eine der Möglichkeiten, eine Grundlage zu schaffen, auf der Graphen geplottet werden können. Es gibt auch die Möglichkeit `plt.plot()`.
+*   `plt.show()`: Dieser Befehl ist entscheidend. Er nimmt alles, was bisher "gezeichnet" wurde, und zeigt es in der Ausgabe an. Ohne diesen Befehl siehst Du nichts! Danach ist die Abbildung "abgeschlossen": Der nächste Code-Block beginnt wieder mit einer leeren Abbildung, genau wie in einer normalen Python-Umgebung.
+:::
+
+## 2. Einen Graphen plotten
+
+Nachdem das Grundgerüst steht, können wir unseren ersten Graphen zeichnen.  
+Hierfür werden Datenpunkte benötigt, damit diese nicht einzeln eingetippt werden, hilft dir `numpy` Bibliothek aus, indem mit `np.linspace` Werte zwischen 0 und 10 generiert werden (100 an der Zahl).  
+
+::: {.callout-tip collapse="true" title="Was ist Numpy? Eine kurze Erklärung"}
+`Numpy` (Numerical Python) ist eine der fundamentaleren Python-Bibliotheken. Diese bietet das Rechnen und Berechnen von und mit Matrizen/Vektoren und großen mehrdimensionalen Arrays an.  
+Auch ist `Numpy` die Bibliothek, welche für numerische Berechnungen genutzt wird.  
+
+:::
+
+```{pyodide-python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+fig, ax = plt.subplots()
+x = np.linspace(0, 10, 100) 
+y = np.sin(x)              
+
+ax.plot(x, y) #Plottet den Graphen, der von den x/y Werten erzeugt wird.
+
+ax.set_xlabel("x-Achse")
+ax.set_ylabel("y-Achse")
+ax.set_title("Sinus-Graph")
+
+plt.show()
+```
+
+::: {.callout-tip collapse="true" title="Tipps zum Plotten eines Graphen"}
+*   Mit `np.linspace` werden gleichverteilte Werte zwischen 0 und 10 generiert (100 an der Zahl).
+*   Mit `ax.set_xlabel` und `ax.set_ylabel` können x-/y- Achsen und Titel benannt werden. 
+
+Eine andere Möglichkeit einen Graphen zu generieren ist, direkt mit `plt.plot()` zu zeichnen, ohne vorher `fig, ax` anzulegen:  
+Das ist kürzer und funktioniert für einzelne, einfache Graphen genauso gut. Wir nutzen im Tutorial trotzdem meist `fig, ax`, weil man damit immer genau weiß, in welches Koordinatensystem gezeichnet wird.
+
+```{pyodide-python}
+import matplotlib.pyplot as plt
+
+x = [1,2,3]
+y = [2,4,1]
+
+plt.plot(x, y) #Hier ist der Hauptunterschied!
+
+plt.xlabel('x - Achse')
+plt.ylabel('y - Achse')
+plt.title('Mein erster Graph!')
+
+plt.show()
+
+```
+
+_Probiere es aus: Führe diesen Block und danach einen der anderen Blöcke aus. Jeder Graph erscheint nur unter seinem eigenen Block, weil `plt.show()` die Abbildung abschließt._
+:::
+
+::: {.callout-tip title="Werkzeugleiste unter jedem Plot"}
+Unter jedem Graphen erscheint nach kurzer Zeit eine Werkzeugleiste: <i class="fa-solid fa-magnifying-glass-plus"></i> zoomt in einen Bereich, <i class="fa-solid fa-arrows-up-down-left-right"></i> verschiebt den Ausschnitt, <i class="fa-solid fa-house"></i> stellt die Ausgangsansicht wieder her. Mit **PNG**, **SVG** oder **PDF** speicherst du den Graphen als Datei, zum Beispiel für eine Hausaufgabe oder ein Referat.
+:::
+
+## 3. Mehrere Funktionen auf einmal plotten
+
+Oft möchte man mehrere Funktionen in einem einzigen Graphen vergleichen.  
+Das geht recht einfach mit der `plot`-Funktion, es wird jede Funktion einzeln geplottet `plt.show`  stellt dann alle geplotteten Funktionen dar. Matplotlib kümmert sich automatisch darum, jeder Linie eine andere Farbe zu geben. 
+
+```{pyodide-python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+fig, ax = plt.subplots()
+
+# Erzeuge Daten
+x = np.linspace(0, 10, 100)
+y1 = np.sin(x)
+y2 = np.cos(x)
+
+# Plotte beide Kurven auf derselben Achse
+ax.plot(x, y1, label="Sinus")
+ax.plot(x, y2, label="Cosinus")
+
+# ax.legend erzeugt eine Legende der unterschiedlichen Graphen, die dargestellt werden und mit den "Labels" benannt werden.
+ax.legend()
+
+ax.set_xlabel("x-Achse")
+ax.set_ylabel("y-Achse")
+ax.set_title("Sinus- und Cosinus- Graph")
+
+plt.show()
+```
+
+::: {.callout-tip collapse="true" title="Tipps zum Plotten mehrerer Funktionen"}
+*   **Die Legende:** Um eine Legende anzuzeigen, musst Du zwei Dinge tun:
+    1.  Gib jedem Plot ein `label` (z.B. `ax.plot(x, y1, label="Sinus")`).
+    2.  Rufe `ax.legend()` auf, um die Legende basierend auf den Labels tatsächlich zu zeichnen.
+:::
+
+## 4. Wie kann man Punkte in einen Graphen plotten
+
+Manchmal wollen wir keine durchgehende Linie, sondern einzelne Datenpunkte darstellen, z.B. aus einem Experiment. Dafür eignet sich die `scatter`-Funktion hervorragend. Sie ist speziell dafür gemacht, eine Wolke von Punkten zu zeichnen.
+
+```{pyodide-python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+fig, ax = plt.subplots()
+
+# Daten für einzelne Punkte (z.B. Messwerte)
+x_punkte = [1, 2, 3.5, 4, 5.2]
+y_punkte = [2, 1.5, 3, 2.5, 4]
+
+# Plotte die Punkte mit scatter
+ax.scatter(x_punkte, y_punkte, label="Einzelpunkte", marker="x", color="red")
+
+ax.set_xlabel("x-Werte")
+ax.set_ylabel("y-Werte")
+ax.set_title("Test-Darstellung einzelner Punkte")
+
+ax.legend()
+
+plt.show()
+```
+
+::: {.callout-tip collapse="true" title="Tipps zum Plotten von Punkten"}
+*   Es gibt mehrere Möglichkeiten, Punkte zu verteilen, es ist auch möglich `ax.plot(x_punkte, y_punkte)` zu verwenden. Nutze gern unterschiedliche Möglichkeiten und versuche die Unterschiede zu erkennen.  
+*   Wie im Graphen zu sehen bestehen sehr wohl auch die Möglichkeiten, die Art und Farbe der Punkte zu verändern.
+*   Du kannst `plot` und `scatter` im selben Graphen **kombinieren**. Zeichne zuerst eine Funktionslinie mit `plot` und dann einzelne Messpunkte darüber mit `scatter`.
+*   Probiere das gerne aus! (indem du dir einen eigenen Block erstellst)
+:::
+
+## 5. Wie kann man Einzelheiten einstellen
+
+Es gibt viele Einzelheiten, die verändert werden können.  
+Im folgenden Code wird eine Menge geändert auf unterschiedliche Arten und Weisen und in den Tipps wird dann erklärt, was welche Veränderung herbeiführt.  
+Im Grunde kann das folgende verändert werden:  
+
+*   Linienstil (gestrichelt, gepunktet, ...)
+*   Markerstil (Kreis, Kreuze, ...)
+*   Linienbreite
+*   Farbe
+*   Form der Markierung
+
+```{pyodide-python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+fig, ax = plt.subplots()
+
+x = np.linspace(0, 10, 50)
+y1 = np.sin(x)
+y2 = np.cos(x)
+
+ax.plot(x, y1, color='red', linestyle='--', linewidth=2, label='Rote Strichlinie')
+ax.plot(x, y2, color='#009933', linestyle=':', marker='o', markersize=4, label='Grüne Punktlinie mit Kreisen')
+
+ax.legend()
+ax.set_title("Graph mit angepassten Linien")
+plt.show()
+```
+
+::: {.callout-tip collapse="true" title="Tipps zur Anpassung"}
+*   **Farben (`color`):** Du kannst Farbnamen (`'red'`, `'green'`), Kurzcodes (`'r'`, `'g'`, `'b'`, `'k'` für Schwarz) oder Hex-Codes (`'#FF5733'`) verwenden.
+*   **Linienstile (`linestyle`):**
+    *   `'-'` oder `'solid'`: Durchgezogene Linie (Standard)
+    *   `'--'` oder `'dashed'`: Gestrichelte Linie
+    *   `':'` oder `'dotted'`: Gepunktete Linie
+    *   `'-.'` oder `'dashdot'`: Strich-Punkt-Linie
+*   **Marker (`marker`):**
+    *   `'o'`: Kreis
+    *   `'x'`: X
+    *   `'+'`: Plus
+    *   `'s'`: Quadrat (`square`)
+    *   `'.'` : Kleiner Punkt
+*   **Kurzschreibweise:** Für einfache Stile kannst Du Farbe, Marker und Linienstil in einem einzigen String kombinieren, z.B. `'go--'` für eine grüne (`g`), gestrichelte (`--`) Linie mit Kreismarkern (`o`).
+:::
+
+## Mini-Quiz
+
+```quizdown
+---
+locale: de
+shuffleQuestions: true
+---
+
+# Was macht `np.linspace(0, 10, 50)`?
+- [x] 50 gleichmäßig verteilte Werte von 0 bis 10
+- [ ] die Werte 0, 10, 20, ... bis 50
+- [ ] 10 Werte zwischen 0 und 50
+> Hinweis: Mit diesen Werten wird der Graph "Punkt für Punkt" berechnet.
+
+# Wie sieht der Aufruf `ax.plot(x, y, 'ro-')` aus?
+- [x] rote Linie mit Kreismarkern
+- [ ] rote gestrichelte Linie ohne Marker
+- [ ] roter Kreis ohne Linie
+> Hinweis: `r` = rot, `o` = Kreismarker, `-` = durchgezogene Linie.
+
+# Mit welcher Option erzeugst du eine gestrichelte Linie?
+- [ ] `marker='--'`
+- [x] `linestyle='--'`
+- [ ] `color='--'`
+> Hinweis: Der Linienstil heißt `linestyle`.
+
+# Was passiert, wenn du bei `ax.plot(...)` kein `label=...` angibst und `ax.legend()` aufrufst?
+- [ ] Python wählt automatisch hübsche Namen
+- [x] Die Linie erscheint nicht mit einem Namen in der Legende
+- [ ] Der Graph wird nicht angezeigt
+> Hinweis: Die Legende zeigt die Namen, die du mit `label` vergeben hast.
+```
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+# Creating graphs
+
+In this section, you will learn how to display (plot) a graph with Python.  
+There are several aspects that will remain important for us.  
+
+1. The basic framework
+2. Plotting a graph
+3. Plotting several functions at once
+4. How to plot points in a graph
+5. How to adjust details (color, line style etc.)
+
+_There are no exercises as such in this section; every piece of code can be edited, so feel free to experiment with the code, change things and see what happens!_
+
+## 1. The basic framework
+
+First, we need the basic framework to be able to draw a function at all. For this we import the `matplotlib.pyplot` library, with which graphs can be plotted.  
+We import the library as `plt`, which makes the function names much shorter.  
+
+```{pyodide-python}
+import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots()
+
+# The code for plotting will be inserted here later
+
+# Show the graph
+plt.show()
+```
+
+::: {.callout-tip collapse="true" title="Explanations of the basic framework"}
+*   `fig, ax = plt.subplots()` creates a new, empty figure and gives us direct access to the coordinate system `ax`. This lets you draw into exactly this coordinate system, which becomes much clearer as soon as there are several plots side by side. 
+*   `fig` describes the whole figure (the window) 
+*   `ax` is the actual graph (the coordinate system) that we draw on.
+*   `plt.subplots` is one of the ways to create a basis on which graphs can be plotted. There is also `plt.plot()`.
+*   `plt.show()`: This command is crucial. It takes everything that has been "drawn" so far and displays it in the output. Without this command you see nothing! After that, the figure is "finished": the next code block starts with an empty figure again, just like in a normal Python environment.
+:::
+
+## 2. Plotting a graph
+
+Once the basic framework is in place, we can draw our first graph.  
+For this we need data points. So that we do not have to type them in one by one, the `numpy` library helps out: `np.linspace` generates values between 0 and 10 (100 of them).  
+
+::: {.callout-tip collapse="true" title="What is NumPy? A short explanation"}
+`NumPy` (Numerical Python) is one of the more fundamental Python libraries. It provides calculations with matrices/vectors and large multidimensional arrays.  
+`NumPy` is also the library used for numerical calculations.  
+
+:::
+
+```{pyodide-python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+fig, ax = plt.subplots()
+x = np.linspace(0, 10, 100) 
+y = np.sin(x)              
+
+ax.plot(x, y) #plots the graph created from the x/y values.
+
+ax.set_xlabel("x-axis")
+ax.set_ylabel("y-axis")
+ax.set_title("Sine graph")
+
+plt.show()
+```
+
+::: {.callout-tip collapse="true" title="Tips on plotting a graph"}
+*   `np.linspace` generates evenly spaced values between 0 and 10 (100 of them).
+*   With `ax.set_xlabel` and `ax.set_ylabel` you can name the x-/y-axes, and with `ax.set_title` the title. 
+
+Another way to create a graph is to draw directly with `plt.plot()`, without creating `fig, ax` first:  
+This is shorter and works just as well for single, simple graphs. In the tutorial we still mostly use `fig, ax`, because then you always know exactly which coordinate system you are drawing into.
+
+```{pyodide-python}
+import matplotlib.pyplot as plt
+
+x = [1,2,3]
+y = [2,4,1]
+
+plt.plot(x, y) #This is the main difference!
+
+plt.xlabel('x-axis')
+plt.ylabel('y-axis')
+plt.title('My first graph!')
+
+plt.show()
+
+```
+
+_Try it out: run this block and then one of the other blocks. Each graph appears only below its own block, because `plt.show()` finishes the figure._
+:::
+
+::: {.callout-tip title="Toolbar below every plot"}
+Shortly after a graph appears, a toolbar shows up below it: <i class="fa-solid fa-magnifying-glass-plus"></i> zooms into an area, <i class="fa-solid fa-arrows-up-down-left-right"></i> pans the view, <i class="fa-solid fa-house"></i> restores the original view. With **PNG**, **SVG** or **PDF** you save the graph as a file, for example for homework or a presentation.
+:::
+
+## 3. Plotting several functions at once
+
+Often you want to compare several functions in a single graph.  
+This is quite easy with the `plot` function: each function is plotted separately and `plt.show` then displays all plotted functions. Matplotlib automatically gives each line a different color. 
+
+```{pyodide-python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+fig, ax = plt.subplots()
+
+# Generate data
+x = np.linspace(0, 10, 100)
+y1 = np.sin(x)
+y2 = np.cos(x)
+
+# Plot both curves on the same axes
+ax.plot(x, y1, label="Sine")
+ax.plot(x, y2, label="Cosine")
+
+# ax.legend creates a legend of the different graphs, named with their "labels".
+ax.legend()
+
+ax.set_xlabel("x-axis")
+ax.set_ylabel("y-axis")
+ax.set_title("Sine and cosine graph")
+
+plt.show()
+```
+
+::: {.callout-tip collapse="true" title="Tips on plotting several functions"}
+*   **The legend:** To show a legend, you have to do two things:
+    1.  Give each plot a `label` (e.g. `ax.plot(x, y1, label="Sine")`).
+    2.  Call `ax.legend()` to actually draw the legend based on the labels.
+:::
+
+## 4. How to plot points in a graph
+
+Sometimes we do not want a continuous line but individual data points, e.g. from an experiment. The `scatter` function is ideal for this. It is made specifically for drawing a cloud of points.
+
+```{pyodide-python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+fig, ax = plt.subplots()
+
+# Data for individual points (e.g. measurements)
+x_points = [1, 2, 3.5, 4, 5.2]
+y_points = [2, 1.5, 3, 2.5, 4]
+
+# Plot the points with scatter
+ax.scatter(x_points, y_points, label="Individual points", marker="x", color="red")
+
+ax.set_xlabel("x-values")
+ax.set_ylabel("y-values")
+ax.set_title("Test display of individual points")
+
+ax.legend()
+
+plt.show()
+```
+
+::: {.callout-tip collapse="true" title="Tips on plotting points"}
+*   There are several ways to place points; you can also use `ax.plot(x_points, y_points)`. Feel free to use different ways and try to spot the differences.  
+*   As you can see in the graph, you can also change the type and color of the points.
+*   You can **combine** `plot` and `scatter` in the same graph. First draw a function line with `plot` and then individual measurement points on top with `scatter`.
+*   Feel free to try it out! (by creating a block of your own)
+:::
+
+## 5. How to adjust details
+
+There are many details that can be changed.  
+The following code changes a lot of things in different ways, and the tips then explain which change does what.  
+Basically, the following can be changed:  
+
+*   Line style (dashed, dotted, ...)
+*   Marker style (circle, crosses, ...)
+*   Line width
+*   Color
+*   Shape of the marker
+
+```{pyodide-python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+fig, ax = plt.subplots()
+
+x = np.linspace(0, 10, 50)
+y1 = np.sin(x)
+y2 = np.cos(x)
+
+ax.plot(x, y1, color='red', linestyle='--', linewidth=2, label='Red dashed line')
+ax.plot(x, y2, color='#009933', linestyle=':', marker='o', markersize=4, label='Green dotted line with circles')
+
+ax.legend()
+ax.set_title("Graph with customized lines")
+plt.show()
+```
+
+::: {.callout-tip collapse="true" title="Tips on customization"}
+*   **Colors (`color`):** You can use color names (`'red'`, `'green'`), short codes (`'r'`, `'g'`, `'b'`, `'k'` for black) or hex codes (`'#FF5733'`).
+*   **Line styles (`linestyle`):**
+    *   `'-'` or `'solid'`: solid line (default)
+    *   `'--'` or `'dashed'`: dashed line
+    *   `':'` or `'dotted'`: dotted line
+    *   `'-.'` or `'dashdot'`: dash-dot line
+*   **Markers (`marker`):**
+    *   `'o'`: circle
+    *   `'x'`: X
+    *   `'+'`: plus
+    *   `'s'`: square
+    *   `'.'` : small dot
+*   **Shorthand:** For simple styles you can combine color, marker and line style in a single string, e.g. `'go--'` for a green (`g`), dashed (`--`) line with circle markers (`o`).
+:::
+
+## Mini quiz
+
+```quizdown
+---
+locale: en
+shuffleQuestions: true
+---
+
+# What does `np.linspace(0, 10, 50)` do?
+- [x] 50 evenly spaced values from 0 to 10
+- [ ] the values 0, 10, 20, ... up to 50
+- [ ] 10 values between 0 and 50
+> Hint: These values are used to compute the graph "point by point".
+
+# What does the call `ax.plot(x, y, 'ro-')` draw?
+- [x] a red line with circle markers
+- [ ] a red dashed line without markers
+- [ ] red circles without a line
+> Hint: `r` = red, `o` = circle marker, `-` = solid line.
+
+# Which option creates a dashed line?
+- [ ] `marker='--'`
+- [x] `linestyle='--'`
+- [ ] `color='--'`
+> Hint: The line style is called `linestyle`.
+
+# What happens if you give `ax.plot(...)` no `label=...` and call `ax.legend()`?
+- [ ] Python picks nice names automatically
+- [x] The line does not appear with a name in the legend
+- [ ] The graph is not shown
+> Hint: The legend shows the names you assigned with `label`.
+```
+
+::::

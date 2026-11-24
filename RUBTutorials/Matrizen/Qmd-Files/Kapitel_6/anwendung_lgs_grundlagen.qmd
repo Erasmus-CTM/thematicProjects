@@ -1,0 +1,442 @@
+---
+title: "6.1. Grundlagen linearer Gleichungssysteme"
+title-en: "6.1. Basics of Systems of Linear Equations"
+format: html
+filters:
+  - ctm-assessment
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+## 6.1.1. Was sind LGS eigentlich?
+
+Aus der Schule sind LGS meist bekannt in der folgenden Form:
+
+$$\begin{align*}
+2x + 3y &= 8 \\
+4x - y &= -2
+\end{align*}$$
+
+Das Ziel war dort, die Zahlen für $x$ und $y$ zu finden, die beide Gleichungen gleichzeitig erfüllen. Geometrisch betrachtet suchen wir den Schnittpunkt von zwei Geraden.
+
+**Die mathematische Definition (Matrix-Schreibweise)**
+
+In der Welt der Data Science und des Machine Learning schreiben wir solche Systeme aber nicht mehr untereinander. Wir nutzen die [Matrix-Vektor-Multiplikation](../Kapitel_3/matrizen_vektor_multiplikation.qmd), die wir in den letzten Kapiteln bereits gelernt haben.
+
+Ein LGS besteht aus:
+
+* Einer <u>Koeffizientenmatrix</u> $A$ (die Zahlen vor den Variablen).
+
+* Einem <u>Unbekanntenvektor</u> $\vec{x}$ (die Variablen, die wir suchen).
+
+* Einem <u>Ergebnisvektor</u> $\vec{b}$ (die Zahlen auf der rechten Seite).
+
+Das System oben sieht in "Matrix-Sprache" so aus:
+
+$$\underbrace{\begin{pmatrix} 2 & 3 \\ 4 & -1 \end{pmatrix}}_{A} \cdot \underbrace{\begin{pmatrix} x \\ y \end{pmatrix}}_{\vec{x}} = \underbrace{\begin{pmatrix} 8 \\ -2 \end{pmatrix}}_{\vec{b}}$$
+
+Allgemein definiert:
+
+
+$$A \cdot \vec{x} = \vec{b}$$
+
+## 6.1.2. Der Rang entscheidet über das Ergebnis
+
+Bevor wir überhaupt anfangen zu rechnen, sollten wir uns an [Kapitel 4.1 (Rang einer Matrix)](../Kapitel_4/kernoperationen_rang.qmd) erinnern. Warum war das so wichtig? Weil der Rang uns sofort verrät, ob wir überhaupt eine Lösung finden können!
+
+Wir können die Matrix $A$ und die sogenannte "erweiterte Koeffizientenmatrix" $(A|b)$ (das ist $A$ mit angehängtem Vektor $\vec{b}$) betrachten.
+
+:::{.callout-important title="Der Rangsatz (Lösbarkeitskriterium)" collapse="true"}
+
+* **Keine Lösung:** Wenn $\operatorname{rang}(A) < \operatorname{rang}(A|b)$, dann widersprechen sich die Gleichungen (z.B. parallele Geraden).
+* **Genau eine Lösung:** Wenn $\operatorname{rang}(A) = \operatorname{rang}(A|b) = n$ (Anzahl der Unbekannten), dann gibt es exakt einen Schnittpunkt.
+* **Unendlich viele Lösungen:** Wenn $\operatorname{rang}(A) = \operatorname{rang}(A|b) < n$, dann ist das System unterbestimmt (z.B. zwei identische Geraden).
+:::
+
+In Python können wir das prüfen, bevor wir überhaupt versuchen, das System zu lösen. Die folgende Funktion vergleicht die beiden Ränge für drei kleine Systeme: das von oben, zwei parallele Geraden ($x+y=1$, $x+y=2$) und zwei identische Geraden ($x+y=1$, $2x+2y=2$). Ändere ruhig die Zahlen und probiere eigene Systeme aus.
+
+```{pyodide-python}
+import numpy as np
+
+def anzahl_loesungen(A, b):
+    Ab = np.column_stack([A, b])          # erweiterte Koeffizientenmatrix (A|b)
+    rang_A = np.linalg.matrix_rank(A)
+    rang_Ab = np.linalg.matrix_rank(Ab)
+    n = A.shape[1]                        # Anzahl der Unbekannten
+    if rang_A < rang_Ab:
+        return "keine Lösung"
+    if rang_A == n:
+        return "genau eine Lösung"
+    return "unendlich viele Lösungen"
+
+print(anzahl_loesungen(np.array([[2, 3], [4, -1]]), np.array([8, -2])))
+print(anzahl_loesungen(np.array([[1, 1], [1, 1]]), np.array([1, 2])))
+print(anzahl_loesungen(np.array([[1, 1], [2, 2]]), np.array([1, 2])))
+```
+
+## 6.1.3. Klassische Lösungswege
+
+Es gibt verschiedene Wege, nach Rom (oder zur Lösung $x$) zu kommen. Schauen wir uns die Klassiker an und analysieren, warum wir sie ungern per Hand machen.
+
+::: {.panel-tabset}
+
+### Gauß-Elimination
+
+Das ist der Klassiker aus der Oberstufe.
+
+:::{.callout-note title="Der Algorithmus" collapse="false"}
+Ziel: Wir wollen die Matrix $A$ in eine Zeilenstufenform (Dreiecksform) bringen, wo unter der Diagonalen nur Nullen stehen.
+
+Elimination: Addiere Vielfache einer Zeile zu einer anderen, um die Variable vorne zu eliminieren.
+
+Rückwärtseinsetzen: Wenn wir unten angekommen sind (z.B. $3z = 9 \rightarrow z=3$), setzen wir das Ergebnis in die Zeile darüber ein, um $y$ zu finden, und so weiter.
+:::
+
+Warum das kompliziert ist:
+Stell dir vor, du hast ein System mit 100 Variablen (in der Bildverarbeitung sind es oft Tausende!).
+
+**Rechenaufwand:** Der Aufwand wächst kubisch ($O(n^3)$). Für 10 Variablen brauchst du ca. 1000 Schritte. Für 100 Variablen eine Million.
+
+**Fehleranfälligkeit:** Ein einziges Minuszeichen vergessen in Zeile 1? Das gesamte Ergebnis ist falsch.
+
+### Inversen-Methode
+
+Hier nutzt man die [Inverse](../Kapitel_4/kernoperationen_inverse.qmd) aus Kapitel 4.3.
+
+:::{.callout-note title="Der Algorithmus" collapse="false"}
+Multipliziert man $A \cdot \vec{x} = \vec{b}$ von links mit $A^{-1}$, bleibt links nur $\vec{x}$ übrig:
+
+$$\vec{x} = A^{-1} \cdot \vec{b}$$
+
+Das funktioniert nur, wenn $A$ quadratisch ist und $\det(A) \neq 0$ gilt.
+:::
+
+Warum das kompliziert ist:
+
+**Berechnung:** Die Inverse einer $3 \times 3$ Matrix von Hand zu berechnen ist schon Strafarbeit. Bei $4 \times 4$ wird es fast unmöglich.
+
+**Instabilität:** Wenn die Zahlen sehr "krumm" sind oder die Matrix fast singulär ist (Determinante nahe 0), explodieren die Rundungsfehler bei der Berechnung der Inversen.
+
+### Cramersche Regel
+
+Ein Verfahren, das rein auf Determinanten basiert.
+
+:::{.callout-note title="Der Algorithmus" collapse="false"}
+Für jede Unbekannte $x_i$ berechnet man:
+
+
+$$x_i = \frac{\det(A_i)}{\det(A)}$$
+
+
+Wobei $A_i$ die Matrix ist, bei der die $i$-te Spalte durch den Vektor $\vec{b}$ ersetzt wurde.
+:::
+
+Für ein $2 \times 2$-System ist das noch gut von Hand machbar. Probiere es mit $x + y = 3$ und $x - y = 1$ aus (Determinante: $ad - bc$):
+
+```{math-exercise}
+#| label: lgs-cramer
+#| caption: Cramersche Regel von Hand
+#| partial-credit: true
+$\det(A) =$ _[-2]
+
+$\det(A_1) =$ _[-4] (erste Spalte durch $\vec{b}$ ersetzt)
+
+$\det(A_2) =$ _[-2] (zweite Spalte durch $\vec{b}$ ersetzt)
+
+Lösung: $x =$ _[2] und $y =$ _[1]
+```
+
+Warum das kompliziert ist:
+
+**Determinanten-Horror:** Für ein System mit 4 Unbekannten musst du fünf $4 \times 4$ Determinanten berechnen. Das ist rechentechnisch extrem ineffizient und eigentlich nur für $2 \times 2$ oder $3 \times 3$ Systeme sinnvoll.
+
+:::
+
+## 6.1.4. Warum wir Python brauchen
+
+Wir sehen: Die Mathematik hinter den Lösungswegen ist elegant, aber die manuelle Ausführung ist:
+
+* **Fehleranfällig** (Vorzeichenfehler!).
+* **Zeitaufwendig** (stundenlanges Rechnen für große Systeme).
+* **Nicht skalierbar** (ein System mit 1000 Variablen per Hand lösen? Unmöglich.)
+
+In der Praxis (Data Science, Ingenieurwesen) haben wir oft Systeme mit Millionen von Gleichungen. Hier kommt Python ins Spiel. Der Computer macht keine Flüchtigkeitsfehler und nutzt hochoptimierte Algorithmen, die viel stabiler sind als der Schul-Gauß.
+
+## 6.1.5. Mini-Aufgabe: Matrix-Blick
+
+Bevor wir im nächsten Kapitel den Computer die Arbeit machen lassen, teste kurz, ob du das Prinzip $A \vec{x} = \vec{b}$ verstanden hast.
+
+Gegeben ist folgendes System:
+
+$$\begin{align*}
+1x + 2y - z &= 5 \\
+0x + 3y + 4z &= 10 \\
+-1x + 0y + 1z &= 0
+\end{align*}$$
+
+Trage im folgenden Code-Block die fehlenden Zahlen für die Matrix `A` und den Vektor `b` ein. Mit **Überprüfen** siehst du, ob du die Struktur richtig erkannt hast (die Lösung steht nicht im Code).
+
+**Befehle, die du brauchst:** `np.array()`.
+
+```{py-exercise}
+#| label: lgs-matrixblick
+#| caption: Matrix-Blick
+import numpy as np
+# Ersetze die Nullen durch die richtigen Werte aus dem Gleichungssystem oben
+A = np.array([
+    [0, 0, 0],  # Erste Gleichung
+    [0, 0, 0],  # Zweite Gleichung
+    [0, 0, 0]   # Dritte Gleichung
+])
+
+b = np.array([0, 0, 0])
+
+print("A =\n", A)
+print("b =", b)
+
+## TESTS ##
+assert np.shape(A) == (3, 3), "A sollte eine 3×3-Matrix sein: drei Gleichungen, drei Unbekannte."
+assert np.array_equal(A[0], [1, 2, -1]), "Die erste Zeile von A passt noch nicht. Sie enthält die Zahlen vor x, y und z in der ersten Gleichung."
+assert np.array_equal(A[1], [0, 3, 4]), "Die zweite Zeile von A passt noch nicht. Tipp: Steht eine Variable als '0x' da, ist der Koeffizient 0."
+assert np.array_equal(A[2], [-1, 0, 1]), "Die dritte Zeile von A passt noch nicht. Achte auf das Vorzeichen bei x."
+assert np.array_equal(np.ravel(b), [5, 10, 0]), "A stimmt! Jetzt noch b: das sind die Zahlen rechts vom Gleichheitszeichen."
+```
+
+::: {.callout-caution title="Lösung" collapse="true"}
+```python
+import numpy as np
+
+A = np.array([
+    [1, 2, -1],
+    [0, 3, 4],
+    [-1, 0, 1]
+])
+
+b = np.array([5, 10, 0])
+```
+:::
+
+
+## 6.1.6. Ausblick
+
+Wir haben das Problem definiert und gemerkt, dass wir es nicht von Hand lösen wollen. Im nächsten Kapitel "6.2. Lösungsmethoden mit Python" schauen wir uns an, wie wir NumPy nutzen, um diese Systeme mit einem Einzeiler zu knacken – egal ob 2 oder 200 Unbekannte.
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+## 6.1.1. What are systems of linear equations? {#was-sind-lgs-eigentlich}
+
+From school, systems of linear equations are usually known in the following form:
+
+$$\begin{align*}
+2x + 3y &= 8 \\
+4x - y &= -2
+\end{align*}$$
+
+The goal there was to find the numbers for $x$ and $y$ that satisfy both equations at the same time. Geometrically, we are looking for the intersection point of two lines.
+
+**The mathematical definition (matrix notation)**
+
+In the world of data science and machine learning, however, we no longer write such systems one below the other. We use the [matrix-vector multiplication](../Kapitel_3/matrizen_vektor_multiplikation.qmd) that we already learned in the previous chapters.
+
+A system of linear equations consists of:
+
+* A <u>coefficient matrix</u> $A$ (the numbers in front of the variables).
+
+* A <u>vector of unknowns</u> $\vec{x}$ (the variables we are looking for).
+
+* A <u>right-hand side vector</u> $\vec{b}$ (the numbers on the right-hand side).
+
+In "matrix language", the system above looks like this:
+
+$$\underbrace{\begin{pmatrix} 2 & 3 \\ 4 & -1 \end{pmatrix}}_{A} \cdot \underbrace{\begin{pmatrix} x \\ y \end{pmatrix}}_{\vec{x}} = \underbrace{\begin{pmatrix} 8 \\ -2 \end{pmatrix}}_{\vec{b}}$$
+
+In general:
+
+
+$$A \cdot \vec{x} = \vec{b}$$
+
+## 6.1.2. The rank decides the outcome {#der-rang-entscheidet-über-das-ergebnis}
+
+Before we even start computing, we should remember [chapter 4.1 (rank of a matrix)](../Kapitel_4/kernoperationen_rang.qmd). Why was it so important? Because the rank tells us immediately whether we can find a solution at all!
+
+We can look at the matrix $A$ and the so-called "augmented coefficient matrix" $(A|b)$ (that is $A$ with the vector $\vec{b}$ appended).
+
+:::{.callout-important title="The rank theorem (solvability criterion)" collapse="true"}
+
+* **No solution:** If $\operatorname{rank}(A) < \operatorname{rank}(A|b)$, the equations contradict each other (e.g. parallel lines).
+* **Exactly one solution:** If $\operatorname{rank}(A) = \operatorname{rank}(A|b) = n$ (number of unknowns), there is exactly one intersection point.
+* **Infinitely many solutions:** If $\operatorname{rank}(A) = \operatorname{rank}(A|b) < n$, the system is underdetermined (e.g. two identical lines).
+:::
+
+In Python we can check this before we even try to solve the system. The following function compares the two ranks for three small systems: the one from above, two parallel lines ($x+y=1$, $x+y=2$) and two identical lines ($x+y=1$, $2x+2y=2$). Feel free to change the numbers and try your own systems.
+
+```{pyodide-python}
+import numpy as np
+
+def number_of_solutions(A, b):
+    Ab = np.column_stack([A, b])          # augmented coefficient matrix (A|b)
+    rank_A = np.linalg.matrix_rank(A)
+    rank_Ab = np.linalg.matrix_rank(Ab)
+    n = A.shape[1]                        # number of unknowns
+    if rank_A < rank_Ab:
+        return "no solution"
+    if rank_A == n:
+        return "exactly one solution"
+    return "infinitely many solutions"
+
+print(number_of_solutions(np.array([[2, 3], [4, -1]]), np.array([8, -2])))
+print(number_of_solutions(np.array([[1, 1], [1, 1]]), np.array([1, 2])))
+print(number_of_solutions(np.array([[1, 1], [2, 2]]), np.array([1, 2])))
+```
+
+## 6.1.3. Classical solution methods {#klassische-lösungswege}
+
+There are several roads to Rome (or to the solution $x$). Let us look at the classics and analyze why we do not like doing them by hand.
+
+::: {.panel-tabset}
+
+### Gaussian elimination {#gauß-elimination}
+
+This is the classic from high school.
+
+:::{.callout-note title="The algorithm" collapse="false"}
+Goal: We want to bring the matrix $A$ into row echelon form (triangular form), where there are only zeros below the diagonal.
+
+Elimination: Add multiples of one row to another in order to eliminate the leading variable.
+
+Back substitution: Once we have reached the bottom (e.g. $3z = 9 \rightarrow z=3$), we substitute the result into the row above to find $y$, and so on.
+:::
+
+Why this is complicated:
+Imagine you have a system with 100 variables (in image processing there are often thousands!).
+
+**Computational effort:** The effort grows cubically ($O(n^3)$). For 10 variables you need about 1000 steps. For 100 variables, a million.
+
+**Error-proneness:** Forgot a single minus sign in row 1? The whole result is wrong.
+
+### Inverse method {#inversen-methode}
+
+Here you use the [inverse](../Kapitel_4/kernoperationen_inverse.qmd) from chapter 4.3.
+
+:::{.callout-note title="The algorithm" collapse="false"}
+If you multiply $A \cdot \vec{x} = \vec{b}$ from the left by $A^{-1}$, only $\vec{x}$ remains on the left:
+
+$$\vec{x} = A^{-1} \cdot \vec{b}$$
+
+This only works if $A$ is square and $\det(A) \neq 0$.
+:::
+
+Why this is complicated:
+
+**Computation:** Computing the inverse of a $3 \times 3$ matrix by hand is already a punishment. For $4 \times 4$ it becomes almost impossible.
+
+**Instability:** If the numbers are very "uneven" or the matrix is almost singular (determinant close to 0), the rounding errors explode when computing the inverse.
+
+### Cramer's rule {#cramersche-regel}
+
+A method based purely on determinants.
+
+:::{.callout-note title="The algorithm" collapse="false"}
+For each unknown $x_i$ you compute:
+
+
+$$x_i = \frac{\det(A_i)}{\det(A)}$$
+
+
+where $A_i$ is the matrix in which the $i$-th column has been replaced by the vector $\vec{b}$.
+:::
+
+For a $2 \times 2$ system this is still easy to do by hand. Try it with $x + y = 3$ and $x - y = 1$ (determinant: $ad - bc$):
+
+```{math-exercise}
+#| label: lgs-cramer-en
+#| caption: Cramer's rule by hand
+#| partial-credit: true
+$\det(A) =$ _[-2]
+
+$\det(A_1) =$ _[-4] (first column replaced by $\vec{b}$)
+
+$\det(A_2) =$ _[-2] (second column replaced by $\vec{b}$)
+
+Solution: $x =$ _[2] and $y =$ _[1]
+```
+
+Why this is complicated:
+
+**Determinant horror:** For a system with 4 unknowns you have to compute five $4 \times 4$ determinants. This is computationally extremely inefficient and really only sensible for $2 \times 2$ or $3 \times 3$ systems.
+
+:::
+
+## 6.1.4. Why we need Python {#warum-wir-python-brauchen}
+
+We see: the mathematics behind the solution methods is elegant, but doing it by hand is:
+
+* **Error-prone** (sign errors!).
+* **Time-consuming** (hours of computing for large systems).
+* **Not scalable** (solving a system with 1000 variables by hand? Impossible.)
+
+In practice (data science, engineering) we often have systems with millions of equations. This is where Python comes in. The computer makes no careless mistakes and uses highly optimized algorithms that are much more stable than the school version of Gauss.
+
+## 6.1.5. Mini task: seeing the matrix {#mini-aufgabe-matrix-blick}
+
+Before we let the computer do the work in the next chapter, briefly test whether you have understood the principle $A \vec{x} = \vec{b}$.
+
+The following system is given:
+
+$$\begin{align*}
+1x + 2y - z &= 5 \\
+0x + 3y + 4z &= 10 \\
+-1x + 0y + 1z &= 0
+\end{align*}$$
+
+Fill in the missing numbers for the matrix `A` and the vector `b` in the following code block. With **Check** you can see whether you recognized the structure correctly (the solution is not in the code).
+
+**Commands you need:** `np.array()`.
+
+```{py-exercise}
+#| label: lgs-matrixblick-en
+#| caption: Seeing the matrix
+import numpy as np
+# Replace the zeros with the correct values from the system above
+A = np.array([
+    [0, 0, 0],  # First equation
+    [0, 0, 0],  # Second equation
+    [0, 0, 0]   # Third equation
+])
+
+b = np.array([0, 0, 0])
+
+print("A =\n", A)
+print("b =", b)
+
+## TESTS ##
+assert np.shape(A) == (3, 3), "A should be a 3×3 matrix: three equations, three unknowns."
+assert np.array_equal(A[0], [1, 2, -1]), "The first row of A is not right yet. It contains the numbers in front of x, y and z in the first equation."
+assert np.array_equal(A[1], [0, 3, 4]), "The second row of A is not right yet. Hint: if a variable appears as '0x', its coefficient is 0."
+assert np.array_equal(A[2], [-1, 0, 1]), "The third row of A is not right yet. Watch the sign of x."
+assert np.array_equal(np.ravel(b), [5, 10, 0]), "A is correct! Now b: these are the numbers to the right of the equals sign."
+```
+
+::: {.callout-caution title="Solution" collapse="true"}
+```python
+import numpy as np
+
+A = np.array([
+    [1, 2, -1],
+    [0, 3, 4],
+    [-1, 0, 1]
+])
+
+b = np.array([5, 10, 0])
+```
+:::
+
+
+## 6.1.6. Outlook {#ausblick}
+
+We have defined the problem and noticed that we do not want to solve it by hand. In the next chapter "6.2. Solution methods with Python" we look at how to use NumPy to crack these systems with a one-liner – no matter whether there are 2 or 200 unknowns.
+
+::::

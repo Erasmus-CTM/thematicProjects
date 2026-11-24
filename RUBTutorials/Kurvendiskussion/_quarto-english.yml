@@ -1,0 +1,72 @@
+project:
+  output-dir: docs/en
+
+lang: en
+
+website:
+  title: "Curve Sketching with Python"
+  reader-mode: true
+  navbar:
+    right:
+      - icon: github
+        #href: "Insert GitHub link here"
+      - icon: globe
+        aria-label: "Sprache wählen / Choose language"
+        menu:
+          - text: "Deutsch"
+            href: "#sprache-de"
+          - text: "English"
+            href: "#sprache-en"
+  sidebar:
+    collapse-level: 1
+    style: "floating"
+    contents:
+      - text: "Home"
+        href: Qmd-Files/index.qmd
+      - text: "Table of Contents"
+        href: Qmd-Files/toc.qmd
+      - text: "Python Basics"
+        href: Qmd-Files/grundlagen.qmd
+      - section: "Domain and Range"
+        href: Qmd-Files/Kapitel_1/index.qmd
+        contents:
+          - text: "Determining the Domain"
+            href: Qmd-Files/Kapitel_1/definitionsbereich.qmd
+          - text: "Determining the Range"
+            href: Qmd-Files/Kapitel_1/wertebereich.qmd
+      - section: "Symmetry and Intercepts"
+        href: Qmd-Files/Kapitel_2/index.qmd
+        contents:
+          - text: "Examining Symmetry"
+            href: Qmd-Files/Kapitel_2/symmetrieverhalten.qmd
+          - text: "Finding Zeros"
+            href: Qmd-Files/Kapitel_2/nullstellen.qmd
+          - text: "Finding the y-Intercept"
+            href: Qmd-Files/Kapitel_2/achsenschnittpunkte.qmd
+      - section: "End Behavior and Asymptotes"
+        href: Qmd-Files/Kapitel_3/index.qmd
+        contents:
+          - text: "Examining End Behavior"
+            href: Qmd-Files/Kapitel_3/globalverhalten.qmd
+          - text: "Finding Asymptotes"
+            href: Qmd-Files/Kapitel_3/asymptoten.qmd
+      - section: "Monotonicity and Concavity"
+        href: Qmd-Files/Kapitel_4/index.qmd
+        contents:
+          - text: "Computing Derivatives"
+            href: Qmd-Files/Kapitel_4/ableitungen.qmd
+          - text: "Examining Monotonicity"
+            href: Qmd-Files/Kapitel_4/monotonieverhalten.qmd
+          - text: "Finding Extrema / Saddle Points"
+            href: Qmd-Files/Kapitel_4/extrempunkte.qmd
+          - text: "Examining Concavity"
+            href: Qmd-Files/Kapitel_4/kruemmungsverhalten.qmd
+          - text: "Finding Inflection Points"
+            href: Qmd-Files/Kapitel_4/wendepunkte.qmd
+      - section: "Drawing Graphs"
+        href: Qmd-Files/Kapitel_5/index.qmd
+        contents:
+          - text: "Creating Graphs"
+            href: Qmd-Files/Kapitel_5/graphen.qmd
+          - text: "Labeling Graphs"
+            href: Qmd-Files/Kapitel_5/graphen_beschriften.qmd

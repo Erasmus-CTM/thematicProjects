@@ -1,0 +1,40 @@
+project:
+  type: website
+  # Alle Seiten liegen unter Qmd-Files/. Ohne index.qmd im Wurzelordner legt Quarto eine
+  # Weiterleitung auf die erste gerenderte Seite an, darum die Startseite zuerst.
+  render:
+    - Qmd-Files/index.qmd
+    - "Qmd-Files/**/*.qmd"
+
+# Zwei Sprachen als Quarto-Profile:
+#   quarto render --profile deutsch  -> docs/de/
+#   quarto render --profile english  -> docs/en/
+# Beides zusammen plus Weiterleitung docs/index.html: python build_multilingual_site.py
+# Theme/sprache.lua: im Profil english ersetzt `title-en:` aus dem Seitenkopf den `title:`
+filters:
+  - Theme/sprache.lua
+
+pyodide:
+  # Code in bearbeitbaren Zellen wird im Browser gespeichert und beim nächsten Besuch
+  # wiederhergestellt (nie automatisch ausgeführt). Abschaltbar im ⚙-Panel.
+  local-storage: true
+
+format:
+  html:
+    theme:
+      light: [morph, Theme/morph_custom.scss]
+      dark: [slate, Theme/slate_custom.scss]
+    toc: true
+    css: Theme/styles.css
+    # Font-Awesome-Webschrift: wird von styles.css für die Navbar-Symbole gebraucht
+    include-in-header:
+      - text: |
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+profile: 
+  default: deutsch
+  group: [english, deutsch]
+
+# Vor/Zurück-Links unten auf jeder Seite (gilt für beide Sprachprofile)
+website:
+  page-navigation: true

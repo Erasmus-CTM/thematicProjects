@@ -1,0 +1,262 @@
+---
+title: '2.4. Zugriff auf Matrixelemente'
+title-en: '2.4. Accessing Matrix Elements'
+format: html
+filters:
+  - ctm-assessment
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+::: {.callout-note title="Zellen der Reihe nach ausführen"}
+Die Code-Zellen dieser Seite bauen aufeinander auf: Importe, Variablen und Funktionen aus einer Zelle gelten auch in allen späteren Zellen und werden dort nicht wiederholt. Führe die Zellen deshalb von oben nach unten aus. Meldet Python einen `NameError`, hast du meist eine frühere Zelle noch nicht ausgeführt. Aufgaben mit **Überprüfen** laufen für sich allein: Dort gilt nur, was in der Zelle selbst steht.
+:::
+
+Bisher sollte nun bekannt sein, was eine Matrix ist, welche Attribute sie hat und welche Formen von speziellen Matrizen es gibt, in diesem Abschnitt geht es darum, wie man auf Werte innerhalb einer Matrix zugreifen kann.
+Das ist vor allem wichtig bei großen Matrizen oder zum Beispiel Adjazenzmatrizen oder Übergangsmatrizen, da durch einen einzelnen Wert spezifische Aussagen getroffen werden können.
+
+### 2.4.1. Zugriff auf einzelne Elemente
+
+Der Zugriff auf ein einzelnes Element einer Matrix erfolgt über dessen Zeilen- und Spaltenindex. In NumPy (und den meisten Programmiersprachen) beginnt die Zählung bei 0.
+
+Die Syntax lautet: `matrix[zeile, spalte]`
+
+```{pyodide-python}
+import numpy as np
+
+# Erstellen wir eine Beispielmatrix
+A = np.array([[10, 20, 30, 40],
+              [50, 60, 70, 80],
+              [90, 100, 110, 120]])
+
+print("Matrix A:\n", A)
+
+# Zugriff auf das Element in der 2. Zeile (Index 1) und 3. Spalte (Index 2)
+element = A[1, 2]
+print(f"\nElement an Position (1, 2): {element}") # Erwartet: 70
+
+# Zugriff auf das Element in der ersten Zeile, vierten Spalte
+element_rechts_oben = A[0, 3]
+print(f"Element an Position (0, 3): {element_rechts_oben}") # Erwartet: 40
+```
+
+#### 2.4.1.1. Bonus: Elemente interaktiv abfragen
+
+Dieser Abschnitt ist ein freiwilliges Experiment ohne automatische Prüfung. `A` aus der Zelle oben steht dir hier weiterhin zur Verfügung. Frage Zeilen- und Spaltenindex per `input()` ab und gib das entsprechende Element aus. Probiere dabei auch einen ungültigen Index aus (zum Beispiel Zeile 5) und beobachte, welchen Fehler NumPy dabei auslöst.
+
+**Befehle, die du brauchst:** `input()`, `int()`, der Zugriff `A[zeile, spalte]`, `print()`.
+
+```{pyodide-python}
+# Dein Code hier (A stammt aus der Zelle oben, führe sie vorher aus)
+```
+
+::: {.callout-caution title="Lösung" collapse="true"}
+```python
+zeile = int(input("Welche Zeile (0-2)? "))
+spalte = int(input("Welche Spalte (0-3)? "))
+print(f"Element an Position ({zeile}, {spalte}): {A[zeile, spalte]}")
+```
+Ein ungültiger Index wie Zeile 5 löst einen `IndexError` aus.
+:::
+
+### 2.4.2. Slicing: Zeilen und Spalten extrahieren
+
+Oft möchte man nicht nur ein einzelnes Element, sondern eine ganze Zeile oder Spalte. Dies wird als "Slicing" bezeichnet. Der Doppelpunkt `:` dient dabei als Platzhalter für "alle Elemente dieser Achse".
+
+```{pyodide-python}
+# Ganze zweite Zeile (Index 1) extrahieren
+zweite_zeile = A[1, :] # oder kürzer: A[1]
+print(f"Zweite Zeile: {zweite_zeile}")
+
+# Ganze dritte Spalte (Index 2) extrahieren
+dritte_spalte = A[:, 2]
+print(f"Dritte Spalte: {dritte_spalte}")
+```
+::: {.callout-important title="Wichtiger Hinweis" collapse="true"}
+Beachte, dass eine extrahierte Zeile und eine extrahierte Spalte jeweils als 1D-Array zurückgegeben werden. Das heißt nicht als Zeilen- oder Spaltenvektor, sondern als eindimensionales Array.
+:::
+
+### 2.4.3. Slicing: Untermatrizen extrahieren
+
+Man kann das Slicing auch verwenden, um Teile der Matrix, sogenannte Untermatrizen, zu extrahieren. Die Syntax `start:stop` wählt dabei Elemente vom `start`-Index bis zum `stop`-Index (exklusive) aus.
+
+```{pyodide-python}
+# Extrahiere eine 2x2-Untermatrix oben links
+# Zeilen 0 und 1 (Index 0 bis 2, exkl.), Spalten 0 und 1 (Index 0 bis 2, exkl.)
+untermatrix = A[0:2, 0:2]
+print("Matrix A:\n", A)
+print("\n2x2 Untermatrix oben links:\n", untermatrix)
+
+# Extrahiere die letzten beiden Spalten der ersten beiden Zeilen
+untermatrix_rechts = A[0:2, 2:4]
+print("\nLetzte zwei Spalten der ersten beiden Zeilen:\n", untermatrix_rechts)
+```
+
+#### 2.4.3.1. Aufgabe: Ecke oben links extrahieren
+
+Schreibe eine Funktion `ecke_oben_links(matrix, groesse)`, die von einer quadratischen oder rechteckigen NumPy-Matrix die `groesse` × `groesse` große Untermatrix oben links zurückgibt. Versteckte Tests prüfen automatisch, ob deine Lösung stimmt.
+
+**Befehle, die du brauchst:** Slicing `matrix[start:stop, start:stop]`, `return`.
+
+```{py-exercise}
+#| label: matrizen-zugriff-ecke
+#| caption: ecke_oben_links implementieren
+#| show-test-hints: false
+import numpy as np
+
+def ecke_oben_links(matrix, groesse):
+    # Dein Code hier
+    pass
+
+## TESTS ##
+A = np.array([[10, 20, 30, 40],
+              [50, 60, 70, 80],
+              [90, 100, 110, 120]])
+assert np.array_equal(ecke_oben_links(A, 2), [[10, 20], [50, 60]]), "ecke_oben_links(A, 2) ist falsch"
+assert np.array_equal(ecke_oben_links(A, 3), [[10, 20, 30], [50, 60, 70], [90, 100, 110]]), "ecke_oben_links(A, 3) ist falsch"
+assert np.array_equal(ecke_oben_links(A, 1), [[10]]), "ecke_oben_links(A, 1) ist falsch"
+```
+
+::: {.callout-tip title="Tipp" collapse="true"}
+Die gesuchte Untermatrix besteht aus den ersten `groesse` Zeilen und den ersten `groesse` Spalten — das lässt sich mit einem einzigen Slicing-Ausdruck `matrix[:groesse, :groesse]` lösen.
+:::
+
+::: {.callout-caution title="Lösung" collapse="true"}
+```python
+def ecke_oben_links(matrix, groesse):
+    return matrix[:groesse, :groesse]
+```
+:::
+
+
+Mit diesen Zugriffsmethoden hast du die volle Kontrolle über die Elemente deiner Matrizen.
+Nun solltest du alle Grundlagen haben, um das Kapitel [3. Grundlegende Matrix-Operationen](../Kapitel_3/index.qmd) zu beginnen.
+
+::::
+
+:::: {.content-visible when-profile="english"}
+::: {.callout-note title="Run the cells in order"}
+The code cells on this page build on each other: imports, variables and functions from one cell are also available in all later cells and are not repeated there. So run the cells from top to bottom. If Python reports a `NameError`, you most likely have not run an earlier cell yet. Exercises with **Check** run on their own: only what is written in the cell itself counts there.
+:::
+
+By now you should know what a matrix is, which attributes it has, and which kinds of special matrices exist — this section is about how to access values inside a matrix.
+This is especially important for large matrices, or for example adjacency or transition matrices, since a single value can carry specific meaning.
+
+### 2.4.1. Accessing Individual Elements {#zugriff-auf-einzelne-elemente}
+
+Accessing a single element of a matrix is done via its row and column index. In NumPy (and most programming languages), counting starts at 0.
+
+The syntax is: `matrix[row, column]`
+
+```{pyodide-python}
+import numpy as np
+
+# Let's create an example matrix
+A = np.array([[10, 20, 30, 40],
+              [50, 60, 70, 80],
+              [90, 100, 110, 120]])
+
+print("Matrix A:\n", A)
+
+# Access the element in the 2nd row (index 1) and 3rd column (index 2)
+element = A[1, 2]
+print(f"\nElement at position (1, 2): {element}") # Expected: 70
+
+# Access the element in the first row, fourth column
+element_top_right = A[0, 3]
+print(f"Element at position (0, 3): {element_top_right}") # Expected: 40
+```
+
+#### 2.4.1.1. Bonus: Query Elements Interactively
+
+This section is an optional experiment without automatic checking. `A` from the cell above is still available here. Ask for a row and column index with `input()` and print the corresponding element. Also try an invalid index (for example row 5) and observe which error NumPy raises.
+
+**Commands you need:** `input()`, `int()`, the access `A[row, col]`, `print()`.
+
+```{pyodide-python}
+# Your code here (A comes from the cell above, run it first)
+```
+
+::: {.callout-caution title="Solution" collapse="true"}
+```python
+row = int(input("Which row (0-2)? "))
+col = int(input("Which column (0-3)? "))
+print(f"Element at position ({row}, {col}): {A[row, col]}")
+```
+An invalid index such as row 5 raises an `IndexError`.
+:::
+
+### 2.4.2. Slicing: Extracting Rows and Columns {#slicing-zeilen-und-spalten-extrahieren}
+
+Often you don't want just a single element, but an entire row or column. This is called "slicing". The colon `:` acts as a placeholder for "all elements along this axis".
+
+```{pyodide-python}
+# Extract the entire second row (index 1)
+second_row = A[1, :] # or more briefly: A[1]
+print(f"Second row: {second_row}")
+
+# Extract the entire third column (index 2)
+third_col = A[:, 2]
+print(f"Third column: {third_col}")
+```
+::: {.callout-important title="Important Note" collapse="true"}
+Note that an extracted row and an extracted column are each returned as a 1D array. That means not as a row or column vector, but as a one-dimensional array.
+:::
+
+### 2.4.3. Slicing: Extracting Submatrices {#slicing-untermatrizen-extrahieren}
+
+Slicing can also be used to extract parts of a matrix, so-called submatrices. The syntax `start:stop` selects elements from the `start` index up to the `stop` index (exclusive).
+
+```{pyodide-python}
+# Extract a 2x2 submatrix from the top-left corner
+# Rows 0 and 1 (index 0 to 2, excl.), columns 0 and 1 (index 0 to 2, excl.)
+submatrix = A[0:2, 0:2]
+print("Matrix A:\n", A)
+print("\n2x2 top-left submatrix:\n", submatrix)
+
+# Extract the last two columns of the first two rows
+submatrix_right = A[0:2, 2:4]
+print("\nLast two columns of the first two rows:\n", submatrix_right)
+```
+
+#### 2.4.3.1. Exercise: Extract the Top-Left Corner
+
+Write a function `ecke_oben_links(matrix, groesse)` that returns the `groesse` × `groesse` (size × size) submatrix from the top-left corner of a square or rectangular NumPy matrix. Hidden tests automatically check whether your solution is correct.
+
+**Commands you need:** slicing `matrix[start:stop, start:stop]`, `return`.
+
+```{py-exercise}
+#| label: matrizen-zugriff-ecke-en
+#| caption: Implement ecke_oben_links
+#| show-test-hints: false
+import numpy as np
+
+def ecke_oben_links(matrix, groesse):
+    # Your code here
+    pass
+
+## TESTS ##
+A = np.array([[10, 20, 30, 40],
+              [50, 60, 70, 80],
+              [90, 100, 110, 120]])
+assert np.array_equal(ecke_oben_links(A, 2), [[10, 20], [50, 60]]), "ecke_oben_links(A, 2) is wrong"
+assert np.array_equal(ecke_oben_links(A, 3), [[10, 20, 30], [50, 60, 70], [90, 100, 110]]), "ecke_oben_links(A, 3) is wrong"
+assert np.array_equal(ecke_oben_links(A, 1), [[10]]), "ecke_oben_links(A, 1) is wrong"
+```
+
+::: {.callout-tip title="Tip" collapse="true"}
+The submatrix you're looking for consists of the first `groesse` rows and the first `groesse` columns — this can be solved with a single slicing expression `matrix[:groesse, :groesse]`.
+:::
+
+::: {.callout-caution title="Solution" collapse="true"}
+```python
+def ecke_oben_links(matrix, groesse):
+    return matrix[:groesse, :groesse]
+```
+:::
+
+
+With these access methods, you have full control over the elements of your matrices.
+You should now have all the basics needed to begin Chapter [3. Basic Matrix Operations](../Kapitel_3/index.qmd).
+
+::::

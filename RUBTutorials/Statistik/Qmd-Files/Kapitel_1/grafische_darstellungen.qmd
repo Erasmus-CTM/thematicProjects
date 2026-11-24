@@ -1,0 +1,1195 @@
+---
+title: "1.3 Grafische Darstellungen"
+title-en: "1.3 Graphical Representations"
+subtitle: "Deskriptive Statistik"
+subtitle-en: "Descriptive Statistics"
+format: html
+filters:
+  - ctm-assessment
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+> **Lernziele:** Am Ende dieses Kapitels kannst du
+>
+> - Balkendiagramme, Kreisdiagramme, Histogramme und empirische Verteilungsfunktionen in Python erstellen.
+> - entscheiden, welche Grafik für welchen Merkmalstyp und welche Fragestellung geeignet ist.
+> - Grafiken korrekt beschriften und interpretieren.
+
+---
+
+## Einführung
+
+Eine Tabelle mit Häufigkeiten ist präzise – aber ein Bild sagt mehr als tausend Zahlen. Grafische Darstellungen helfen, Muster, Unterschiede und Ausreißer auf einen Blick zu erkennen.
+
+**Welche Grafik wählt man?** Das hängt vom Merkmalstyp ab:
+
+| Grafik | Geeignet für |
+|--------|-------------|
+| Balkendiagramm | nominale, ordinale, diskrete Merkmale (wenige Ausprägungen) |
+| Kreisdiagramm | nominale, ordinale Merkmale (wenige Ausprägungen, Anteile zeigen) |
+| Histogramm | kardinale Merkmale (viele Ausprägungen, klassiert) |
+| Emp. Verteilungsfunktion | ordinale, kardinale Merkmale |
+| Boxplot | kardinale Merkmale (Vergleiche, Ausreißer) |
+
+: {.striped}
+
+---
+
+## Balkendiagramm
+
+Das **Balkendiagramm** stellt für jede Merkmalsausprägung einen Balken dar, dessen Höhe der absoluten oder relativen Häufigkeit entspricht. Die Balkenbreite hat keine Bedeutung.
+
+::: {.callout-tip}
+**Wann?** Immer wenn du nominale, ordinale oder diskrete Merkmale mit wenigen Ausprägungen visualisieren möchtest.
+:::
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Balkendiagramm: Absolute Häufigkeiten der Pinguinarten"
+#| label: fig-balken-arten
+import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.rcParams['figure.dpi'] = 120
+
+try:
+    from palmerpenguins import load_penguins
+    penguins = load_penguins()
+except:
+    import pandas as pd
+    import io, urllib.request
+    url = "https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"
+    penguins = pd.read_csv(url)
+
+counts = penguins["species"].value_counts()
+
+fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+
+# Absolute Häufigkeiten
+axes[0].bar(counts.index, counts.values, color=["#4c72b0","#dd8452","#55a868"], edgecolor="white")
+axes[0].set_title("Absolute Häufigkeiten")
+axes[0].set_xlabel("Pinguinart")
+axes[0].set_ylabel("Anzahl")
+for i, v in enumerate(counts.values):
+    axes[0].text(i, v + 1, str(v), ha='center', fontsize=10)
+
+# Relative Häufigkeiten
+rel = counts / counts.sum()
+axes[1].bar(counts.index, rel.values, color=["#4c72b0","#dd8452","#55a868"], edgecolor="white")
+axes[1].set_title("Relative Häufigkeiten")
+axes[1].set_xlabel("Pinguinart")
+axes[1].set_ylabel("Anteil")
+axes[1].set_ylim(0, 0.55)
+for i, v in enumerate(rel.values):
+    axes[1].text(i, v + 0.005, f"{v:.2f}", ha='center', fontsize=10)
+
+plt.tight_layout()
+plt.show()
+```
+
+::: {.callout-python}
+**Python-Tipp:** `plt.bar(x, heights)` zeichnet ein Balkendiagramm. `value_counts()` liefert direkt die Balkenhöhen. Mit `.plot(kind='bar')` geht es noch kürzer.
+:::
+
+```{pyodide-python}
+#| read-only: true
+import matplotlib.pyplot as plt
+import pandas as pd
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+counts = penguins["species"].value_counts()
+
+plt.figure(figsize=(6, 4))
+plt.bar(counts.index, counts.values, color=["#4c72b0","#dd8452","#55a868"])
+plt.xlabel("Pinguinart")
+plt.ylabel("Anzahl")
+plt.title("Pinguine je Art")
+plt.show()
+```
+
+:::: {.theorem .exercise}
+#### Aufgabe: Balkendiagramm nach Insel
+
+Erstelle ein Balkendiagramm, das zeigt, wie viele Pinguine auf jeder der drei Inseln beobachtet wurden.
+
+**Aufgabe:**
+
+1. Zähle die Pinguine pro Insel mit `value_counts()`.
+2. Erstelle ein beschriftetes Balkendiagramm (x-Achse: Insel, y-Achse: Anzahl, Titel).
+3. Auf welcher Insel wurden die meisten Pinguine beobachtet?
+
+```{pyodide-python}
+import matplotlib.pyplot as plt
+import pandas as pd
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+
+# Dein Code hier
+```
+
+::: {.callout-tip title="Tipp 1" collapse="true"}
+Berechne zuerst die Häufigkeiten: `counts = penguins["island"].value_counts()`. Dann übergib `counts.index` als x-Werte und `counts.values` als Balkenhöhen an `plt.bar()`.
+:::
+
+::: {.callout-tip title="Tipp 2" collapse="true"}
+Beschrifte die Achsen mit `plt.xlabel()` und `plt.ylabel()`, den Titel mit `plt.title()`. Rufe abschließend `plt.show()` auf, um das Diagramm anzuzeigen.
+:::
+
+::: {.callout-caution title="Minimale Lösung" collapse="true"}
+```python
+import matplotlib.pyplot as plt
+import pandas as pd
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+counts = penguins["island"].value_counts()
+
+plt.figure(figsize=(6, 4))
+plt.bar(counts.index, counts.values, color=["steelblue", "coral", "seagreen"])
+plt.xlabel("Insel")
+plt.ylabel("Anzahl")
+plt.title("Pinguine je Insel")
+plt.show()
+```
+:::
+::::
+
+Balkendiagramme können auch **gruppiert** werden, um Vergleiche zwischen Gruppen zu zeigen:
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Gruppiertes Balkendiagramm: Pinguinarten je Insel"
+#| label: fig-balken-grupiert
+import matplotlib.pyplot as plt
+import numpy as np
+
+try:
+    from palmerpenguins import load_penguins
+    penguins = load_penguins()
+except:
+    import pandas as pd
+    import urllib.request
+    url = "https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"
+    penguins = pd.read_csv(url)
+
+import pandas as pd
+kreuztab = pd.crosstab(penguins["island"], penguins["species"])
+
+x = np.arange(len(kreuztab.index))
+width = 0.25
+colors = ["#4c72b0","#dd8452","#55a868"]
+
+fig, ax = plt.subplots(figsize=(8, 4))
+for i, (art, color) in enumerate(zip(kreuztab.columns, colors)):
+    ax.bar(x + i*width, kreuztab[art], width, label=art, color=color)
+
+ax.set_xticks(x + width)
+ax.set_xticklabels(kreuztab.index)
+ax.set_xlabel("Insel")
+ax.set_ylabel("Anzahl")
+ax.set_title("Pinguinarten je Insel")
+ax.legend(title="Art")
+plt.tight_layout()
+plt.show()
+```
+
+---
+
+## Kreisdiagramm
+
+Das **Kreisdiagramm** (Tortendiagramm) teilt einen Kreis in Sektoren auf – die Fläche jedes Sektors entspricht der relativen Häufigkeit.
+
+::: {.callout-caution}
+**Kritik:** Kreisdiagramme sind schwieriger zu lesen als Balkendiagramme, weil das Auge Flächen und Winkel schlechter vergleicht als Höhen. Sie eignen sich am besten, wenn man **Anteile am Ganzen** hervorheben will (z.B. „Gentoo macht 36 % aus").
+:::
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Kreisdiagramm: Anteile der Pinguinarten"
+#| label: fig-pie
+import matplotlib.pyplot as plt
+
+try:
+    from palmerpenguins import load_penguins
+    penguins = load_penguins()
+except:
+    import pandas as pd
+    url = "https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"
+    penguins = pd.read_csv(url)
+
+counts = penguins["species"].value_counts()
+fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+
+# Kreisdiagramm
+axes[0].pie(counts.values, labels=counts.index,
+            autopct='%1.1f%%', colors=["#4c72b0","#dd8452","#55a868"],
+            startangle=90)
+axes[0].set_title("Kreisdiagramm")
+
+# Vergleich: Balkendiagramm
+axes[1].bar(counts.index, counts.values / counts.sum(),
+            color=["#4c72b0","#dd8452","#55a868"])
+axes[1].set_title("Balkendiagramm (zum Vergleich)")
+axes[1].set_ylabel("Relativer Anteil")
+axes[1].set_ylim(0, 0.55)
+
+plt.suptitle("Welche Darstellung ist übersichtlicher?", y=1.02)
+plt.tight_layout()
+plt.show()
+```
+
+---
+
+## Histogramm
+
+Das **Histogramm** zeigt die Häufigkeitsverteilung eines kardinalen Merkmals. Der Wertebereich wird in Klassen eingeteilt; jede Klasse bekommt einen Balken, dessen **Fläche** der relativen Häufigkeit entspricht.
+
+::: {.callout-rechnen}
+**Wichtig:** Die Balkenhöhe ist die **Häufigkeitsdichte** $f(K_j) = h(K_j) / \text{Breite}$, nicht die relative Häufigkeit. Bei gleichen Klassenbreiten sind beide proportional – bei ungleichen Breiten **muss** man die Dichte verwenden.
+:::
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Histogramme: Körpergewicht der drei Pinguinarten"
+#| label: fig-histogramme
+import matplotlib.pyplot as plt
+import numpy as np
+
+try:
+    from palmerpenguins import load_penguins
+    penguins = load_penguins()
+except:
+    import pandas as pd
+    url = "https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"
+    penguins = pd.read_csv(url)
+
+arten = ["Adelie", "Chinstrap", "Gentoo"]
+farben = ["#4c72b0", "#dd8452", "#55a868"]
+grenzen = np.arange(2500, 6600, 500)
+
+fig, axes = plt.subplots(1, 3, figsize=(12, 4), sharey=True)
+
+for ax, art, farbe in zip(axes, arten, farben):
+    daten = penguins[penguins["species"] == art]["body_mass_g"].dropna()
+    ax.hist(daten, bins=grenzen, density=True, color=farbe, edgecolor="white", alpha=0.85)
+    ax.set_title(art)
+    ax.set_xlabel("Körpergewicht (g)")
+    ax.set_xlim(2000, 7000)
+
+axes[0].set_ylabel("Häufigkeitsdichte")
+plt.suptitle("Körpergewicht je Pinguinart", y=1.02)
+plt.tight_layout()
+plt.show()
+```
+
+::: {.callout-tip}
+**Interpretation:** Die Adélie- und Chinstrap-Pinguine haben ein ähnliches Gewicht (Schwerpunkt um 3500–4000 g). Gentoo-Pinguine sind deutlich schwerer (Schwerpunkt um 5000–5500 g).
+:::
+
+::: {.callout-python}
+**Python-Tipp:** `plt.hist(daten, bins=grenzen, density=True)` erzeugt ein Histogramm mit Häufigkeitsdichte auf der y-Achse. Mit `density=False` werden absolute Häufigkeiten gezeigt.
+:::
+
+```{pyodide-python}
+#| read-only: true
+import matplotlib.pyplot as plt
+import pandas as pd
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+
+plt.figure(figsize=(7, 4))
+plt.hist(
+    penguins["flipper_length_mm"].dropna(),
+    bins=15,
+    density=True,
+    color="steelblue",
+    edgecolor="white"
+)
+plt.xlabel("Flossenlänge (mm)")
+plt.ylabel("Häufigkeitsdichte")
+plt.title("Histogramm: Flossenlänge aller Pinguine")
+plt.show()
+```
+
+```{pyodide-python}
+import matplotlib.pyplot as plt
+import pandas as pd
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+
+# Histogramm der Schnabellänge (bill_length_mm).
+# Probiere verschiedene bin-Zahlen aus (z.B. 5, 10, 20, 40):
+# Wie verändert sich das Erscheinungsbild?
+
+plt.figure(figsize=(7, 4))
+plt.hist(
+    penguins["bill_length_mm"].dropna(),
+    bins=10,           # ← Ändere diesen Wert!
+    density=True,
+    color="coral",
+    edgecolor="white"
+)
+plt.xlabel("Schnabellänge (mm)")
+plt.ylabel("Häufigkeitsdichte")
+plt.title("Histogramm: Schnabellänge")
+plt.show()
+```
+
+---
+
+## Empirische Verteilungsfunktion
+
+Die **empirische Verteilungsfunktion** (ECDF – *Empirical Cumulative Distribution Function*) gibt für jeden Wert $x$ an, welcher **Anteil** der Beobachtungen **höchstens so groß** wie $x$ ist.
+
+::: {#def-ecdf}
+### Empirische Verteilungsfunktion
+
+$$F_n(x) = \frac{\text{Anzahl der Beobachtungen} \le x}{n} = \sum_{a_j \le x} h(a_j)$$
+
+$F_n$ ist eine monoton steigende, rechtsseitig stetige Treppenfunktion. Sie springt an jeder beobachteten Merkmalsausprägung um deren relative Häufigkeit.
+:::
+
+Probiere es an einer kleinen Stichprobe aus: $2,\ 3,\ 3,\ 5,\ 7$ (also $n = 5$). Berechne die Werte der empirischen Verteilungsfunktion (als Bruch wie `3/5` oder als Dezimalzahl):
+
+```{math-exercise}
+#| label: ecdf-handrechnung
+#| caption: Empirische Verteilungsfunktion von Hand
+#| mode: numeric
+#| tolerance: 1%
+#| partial-credit: true
+#| field-labels: F(1), F(3), F(4), F(7)
+$F_5(1) =$ _[0], $F_5(3) =$ _[3/5], $F_5(4) =$ _[3/5], $F_5(7) =$ _[1]
+```
+
+$F_5(4)$ ist genauso groß wie $F_5(3)$: Zwischen 3 und 5 gibt es keine Beobachtung, die Funktion bleibt dort waagerecht. Bei $x = 3$ springt sie um $2/5$, weil der Wert 3 zweimal vorkommt.
+
+**Vorteil gegenüber Histogramm:** Keine Klassenwahl nötig. **Nachteil:** Schwieriger zu lesen für Einsteiger.
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Histogramm und ECDF: Körpergewicht der Adélie-Pinguine"
+#| label: fig-ecdf
+import matplotlib.pyplot as plt
+import numpy as np
+
+try:
+    from palmerpenguins import load_penguins
+    penguins = load_penguins()
+except:
+    import pandas as pd
+    url = "https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"
+    penguins = pd.read_csv(url)
+
+adelie = penguins[penguins["species"] == "Adelie"]["body_mass_g"].dropna().sort_values()
+n = len(adelie)
+
+fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+
+# Histogramm
+axes[0].hist(adelie, bins=np.arange(2500, 5500, 250), density=False,
+             color="#4c72b0", edgecolor="white")
+axes[0].set_xlabel("Körpergewicht (g)")
+axes[0].set_ylabel("Absolute Häufigkeit")
+axes[0].set_title("Histogramm")
+axes[0].set_xlim(2200, 5500)
+
+# ECDF
+ecdf_x = np.concatenate([[adelie.iloc[0] - 1], adelie.values, [adelie.iloc[-1] + 1]])
+ecdf_y = np.concatenate([[0], np.arange(1, n + 1) / n, [1]])
+axes[1].step(ecdf_x, ecdf_y, where='post', color="#4c72b0", linewidth=2)
+axes[1].scatter(adelie.values, np.arange(1, n + 1) / n, s=8, color="#4c72b0")
+axes[1].set_xlabel("Körpergewicht (g)")
+axes[1].set_ylabel("$F_n(x)$")
+axes[1].set_title("Empirische Verteilungsfunktion")
+axes[1].set_xlim(2200, 5500)
+axes[1].axhline(0.5, color="gray", linestyle="--", alpha=0.5, label="50%")
+axes[1].legend()
+
+plt.suptitle("Adélie-Pinguine", y=1.02)
+plt.tight_layout()
+plt.show()
+```
+
+::: {#exm-ecdf-lesen}
+### ECDF lesen
+
+Am obigen Diagramm kann man direkt ablesen:
+
+- $F_n(3500) \approx 0.39$ → ca. 39 % der Adélie-Pinguine wiegen **höchstens** 3500 g.
+- Der Anteil zwischen 3000 g und 3500 g: $F_n(3500) - F_n(3000) \approx 0.39 - 0.06 = 0.33$, also ca. 33 %.
+:::
+
+```{pyodide-python}
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+
+# Erstelle die ECDF für die Flossenlänge aller Pinguine
+daten = penguins["flipper_length_mm"].dropna().sort_values()
+n = len(daten)
+
+ecdf_y = np.arange(1, n + 1) / n
+
+plt.figure(figsize=(7, 4))
+plt.step(daten, ecdf_y, where='post', color="steelblue", linewidth=2)
+plt.xlabel("Flossenlänge (mm)")
+plt.ylabel("$F_n(x)$")
+plt.title("Empirische Verteilungsfunktion: Flossenlänge")
+plt.grid(True, alpha=0.3)
+plt.show()
+
+# Wie viele Pinguine haben eine Flossenlänge von höchstens 200 mm?
+anteil = (daten <= 200).mean()
+print(f"Anteil Pinguine mit Flossenlänge ≤ 200 mm: {anteil:.3f} ({anteil*100:.1f}%)")
+```
+
+:::: {.theorem .exercise}
+#### Aufgabe: Anteile aus der Verteilungsfunktion
+
+Betrachte das Körpergewicht (`body_mass_g`) **aller** Pinguine.
+
+1. Welcher Anteil wiegt höchstens 4000 g? Speichere $F_n(4000)$ in `anteil_4000`.
+2. Welcher Anteil wiegt mehr als 3500 g, aber höchstens 4500 g? Speichere das Ergebnis in `anteil_mitte`.
+
+**Überprüfen** testet beide Werte.
+
+```{py-exercise}
+#| label: ecdf-anteile
+#| caption: Anteile aus der Verteilungsfunktion
+#| show-test-hints: false
+import pandas as pd
+from pyodide.http import open_url
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+gewicht = penguins["body_mass_g"].dropna()
+
+anteil_4000 = None   # Dein Code hier
+anteil_mitte = None  # Dein Code hier
+print(anteil_4000, anteil_mitte)
+
+## TESTS ##
+assert anteil_4000 is not None, "anteil_4000 ist noch leer. Tipp: (gewicht <= 4000).mean()"
+assert anteil_4000 is not None and abs(float(anteil_4000) - 0.4971) < 0.001, "anteil_4000 stimmt nicht. Gesucht ist der Anteil der Werte, die kleiner oder gleich 4000 sind."
+assert anteil_mitte is not None, "anteil_mitte ist noch leer. Tipp: Differenz zweier Werte der Verteilungsfunktion."
+assert anteil_mitte is not None and abs(float(anteil_mitte) - 0.4357) < 0.001, "anteil_mitte stimmt nicht. Es gilt: Anteil in (3500, 4500] = F(4500) − F(3500)."
+```
+
+::: {.callout-tip title="Tipp" collapse="true"}
+$F_n(x)$ ist der Anteil der Werte $\le x$, in Python `(gewicht <= x).mean()`. Den Anteil in einem Intervall $(a, b]$ bekommst du als $F_n(b) - F_n(a)$.
+:::
+
+::: {.callout-caution title="Minimale Lösung" collapse="true"}
+```python
+anteil_4000 = (gewicht <= 4000).mean()
+anteil_mitte = (gewicht <= 4500).mean() - (gewicht <= 3500).mean()
+```
+:::
+::::
+
+---
+
+## Ausblick: Boxplot
+
+Der **Boxplot** ist eine kompakte Darstellung, die auf fünf Kennzahlen basiert: Minimum, 25%-Quartil, Median, 75%-Quartil und Maximum. Er eignet sich besonders gut, um mehrere Gruppen zu vergleichen. Im unten gezeigten (verfeinerten) Boxplot reichen die Antennen nicht ganz bis Minimum und Maximum, sehr weit außen liegende Werte werden als einzelne Punkte gezeichnet. Wir behandeln ihn ausführlich in Kapitel 1.4 (Kennzahlen).
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Boxplots: Schnabellänge je Pinguinart"
+#| label: fig-boxplot-vorschau
+import matplotlib.pyplot as plt
+
+try:
+    from palmerpenguins import load_penguins
+    penguins = load_penguins()
+except:
+    import pandas as pd
+    url = "https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"
+    penguins = pd.read_csv(url)
+
+arten = ["Adelie", "Chinstrap", "Gentoo"]
+daten = [penguins[penguins["species"] == art]["bill_length_mm"].dropna().values
+         for art in arten]
+
+fig, ax = plt.subplots(figsize=(7, 4))
+bp = ax.boxplot(daten, tick_labels=arten, patch_artist=True,
+                boxprops=dict(facecolor="#d0e4f5"), medianprops=dict(color="#2c5f8a", linewidth=2))
+ax.set_xlabel("Pinguinart")
+ax.set_ylabel("Schnabellänge (mm)")
+ax.set_title("Boxplots: Schnabellänge je Art")
+plt.tight_layout()
+plt.show()
+```
+
+---
+
+## Zusammenfassung
+
+- **Balkendiagramm:** für nominale, ordinale und diskrete Merkmale; Balkenhöhe = (relative) Häufigkeit.
+- **Kreisdiagramm:** für Anteile am Ganzen; schlechter lesbar als Balkendiagramm.
+- **Histogramm:** für kardinale Merkmale; Balkenfläche = relative Häufigkeit; Balkenhöhe = Häufigkeitsdichte.
+- **Empirische Verteilungsfunktion:** $F_n(x)$ = Anteil der Beobachtungen ≤ $x$; keine Klassenwahl nötig.
+- **Boxplot:** kompakt, gut für Gruppenvergleiche (→ Kapitel 1.4).
+
+---
+
+## Wissens-Check
+
+```{quizdown}
+---
+locale: de
+---
+
+### Welche Grafik eignet sich am besten für das nominale Merkmal "Pinguinart"?
+
+1. [x] Balkendiagramm
+    > Richtig! Balkendiagramme sind ideal für nominale/kategoriale Merkmale.
+1. [ ] Histogramm
+1. [ ] Empirische Verteilungsfunktion
+1. [ ] Streudiagramm
+
+### Was stellt die y-Achse eines Histogramms bei ungleichen Klassenbreiten dar?
+
+1. [ ] Die absolute Häufigkeit der Klasse.
+1. [ ] Die relative Häufigkeit der Klasse.
+1. [x] Die Häufigkeitsdichte: relative Häufigkeit geteilt durch Klassenbreite.
+    > Richtig! Nur so sind Klassen mit unterschiedlicher Breite fair vergleichbar.
+1. [ ] Die Klassenmitte.
+
+### Was sagt $F_n(x) = 0.75$ aus?
+
+1. [ ] 75 % der Merkmalsausprägungen sind größer als x.
+1. [x] 75 % der Beobachtungen sind kleiner oder gleich x.
+    > Genau! Die ECDF gibt den kumulierten Anteil bis x an.
+1. [ ] x ist der häufigste Wert.
+1. [ ] Der Mittelwert liegt bei 0.75.
+
+### Warum wird das Kreisdiagramm oft kritisiert?
+
+- [x] Das Auge vergleicht Flächen und Winkel schlechter als Längen.
+    > Richtig! Deshalb bevorzugt man meist Balkendiagramme.
+- [ ] Es kann nur zwei Kategorien darstellen.
+- [ ] Es zeigt keine Häufigkeiten.
+- [x] Kleine Unterschiede zwischen Sektoren sind schwer erkennbar.
+
+### Welches Python-Argument erzeugt bei `plt.hist()` die Häufigkeitsdichte auf der y-Achse?
+
+1. [ ] `normalize=True`
+1. [x] `density=True`
+    > Richtig! Mit `density=True` wird die Häufigkeitsdichte auf der y-Achse dargestellt.
+1. [ ] `relative=True`
+1. [ ] `freq=False`
+
+### Wann hat ein Histogramm die Fläche 1?
+
+1. [ ] Immer, unabhängig vom Argument.
+1. [x] Immer wenn `density=True` gesetzt ist – dann summieren sich alle Balkenflächen zu 1.
+    > Korrekt! Die Fläche des Histogramms (Summe aller Breite × Dichte) ergibt 1.
+1. [ ] Nur bei gleichen Klassenbreiten.
+1. [ ] Nur wenn die Daten normalverteilt sind.
+```
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+> **Learning objectives:** By the end of this chapter you can
+>
+> - create bar charts, pie charts, histograms and empirical distribution functions in Python.
+> - decide which chart suits which type of variable and which question.
+> - label and interpret charts correctly.
+
+---
+
+## Introduction {#einführung}
+
+A frequency table is precise – but a picture says more than a thousand numbers. Charts help you spot patterns, differences and outliers at a glance.
+
+**Which chart should you choose?** That depends on the type of variable:
+
+| Chart | Suitable for |
+|--------|-------------|
+| Bar chart | nominal, ordinal, discrete variables (few values) |
+| Pie chart | nominal, ordinal variables (few values, showing shares) |
+| Histogram | metric variables (many values, grouped) |
+| Emp. distribution function | ordinal, metric variables |
+| Box plot | metric variables (comparisons, outliers) |
+
+: {.striped}
+
+---
+
+## Bar chart {#balkendiagramm}
+
+A **bar chart** draws one bar for each value of the variable; the height of the bar equals its absolute or relative frequency. The width of the bars has no meaning.
+
+::: {.callout-tip}
+**When?** Whenever you want to visualize nominal, ordinal or discrete variables with only a few values.
+:::
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Bar chart: absolute frequencies of the penguin species"
+#| label: fig-balken-arten-en
+import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.rcParams['figure.dpi'] = 120
+
+try:
+    from palmerpenguins import load_penguins
+    penguins = load_penguins()
+except:
+    import pandas as pd
+    url = "https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"
+    penguins = pd.read_csv(url)
+
+counts = penguins["species"].value_counts()
+
+fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+
+# Absolute frequencies
+axes[0].bar(counts.index, counts.values, color=["#4c72b0","#dd8452","#55a868"], edgecolor="white")
+axes[0].set_title("Absolute frequencies")
+axes[0].set_xlabel("Species")
+axes[0].set_ylabel("Count")
+for i, v in enumerate(counts.values):
+    axes[0].text(i, v + 1, str(v), ha='center', fontsize=10)
+
+# Relative frequencies
+rel = counts / counts.sum()
+axes[1].bar(counts.index, rel.values, color=["#4c72b0","#dd8452","#55a868"], edgecolor="white")
+axes[1].set_title("Relative frequencies")
+axes[1].set_xlabel("Species")
+axes[1].set_ylabel("Share")
+axes[1].set_ylim(0, 0.55)
+for i, v in enumerate(rel.values):
+    axes[1].text(i, v + 0.005, f"{v:.2f}", ha='center', fontsize=10)
+
+plt.tight_layout()
+plt.show()
+```
+
+::: {.callout-python}
+**Python tip:** `plt.bar(x, heights)` draws a bar chart. `value_counts()` directly gives you the bar heights. With `.plot(kind='bar')` it is even shorter.
+:::
+
+```{pyodide-python}
+#| read-only: true
+import matplotlib.pyplot as plt
+import pandas as pd
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+counts = penguins["species"].value_counts()
+
+plt.figure(figsize=(6, 4))
+plt.bar(counts.index, counts.values, color=["#4c72b0","#dd8452","#55a868"])
+plt.xlabel("Species")
+plt.ylabel("Count")
+plt.title("Penguins per species")
+plt.show()
+```
+
+:::: {.theorem .exercise}
+#### Exercise: Bar chart by island
+
+Create a bar chart showing how many penguins were observed on each of the three islands.
+
+**Task:**
+
+1. Count the penguins per island with `value_counts()`.
+2. Create a labelled bar chart (x-axis: island, y-axis: count, title).
+3. On which island were the most penguins observed?
+
+```{pyodide-python}
+import matplotlib.pyplot as plt
+import pandas as pd
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+
+# Your code here
+```
+
+::: {.callout-tip title="Hint 1" collapse="true"}
+First compute the frequencies: `counts = penguins["island"].value_counts()`. Then pass `counts.index` as x-values and `counts.values` as bar heights to `plt.bar()`.
+:::
+
+::: {.callout-tip title="Hint 2" collapse="true"}
+Label the axes with `plt.xlabel()` and `plt.ylabel()`, and the title with `plt.title()`. Finally call `plt.show()` to display the chart.
+:::
+
+::: {.callout-caution title="Minimal solution" collapse="true"}
+```python
+import matplotlib.pyplot as plt
+import pandas as pd
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+counts = penguins["island"].value_counts()
+
+plt.figure(figsize=(6, 4))
+plt.bar(counts.index, counts.values, color=["steelblue", "coral", "seagreen"])
+plt.xlabel("Island")
+plt.ylabel("Count")
+plt.title("Penguins per island")
+plt.show()
+```
+:::
+::::
+
+Bar charts can also be **grouped** to compare several groups:
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Grouped bar chart: penguin species per island"
+#| label: fig-balken-grupiert-en
+import matplotlib.pyplot as plt
+import numpy as np
+
+try:
+    from palmerpenguins import load_penguins
+    penguins = load_penguins()
+except:
+    import pandas as pd
+    url = "https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"
+    penguins = pd.read_csv(url)
+
+import pandas as pd
+crosstab = pd.crosstab(penguins["island"], penguins["species"])
+
+x = np.arange(len(crosstab.index))
+width = 0.25
+colors = ["#4c72b0","#dd8452","#55a868"]
+
+fig, ax = plt.subplots(figsize=(8, 4))
+for i, (species, color) in enumerate(zip(crosstab.columns, colors)):
+    ax.bar(x + i*width, crosstab[species], width, label=species, color=color)
+
+ax.set_xticks(x + width)
+ax.set_xticklabels(crosstab.index)
+ax.set_xlabel("Island")
+ax.set_ylabel("Count")
+ax.set_title("Penguin species per island")
+ax.legend(title="Species")
+plt.tight_layout()
+plt.show()
+```
+
+---
+
+## Pie chart {#kreisdiagramm}
+
+A **pie chart** divides a circle into sectors – the area of each sector equals the relative frequency.
+
+::: {.callout-caution}
+**Criticism:** Pie charts are harder to read than bar charts because the eye compares areas and angles less accurately than heights. They work best when you want to highlight **shares of the whole** (e.g. "Gentoo make up 36 %").
+:::
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Pie chart: shares of the penguin species"
+#| label: fig-pie-en
+import matplotlib.pyplot as plt
+
+try:
+    from palmerpenguins import load_penguins
+    penguins = load_penguins()
+except:
+    import pandas as pd
+    url = "https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"
+    penguins = pd.read_csv(url)
+
+counts = penguins["species"].value_counts()
+fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+
+# Pie chart
+axes[0].pie(counts.values, labels=counts.index,
+            autopct='%1.1f%%', colors=["#4c72b0","#dd8452","#55a868"],
+            startangle=90)
+axes[0].set_title("Pie chart")
+
+# Comparison: bar chart
+axes[1].bar(counts.index, counts.values / counts.sum(),
+            color=["#4c72b0","#dd8452","#55a868"])
+axes[1].set_title("Bar chart (for comparison)")
+axes[1].set_ylabel("Relative share")
+axes[1].set_ylim(0, 0.55)
+
+plt.suptitle("Which chart is easier to read?", y=1.02)
+plt.tight_layout()
+plt.show()
+```
+
+---
+
+## Histogram {#histogramm}
+
+A **histogram** shows the frequency distribution of a metric variable. The range of values is divided into classes; each class gets a bar whose **area** equals the relative frequency.
+
+::: {.callout-rechnen}
+**Important:** The bar height is the **frequency density** $f(K_j) = h(K_j) / \text{width}$, not the relative frequency. With equal class widths both are proportional – with unequal widths you **must** use the density.
+:::
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Histograms: body mass of the three penguin species"
+#| label: fig-histogramme-en
+import matplotlib.pyplot as plt
+import numpy as np
+
+try:
+    from palmerpenguins import load_penguins
+    penguins = load_penguins()
+except:
+    import pandas as pd
+    url = "https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"
+    penguins = pd.read_csv(url)
+
+species_list = ["Adelie", "Chinstrap", "Gentoo"]
+colors = ["#4c72b0", "#dd8452", "#55a868"]
+bounds = np.arange(2500, 6600, 500)
+
+fig, axes = plt.subplots(1, 3, figsize=(12, 4), sharey=True)
+
+for ax, species, color in zip(axes, species_list, colors):
+    data = penguins[penguins["species"] == species]["body_mass_g"].dropna()
+    ax.hist(data, bins=bounds, density=True, color=color, edgecolor="white", alpha=0.85)
+    ax.set_title(species)
+    ax.set_xlabel("Body mass (g)")
+    ax.set_xlim(2000, 7000)
+
+axes[0].set_ylabel("Frequency density")
+plt.suptitle("Body mass per penguin species", y=1.02)
+plt.tight_layout()
+plt.show()
+```
+
+::: {.callout-tip}
+**Interpretation:** Adélie and Chinstrap penguins have a similar body mass (centred around 3500–4000 g). Gentoo penguins are clearly heavier (centred around 5000–5500 g).
+:::
+
+::: {.callout-python}
+**Python tip:** `plt.hist(data, bins=bounds, density=True)` creates a histogram with the frequency density on the y-axis. With `density=False` absolute frequencies are shown.
+:::
+
+```{pyodide-python}
+#| read-only: true
+import matplotlib.pyplot as plt
+import pandas as pd
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+
+plt.figure(figsize=(7, 4))
+plt.hist(
+    penguins["flipper_length_mm"].dropna(),
+    bins=15,
+    density=True,
+    color="steelblue",
+    edgecolor="white"
+)
+plt.xlabel("Flipper length (mm)")
+plt.ylabel("Frequency density")
+plt.title("Histogram: flipper length of all penguins")
+plt.show()
+```
+
+```{pyodide-python}
+import matplotlib.pyplot as plt
+import pandas as pd
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+
+# Histogram of bill length (bill_length_mm).
+# Try different numbers of bins (e.g. 5, 10, 20, 40):
+# How does the picture change?
+
+plt.figure(figsize=(7, 4))
+plt.hist(
+    penguins["bill_length_mm"].dropna(),
+    bins=10,           # ← Change this value!
+    density=True,
+    color="coral",
+    edgecolor="white"
+)
+plt.xlabel("Bill length (mm)")
+plt.ylabel("Frequency density")
+plt.title("Histogram: bill length")
+plt.show()
+```
+
+---
+
+## Empirical distribution function {#empirische-verteilungsfunktion}
+
+The **empirical distribution function** (ECDF – *Empirical Cumulative Distribution Function*) tells you, for every value $x$, which **share** of the observations is **at most** $x$.
+
+::: {#def-ecdf}
+### Empirical distribution function
+
+$$F_n(x) = \frac{\text{number of observations} \le x}{n} = \sum_{a_j \le x} h(a_j)$$
+
+$F_n$ is a monotonically increasing, right-continuous step function. At each observed value it jumps by that value's relative frequency.
+:::
+
+Try it on a small sample: $2,\ 3,\ 3,\ 5,\ 7$ (so $n = 5$). Compute the values of the empirical distribution function (as a fraction like `3/5` or as a decimal):
+
+```{math-exercise}
+#| label: ecdf-handrechnung-en
+#| caption: Empirical distribution function by hand
+#| mode: numeric
+#| tolerance: 1%
+#| partial-credit: true
+#| field-labels: F(1), F(3), F(4), F(7)
+$F_5(1) =$ _[0], $F_5(3) =$ _[3/5], $F_5(4) =$ _[3/5], $F_5(7) =$ _[1]
+```
+
+$F_5(4)$ is just as large as $F_5(3)$: there is no observation between 3 and 5, so the function stays flat there. At $x = 3$ it jumps by $2/5$ because the value 3 occurs twice.
+
+**Advantage over the histogram:** No choice of classes needed. **Disadvantage:** Harder to read for beginners.
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Histogram and ECDF: body mass of Adélie penguins"
+#| label: fig-ecdf-en
+import matplotlib.pyplot as plt
+import numpy as np
+
+try:
+    from palmerpenguins import load_penguins
+    penguins = load_penguins()
+except:
+    import pandas as pd
+    url = "https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"
+    penguins = pd.read_csv(url)
+
+adelie = penguins[penguins["species"] == "Adelie"]["body_mass_g"].dropna().sort_values()
+n = len(adelie)
+
+fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+
+# Histogram
+axes[0].hist(adelie, bins=np.arange(2500, 5500, 250), density=False,
+             color="#4c72b0", edgecolor="white")
+axes[0].set_xlabel("Body mass (g)")
+axes[0].set_ylabel("Absolute frequency")
+axes[0].set_title("Histogram")
+axes[0].set_xlim(2200, 5500)
+
+# ECDF
+ecdf_x = np.concatenate([[adelie.iloc[0] - 1], adelie.values, [adelie.iloc[-1] + 1]])
+ecdf_y = np.concatenate([[0], np.arange(1, n + 1) / n, [1]])
+axes[1].step(ecdf_x, ecdf_y, where='post', color="#4c72b0", linewidth=2)
+axes[1].scatter(adelie.values, np.arange(1, n + 1) / n, s=8, color="#4c72b0")
+axes[1].set_xlabel("Body mass (g)")
+axes[1].set_ylabel("$F_n(x)$")
+axes[1].set_title("Empirical distribution function")
+axes[1].set_xlim(2200, 5500)
+axes[1].axhline(0.5, color="gray", linestyle="--", alpha=0.5, label="50%")
+axes[1].legend()
+
+plt.suptitle("Adélie penguins", y=1.02)
+plt.tight_layout()
+plt.show()
+```
+
+::: {#exm-ecdf-lesen}
+### Reading the ECDF
+
+From the chart above you can read off directly:
+
+- $F_n(3500) \approx 0.39$ → about 39 % of Adélie penguins weigh **at most** 3500 g.
+- The share between 3000 g and 3500 g: $F_n(3500) - F_n(3000) \approx 0.39 - 0.06 = 0.33$, i.e. about 33 %.
+:::
+
+```{pyodide-python}
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from pyodide.http import open_url
+
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+
+# ECDF of the flipper length of all penguins
+data = penguins["flipper_length_mm"].dropna().sort_values()
+n = len(data)
+
+ecdf_y = np.arange(1, n + 1) / n
+
+plt.figure(figsize=(7, 4))
+plt.step(data, ecdf_y, where='post', color="steelblue", linewidth=2)
+plt.xlabel("Flipper length (mm)")
+plt.ylabel("$F_n(x)$")
+plt.title("Empirical distribution function: flipper length")
+plt.grid(True, alpha=0.3)
+plt.show()
+
+# How many penguins have a flipper length of at most 200 mm?
+share = (data <= 200).mean()
+print(f"Share of penguins with flipper length ≤ 200 mm: {share:.3f} ({share*100:.1f}%)")
+```
+
+:::: {.theorem .exercise}
+#### Exercise: Shares from the distribution function
+
+Look at the body mass (`body_mass_g`) of **all** penguins.
+
+1. What share weighs at most 4000 g? Store $F_n(4000)$ in `share_4000`.
+2. What share weighs more than 3500 g but at most 4500 g? Store the result in `share_middle`.
+
+**Check** tests both values.
+
+```{py-exercise}
+#| label: ecdf-anteile-en
+#| caption: Shares from the distribution function
+#| show-test-hints: false
+import pandas as pd
+from pyodide.http import open_url
+penguins = pd.read_csv(open_url("https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"))
+mass = penguins["body_mass_g"].dropna()
+
+share_4000 = None    # Your code here
+share_middle = None  # Your code here
+print(share_4000, share_middle)
+
+## TESTS ##
+assert share_4000 is not None, "share_4000 is still empty. Hint: (mass <= 4000).mean()"
+assert share_4000 is not None and abs(float(share_4000) - 0.4971) < 0.001, "share_4000 is wrong. You need the share of values less than or equal to 4000."
+assert share_middle is not None, "share_middle is still empty. Hint: difference of two values of the distribution function."
+assert share_middle is not None and abs(float(share_middle) - 0.4357) < 0.001, "share_middle is wrong. Remember: share in (3500, 4500] = F(4500) − F(3500)."
+```
+
+::: {.callout-tip title="Hint" collapse="true"}
+$F_n(x)$ is the share of values $\le x$, in Python `(mass <= x).mean()`. You get the share in an interval $(a, b]$ as $F_n(b) - F_n(a)$.
+:::
+
+::: {.callout-caution title="Minimal solution" collapse="true"}
+```python
+share_4000 = (mass <= 4000).mean()
+share_middle = (mass <= 4500).mean() - (mass <= 3500).mean()
+```
+:::
+::::
+
+---
+
+## Outlook: box plot {#ausblick-boxplot}
+
+The **box plot** is a compact display based on five key figures: minimum, 25 % quartile, median, 75 % quartile and maximum. It is especially good for comparing several groups. In the (refined) box plot shown below, the whiskers do not quite reach the minimum and maximum; values far out are drawn as individual points. We cover it in detail in chapter 1.4 (measures).
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-cap: "Box plots: bill length per penguin species"
+#| label: fig-boxplot-vorschau-en
+import matplotlib.pyplot as plt
+
+try:
+    from palmerpenguins import load_penguins
+    penguins = load_penguins()
+except:
+    import pandas as pd
+    url = "https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv"
+    penguins = pd.read_csv(url)
+
+species_list = ["Adelie", "Chinstrap", "Gentoo"]
+data = [penguins[penguins["species"] == s]["bill_length_mm"].dropna().values
+        for s in species_list]
+
+fig, ax = plt.subplots(figsize=(7, 4))
+bp = ax.boxplot(data, tick_labels=species_list, patch_artist=True,
+                boxprops=dict(facecolor="#d0e4f5"), medianprops=dict(color="#2c5f8a", linewidth=2))
+ax.set_xlabel("Species")
+ax.set_ylabel("Bill length (mm)")
+ax.set_title("Box plots: bill length per species")
+plt.tight_layout()
+plt.show()
+```
+
+---
+
+## Summary {#zusammenfassung}
+
+- **Bar chart:** for nominal, ordinal and discrete variables; bar height = (relative) frequency.
+- **Pie chart:** for shares of the whole; harder to read than a bar chart.
+- **Histogram:** for metric variables; bar area = relative frequency; bar height = frequency density.
+- **Empirical distribution function:** $F_n(x)$ = share of observations ≤ $x$; no choice of classes needed.
+- **Box plot:** compact, good for comparing groups (→ chapter 1.4).
+
+---
+
+## Knowledge check {#wissens-check}
+
+```{quizdown}
+---
+locale: en
+---
+
+### Which chart is best suited for the nominal variable "penguin species"?
+
+1. [x] Bar chart
+    > Correct! Bar charts are ideal for nominal/categorical variables.
+1. [ ] Histogram
+1. [ ] Empirical distribution function
+1. [ ] Scatter plot
+
+### What does the y-axis of a histogram show when the class widths are unequal?
+
+1. [ ] The absolute frequency of the class.
+1. [ ] The relative frequency of the class.
+1. [x] The frequency density: relative frequency divided by class width.
+    > Correct! Only then can classes of different widths be compared fairly.
+1. [ ] The class midpoint.
+
+### What does $F_n(x) = 0.75$ mean?
+
+1. [ ] 75 % of the values are greater than x.
+1. [x] 75 % of the observations are less than or equal to x.
+    > Exactly! The ECDF gives the cumulative share up to x.
+1. [ ] x is the most frequent value.
+1. [ ] The mean is 0.75.
+
+### Why is the pie chart often criticized?
+
+- [x] The eye compares areas and angles less accurately than lengths.
+    > Correct! That is why bar charts are usually preferred.
+- [ ] It can only show two categories.
+- [ ] It does not show frequencies.
+- [x] Small differences between sectors are hard to see.
+
+### Which Python argument makes `plt.hist()` show the frequency density on the y-axis?
+
+1. [ ] `normalize=True`
+1. [x] `density=True`
+    > Correct! With `density=True` the frequency density is shown on the y-axis.
+1. [ ] `relative=True`
+1. [ ] `freq=False`
+
+### When does a histogram have area 1?
+
+1. [ ] Always, regardless of the arguments.
+1. [x] Whenever `density=True` is set – then all bar areas add up to 1.
+    > Correct! The area of the histogram (sum of all width × density) is 1.
+1. [ ] Only with equal class widths.
+1. [ ] Only if the data are normally distributed.
+```
+
+::::

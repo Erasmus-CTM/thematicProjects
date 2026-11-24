@@ -1,0 +1,356 @@
+---
+title: "7.2. Berechnung in Python"
+title-en: "7.2. Computation in Python"
+format: html
+filters:
+  - ctm-assessment
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+Im letzten Kapitel haben wir gelernt, was **Eigenwerte & Eigenvektoren** sind. Aber wie finden wir sie?
+
+Wenn du Lineare Algebra in der Theorie lernst, würdest du jetzt das **charakteristische Polynom** lösen ($\det(A - \lambda E) = 0$, wobei $E$ die Einheitsmatrix ist). Das ist für $2 \times 2$ Matrizen noch machbar, wird aber ab $3 \times 3$ zur Qual und für große Matrizen (wie in Data Science üblich) unmöglich von Hand zu rechnen.
+
+Für die Matrix $A = \begin{pmatrix} 4 & 2 \\ 1 & 3 \end{pmatrix}$ aus dem Beispiel unten geht es noch: $\det(A - \lambda E) = (4-\lambda)(3-\lambda) - 2 \cdot 1 = \lambda^2 - 7\lambda + 10$. Finde die beiden Nullstellen dieses Polynoms (die größere zuerst):
+
+```{math-exercise}
+#| label: eigenwerte-polynom
+#| caption: Charakteristisches Polynom von Hand
+#| field-labels: größerer Eigenwert, kleinerer Eigenwert
+$\lambda_1 =$ _[5] und $\lambda_2 =$ _[2]
+```
+
+Zum Glück nimmt uns NumPy diese schwere Arbeit ab. Die Zellen auf dieser Seite bauen aufeinander auf: Führe sie von oben nach unten aus.
+
+## 7.2.1. Die Funktion `np.linalg.eig()`
+
+Die Funktion `np.linalg.eig(A)` (kurz für "eigen") ist das Mittel der Wahl für diese Aufgabe. Sie liefert uns **zwei** Ergebnisse gleichzeitig zurück:
+
+1.  Ein Array mit den **Eigenwerten**.
+2.  Eine Matrix, die die **Eigenvektoren** enthält.
+
+Schauen wir uns das an einem Beispiel an:
+
+```{pyodide-python}
+import numpy as np
+
+# Wir definieren eine Matrix mit reellen Eigenwerten (5 und 2),
+# das ist netter zum Starten
+A = np.array([
+    [4, 2],
+    [1, 3]
+])
+
+# Berechnung
+eigenwerte, eigenvektoren_matrix = np.linalg.eig(A)
+
+print("Die Eigenwerte:")
+print(eigenwerte)
+print("-" * 20)
+print("Die Matrix der Eigenvektoren:")
+print(eigenvektoren_matrix)
+```
+
+## 7.2.2. Das Ergebnis verstehen (Achtung Stolperfalle!)
+
+Der Rückgabewert der Eigenvektoren ist oft eine Quelle für Fehler bei Einsteigern.
+
+NumPy gibt die Eigenvektoren als **Spalten** einer Matrix zurück.
+
+Das bedeutet:
+
+* Der Eigenvektor zum **ersten** Eigenwert `eigenwerte[0]` steht in der **ersten Spalte** `eigenvektoren_matrix[:, 0]`.
+* Der Eigenvektor zum **zweiten** Eigenwert `eigenwerte[1]` steht in der **zweiten Spalte** `eigenvektoren_matrix[:, 1]`.
+
+Du darfst also nicht die **Zeilen** lesen, sondern musst die **Spalten** extrahieren!
+
+```{pyodide-python}
+# Zugriff auf das erste Paar
+ew_1 = eigenwerte[0]
+ev_1 = eigenvektoren_matrix[:, 0] # Doppelpunkt heißt "alle Zeilen", 0 heißt "Spalte 0"
+
+print(f"Eigenwert 1: {ew_1}")
+print(f"Dazugehöriger Eigenvektor 1: {ev_1}")
+```
+
+::: {.callout-tip}
+**Normierung:** NumPy gibt die Eigenvektoren meistens "normiert" zurück (Länge 1). Wundere dich also nicht, wenn du krumme Kommazahlen wie `0.894...` siehst, auch wenn du vielleicht einfachere Vektoren wie `[2, 1]` erwartet hättest. Die Richtung ist dieselbe!
+:::
+
+## 7.2.3. Die Probe aufs Exempel
+
+Vertrauen ist gut, Kontrolle ist besser. Wir können überprüfen, ob NumPy richtig gerechnet hat, indem wir die definierende Gleichung nutzen:
+
+$$A \cdot \vec{v} = \lambda \cdot \vec{v}$$
+
+Wir berechnen beide Seiten getrennt und vergleichen sie.
+
+```{pyodide-python}
+# Linke Seite: Matrix mal Vektor
+linke_seite = A @ ev_1
+
+# Rechte Seite: Eigenwert mal Vektor
+rechte_seite = ew_1 * ev_1
+
+print(f"A @ v:      {linke_seite}")
+print(f"Lambda * v: {rechte_seite}")
+
+# Vergleich (mit Toleranz für Rundungsfehler)
+ist_korrekt = np.allclose(linke_seite, rechte_seite)
+print(f"Stimmt die Gleichung? {ist_korrekt}")
+```
+
+## 7.2.4. Aufgabe: Eigenwerte berechnen und zuordnen
+
+Gegeben ist die folgende Matrix `M`. Deine Aufgabe ist es:
+
+1.  Die Eigenwerte und Eigenvektoren zu berechnen.
+2.  Den **größten** Eigenwert in der Variable `max_lambda` zu speichern.
+3.  Den dazugehörigen Eigenvektor in der Variable `max_v` zu speichern.
+
+:::{.callout-tip}
+Den **Index** des größten Werts liefert dir `np.argmax`.
+:::
+
+Mit **Überprüfen** wird dein Ergebnis getestet.
+
+**Befehle, die du brauchst:** `np.linalg.eig()`, `np.argmax()`, der Spaltenzugriff `matrix[:, i]`.
+
+```{py-exercise}
+#| label: eigenwerte-aufgabe
+#| caption: Größten Eigenwert finden
+import numpy as np
+
+M = np.array([
+    [2, 0, 0],
+    [0, 3, 4],
+    [0, 4, -3]
+])
+
+# Dein Code hier
+max_lambda = None
+max_v = None
+
+print("größter Eigenwert:", max_lambda)
+print("Eigenvektor dazu: ", max_v)
+
+## TESTS ##
+assert max_lambda is not None, "max_lambda ist noch leer. Berechne zuerst die Eigenwerte mit np.linalg.eig(M)."
+assert max_lambda is not None and np.isclose(max_lambda, 5), "max_lambda ist nicht der größte Eigenwert. Tipp: np.argmax(eigenwerte) liefert seinen Index."
+assert max_v is not None and np.size(max_v) == 3, "max_v sollte ein Vektor mit 3 Einträgen sein: eine Spalte der Eigenvektor-Matrix."
+assert max_v is not None and np.size(max_v) == 3 and np.linalg.norm(max_v) > 1e-9 and np.allclose(M @ np.ravel(max_v), 5 * np.ravel(max_v)), "max_v ist nicht der Eigenvektor zum größten Eigenwert. Hast du eine Zeile statt einer Spalte genommen?"
+```
+
+::: {.callout-caution collapse="true" title="Hinweis"}
+Denk dran, dass du den Index des größten Wertes brauchst, um den passenden Vektor aus der Matrix greifen zu können.
+:::
+
+::: {.callout-caution title="Lösung" collapse="true"}
+```python
+eigenwerte, eigenvektoren_matrix = np.linalg.eig(M)
+i = np.argmax(eigenwerte)
+max_lambda = eigenwerte[i]
+max_v = eigenvektoren_matrix[:, i]   # Spalte i, nicht Zeile i
+```
+:::
+
+
+## 7.2.5. Was passiert bei komplexen Zahlen?
+
+Manchmal gibt es Transformationen, bei denen kein reeller Vektor seine Richtung behält – zum Beispiel eine **Rotation um 90 Grad**. Jeder Vektor kippt um.
+
+In solchen Fällen gibt NumPy **komplexe Zahlen** zurück (erkennbar am `j` am Ende, z.B. `0. + 1.j`).
+
+```{pyodide-python}
+# Rotation um 90 Grad
+R = np.array([
+    [0, -1],
+    [1,  0]
+])
+
+w, v = np.linalg.eig(R)
+print("Eigenwerte der Rotation:")
+print(w)
+```
+
+Lass dich davon nicht abschrecken: In den meisten Aufgaben werden Matrizen genutzt, die garantiert **reelle** Eigenwerte haben.
+
+Im nächsten und [letzten Abschnitt](eigenwerte_visualisierung.qmd) des Tutorials werden Eigenvektoren sichtbar gemacht, und es geht darum, wo Eigenwerte und Eigenvektoren in der Praxis gebraucht werden.
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+In the last chapter we learned what **eigenvalues & eigenvectors** are. But how do we find them?
+
+If you learn linear algebra in theory, you would now solve the **characteristic polynomial** ($\det(A - \lambda I) = 0$, where $I$ is the identity matrix). This is still feasible for $2 \times 2$ matrices, but from $3 \times 3$ on it becomes torture, and for large matrices (as usual in data science) it is impossible to compute by hand.
+
+For the matrix $A = \begin{pmatrix} 4 & 2 \\ 1 & 3 \end{pmatrix}$ from the example below it still works: $\det(A - \lambda I) = (4-\lambda)(3-\lambda) - 2 \cdot 1 = \lambda^2 - 7\lambda + 10$. Find the two roots of this polynomial (the larger one first):
+
+```{math-exercise}
+#| label: eigenwerte-polynom-en
+#| caption: Characteristic polynomial by hand
+#| field-labels: larger eigenvalue, smaller eigenvalue
+$\lambda_1 =$ _[5] and $\lambda_2 =$ _[2]
+```
+
+Fortunately, NumPy does this hard work for us. The cells on this page build on each other: run them from top to bottom.
+
+## 7.2.1. The function `np.linalg.eig()` {#die-funktion-np.linalg.eig}
+
+The function `np.linalg.eig(A)` (short for "eigen") is the tool of choice for this task. It returns **two** results at the same time:
+
+1.  An array with the **eigenvalues**.
+2.  A matrix that contains the **eigenvectors**.
+
+Let us look at an example:
+
+```{pyodide-python}
+import numpy as np
+
+# We define a matrix with real eigenvalues (5 and 2),
+# which is nicer to start with
+A = np.array([
+    [4, 2],
+    [1, 3]
+])
+
+# Computation
+eigenvalues, eigenvector_matrix = np.linalg.eig(A)
+
+print("The eigenvalues:")
+print(eigenvalues)
+print("-" * 20)
+print("The matrix of eigenvectors:")
+print(eigenvector_matrix)
+```
+
+## 7.2.2. Understanding the result (watch out!) {#das-ergebnis-verstehen-achtung-stolperfalle}
+
+The returned eigenvectors are often a source of errors for beginners.
+
+NumPy returns the eigenvectors as **columns** of a matrix.
+
+This means:
+
+* The eigenvector for the **first** eigenvalue `eigenvalues[0]` is in the **first column** `eigenvector_matrix[:, 0]`.
+* The eigenvector for the **second** eigenvalue `eigenvalues[1]` is in the **second column** `eigenvector_matrix[:, 1]`.
+
+So you must not read the **rows**, but extract the **columns**!
+
+```{pyodide-python}
+# Access the first pair
+ev_1 = eigenvalues[0]
+v_1 = eigenvector_matrix[:, 0] # colon means "all rows", 0 means "column 0"
+
+print(f"Eigenvalue 1: {ev_1}")
+print(f"Corresponding eigenvector 1: {v_1}")
+```
+
+::: {.callout-tip}
+**Normalization:** NumPy usually returns the eigenvectors "normalized" (length 1). So do not be surprised if you see uneven decimal numbers like `0.894...`, even though you might have expected simpler vectors like `[2, 1]`. The direction is the same!
+:::
+
+## 7.2.3. Putting it to the test {#die-probe-aufs-exempel}
+
+Trust is good, control is better. We can check whether NumPy computed correctly by using the defining equation:
+
+$$A \cdot \vec{v} = \lambda \cdot \vec{v}$$
+
+We compute both sides separately and compare them.
+
+```{pyodide-python}
+# Left-hand side: matrix times vector
+left_side = A @ v_1
+
+# Right-hand side: eigenvalue times vector
+right_side = ev_1 * v_1
+
+print(f"A @ v:      {left_side}")
+print(f"Lambda * v: {right_side}")
+
+# Comparison (with tolerance for rounding errors)
+is_correct = np.allclose(left_side, right_side)
+print(f"Does the equation hold? {is_correct}")
+```
+
+## 7.2.4. Task: compute and match eigenvalues {#aufgabe-eigenwerte-berechnen-und-zuordnen}
+
+The following matrix `M` is given. Your task is to:
+
+1.  Compute the eigenvalues and eigenvectors.
+2.  Store the **largest** eigenvalue in the variable `max_lambda`.
+3.  Store the corresponding eigenvector in the variable `max_v`.
+
+:::{.callout-tip}
+`np.argmax` gives you the **index** of the largest value.
+:::
+
+**Check** tests your result.
+
+**Commands you need:** `np.linalg.eig()`, `np.argmax()`, the column access `matrix[:, i]`.
+
+```{py-exercise}
+#| label: eigenwerte-aufgabe-en
+#| caption: Finding the largest eigenvalue
+import numpy as np
+
+M = np.array([
+    [2, 0, 0],
+    [0, 3, 4],
+    [0, 4, -3]
+])
+
+# Your code here
+max_lambda = None
+max_v = None
+
+print("largest eigenvalue:", max_lambda)
+print("its eigenvector:   ", max_v)
+
+## TESTS ##
+assert max_lambda is not None, "max_lambda is still empty. First compute the eigenvalues with np.linalg.eig(M)."
+assert max_lambda is not None and np.isclose(max_lambda, 5), "max_lambda is not the largest eigenvalue. Hint: np.argmax(eigenvalues) gives its index."
+assert max_v is not None and np.size(max_v) == 3, "max_v should be a vector with 3 entries: one column of the eigenvector matrix."
+assert max_v is not None and np.size(max_v) == 3 and np.linalg.norm(max_v) > 1e-9 and np.allclose(M @ np.ravel(max_v), 5 * np.ravel(max_v)), "max_v is not the eigenvector for the largest eigenvalue. Did you take a row instead of a column?"
+```
+
+::: {.callout-caution collapse="true" title="Hint"}
+Remember that you need the index of the largest value in order to pick the matching vector from the matrix.
+:::
+
+::: {.callout-caution title="Solution" collapse="true"}
+```python
+eigenvalues, eigenvector_matrix = np.linalg.eig(M)
+i = np.argmax(eigenvalues)
+max_lambda = eigenvalues[i]
+max_v = eigenvector_matrix[:, i]   # column i, not row i
+```
+:::
+
+
+## 7.2.5. What happens with complex numbers? {#was-passiert-bei-komplexen-zahlen}
+
+Sometimes there are transformations in which no real vector keeps its direction – for example a **rotation by 90 degrees**. Every vector tilts.
+
+In such cases NumPy returns **complex numbers** (recognizable by the `j` at the end, e.g. `0. + 1.j`).
+
+```{pyodide-python}
+# Rotation by 90 degrees
+R = np.array([
+    [0, -1],
+    [1,  0]
+])
+
+w, v = np.linalg.eig(R)
+print("Eigenvalues of the rotation:")
+print(w)
+```
+
+Do not let this scare you: most tasks use matrices that are guaranteed to have **real** eigenvalues.
+
+In the next and [last section](eigenwerte_visualisierung.qmd) of the tutorial, eigenvectors are made visible, and we look at where eigenvalues and eigenvectors are needed in practice.
+
+::::

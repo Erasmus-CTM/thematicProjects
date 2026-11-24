@@ -1,0 +1,1783 @@
+---
+title: "Python Grundlagen"
+title-en: "Python Basics"
+format: html
+filters:
+  - ctm-assessment
+  - quizdown
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+Diese Seite dient als Erinnerung an die Grundlagen von Python, **wenn die Inhalte dieser Seite nicht bearbeitet und/oder bekannt sind, ist die Weiterarbeit im Tutorial schwierig**.
+
+## Kurzfassung mit Implementierungen
+
+::: {.panel-tabset}
+
+## Variablen
+
+Für einen leichten Einstieg in Python beschäftigen wir uns zunächst mit Variablen. Dabei ist der Unterschied zu Variablen in der Mathematik hervorzuheben. Im Folgenden ein kleines Beispiel:
+
+```{pyodide-python}
+#| read-only: true
+a = 7 
+print(a)
+```
+Dies ist eine Variablenzuweisung. Die Variablen können nach der Zuweisung für die Berechnung verwendet werden. Ein paar Beispiele siehst du im folgenden Code:
+
+```{pyodide-python}
+#| read-only: true
+a = 4 
+b = 5  
+print(a+b)
+print(a*b)
+print(a/2)
+print(a-b)
+```
+Für die Multiplikation wird in Python ein Sternchen * verwendet. Dividieren kannst du in Python mit dem Schrägstrich /.  
+Am folgenden Beispiel lässt sich der Unterschied zu Variablen in der Mathematik verdeutlichen:
+
+```{pyodide-python}
+#| read-only: true
+a = 4 
+a = 7 + a
+b = 5  
+print(a+b)
+print(a*b)
+print(a/2)
+print(a-b)
+```
+
+Wie du siehst, können sich Variablen verändern bzw. neu zugewiesen werden. In Python hat eine Variable immer den Wert, der ihr zuletzt zugewiesen worden ist.
+
+Statt einzelner Anweisungen wollen wir uns jetzt ein ganzes Programm ansehen. Stellen wir uns vor, wir fahren mit dem Auto eine längere Strecke und notieren uns dabei den Kilometerstand des Fahrzeugs zu Beginn der Fahrt sowie zu gewissen Zeitpunkten während der Fahrt gemeinsam mit der bisherigen Fahrtdauer. 
+Diese Informationen können wir nutzen, um uns die Durchschnittsgeschwindigkeit der ganzen Fahrt sowie in den Teilintervallen zu berechnen. 
+Ein einfaches Python-Programm, das dies für uns erledigt, ist das folgende:
+
+
+```{pyodide-python}
+#| read-only: true
+# Programm zur Berechnung der Durchschnittsgeschwindigkeit
+s0 = 13157.6 # Kilometerstand zu Beginn
+s1 = 13160.0 # Kilometerstand bei 1. Messung
+t1 = 4 # Minuten ab Fahrtbeginn bei 1. Messung
+s2 = 13177.4 # Kilometerstand bei 2. Messung
+t2 = 16 # Minuten ab Fahrtbeginn bei 2. Messung
+s3 = 13267.4 # Kilometerstand bei 3. Messung
+t3 = 64 # Minuten ab Fahrtbeginn bei 3. Messung
+# Durchschnittsgeschwindigkeit in km/h im ...
+v1 = (s1 - s0) / (t1 / 60) # ... 1. Intervall
+v2 = (s2 - s1) / ((t2 - t1) / 60) # ... 2. Intervall
+v3 = (s3 - s2) / ((t3 - t2) / 60) # ... 3. Intervall
+v_durchschnitt = (s3 - s0) / (t3 / 60) # Gesamt
+print(v1)
+print(v2)
+print(v3)
+print("Durchschnitt: {} km/h".format(v_durchschnitt))
+```
+
+An diesem Beispiel siehst du zudem, dass Variablen auch mehr als einen Buchstaben haben können. 
+Es können in Python auch Variablen durch ganze Wörter definiert werden, was zudem sinnvoll ist, um den Code mit passenden Variablennamen besser verstehen zu können.
+
+### Aufgabe zu Variablen
+
+Probiere einmal den Code so zu verändern, dass die Berechnung durch eine 4. und 5. Messung erweitert wird. 
+Bei der vierten Messung war der Kilometerstand bei 13281 km und 75 Minuten nach Fahrtbeginn. 
+Bei der fünften Messung betrug der Kilometerstand 13334 km und 119 Minuten nach Fahrtbeginn.
+Diese Berechnungen sollen auch mit dem Befehl print() ausgegeben werden.
+
+```{pyodide-python}
+#| label: grundlagen-aufgabe-variablen
+# Programm zur Berechnung der Durchschnittsgeschwindigkeit
+s0 = 13157.6 # Kilometerstand zu Beginn
+s1 = 13160.0 # Kilometerstand bei 1. Messung
+t1 = 4 # Minuten ab Fahrtbeginn bei 1. Messung
+s2 = 13177.4 # Kilometerstand bei 2. Messung
+t2 = 16 # Minuten ab Fahrtbeginn bei 2. Messung
+s3 = 13267.4 # Kilometerstand bei 3. Messung
+t3 = 64 # Minuten ab Fahrtbeginn bei 3. Messung
+# Durchschnittsgeschwindigkeit in km/h im ...
+v1 = (s1 - s0) / (t1 / 60) # ... 1. Intervall
+v2 = (s2 - s1) / ((t2 - t1) / 60) # ... 2. Intervall
+v3 = (s3 - s2) / ((t3 - t2) / 60) # ... 3. Intervall
+v_durchschnitt = (s3 - s0) / (t3 / 60) # Gesamt
+print(v1)
+print(v2)
+print(v3)
+print("Durchschnitt: {} km/h".format(v_durchschnitt))
+```
+
+## Fallunterscheidungen
+
+
+Bei einer Fallunterscheidung möchte man zwei oder mehr Fälle unterscheiden.
+Übersetzt heißt dies: Wenn "x", mache "y", ansonsten mache "z".  
+Betrachte das folgende Beispiel: 
+
+```{pyodide-python}
+#| read-only: true
+a = 15 
+b = 20
+if a>=b:
+    print("a ist größer als b oder gleich b")
+else: 
+    print("b ist größer als a")
+```
+
+Probiere es selbst aus und schreibe einen Code, in dem du zwischen a und b unterscheidest. Wenn a gleich b ist soll ein entsprechender Text ausgegeben werden und wenn sie unterschiedlich sind, ein entsprechend anderer Text.
+
+```{pyodide-python}
+#| label: grundlagen-aufgabe-if-else
+```
+
+Wenn du mehr als zwei Fälle unterscheiden möchtest, kannst du "elif" zwischen "if" und "else" verwenden. Dies ist die Kurzfassung für "else if". Betrachte den folgenden Code: 
+
+```{pyodide-python}
+#| read-only: true
+a = 25 
+b = 20
+if a==b:
+    print("a ist gleich b")
+elif a>b: 
+    print("a ist größer als b")
+else: 
+    print("b ist größer als a")
+```
+
+Es ist nicht notwendig immer if und else zu verwenden. Du kannst auch nur if verwenden, wenn du im else-Fall nichts machen möchtest: 
+
+### Aufgabe zu Fallunterscheidungen
+
+Ändere den folgenden Code und probiere aus, was passiert, wenn a ungleich b ist.
+```{pyodide-python}
+a = 20 
+b = 20
+if a==b:
+    print("Fallunterscheidungen sind super")
+```
+
+
+## Datentypen
+
+
+Es gibt verschiedene Datentypen, die in Python unterschieden werden. Ganzzahlen heißen Integer. Dezimalzahlen werden "Float" genannt. 
+Sobald in einer Berechnung eine Dezimalzahl vorkommt, ist das Ergebnis ebenfalls ein Float, auch, wenn es eigentlich eine Ganzzahl ist. Im folgenden Beispiel kannst du dies sehen: 
+
+```{pyodide-python}
+#| read-only: true
+a = 15 
+print(a)
+b = 1.5
+print(a*b)
+print(a/b)
+```
+Die Division ergibt immer eine Gleitkommazahl, auch wenn ein Integer von einem anderen dividiert wird: 
+
+```{pyodide-python}
+#| read-only: true
+a = 15 
+b = 5
+print (a/b)
+```
+Ein weiterer Datentyp ist der sogenannte Boolean, der als wahr oder falsch ausgewertet wird. Führe den folgenden Code aus und verändere ihn so, dass "falsch" ausgegeben wird. 
+
+```{pyodide-python}
+a = 15 
+if a==15:
+  print ("wahr")
+else: 
+  print ("falsch")
+```
+
+Im obigen Beispiel haben wir einen Vergleichsoperator "==" verwendet, um auf Gleichheit zu überprüfen. 
+Möchte man abfragen, ob a ungleich einem bestimmten Wert ist, sagen wir 7, so verwendet man "a!=7". 
+
+### Aufgabe zu Datentypen
+
+Schreibe nun einmal das Programm so um, dass du abfragst, ob a ungleich 8 ist. 
+Wenn dies der Fall ist, schreibe "wahr", wenn nicht, schreibe "falsch".
+
+```{pyodide-python}
+#| label: grundlagen-aufgabe-datentypen
+
+```
+
+## Listen
+
+Neben den numerischen Datentypen gibt es weitere, worin sich mehrere Zahlen in einer Menge darstellen lassen. Diese nennen sich Listen und können sowohl direkt mit Zahlen erstellt werden, als auch zunächst leer gelassen werden. 
+Betrachte die folgenden Beispiele:
+
+```{pyodide-python}
+#| read-only: true
+Liste = [2, -4, 5, 9, 12]
+print(Liste)
+print(Liste[4])
+```
+
+Im obigen Beispiel wird eine Liste aus fünf Zahlen initialisiert. Anschließend wird die Liste und der fünfte Eintrag der Liste ausgegeben. Der Grund, wieso wir dabei "Liste[4]" und nicht "Liste[5]" verwenden, ist, weil der Index der Listeneinträge bei null beginnt. 
+So ist der erste Listeneintrag bei "Liste[0]" und der fünfte bei "Liste[4]".
+
+Im nächsten Beispiel werden wir eine leere Liste erstellen und dann zwei Einträge hinzufügen. Anschließend verändern wir einen der Einträge. Beachte die Ausgabe:
+
+```{pyodide-python}
+#| read-only: true
+Liste = []
+Liste.append(4)
+Liste.append(-7)
+print(Liste)
+Liste[1]=-9
+print(Liste)
+```
+
+### Aufgabe zu Listen
+
+Versuch es einmal selbst und erstelle eine Liste mit den Einträgen 2, -13, 6 und 4. Gib die Liste aus. Verändere dann den zweiten Eintrag zu einer 4 und gib die neue Liste aus.
+
+```{pyodide-python}
+#| label: grundlagen-aufgabe-listen
+```
+
+### Listen sortieren und aus Mengen erzeugen
+
+Das brauchst du später oft, zum Beispiel wenn `sympy` mehrere Lösungen liefert. `sorted(...)` funktioniert für Listen **und** Mengen (`{...}`) und gibt immer eine **neue, aufsteigend sortierte Liste** zurück. In einer Menge steht jeder Wert nur einmal.
+
+```{pyodide-python}
+#| read-only: true
+zahlen = [5, -2, 9, 0]
+print(sorted(zahlen))    # neue sortierte Liste: [-2, 0, 5, 9]
+print(zahlen)            # die ursprüngliche Liste bleibt unverändert
+
+menge = {3, -3, 3}       # die zweite 3 wird ignoriert
+print(sorted(menge))     # [-3, 3]
+```
+
+## Funktionen
+
+Bisher haben wir Code geschrieben, der von oben nach unten ausgeführt wird. Wenn wir eine Berechnung wie die der Fakultät oder der Durchschnittsgeschwindigkeit an verschiedenen Stellen mit unterschiedlichen Werten wiederholen wollten, müssten wir den Code kopieren und einfügen. Das ist unübersichtlich und fehleranfällig.
+
+**Funktionen** lösen dieses Problem. Eine Funktion ist ein benannter, wiederverwendbarer Codeblock, der eine bestimmte Aufgabe erfüllt. Man definiert sie einmal und kann sie dann beliebig oft "aufrufen".
+
+Eine Funktion wird mit dem Schlüsselwort `def` definiert, gefolgt von einem Namen und Klammern `()`. Innerhalb der Klammern können **Parameter** (Eingabewerte) übergeben werden. Mit `return` gibt die Funktion ein Ergebnis zurück.
+
+### f-Strings in Python
+Im Folgenden verwenden wir sogenannte **f-Strings** für die `print()`-Ausgaben. Ein f-String wird durch ein `f` vor dem öffnenden Anführungszeichen eingeleitet (z.B. `f"Hallo"`).
+
+Der große Vorteil ist, dass man Variablen und Ausdrücke direkt in den Text einbetten kann, indem man sie in geschweifte Klammern `{}` setzt. Das macht den Code oft deutlich lesbarer.
+```{pyodide-python}
+#| read-only: true
+# Definition einer einfachen Funktion, die zwei Zahlen addiert
+def addiere(zahl1, zahl2):
+    summe = zahl1 + zahl2
+    return summe
+
+# Aufruf der Funktion mit den Werten 5 und 10
+print(f"Das Ergebnis von 5 + 10 ist: {addiere(5, 10)}")
+
+# Erneuter Aufruf mit anderen Werten
+print(f"Das Ergebnis von -2 + 7 ist: {addiere(-2, 7)}")
+```
+
+### Aufgabe zu Funktionen
+
+Schreibe eine Funktion mit dem Namen `rechteck_flaeche`, die die Länge und Breite eines Rechtecks als Parameter entgegennimmt und dessen Flächeninhalt berechnet und zurückgibt.
+
+- Die Funktion soll zwei Parameter annehmen: `laenge` und `breite`.
+- Sie soll das Produkt der beiden Parameter berechnen und mit `return` zurückgeben.
+- Teste deine Funktion mit unterschiedlichen Wertepaaren und lass diese ausgeben
+
+Diesmal prüfen versteckte Tests automatisch, ob deine Funktion für verschiedene Werte das Richtige zurückgibt. Klicke nach dem Ausfüllen auf **Überprüfen**. Eigene `print()`-Ausgaben werden dabei ebenfalls angezeigt.
+
+```{py-exercise}
+#| label: grundlagen-rechteck
+#| caption: rechteck_flaeche implementieren
+def rechteck_flaeche(laenge, breite):
+    # Dein Code hier
+    pass
+
+## TESTS ##
+assert rechteck_flaeche(2, 3) == 6,   "rechteck_flaeche(2, 3) sollte 6 ergeben"
+assert rechteck_flaeche(5, 5) == 25,  "rechteck_flaeche(5, 5) sollte 25 ergeben"
+assert rechteck_flaeche(1, 7) == 7,   "rechteck_flaeche(1, 7) sollte 7 ergeben"
+assert rechteck_flaeche(2.5, 4) == 10, "rechteck_flaeche(2.5, 4) sollte 10 ergeben (auch Kommazahlen!)"
+```
+
+
+## Schleifen
+
+Zum Verständnis ein paar Beispiele und eine Aufgabe dazu:  
+
+`For-Schleifen` wiederholen sich über ein bestimmtes Intervall. Das Schlüsselwort `range` beschreibt hierbei das Intervall von $a$ bis $b$. Dabei ist $a$ der Start der Iteration, $b$ selbst gehört **nicht** mehr dazu: `range(5, 20)` läuft von 5 bis 19.
+
+```{pyodide-python}
+a = 5 #Die Variable a wird hier definiert
+b = 20
+for i in range(a,b,2): #a,b sind die Grenzen 2 die Schrittgröße
+    print(i+1)
+```
+
+Wenn eine Rechnung/ eine Abfrage mehrfach ausgeführt werden soll, ist dies vereinfacht mit Hilfe von Schleifen möglich.
+`While-Schleifen`wiederholen hierbei den Code solange wie eine gewisse Bedingung erfüllt ist.
+Ein kleines Bsp.:
+```{pyodide-python}
+a = 3 #Die Variable a wird hier definiert
+b = 11
+while a<b: 
+    a = a+1 #ist sehr wichtig, da die Bedingung sonst immer erfüllt bliebe, heißt es wäre eine ENDLOS-Schleife
+    print(a)
+```
+
+### Aufgabe zu For-/While- Schleifen
+
+Die obigen Blöcke sind absichtlich bearbeitbar, teste ein wenig in ihnen herum, um ein Verständnis dafür zu entwickeln, wie die unterschiedlichen Systeme funktionieren.  
+Wenn du dir sicher bist, dass du verstanden hast, wie beides funktioniert, versuche gerne mal ein Programm zu schreiben, welches eine Fakultät berechnet, indem du eine `While-Schleife` verwendest.  
+
+```{pyodide-python}
+#Hier ein Beispielcode für eine For Schleife
+#Text hinter einem # zählt als Kommentar und wird von Python ignoriert
+def fakultaet_for(n):
+    if n == 0:
+        return 1
+    result = 1
+    for i in range(1, n + 1):
+        result = result*i
+        #print(result,i) <-- Das kannst du hinzufügen um ein paar mehr Schritte zu sehen 
+    return result
+
+print("Die Fakultät von 5 ist:", fakultaet_for(5)) #Print gibt eine Ausgabe aus
+
+print("Die Fakultät von 0 ist:", fakultaet_for(0))
+
+print("Die Fakultät von 10 ist:", fakultaet_for(10))
+
+```
+
+```{py-exercise}
+#| label: grundlagen-fakultaet-while
+#| caption: fakultaet_while mit einer While-Schleife
+#| forbidden-keywords: for
+#| show-test-hints: false
+#Versuche dich hier an einer Funktion für eine While-Schleife
+def fakultaet_while(n):
+    pass
+
+## TESTS ##
+assert fakultaet_while(0) == 1,     "fakultaet_while(0) sollte 1 ergeben (0! = 1)"
+assert fakultaet_while(1) == 1,     "fakultaet_while(1) sollte 1 ergeben"
+assert fakultaet_while(5) == 120,   "fakultaet_while(5) sollte 120 ergeben"
+assert fakultaet_while(10) == 3628800, "fakultaet_while(10) sollte 3628800 ergeben"
+```
+
+_Die versteckten Tests prüfen deine Funktion mit mehreren Werten. Das Schlüsselwort `for` ist hier gesperrt, damit du wirklich eine `While-Schleife` benutzt._
+
+- Deine `While-Schleife` wird ein sehr ähnliches Grundgerüst haben, wie die `For-Schleife`
+Auch wirst du die folgenden Dinge benötigen:  
+1. **Initialisierung**  
+   `result = 1` und `i = 1`
+
+2. **Schleifenlogik**  
+   Wiederhole solange `i <= n`, multipliziere jeweils `result = result * i`
+
+3. **Zähler hochzählen!**  
+   `i = i + 1` (→ sonst Endlosschleife)
+
+4. Zusatz: Was passiert bei `n = 0`?
+
+<details>
+<summary> Hier eine mögliche Lösung für eine `While Schleife`, falls du absolut nicht mehr weiter weißt </summary>
+
+```{pyodide-python}
+def fakultaet_while(n):
+    if n == 0:
+        return 1
+    result = 1
+    i = 1
+    while i <= n:
+        result = result*i
+        i = i+1
+        #print(result,i) <-- Das kannst du hinzufügen um ein paar mehr Schritte zu sehen 
+    return result
+
+print("Die Fakultät von 5 ist:", fakultaet_while(5))
+```
+
+</details>
+
+### Listen in einer Schleife füllen
+
+Ein sehr häufiges Muster: Du startest mit einer **leeren Liste**, gehst mit einer `for`-Schleife alle Werte durch und hängst mit `append` nur die passenden an. **Sage das Ergebnis vorher voraus**, bevor du den Block ausführst:
+
+```{pyodide-python}
+#| read-only: true
+quadrate = []                      # leere Liste
+for zahl in [1, 2, 3, 4]:
+    if zahl % 2 == 0:              # nur gerade Zahlen (Rest 0 bei Division durch 2)
+        quadrate.append(zahl**2)
+print(quadrate)
+```
+
+
+## Bibliotheken
+
+Eine der größten Stärken von Python ist die riesige Auswahl an **Bibliotheken** (auch Module genannt). Eine Bibliothek ist eine Sammlung von vordefinierten Funktionen und Konstanten, die du in deinem Code verwenden kannst, ohne das Rad neu erfinden zu müssen. 
+
+Um eine Bibliothek zu nutzen, musst du sie mit dem `import`-Befehl am Anfang deines Codes "laden". Für dieses Tutorial sind die Bibliotheken `sympy`, `numpy` und `matplotlib` besonders relevant:  
+_`import numpy as np` lädt die ganze Bibliothek, `np` ist nur ein kürzerer Name dafür. Mit `from bibliothek import funktion` holt man sich dagegen einzelne Funktionen, die man dann ohne Vorsilbe aufrufen kann._
+
+**1. `numpy` – Für numerische Berechnungen**  
+`numpy` rechnet mit vielen Zahlen auf einmal. In diesem Tutorial brauchen wir es vor allem, um Wertetabellen für Graphen zu erzeugen. Es ist optimiert für die Arbeit mit Vektoren und Matrizen (in NumPy `arrays` genannt). Man importiert sie üblicherweise mit dem Kürzel `np`. Das sorgt dafür, dass im weiteren Verlauf des Programms `np.array` verwendet werden kann, anstatt von `numpy.array`.
+
+```{pyodide-python}
+import numpy as np
+
+# Erstelle einen Vektor (ein NumPy-Array)
+vektor = np.array([1, 2, 3, 4])
+print(f"Ein NumPy-Vektor: {vektor}")
+
+# Eine Stärke von NumPy: Operationen auf dem ganzen Array
+print(f"Der doppelte Vektor: {vektor * 2}")
+```
+
+**2. `matplotlib` – Für die Visualisierung von Daten**  
+Mit `matplotlib` können wir unsere Daten und Ergebnisse als Graphen und Diagramme darstellen. Das hilft enorm, um Zusammenhänge zu verstehen.  
+In diesem Fall wird das Kürzel `plt` für `matplotlib.pyplot` verwendet. Das zeigt, wie praktisch Aliase sind, da man statt `matplotlib.pyplot.plot()` einfach `plt.plot()` schreiben kann. Wichtig ist hierbei auch, dass `pyplot` ein spezifisches Untermodul von `matplotlib` ist, das explizit importiert werden muss. Ein einfaches `import matplotlib` würde nicht ausreichen, um auf Funktionen wie `plot()` zuzugreifen.
+
+```{pyodide-python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+x_werte = np.array([0, 1, 2, 3, 4])
+y_werte = x_werte**2 # y = x^2
+
+plt.figure() # Erstellt eine neue "Zeichenfläche"
+plt.plot(x_werte, y_werte, marker='o') # 'marker' fügt Punkte hinzu
+plt.title("Ein einfacher Plot")
+plt.xlabel("X-Achse")
+plt.ylabel("Y-Achse")
+plt.grid(True) # Fügt ein Gitter hinzu
+plt.show() # Zeigt den Plot an
+```
+
+::: {.callout-tip title="Plots sind interaktiv"}
+Ohne `plt.show()` erscheint kein Plot, genau wie in einer normalen Python-Umgebung. Kurz nachdem ein Plot erschienen ist, bekommt er eine **Werkzeugleiste**: Mit der <i class="fa-solid fa-magnifying-glass-plus"></i>-Lupe ziehst du ein Rechteck auf, in das hineingezoomt wird, mit dem <i class="fa-solid fa-arrows-up-down-left-right"></i>-Kreuz verschiebst du den Ausschnitt, und das <i class="fa-solid fa-house"></i>-Haus setzt die Ansicht zurück. Über PNG/PDF/SVG kannst du den Plot herunterladen. Das Zoomen wird später beim Ablesen von Nullstellen und Extrempunkten sehr praktisch.
+:::
+
+Mithilfe von `matplotlib` können nicht nur Graphen von Funktionen dargestellt werden, sondern auch Datenpunkte graphisch dargestellt werden. 
+
+```{pyodide-python}
+import matplotlib.pyplot as plt
+import numpy as np
+#Betrachten wir eine Liste an Temperaturen
+cvalues = [20.1, 20.8, 21.9, 22.5, 22.7, 
+           21.8, 21.3, 20.9, 20.1]
+C=np.array(cvalues)
+print(C,type(C))
+plt.plot(C)
+plt.show()
+
+```
+
+**3. `sympy` – Rechnen mit Formeln (unser Hauptwerkzeug!)**
+`sympy` rechnet **symbolisch**, also mit Variablen wie $x$ statt mit Zahlen: Gleichungen lösen, ableiten, Grenzwerte bestimmen. Damit arbeiten fast alle Kapitel dieses Tutorials. Wie die einzelnen Befehle funktionieren, lernst du dort Schritt für Schritt.
+
+```{pyodide-python}
+import sympy
+
+x = sympy.symbols('x')        # x als Symbol (Variable) festlegen
+f = x**2 - 4                  # eine Funktion als Formel
+print(sympy.diff(f, x))       # Ableitung: 2*x
+print(sympy.solve(f, x))      # Nullstellen: [-2, 2]
+```
+
+:::
+
+## Wissens-Check
+
+Das Quiz zieht bei jedem Laden der Seite **10 zufällige Fragen** aus insgesamt 35. Lade die Seite neu, um eine neue Runde mit anderen Fragen zu bekommen.
+
+```quizdown
+---
+locale: de
+shuffleQuestions: true
+nQuestions: 10
+---
+
+# Multiplikation
+
+Welches Zeichen wird in Python für die Multiplikation verwendet?
+
+- [ ] `+`
+- [x] `*`
+- [ ] `-`
+- [ ] `.`
+
+
+# Division
+
+Was ist das Ergebnis von `10 / 2` in Python?
+
+> Beachte den Datentyp! In Python wird der Punkt `.` als Dezimaltrennzeichen verwendet.
+
+- [ ] 5
+- [x] 5.0
+- [ ] "5"
+- [ ] 5,0
+
+# Subtraktion
+
+Was ist das Ergebnis von `10 - 3`?
+
+- [x] 7
+- [ ] 13
+- [ ] 7.0
+- [ ] -7
+
+# Variablenzuweisung
+
+Welchen Wert hat `a` am Ende dieses Codes?
+
+~~~python
+a = 4
+a = 7 + a
+~~~
+
+- [ ] 4
+- [ ] 7
+- [x] 11
+- [ ] 74
+
+# Datentypen
+
+Welche der folgenden Aussagen zu Datentypen sind wahr?
+
+> Was passiert bei `4 / 2`? Kommt `2` oder `2.0` heraus?
+
+- [x] `15` ist ein Integer (Ganzzahl).
+- [x] `1.5` ist ein Float (Gleitkommazahl).
+- [ ] Eine Division `/` zweier Integer ergibt immer einen Integer.
+- [x] Boolean Werte sind `True` oder `False`.
+
+# Vergleichsoperatoren
+
+Wie prüft man, ob `a` **ungleich** `b` ist?
+
+- [ ] `a <> b`
+- [ ] `a NOT b`
+- [x] `a != b`
+- [ ] `a == b`
+
+# Fallunterscheidung
+
+Was ist die Kurzform für "else if" in Python?
+
+- [ ] `else if`
+- [ ] `elseif`
+- [x] `elif`
+- [ ] `if else`
+
+# Listen-Index
+
+Welchen Index hat das **erste** Element einer Liste?
+
+> Python fängt beim Zählen nicht bei 1 an.
+
+- [ ] 1
+- [x] 0
+- [ ] -1
+- [ ] A
+
+# Listen-Zugriff
+
+Gegeben ist `L = [10, 20, 30, 40, 50]`. Wie greift man auf die Zahl 50 zu?
+
+> Die Liste hat 5 Elemente. Wenn das erste den Index 0 hat, welchen hat dann das letzte?
+
+- [ ] `L[5]`
+- [x] `L[4]`
+- [ ] `L(5)`
+- [ ] `L{4}`
+
+# Listen erstellen
+
+Bringe die Befehle in die richtige Reihenfolge, um die Liste `[4, -7]` zu erstellen.
+
+> Bevor man etwas anhängen kann, muss es die Liste schon geben.
+
+1. `Liste = []`
+2. `Liste.append(4)`
+3. `Liste.append(-7)`
+
+# Listen verändern
+
+Was passiert bei `Liste[1] = -9`?
+
+> Denk daran, bei welcher Zahl der Index anfängt.
+
+- [ ] Ein neues Element -9 wird angehängt.
+- [ ] Das erste Element wird -9.
+- [x] Das zweite Element wird -9.
+- [ ] Die Liste wird gelöscht.
+
+# Funktionen definieren
+
+Mit welchem Schlüsselwort beginnt eine Funktionsdefinition?
+
+- [ ] `function`
+- [ ] `define`
+- [x] `def`
+- [ ] `fun`
+
+# Rückgabewerte
+
+Welches Schlüsselwort gibt einen Wert aus einer Funktion zurück?
+
+- [ ] `print`
+- [ ] `output`
+- [x] `return`
+- [ ] `back`
+
+# f-Strings
+
+Wie bettet man die Variable `name` korrekt in einen f-String ein?
+
+> Zwei Dinge müssen stimmen: der Buchstabe vor dem Anführungszeichen und die Art der Klammern.
+
+- [ ] `"Hallo {name}"`
+- [x] `f"Hallo {name}"`
+- [ ] `f"Hallo (name)"`
+- [ ] `f'Hallo [name]'`
+
+# Schleifen - Range
+
+Welche Zahlen erzeugt `range(0, 3)`?
+
+> Der Endwert gehört bei `range` nie mit dazu.
+
+- [ ] 1, 2, 3
+- [x] 0, 1, 2
+- [ ] 0, 1, 2, 3
+- [ ] 0, 3
+
+# Range Parameter
+
+Was bedeuten die Parameter in `range(a, b, c)`?
+
+> Probier es aus: Was liefert `list(range(0, 10, 3))`?
+
+- [x] a ist der Startwert.
+- [x] b ist der Endwert (exklusiv).
+- [x] c ist die Schrittweite.
+- [ ] b ist der Endwert (inklusiv).
+
+# While-Schleife
+
+Was ist eine Gefahr bei While-Schleifen?
+
+- [ ] Sie sind zu schnell.
+- [x] Endlosschleifen, wenn die Bedingung nie falsch wird.
+- [ ] Sie können nicht rechnen.
+- [ ] Man kann sie nicht stoppen.
+
+# Bibliotheken importieren
+
+Wie importiert man NumPy üblicherweise?
+
+- [ ] `import numpy`
+- [x] `import numpy as np`
+- [ ] `import np from numpy`
+- [ ] `use numpy`
+
+# Matplotlib Alias
+
+Welches Kürzel wird für `matplotlib.pyplot` üblicherweise verwendet?
+
+- [ ] `mat`
+- [ ] `plot`
+- [x] `plt`
+- [ ] `mpp`
+
+# NumPy Arrays
+
+Was sind Vorteile von NumPy Arrays?
+
+- [x] Man kann mit Vektoren rechnen (z.B. `vektor * 2`).
+- [x] Sie sind effizient für numerische Berechnungen.
+- [ ] Sie können nur Text speichern.
+- [ ] Sie sind langsamer als Listen.
+
+# Plot anzeigen
+
+Welcher Befehl zeigt einen Plot an?
+
+- [ ] `plt.render()`
+- [ ] `plt.draw()`
+- [x] `plt.show()`
+- [ ] `plt.display()`
+
+# Code-Verständnis
+
+Was gibt dieser Code aus?
+
+~~~python
+a = 15
+b = 20
+if a >= b:
+    print("X")
+else:
+    print("Y")
+~~~
+
+> Ist 15 größer oder gleich 20?
+
+- [ ] X
+- [x] Y
+- [ ] XY
+- [ ] Nichts
+
+# Logik
+
+Was ergibt der Vergleich `15 == 15`?
+
+- [x] `True`
+- [ ] `False`
+
+# Kommentare
+
+Wie macht man einen Kommentar in Python?
+
+- [ ] `// Kommentar`
+- [ ] `/* Kommentar */`
+- [x] `# Kommentar`
+- [ ] `<!-- Kommentar -->`
+
+# Variable überschreiben
+
+Was wird durch `print(x)` ausgegeben?
+
+~~~python
+x = 5
+x = 10
+print(x)
+~~~
+
+- [ ] 5
+- [x] 10
+- [ ] 15
+- [ ] Fehler
+
+# Matplotlib Grid
+
+Wie fügt man ein Gitter zum Plot hinzu?
+
+- [ ] `plt.grid(False)`
+- [x] `plt.grid(True)`
+- [ ] `plt.net()`
+- [ ] `plt.lines()`
+
+# Plot Beschriftung
+
+Ordne die Befehle für einen beschrifteten Plot sinnvoll an.
+
+1. `plt.plot(x, y)`
+2. `plt.xlabel("X")`
+3. `plt.ylabel("Y")`
+4. `plt.show()`
+
+# Funktionsaufruf
+
+Wie ruft man die Funktion `def test(a):` mit dem Wert 5 auf?
+
+- [ ] `test`
+- [ ] `call test 5`
+- [x] `test(5)`
+- [ ] `run test 5`
+
+# Leere Liste
+
+Wie erstellt man eine leere Liste?
+
+- [ ] `L = ()`
+- [x] `L = []`
+- [ ] `L = {}`
+- [ ] `L = empty`
+
+# String Verknüpfung
+
+Was ist das Ergebnis dieses Codes?
+
+~~~python
+a = "Py"
+b = "thon"
+print(a + b)
+~~~
+
+- [x] `"Python"`
+- [ ] `"Py thon"`
+- [ ] `"Py+thon"`
+- [ ] Fehler
+
+# Modulo Operator
+
+Was berechnet der Modulo-Operator `%`?
+
+~~~python
+print(10 % 3)
+~~~
+
+> 3 passt dreimal in 10. Was bleibt übrig?
+
+- [x] `1` (Rest der Division)
+- [ ] `3` (Ergebnis der Division)
+- [ ] `3.33` (Dezimalwert)
+- [ ] `0`
+
+# Logische Operatoren
+
+Was wird hier ausgegeben?
+
+~~~python
+x = True
+y = False
+print(x and y)
+~~~
+
+> `and` ist nur dann `True`, wenn **beide** Seiten `True` sind.
+
+- [ ] `True`
+- [x] `False`
+- [ ] `None`
+- [ ] `Error`
+
+# Schleifen-Summe
+
+Welchen Wert hat `s` am Ende?
+
+~~~python
+s = 0
+for i in range(3):
+    s = s + i
+print(s)
+~~~
+
+> `range(3)` liefert 0, 1, 2. Rechne die Durchläufe einzeln nach.
+
+- [ ] `0`
+- [ ] `1`
+- [x] `3`
+- [ ] `6`
+
+# Listen-Slicing
+
+Was gibt dieser Code aus?
+
+~~~python
+L = [10, 20, 30, 40]
+print(L[1:3])
+~~~
+
+> Beim Slicing `L[a:b]` gehört der Index `b` nicht mehr dazu, genau wie bei `range`.
+
+- [x] `[20, 30]`
+- [ ] `[10, 20]`
+- [ ] `[20, 30, 40]`
+- [ ] `[10, 20, 30]`
+
+# Zusammenfassung
+
+Welche Konzepte wurden in den Grundlagen behandelt?
+
+- [x] Variablen
+- [x] Schleifen
+- [x] Funktionen
+- [x] Bibliotheken
+```
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+This page is a refresher on the basics of Python. **If you skip the content of this page and it is not already familiar to you, the rest of the tutorial will be difficult to follow.**
+
+## Summary with implementations
+
+::: {.panel-tabset}
+
+## Variables
+
+For an easy start with Python, let's first look at variables. It is worth pointing out how they differ from variables in mathematics. Here is a small example:
+
+```{pyodide-python}
+#| read-only: true
+a = 7 
+print(a)
+```
+This is a variable assignment. After the assignment, the variables can be used in calculations. You can see a few examples in the following code:
+
+```{pyodide-python}
+#| read-only: true
+a = 4 
+b = 5  
+print(a+b)
+print(a*b)
+print(a/2)
+print(a-b)
+```
+Python uses an asterisk * for multiplication. You divide with the slash /.  
+The following example illustrates the difference to variables in mathematics:
+
+```{pyodide-python}
+#| read-only: true
+a = 4 
+a = 7 + a
+b = 5  
+print(a+b)
+print(a*b)
+print(a/2)
+print(a-b)
+```
+
+As you can see, variables can change, i.e. they can be reassigned. In Python, a variable always holds the value that was assigned to it last.
+
+Instead of individual statements, let's now look at a whole program. Imagine we are driving a longer distance by car and write down the odometer reading at the start of the trip as well as at certain points during the trip, together with the time elapsed so far. 
+We can use this information to calculate the average speed for the whole trip as well as for the individual sections. 
+A simple Python program that does this for us is the following:
+
+
+```{pyodide-python}
+#| read-only: true
+# Program to calculate the average speed
+s0 = 13157.6 # odometer reading at the start
+s1 = 13160.0 # odometer reading at the 1st measurement
+t1 = 4 # minutes since the start at the 1st measurement
+s2 = 13177.4 # odometer reading at the 2nd measurement
+t2 = 16 # minutes since the start at the 2nd measurement
+s3 = 13267.4 # odometer reading at the 3rd measurement
+t3 = 64 # minutes since the start at the 3rd measurement
+# Average speed in km/h in the ...
+v1 = (s1 - s0) / (t1 / 60) # ... 1st section
+v2 = (s2 - s1) / ((t2 - t1) / 60) # ... 2nd section
+v3 = (s3 - s2) / ((t3 - t2) / 60) # ... 3rd section
+v_average = (s3 - s0) / (t3 / 60) # overall
+print(v1)
+print(v2)
+print(v3)
+print("Average: {} km/h".format(v_average))
+```
+
+This example also shows that variable names can be longer than one letter. 
+In Python, variables can even be named with whole words, which is a good idea because fitting variable names make the code easier to understand.
+
+### Exercise on variables
+
+Try to change the code so that the calculation is extended by a 4th and a 5th measurement. 
+At the fourth measurement, the odometer read 13281 km, 75 minutes after the start. 
+At the fifth measurement, the odometer read 13334 km, 119 minutes after the start.
+These results should also be printed with the print() command. 
+
+```{pyodide-python}
+#| label: grundlagen-aufgabe-variablen-en
+# Program to calculate the average speed
+s0 = 13157.6 # odometer reading at the start
+s1 = 13160.0 # odometer reading at the 1st measurement
+t1 = 4 # minutes since the start at the 1st measurement
+s2 = 13177.4 # odometer reading at the 2nd measurement
+t2 = 16 # minutes since the start at the 2nd measurement
+s3 = 13267.4 # odometer reading at the 3rd measurement
+t3 = 64 # minutes since the start at the 3rd measurement
+# Average speed in km/h in the ...
+v1 = (s1 - s0) / (t1 / 60) # ... 1st section
+v2 = (s2 - s1) / ((t2 - t1) / 60) # ... 2nd section
+v3 = (s3 - s2) / ((t3 - t2) / 60) # ... 3rd section
+v_average = (s3 - s0) / (t3 / 60) # overall
+print(v1)
+print(v2)
+print(v3)
+print("Average: {} km/h".format(v_average))
+```
+
+## Conditionals
+
+With a conditional, you want to distinguish between two or more cases. 
+In words: if "x", do "y", otherwise do "z".  
+Look at the following example: 
+
+```{pyodide-python}
+#| read-only: true
+a = 15 
+b = 20
+if a>=b:
+    print("a is greater than or equal to b")
+else: 
+    print("b is greater than a")
+```
+
+Try it yourself and write code that distinguishes between a and b. If a equals b, a suitable text should be printed, and if they are different, a different text. 
+
+```{pyodide-python}
+#| label: grundlagen-aufgabe-if-else-en
+```
+
+If you want to distinguish more than two cases, you can use "elif" between "if" and "else". It is short for "else if". Look at the following code: 
+
+```{pyodide-python}
+#| read-only: true
+a = 25 
+b = 20
+if a==b:
+    print("a is equal to b")
+elif a>b: 
+    print("a is greater than b")
+else: 
+    print("b is greater than a")
+```
+
+You don't always have to use both if and else. You can use if on its own if you don't want to do anything in the else case: 
+
+### Exercise on conditionals
+
+Change the following code and try out what happens when a is not equal to b.
+```{pyodide-python}
+a = 20 
+b = 20
+if a==b:
+    print("Conditionals are great")
+```
+
+
+## Data types
+
+
+Python distinguishes between different data types. Whole numbers are called integers. Decimal numbers are called "floats". 
+As soon as a decimal number is involved in a calculation, the result is a float as well, even if it is actually a whole number. You can see this in the following example: 
+
+```{pyodide-python}
+#| read-only: true
+a = 15 
+print(a)
+b = 1.5
+print(a*b)
+print(a/b)
+```
+Division always results in a floating-point number, even when one integer is divided by another: 
+
+```{pyodide-python}
+#| read-only: true
+a = 15 
+b = 5
+print (a/b)
+```
+Another data type is the so-called Boolean, which evaluates to true or false. Run the following code and change it so that "false" is printed. 
+
+```{pyodide-python}
+a = 15 
+if a==15:
+  print ("true")
+else: 
+  print ("false")
+```
+
+In the example above, we used the comparison operator "==" to check for equality. 
+If you want to check whether a is not equal to a certain value, say 7, you use "a!=7". 
+
+### Exercise on data types
+
+Now rewrite the program so that it checks whether a is not equal to 8. 
+If that is the case, print "true", otherwise print "false".
+
+```{pyodide-python}
+#| label: grundlagen-aufgabe-datentypen-en
+
+```
+
+## Lists
+
+Besides the numeric data types, there are others that can hold several numbers as a collection. These are called lists. They can either be created directly with numbers or start out empty. 
+Look at the following examples:
+
+```{pyodide-python}
+#| read-only: true
+my_list = [2, -4, 5, 9, 12]
+print(my_list)
+print(my_list[4])
+```
+
+In the example above, a list of five numbers is created. Then the list and its fifth entry are printed. The reason we use "my_list[4]" and not "my_list[5]" is that the index of list entries starts at zero. 
+So the first entry is "my_list[0]" and the fifth one is "my_list[4]".
+
+In the next example, we create an empty list and then add two entries. After that, we change one of the entries. Pay attention to the output:
+
+```{pyodide-python}
+#| read-only: true
+my_list = []
+my_list.append(4)
+my_list.append(-7)
+print(my_list)
+my_list[1]=-9
+print(my_list)
+```
+
+### Exercise on lists
+
+Try it yourself: create a list with the entries 2, -13, 6 and 4. Print the list. Then change the second entry to 4 and print the new list. 
+
+```{pyodide-python}
+#| label: grundlagen-aufgabe-listen-en
+```
+
+### Sorting lists and creating lists from sets
+
+You will often need this later, for example when `sympy` returns several solutions. `sorted(...)` works for lists **and** sets (`{...}`) and always returns a **new, ascending sorted list**. In a set, every value appears only once.
+
+```{pyodide-python}
+#| read-only: true
+numbers = [5, -2, 9, 0]
+print(sorted(numbers))   # new sorted list: [-2, 0, 5, 9]
+print(numbers)           # the original list stays unchanged
+
+values = {3, -3, 3}      # the second 3 is ignored
+print(sorted(values))    # [-3, 3]
+```
+
+## Functions
+
+So far, we have written code that runs from top to bottom. If we wanted to repeat a calculation such as the factorial or the average speed at different places with different values, we would have to copy and paste the code. That is confusing and error-prone.
+
+**Functions** solve this problem. A function is a named, reusable block of code that performs a specific task. You define it once and can then "call" it as often as you like.
+
+A function is defined with the keyword `def`, followed by a name and parentheses `()`. Inside the parentheses, **parameters** (input values) can be passed. With `return`, the function returns a result.
+
+### f-strings in Python
+In the following, we use so-called **f-strings** for the `print()` output. An f-string starts with an `f` before the opening quotation mark (e.g. `f"Hello"`).
+
+The big advantage is that you can embed variables and expressions directly in the text by putting them in curly braces `{}`. This often makes the code much easier to read.
+```{pyodide-python}
+#| read-only: true
+# Definition of a simple function that adds two numbers
+def add(number1, number2):
+    total = number1 + number2
+    return total
+
+# Calling the function with the values 5 and 10
+print(f"The result of 5 + 10 is: {add(5, 10)}")
+
+# Calling it again with other values
+print(f"The result of -2 + 7 is: {add(-2, 7)}")
+```
+
+### Exercise on functions
+
+Write a function named `rectangle_area` that takes the length and width of a rectangle as parameters, calculates its area and returns it.
+
+- The function should take two parameters: `length` and `width`.
+- It should calculate the product of the two parameters and return it with `return`.
+- Test your function with different pairs of values and print the results
+
+This time, hidden tests automatically check whether your function returns the right result for different values. Click **Check** once you're done. Your own `print()` output is shown as well.
+
+```{py-exercise}
+#| label: grundlagen-rechteck-en
+#| caption: Implement rectangle_area
+def rectangle_area(length, width):
+    # Your code here
+    pass
+
+## TESTS ##
+assert rectangle_area(2, 3) == 6,    "rectangle_area(2, 3) should be 6"
+assert rectangle_area(5, 5) == 25,   "rectangle_area(5, 5) should be 25"
+assert rectangle_area(1, 7) == 7,    "rectangle_area(1, 7) should be 7"
+assert rectangle_area(2.5, 4) == 10, "rectangle_area(2.5, 4) should be 10 (decimals too!)"
+```
+
+
+## Loops
+
+A few examples and an exercise to help you understand:  
+
+`For loops` repeat over a certain range. The keyword `range` describes the range from $a$ to $b$. Here $a$ is the start of the iteration; $b$ itself is **not** included: `range(5, 20)` runs from 5 to 19.
+
+```{pyodide-python}
+a = 5 #The variable a is defined here
+b = 20
+for i in range(a,b,2): #a,b are the bounds, 2 is the step size
+    print(i+1)
+```
+
+If a calculation or a check has to be carried out several times, loops make this much easier.
+`While loops` repeat the code as long as a certain condition is met.
+A small example:
+```{pyodide-python}
+a = 3 #The variable a is defined here
+b = 11
+while a<b: 
+    a = a+1 #very important, otherwise the condition would always stay true, i.e. it would be an ENDLESS loop
+    print(a)
+```
+
+### Exercise on for/while loops
+
+The blocks above are editable on purpose. Play around with them a bit to get a feeling for how the two kinds of loops work.  
+Once you are sure you understand both, try to write a program that calculates a factorial using a `while loop`.  
+
+```{pyodide-python}
+#Here is an example for a for loop
+#Text after a # counts as a comment and is ignored by Python
+def factorial_for(n):
+    if n == 0:
+        return 1
+    result = 1
+    for i in range(1, n + 1):
+        result = result*i
+        #print(result,i) <-- add this to see a few more steps 
+    return result
+
+print("The factorial of 5 is:", factorial_for(5)) #print produces output
+
+print("The factorial of 0 is:", factorial_for(0))
+
+print("The factorial of 10 is:", factorial_for(10))
+
+```
+
+```{py-exercise}
+#| label: grundlagen-fakultaet-while-en
+#| caption: factorial_while with a while loop
+#| forbidden-keywords: for
+#| show-test-hints: false
+#Try writing a function with a while loop here
+def factorial_while(n):
+    pass
+
+## TESTS ##
+assert factorial_while(0) == 1,        "factorial_while(0) should be 1 (0! = 1)"
+assert factorial_while(1) == 1,        "factorial_while(1) should be 1"
+assert factorial_while(5) == 120,      "factorial_while(5) should be 120"
+assert factorial_while(10) == 3628800, "factorial_while(10) should be 3628800"
+```
+
+_The hidden tests check your function with several values. The keyword `for` is blocked here so that you really use a `while loop`._
+
+- Your `while loop` will have a very similar basic structure to the `for loop`
+You will also need the following:  
+
+1. **Initialization**  
+   `result = 1` and `i = 1`
+
+2. **Loop logic**  
+   Repeat as long as `i <= n`, each time multiply `result = result * i`
+
+3. **Increment the counter!**  
+   `i = i + 1` (→ otherwise endless loop)
+
+4. Extra: What happens for `n = 0`?
+
+<details>
+<summary> Here is a possible solution with a `while loop`, in case you are really stuck </summary>
+
+```{pyodide-python}
+def factorial_while(n):
+    if n == 0:
+        return 1
+    result = 1
+    i = 1
+    while i <= n:
+        result = result*i
+        i = i+1
+        #print(result,i) <-- add this to see a few more steps 
+    return result
+
+print("The factorial of 5 is:", factorial_while(5))
+```
+
+</details>
+
+### Filling a list in a loop
+
+A very common pattern: you start with an **empty list**, go through all values with a `for` loop and use `append` to add only the suitable ones. **Predict the result** before you run the block:
+
+```{pyodide-python}
+#| read-only: true
+squares = []                       # empty list
+for number in [1, 2, 3, 4]:
+    if number % 2 == 0:            # only even numbers (remainder 0 when dividing by 2)
+        squares.append(number**2)
+print(squares)
+```
+
+
+## Libraries
+
+One of Python's greatest strengths is its huge selection of **libraries** (also called modules). A library is a collection of predefined functions and constants that you can use in your code without having to reinvent the wheel. 
+
+To use a library, you have to "load" it with the `import` command at the beginning of your code. For this tutorial, the libraries `sympy`, `numpy` and `matplotlib` are particularly relevant:  
+_`import numpy as np` loads the whole library; `np` is just a shorter name for it. With `from library import function`, on the other hand, you fetch individual functions that you can then call without a prefix._
+
+**1. `numpy` – for numerical calculations**  
+`numpy` calculates with many numbers at once. In this tutorial we mainly need it to create tables of values for graphs. It is optimized for working with vectors and matrices (called `arrays` in NumPy). It is usually imported with the abbreviation `np`. This means that later in the program you can write `np.array` instead of `numpy.array`.
+
+```{pyodide-python}
+import numpy as np
+
+# Create a vector (a NumPy array)
+vector = np.array([1, 2, 3, 4])
+print(f"A NumPy vector: {vector}")
+
+# One strength of NumPy: operations on the whole array
+print(f"The doubled vector: {vector * 2}")
+```
+
+**2. `matplotlib` – for visualizing data**  
+With `matplotlib`, we can display our data and results as graphs and charts. This helps enormously to understand relationships.  
+Here, the abbreviation `plt` is used for `matplotlib.pyplot`. This shows how handy aliases are, since instead of `matplotlib.pyplot.plot()` you can simply write `plt.plot()`. It is also important that `pyplot` is a specific submodule of `matplotlib` that has to be imported explicitly. A plain `import matplotlib` would not be enough to access functions such as `plot()`.
+
+```{pyodide-python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+x_values = np.array([0, 1, 2, 3, 4])
+y_values = x_values**2 # y = x^2
+
+plt.figure() # creates a new "canvas"
+plt.plot(x_values, y_values, marker='o') # 'marker' adds points
+plt.title("A simple plot")
+plt.xlabel("x-axis")
+plt.ylabel("y-axis")
+plt.grid(True) # adds a grid
+plt.show() # displays the plot
+```
+
+::: {.callout-tip title="Plots are interactive"}
+Without `plt.show()` no plot appears, exactly as in a normal Python environment. Shortly after a plot has appeared, it gets a **toolbar**: with the <i class="fa-solid fa-magnifying-glass-plus"></i> magnifier you drag a rectangle to zoom into, with the <i class="fa-solid fa-arrows-up-down-left-right"></i> cross you pan the view, and the <i class="fa-solid fa-house"></i> house resets it. PNG/PDF/SVG let you download the plot. Zooming will come in very handy later when reading off zeros and extrema.
+:::
+
+With `matplotlib`, you can not only draw graphs of functions but also plot data points. 
+
+```{pyodide-python}
+import matplotlib.pyplot as plt
+import numpy as np
+#Let's look at a list of temperatures
+cvalues = [20.1, 20.8, 21.9, 22.5, 22.7, 
+           21.8, 21.3, 20.9, 20.1]
+C=np.array(cvalues)
+print(C,type(C))
+plt.plot(C)
+plt.show()
+
+```
+
+**3. `sympy` – calculating with formulas (our main tool!)**
+`sympy` calculates **symbolically**, i.e. with variables like $x$ instead of numbers: solving equations, differentiating, finding limits. Almost every chapter of this tutorial works with it. You will learn how the individual commands work there, step by step.
+
+```{pyodide-python}
+import sympy
+
+x = sympy.symbols('x')        # define x as a symbol (variable)
+f = x**2 - 4                  # a function as a formula
+print(sympy.diff(f, x))       # derivative: 2*x
+print(sympy.solve(f, x))      # zeros: [-2, 2]
+```
+
+:::
+
+## Knowledge check
+
+The quiz draws **10 random questions** out of 35 each time the page is loaded. Reload the page to get a new round with different questions.
+
+```quizdown
+---
+locale: en
+shuffleQuestions: true
+nQuestions: 10
+---
+
+# Multiplication
+
+Which symbol is used for multiplication in Python?
+
+- [ ] `+`
+- [x] `*`
+- [ ] `-`
+- [ ] `.`
+
+
+# Division
+
+What is the result of `10 / 2` in Python?
+
+> Pay attention to the data type! In Python, the dot `.` is used as the decimal separator.
+
+- [ ] 5
+- [x] 5.0
+- [ ] "5"
+- [ ] 5,0
+
+# Subtraction
+
+What is the result of `10 - 3`?
+
+- [x] 7
+- [ ] 13
+- [ ] 7.0
+- [ ] -7
+
+# Variable assignment
+
+What is the value of `a` at the end of this code?
+
+~~~python
+a = 4
+a = 7 + a
+~~~
+
+- [ ] 4
+- [ ] 7
+- [x] 11
+- [ ] 74
+
+# Data types
+
+Which of the following statements about data types are true?
+
+> What does `4 / 2` give: `2` or `2.0`?
+
+- [x] `15` is an integer (whole number).
+- [x] `1.5` is a float (floating-point number).
+- [ ] A division `/` of two integers always gives an integer.
+- [x] Boolean values are `True` or `False`.
+
+# Comparison operators
+
+How do you check whether `a` is **not equal** to `b`?
+
+- [ ] `a <> b`
+- [ ] `a NOT b`
+- [x] `a != b`
+- [ ] `a == b`
+
+# Conditionals
+
+What is the short form of "else if" in Python?
+
+- [ ] `else if`
+- [ ] `elseif`
+- [x] `elif`
+- [ ] `if else`
+
+# List index
+
+What is the index of the **first** element of a list?
+
+> Python does not start counting at 1.
+
+- [ ] 1
+- [x] 0
+- [ ] -1
+- [ ] A
+
+# List access
+
+Given `L = [10, 20, 30, 40, 50]`. How do you access the number 50?
+
+> The list has 5 elements. If the first has index 0, which index does the last one have?
+
+- [ ] `L[5]`
+- [x] `L[4]`
+- [ ] `L(5)`
+- [ ] `L{4}`
+
+# Creating lists
+
+Put the commands in the right order to create the list `[4, -7]`.
+
+> Before you can append something, the list has to exist.
+
+1. `my_list = []`
+2. `my_list.append(4)`
+3. `my_list.append(-7)`
+
+# Changing lists
+
+What happens with `my_list[1] = -9`?
+
+> Remember which number the index starts at.
+
+- [ ] A new element -9 is appended.
+- [ ] The first element becomes -9.
+- [x] The second element becomes -9.
+- [ ] The list is deleted.
+
+# Defining functions
+
+Which keyword starts a function definition?
+
+- [ ] `function`
+- [ ] `define`
+- [x] `def`
+- [ ] `fun`
+
+# Return values
+
+Which keyword returns a value from a function?
+
+- [ ] `print`
+- [ ] `output`
+- [x] `return`
+- [ ] `back`
+
+# f-strings
+
+How do you correctly embed the variable `name` in an f-string?
+
+> Two things have to be right: the letter in front of the quotation mark and the kind of brackets.
+
+- [ ] `"Hello {name}"`
+- [x] `f"Hello {name}"`
+- [ ] `f"Hello (name)"`
+- [ ] `f'Hello [name]'`
+
+# Loops - range
+
+Which numbers does `range(0, 3)` produce?
+
+> The end value is never included in `range`.
+
+- [ ] 1, 2, 3
+- [x] 0, 1, 2
+- [ ] 0, 1, 2, 3
+- [ ] 0, 3
+
+# Range parameters
+
+What do the parameters in `range(a, b, c)` mean?
+
+> Try it: what does `list(range(0, 10, 3))` return?
+
+- [x] a is the start value.
+- [x] b is the end value (exclusive).
+- [x] c is the step size.
+- [ ] b is the end value (inclusive).
+
+# While loop
+
+What is a danger of while loops?
+
+- [ ] They are too fast.
+- [x] Endless loops if the condition never becomes false.
+- [ ] They cannot calculate.
+- [ ] They cannot be stopped.
+
+# Importing libraries
+
+How is NumPy usually imported?
+
+- [ ] `import numpy`
+- [x] `import numpy as np`
+- [ ] `import np from numpy`
+- [ ] `use numpy`
+
+# Matplotlib alias
+
+Which abbreviation is usually used for `matplotlib.pyplot`?
+
+- [ ] `mat`
+- [ ] `plot`
+- [x] `plt`
+- [ ] `mpp`
+
+# NumPy arrays
+
+What are the advantages of NumPy arrays?
+
+- [x] You can calculate with vectors (e.g. `vector * 2`).
+- [x] They are efficient for numerical calculations.
+- [ ] They can only store text.
+- [ ] They are slower than lists.
+
+# Showing a plot
+
+Which command displays a plot?
+
+- [ ] `plt.render()`
+- [ ] `plt.draw()`
+- [x] `plt.show()`
+- [ ] `plt.display()`
+
+# Reading code
+
+What does this code print?
+
+~~~python
+a = 15
+b = 20
+if a >= b:
+    print("X")
+else:
+    print("Y")
+~~~
+
+> Is 15 greater than or equal to 20?
+
+- [ ] X
+- [x] Y
+- [ ] XY
+- [ ] Nothing
+
+# Logic
+
+What does the comparison `15 == 15` evaluate to?
+
+- [x] `True`
+- [ ] `False`
+
+# Comments
+
+How do you write a comment in Python?
+
+- [ ] `// comment`
+- [ ] `/* comment */`
+- [x] `# comment`
+- [ ] `<!-- comment -->`
+
+# Overwriting a variable
+
+What does `print(x)` output?
+
+~~~python
+x = 5
+x = 10
+print(x)
+~~~
+
+- [ ] 5
+- [x] 10
+- [ ] 15
+- [ ] Error
+
+# Matplotlib grid
+
+How do you add a grid to a plot?
+
+- [ ] `plt.grid(False)`
+- [x] `plt.grid(True)`
+- [ ] `plt.net()`
+- [ ] `plt.lines()`
+
+# Plot labels
+
+Put the commands for a labeled plot into a sensible order.
+
+1. `plt.plot(x, y)`
+2. `plt.xlabel("X")`
+3. `plt.ylabel("Y")`
+4. `plt.show()`
+
+# Calling a function
+
+How do you call the function `def test(a):` with the value 5?
+
+- [ ] `test`
+- [ ] `call test 5`
+- [x] `test(5)`
+- [ ] `run test 5`
+
+# Empty list
+
+How do you create an empty list?
+
+- [ ] `L = ()`
+- [x] `L = []`
+- [ ] `L = {}`
+- [ ] `L = empty`
+
+# String concatenation
+
+What is the result of this code?
+
+~~~python
+a = "Py"
+b = "thon"
+print(a + b)
+~~~
+
+- [x] `"Python"`
+- [ ] `"Py thon"`
+- [ ] `"Py+thon"`
+- [ ] Error
+
+# Modulo operator
+
+What does the modulo operator `%` compute?
+
+~~~python
+print(10 % 3)
+~~~
+
+> 3 fits into 10 three times. What is left over?
+
+- [x] `1` (remainder of the division)
+- [ ] `3` (result of the division)
+- [ ] `3.33` (decimal value)
+- [ ] `0`
+
+# Logical operators
+
+What is printed here?
+
+~~~python
+x = True
+y = False
+print(x and y)
+~~~
+
+> `and` is only `True` if **both** sides are `True`.
+
+- [ ] `True`
+- [x] `False`
+- [ ] `None`
+- [ ] `Error`
+
+# Loop sum
+
+What is the value of `s` at the end?
+
+~~~python
+s = 0
+for i in range(3):
+    s = s + i
+print(s)
+~~~
+
+> `range(3)` yields 0, 1, 2. Work through the iterations one by one.
+
+- [ ] `0`
+- [ ] `1`
+- [x] `3`
+- [ ] `6`
+
+# List slicing
+
+What does this code print?
+
+~~~python
+L = [10, 20, 30, 40]
+print(L[1:3])
+~~~
+
+> In the slice `L[a:b]`, index `b` is no longer included, just like with `range`.
+
+- [x] `[20, 30]`
+- [ ] `[10, 20]`
+- [ ] `[20, 30, 40]`
+- [ ] `[10, 20, 30]`
+
+# Summary
+
+Which concepts were covered in the basics?
+
+- [x] Variables
+- [x] Loops
+- [x] Functions
+- [x] Libraries
+```
+
+::::

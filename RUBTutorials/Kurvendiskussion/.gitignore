@@ -1,0 +1,8 @@
+.quarto/
+_site/
+/.aiexclude
+**/*.quarto_ipynb
+/.vscode/
+/.quarto/
+
+/.luarc.json

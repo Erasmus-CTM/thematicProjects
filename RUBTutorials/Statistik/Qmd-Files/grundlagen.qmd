@@ -1,0 +1,1456 @@
+---
+title: "Python Grundlagen"
+title-en: "Python Basics"
+format: html
+filters:
+  - ctm-assessment
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+Diese Seite gibt dir einen kompakten Überblick über die Python-Kenntnisse, die du für dieses Tutorial benötigst. Falls du noch nie mit Python gearbeitet hast, fange mit dem aufklappbaren Grundlagenblock an. Wer Python bereits kennt, kann direkt zu den [Statistik-Bibliotheken](#sec-bibliotheken) springen.
+
+::: {.callout-tip}
+**Keine Panik!** Du musst Python nicht perfekt beherrschen. Die wichtigsten Konzepte werden in den Kapiteln immer dann erklärt, wenn sie gebraucht werden. Diese Seite ist dein Nachschlagewerk.
+:::
+
+---
+
+## Python-Grundlagen zum Auffrischen {#sec-grundlagen}
+
+<details>
+<summary>**Hier aufklappen: Python von Null – Variablen, Listen, Schleifen, etc.**</summary>
+
+::: {.panel-tabset}
+
+## Variablen
+
+Eine **Variable** ist ein benannter Speicherplatz für einen Wert. Weise ihr einen Wert zu – Python merkt sich das:
+
+```{pyodide-python}
+a = 7
+print(a)
+```
+
+**Probiere es:** Weise `b` den Wert `3` zu und gib `b` aus.
+
+```{pyodide-python}
+# Dein Code hier
+```
+
+Mit Variablen kann man rechnen. Python kennt alle üblichen Operationen:
+
+| Operation | Symbol | Beispiel |
+|-----------|--------|---------|
+| Addition | `+` | `3 + 2 = 5` |
+| Subtraktion | `-` | `5 - 2 = 3` |
+| Multiplikation | `*` | `3 * 4 = 12` |
+| Division | `/` | `10 / 4 = 2.5` |
+| Potenz | `**` | `2 ** 3 = 8` |
+| Rest | `%` | `10 % 3 = 1` |
+
+```{pyodide-python}
+a = 4
+b = 5
+print(a + b)   # Addition
+print(a * b)   # Multiplikation
+```
+
+**Probiere:** Berechne `a - b` und `a ** 2`. Was ergibt `a % 3`?
+
+```{pyodide-python}
+a = 4
+b = 5
+# Dein Code hier
+```
+
+Variablen können überschrieben werden – das ist anders als in der Mathematik:
+
+```{pyodide-python}
+x = 5
+print(x)        # 5
+x = x + 3
+print(x)        # 8 – x wurde überschrieben!
+```
+
+**Siehst du's?** Starte mit `x = 10`. Führe `x = x * 2` zweimal aus. Was ist `x` am Ende?
+
+```{pyodide-python}
+x = 10
+# Dein Code hier
+```
+
+## Datentypen
+
+Python unterscheidet verschiedene Typen von Werten:
+
+- **Integer** (`int`): Ganzzahlen wie `5`, `-3`, `100`
+- **Float** (`float`): Dezimalzahlen wie `3.14`, `-0.5`
+- **String** (`str`): Text wie `"Hallo"`, `"Pinguin"`
+- **Boolean** (`bool`): Wahrheitswerte `True` oder `False`
+
+```{pyodide-python}
+n = 42
+pi = 3.14159
+art = "Adelie"
+ist_gross = True
+
+print(type(n).__name__)         # int
+print(type(pi).__name__)        # float
+print(type(art).__name__)       # str
+print(type(ist_gross).__name__) # bool
+```
+
+`type()` gibt eigentlich `<class 'int'>` zurück – die spitzen Klammern sind dabei nur Python-interne Notation. Mit `.__name__` holen wir uns nur den reinen Namen (`int`, `float`, `str`, `bool`), was deutlich lesbarer ist.
+
+**Probiere:** Was ist der Typ von `10 / 2`? Und von `10 // 2`? (Tipp: `print(type(...).__name__)`)
+
+```{pyodide-python}
+# Dein Code hier
+```
+
+::: {.callout-rechnen}
+**Hinweis:** Division `/` liefert immer einen `float` – auch `10 / 2` ergibt `5.0`, nicht `5`. Für ganzzahlige Division gibt es `//`.
+:::
+
+**Probiere noch:** Was ergibt `5 == 5`? Was ergibt `5 == 6`?
+
+```{pyodide-python}
+# Dein Code hier
+```
+
+## Fallunterscheidungen
+
+Mit `if` und `else` kann Python je nach Bedingung etwas anderes tun:
+
+```{pyodide-python}
+a = 15
+b = 20
+if a >= b:
+    print("a ist größer oder gleich b")
+else:
+    print("b ist größer als a")
+```
+
+**Probiere:** Ändere `a = 25` – welcher Zweig wird jetzt ausgeführt?
+
+Für mehr als zwei Fälle gibt es `elif` (kurz für „else if"):
+
+```{pyodide-python}
+a = 25
+b = 20
+if a == b:
+    print("gleich")
+elif a > b:
+    print("a ist größer")
+else:
+    print("b ist größer")
+```
+
+**Jetzt du:** Schreibe eine Fallunterscheidung: Wenn `n > 0`, gib `"positiv"` aus. Wenn `n < 0`, `"negativ"`. Sonst `"null"`. Teste mit `n = 7`, `n = -3` und `n = 0`.
+
+```{pyodide-python}
+n = 7   # ← Ändere diesen Wert!
+
+# Dein Code hier
+```
+
+<details>
+<summary>Lösung anzeigen</summary>
+
+```{pyodide-python}
+n = 7
+if n > 0:
+    print("positiv")
+elif n < 0:
+    print("negativ")
+else:
+    print("null")
+```
+
+</details>
+
+## Listen
+
+Eine **Liste** speichert mehrere Werte. Der Index beginnt bei `0`:
+
+```{pyodide-python}
+noten = [2, 1, 3, 2, 1, 4]
+print(noten[0])   # erstes Element: 2
+print(noten[2])   # drittes Element: 3
+print(len(noten)) # Länge: 6
+```
+
+**Probiere:** Was gibt `noten[5]` zurück? Und `noten[-1]`? (Negativer Index = von hinten zählen)
+
+```{pyodide-python}
+noten = [2, 1, 3, 2, 1, 4]
+# Dein Code hier
+```
+
+Mit `append` fügt man Elemente hinzu, `sort` sortiert die Liste:
+
+```{pyodide-python}
+noten = [2, 1, 3, 2, 1, 4]
+noten.append(2)
+print(noten)
+
+noten.sort()
+print(noten)
+
+print(f"Min: {min(noten)}, Max: {max(noten)}, Summe: {sum(noten)}")
+```
+
+**Jetzt du:** Füge der Liste die Note `3` hinzu. Lass dir danach Min, Max und Durchschnitt (`sum(...) / len(...)`) ausgeben.
+
+```{pyodide-python}
+noten = [2, 1, 3, 2, 1, 4]
+# Dein Code hier
+```
+
+<details>
+<summary>Lösung anzeigen</summary>
+
+```{pyodide-python}
+noten = [2, 1, 3, 2, 1, 4]
+noten.append(3)
+print(f"Min: {min(noten)}, Max: {max(noten)}")
+print(f"Durchschnitt: {sum(noten) / len(noten):.2f}")
+```
+
+</details>
+
+## Schleifen
+
+**For-Schleifen** wiederholen Code für eine bestimmte Anzahl von Durchläufen:
+
+```{pyodide-python}
+for i in range(5):
+    print(i)
+```
+
+**Probiere:** Ändere `range(5)` zu `range(1, 6)`. Dann zu `range(0, 10, 2)`. Was ändert sich?
+
+```{pyodide-python}
+for i in range(5):   # ← Ändere range(...)!
+    print(i)
+```
+
+Man kann auch über Listenelemente iterieren:
+
+```{pyodide-python}
+noten = [2, 1, 3, 2, 4]
+summe = 0
+for note in noten:
+    summe = summe + note
+
+print(f"Summe: {summe}, Durchschnitt: {summe / len(noten):.2f}")
+```
+
+**Jetzt du:** Zähle mit einer for-Schleife, wie viele Noten ≤ 2 sind. Starte mit `anzahl = 0` und erhöhe es bei jeder „guten" Note um 1. **Überprüfen** testet dein Ergebnis.
+
+```{py-exercise}
+#| label: grundlagen-noten-zaehlen
+#| caption: Gute Noten zählen
+noten = [2, 1, 3, 2, 1, 4, 2, 3, 1]
+anzahl = 0
+# Dein Code hier: for note in noten: if note <= 2: ...
+print(anzahl)
+
+## TESTS ##
+assert anzahl != 0, "anzahl ist noch 0. Gehe mit for note in noten: durch die Liste und erhöhe anzahl, wenn note <= 2 ist."
+assert anzahl == 6, "Nicht ganz: Es sind 6 Noten ≤ 2. Zählst du auch die 2er mit (<= statt <)?"
+assert noten == [2, 1, 3, 2, 1, 4, 2, 3, 1], "Die Liste noten soll unverändert bleiben."
+```
+
+<details>
+<summary>Lösung anzeigen</summary>
+
+```{pyodide-python}
+noten = [2, 1, 3, 2, 1, 4, 2, 3, 1]
+anzahl = 0
+for note in noten:
+    if note <= 2:
+        anzahl = anzahl + 1
+print(f"{anzahl} von {len(noten)} Noten sind gut oder besser")
+```
+
+</details>
+
+**While-Schleifen** laufen so lange eine Bedingung gilt:
+
+```{pyodide-python}
+i = 1
+while i <= 5:
+    print(i)
+    i = i + 1   # Wichtig! Sonst Endlosschleife.
+```
+
+::: {.callout-caution}
+**Endlosschleifen:** Vergisst man den Zähler zu erhöhen, läuft die Schleife ewig. Dann hilft der Knopf **Stopp**, der während des Ausführens an Stelle von „Code ausführen“ erscheint.
+:::
+
+**Probiere:** Ändere die while-Schleife so, dass sie von 5 rückwärts bis 1 zählt (`i = 5`, Bedingung `i >= 1`, dann `i = i - 1`).
+
+```{pyodide-python}
+# Dein Code hier
+```
+
+**Abschlussaufgabe:** Schreibe eine Funktion `fakultaet(n)`, die $n! = 1 \cdot 2 \cdots n$ mit einer while-Schleife berechnet. `fakultaet(5)` soll 120 ergeben, und es gilt $0! = 1$.
+
+```{py-exercise}
+#| label: grundlagen-fakultaet
+#| caption: Fakultät mit while
+#| forbidden-imports: math
+#| show-test-hints: false
+def fakultaet(n):
+    # Starte mit result = 1 und i = 1
+    # Schleife: solange i <= n → result = result * i, dann i = i + 1
+    pass
+
+print(fakultaet(5))   # 120
+print(fakultaet(0))   # 1
+
+## TESTS ##
+assert fakultaet(5) is not None, "fakultaet gibt noch nichts zurück. Fehlt das return result am Ende?"
+assert fakultaet(5) == 120, "fakultaet(5) soll 120 ergeben."
+assert fakultaet(1) == 1, "fakultaet(1) soll 1 ergeben."
+assert fakultaet(0) == 1, "fakultaet(0) soll 1 ergeben (0! = 1)."
+assert fakultaet(10) == 3628800, "fakultaet(10) soll 3628800 ergeben."
+```
+
+<details>
+<summary>Lösung anzeigen</summary>
+
+```{pyodide-python}
+def fakultaet(n):
+    if n == 0:
+        return 1
+    result = 1
+    i = 1
+    while i <= n:
+        result = result * i
+        i = i + 1
+    return result
+
+print(fakultaet(5))    # 120
+print(fakultaet(10))   # 3628800
+```
+
+</details>
+
+## Funktionen
+
+Eine **Funktion** bündelt Code, der öfter gebraucht wird. Mit `def` definieren, mit `return` ein Ergebnis zurückgeben:
+
+```{pyodide-python}
+def addiere(a, b):
+    return a + b
+
+print(addiere(3, 5))    
+print(addiere(-2, 7))   
+```
+
+**Probiere:** Schreibe `multipliziere(a, b)` – genau wie `addiere`, aber mit `*`. Denk auch daran, später die Funktion mit zwei Zahlen zu testen.
+
+```{pyodide-python}
+def multipliziere(a, b):
+    pass   # Dein Code hier
+
+print(multipliziere(3, 4))   # 12
+```
+
+Funktionen können auch Listen verarbeiten:
+
+```{pyodide-python}
+def berechne_durchschnitt(werte):
+    return sum(werte) / len(werte)
+
+noten_a = [2, 1, 3, 2, 1, 4]
+noten_b = [3, 3, 2, 4, 3, 2, 1]
+
+print(f"Klasse A: {berechne_durchschnitt(noten_a):.2f}")
+print(f"Klasse B: {berechne_durchschnitt(noten_b):.2f}")
+```
+
+**Jetzt du:** Schreibe `spannweite(werte)`, die Maximum minus Minimum berechnet. Nutze `max()` und `min()`.
+
+```{py-exercise}
+#| label: grundlagen-spannweite
+#| caption: Spannweite als Funktion
+#| show-test-hints: false
+def spannweite(werte):
+    pass   # Dein Code hier
+
+print(spannweite([3, 7, 1, 9, 2]))   # 8
+print(spannweite([2, 1, 3, 2, 1, 4]))  # 3
+
+## TESTS ##
+assert spannweite([3, 7, 1, 9, 2]) is not None, "spannweite gibt noch nichts zurück. Ersetze pass durch return ..."
+assert spannweite([3, 7, 1, 9, 2]) == 8, "spannweite([3, 7, 1, 9, 2]) soll 8 ergeben (9 - 1)."
+assert spannweite([5]) == 0, "Bei nur einem Wert ist die Spannweite 0."
+assert spannweite([-4, 2, 10]) == 14, "Auch mit negativen Zahlen: spannweite([-4, 2, 10]) soll 14 ergeben."
+```
+
+<details>
+<summary>Lösung anzeigen</summary>
+
+```{pyodide-python}
+def spannweite(werte):
+    return max(werte) - min(werte)
+
+print(spannweite([3, 7, 1, 9, 2]))    # 8
+print(spannweite([2, 1, 3, 2, 1, 4])) # 3
+```
+
+</details>
+
+:::
+
+</details>
+
+---
+
+## Die Statistik-Bibliotheken {#sec-bibliotheken}
+
+Für dieses Tutorial arbeiten wir mit vier Bibliotheken. Jede wird mit `import` geladen, auf einer Seite reicht das einmal (alle Codeblöcke einer Seite teilen sich ein Python).
+
+::: {.panel-tabset}
+
+## NumPy
+
+**NumPy** (Numerical Python) ist die Grundlage für numerische Berechnungen. Es stellt Arrays bereit – effiziente Zahlenlisten, auf die man direkt mathematische Operationen anwenden kann.
+
+```{pyodide-python}
+import numpy as np
+
+# Arrays erstellen
+schnabellaenge = np.array([39.1, 39.5, 40.3, 36.7, 39.3, 38.9, 41.1])
+
+# Operationen auf dem ganzen Array
+print(f"Mittelwert:     {np.mean(schnabellaenge):.2f} mm")
+print(f"Standardabw.:   {np.std(schnabellaenge):.2f} mm")
+print(f"Minimum:        {np.min(schnabellaenge):.2f} mm")
+print(f"Maximum:        {np.max(schnabellaenge):.2f} mm")
+```
+
+::: {.callout-python}
+**Python-Tipp:** `np.mean()`, `np.std()`, `np.min()`, `np.max()` – diese vier Funktionen wirst du in fast jedem Kapitel brauchen. NumPy wird immer mit `import numpy as np` eingebunden. Achtung: `np.std()` rechnet standardmäßig die **unkorrigierte** Standardabweichung (Teiler $n$), pandas' `.std()` die korrigierte (Teiler $n-1$). Den Unterschied erklärt [Kapitel 1.5](Kapitel_1/kennzahlen_streuung.qmd).
+:::
+
+## pandas
+
+**pandas** ist das Hauptwerkzeug für die Arbeit mit Datensätzen. Ein `DataFrame` ist wie eine Tabelle – mit Spalten (Merkmale) und Zeilen (Beobachtungen).
+
+```{pyodide-python}
+import pandas as pd
+
+# Kleinen Datensatz manuell erstellen
+daten = pd.DataFrame({
+    "art":          ["Adélie", "Adélie", "Chinstrap", "Gentoo", "Gentoo"],
+    "schnabel_mm":  [39.1, 39.5, 46.5, 46.1, 50.0],
+    "masse_g":      [3750, 3800, 3500, 4500, 5700]
+})
+
+print(daten)
+```
+
+Auf Spalten zugreifen und filtern:
+
+```{pyodide-python}
+import pandas as pd
+
+daten = pd.DataFrame({
+    "art":         ["Adélie", "Adélie", "Chinstrap", "Gentoo", "Gentoo"],
+    "schnabel_mm": [39.1, 39.5, 46.5, 46.1, 50.0],
+    "masse_g":     [3750, 3800, 3500, 4500, 5700]
+})
+
+# Einzelne Spalte
+print(daten["art"])
+
+# Filtern: nur Gentoo-Pinguine
+gentoo = daten[daten["art"] == "Gentoo"]
+print(gentoo)
+
+# Schnelle Übersicht über alle Spalten
+print(daten.describe())
+```
+
+::: {.callout-python}
+**Python-Tipp:** `daten.describe()` ist dein bester Freund am Anfang jeder Analyse – es zeigt Mittelwert, Standardabweichung, Min/Max und Quartile auf einen Blick.
+:::
+
+**Jetzt du:** Filtere aus dem obigen Datensatz nur die Gentoo-Pinguine heraus und speichere ihre mittlere Körpermasse in `mittelwert`.
+
+```{py-exercise}
+#| label: grundlagen-gentoo
+#| caption: Gentoo-Pinguine filtern
+#| show-test-hints: false
+import pandas as pd
+
+daten = pd.DataFrame({
+    "art":         ["Adélie", "Adélie", "Chinstrap", "Gentoo", "Gentoo"],
+    "schnabel_mm": [39.1, 39.5, 46.5, 46.1, 50.0],
+    "masse_g":     [3750, 3800, 3500, 4500, 5700]
+})
+
+# Filtere nur Gentoo-Pinguine und berechne die mittlere Körpermasse
+gentoo = None       # Dein Code hier
+mittelwert = None   # Dein Code hier
+print(mittelwert)
+
+## TESTS ##
+assert gentoo is not None, "gentoo ist noch leer. Filtere mit daten[daten[\"art\"] == \"Gentoo\"]."
+assert gentoo is not None and len(gentoo) == 2, "gentoo soll genau die 2 Gentoo-Zeilen enthalten."
+assert mittelwert is not None, "mittelwert ist noch leer. Nimm gentoo[\"masse_g\"].mean()."
+assert mittelwert is not None and abs(mittelwert - 5100) < 1e-9, "Der Mittelwert der Gentoo-Körpermasse ist (4500 + 5700) / 2 = 5100 g. Hast du die richtige Spalte genommen?"
+```
+
+<details>
+<summary>Lösung anzeigen</summary>
+
+```{pyodide-python}
+import pandas as pd
+
+daten = pd.DataFrame({
+    "art":         ["Adélie", "Adélie", "Chinstrap", "Gentoo", "Gentoo"],
+    "schnabel_mm": [39.1, 39.5, 46.5, 46.1, 50.0],
+    "masse_g":     [3750, 3800, 3500, 4500, 5700]
+})
+
+gentoo = daten[daten["art"] == "Gentoo"]
+mittelwert = gentoo["masse_g"].mean()
+print(f"Mittlere Körpermasse (Gentoo): {mittelwert:.0f} g")
+```
+
+</details>
+
+### Häufigkeiten, fehlende Werte und Gruppen
+
+Drei Werkzeuge brauchst du in Kapitel 1 ständig: **Häufigkeiten zählen** (`value_counts()`), **fehlende Werte entfernen** (`dropna()`) und **nach Gruppen rechnen** (`groupby()`). Echte Datensätze wie die Pinguine haben oft Lücken, hier ist der Schnabel des vierten Tiers nicht gemessen (`None`, in pandas `NaN`):
+
+```{pyodide-python}
+#| read-only: true
+import pandas as pd
+
+daten = pd.DataFrame({
+    "art":         ["Adélie", "Adélie", "Chinstrap", "Gentoo", "Gentoo"],
+    "schnabel_mm": [39.1, 39.5, 46.5, None, 50.0],
+    "masse_g":     [3750, 3800, 3500, 4500, 5700]
+})
+
+# Wie oft kommt jede Art vor?
+print(daten["art"].value_counts())
+
+# Fehlende Werte: .mean() übergeht sie, .dropna() entfernt sie
+print(daten["schnabel_mm"].mean())
+print(daten["schnabel_mm"].dropna())
+
+# Mittelwert je Gruppe
+print(daten.groupby("art")["masse_g"].mean())
+```
+
+**Jetzt du:** Berechne mit dem Datensatz aus dem Beispiel zwei Dinge. Speichere in `anzahl` die Häufigkeit jeder Art (`value_counts()`) und in `mittel_je_art` die mittlere Körpermasse je Art (`groupby()`).
+
+```{py-exercise}
+#| label: grundlagen-groupby
+#| caption: Häufigkeiten und Gruppenmittel
+#| show-test-hints: false
+import pandas as pd
+
+daten = pd.DataFrame({
+    "art":         ["Adélie", "Adélie", "Chinstrap", "Gentoo", "Gentoo"],
+    "schnabel_mm": [39.1, 39.5, 46.5, None, 50.0],
+    "masse_g":     [3750, 3800, 3500, 4500, 5700]
+})
+
+anzahl = None          # Dein Code hier
+mittel_je_art = None   # Dein Code hier
+print(anzahl)
+print(mittel_je_art)
+
+## TESTS ##
+assert anzahl is not None, "anzahl ist noch leer. Nimm daten[\"art\"].value_counts()."
+assert anzahl is not None and anzahl["Adélie"] == 2 and anzahl["Gentoo"] == 2 and anzahl["Chinstrap"] == 1, "anzahl stimmt nicht: Adélie und Gentoo kommen je 2-mal vor, Chinstrap 1-mal."
+assert mittel_je_art is not None, "mittel_je_art ist noch leer. Nimm daten.groupby(\"art\")[\"masse_g\"].mean()."
+assert mittel_je_art is not None and abs(mittel_je_art["Gentoo"] - 5100) < 1e-9, "Gentoo hat die mittlere Körpermasse (4500 + 5700) / 2 = 5100 g."
+assert mittel_je_art is not None and abs(mittel_je_art["Adélie"] - 3775) < 1e-9, "Adélie hat die mittlere Körpermasse (3750 + 3800) / 2 = 3775 g."
+```
+
+<details>
+<summary>Lösung anzeigen</summary>
+
+```python
+anzahl = daten["art"].value_counts()
+mittel_je_art = daten.groupby("art")["masse_g"].mean()
+```
+
+</details>
+
+## matplotlib
+
+**matplotlib** erstellt Grafiken. Mit `plt.show()` erscheint der Plot direkt unter dem Codeblock, mit einer Werkzeugleiste zum Zoomen, Verschieben und Herunterladen. Einige aufwändigere Abbildungen im Tutorial sind vorab berechnet und als Bild eingebunden.
+
+```{pyodide-python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Einfaches Balkendiagramm
+arten = ["Adélie", "Chinstrap", "Gentoo"]
+anzahl = [152, 68, 124]
+
+plt.figure(figsize=(6, 4))
+plt.bar(arten, anzahl, color=["steelblue", "coral", "seagreen"])
+plt.title("Anzahl Pinguine pro Art")
+plt.ylabel("Anzahl")
+plt.show()
+```
+
+```{pyodide-python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Histogramm – für Häufigkeitsverteilungen (Kapitel 1)
+schnabellaenge = np.array([39.1, 39.5, 40.3, 36.7, 39.3, 38.9, 41.1,
+                            42.0, 37.8, 40.6, 38.2, 41.5, 39.8, 40.0])
+
+plt.figure(figsize=(6, 4))
+plt.hist(schnabellaenge, bins=5, color="steelblue", edgecolor="white")
+plt.title("Schnabellänge (Adélie-Pinguine)")
+plt.xlabel("Schnabellänge (mm)")
+plt.ylabel("Häufigkeit")
+plt.show()
+```
+
+::: {.callout-rechnen}
+**Hinweis:** `plt.figure(figsize=(6, 4))` setzt die Größe des Plots – `(Breite, Höhe)` in Zoll.
+:::
+
+## scipy
+
+**scipy** stellt Wahrscheinlichkeitsverteilungen und statistische Testverfahren bereit. Das Untermodul `scipy.stats` wird vor allem in Kapitel 2 genutzt.
+
+```{pyodide-python}
+from scipy import stats
+import numpy as np
+
+# Eine Normalverteilung an die Daten anpassen
+daten = np.array([39.1, 39.5, 40.3, 36.7, 39.3, 38.9, 41.1, 42.0, 37.8])
+
+# Mittelwert und Standardabweichung der Normalverteilung schätzen
+mittelwert, std = np.mean(daten), np.std(daten)
+print(f"Geschätzter Mittelwert: {mittelwert:.2f}")
+print(f"Geschätzte Std.-Abw.:   {std:.2f}")
+
+# Wahrscheinlichkeit, einen Wert ≤ 40 zu beobachten
+p = stats.norm.cdf(40, loc=mittelwert, scale=std)
+print(f"P(X ≤ 40): {p:.3f}")
+```
+
+::: {.callout-python}
+**Python-Tipp:** `from scipy import stats` – beachte die etwas andere Import-Syntax. Damit sind `stats.norm`, `stats.t` etc. direkt verfügbar. Die Funktionen werden in den Kapiteln erklärt, sobald sie gebraucht werden.
+:::
+
+:::
+
+---
+
+## Wissens-Check
+
+```{quizdown}
+---
+locale: de
+---
+
+### Was gibt `type(3.14)` in Python zurück?
+
+1. [ ] `int`
+1. [x] `float`
+    > Richtig! Dezimalzahlen sind in Python vom Typ `float`.
+1. [ ] `str`
+1. [ ] `bool`
+
+### Wie importiert man NumPy üblicherweise?
+
+1. [ ] `import numpy`
+1. [x] `import numpy as np`
+    > Genau! Das Kürzel `np` ist Standard – so schreibt man `np.mean()` statt `numpy.mean()`.
+1. [ ] `from numpy import *`
+1. [ ] `use numpy as np`
+
+### Welche Bibliothek nutzt man für Tabellen und Datensätze?
+
+1. [ ] `numpy`
+1. [ ] `matplotlib`
+1. [x] `pandas`
+    > Richtig! `pandas` stellt DataFrames bereit – die Tabellen für die Datenanalyse.
+1. [ ] `scipy`
+
+### Was macht `daten.describe()`?
+
+1. [ ] Es zeigt die ersten 5 Zeilen des DataFrames.
+1. [x] Es zeigt eine statistische Zusammenfassung aller Spalten (Mittelwert, Std., Min, Max, ...).
+    > Genau! `describe()` ist der schnellste Weg, einen Überblick über einen Datensatz zu bekommen.
+1. [ ] Es löscht fehlende Werte.
+1. [ ] Es gibt den Datentyp jeder Spalte aus.
+
+### Welchen Index hat das erste Element einer Liste?
+
+1. [x] `0`
+    > Richtig! Python zählt ab 0. Das erste Element ist immer bei Index 0.
+1. [ ] `1`
+1. [ ] `-1`
+1. [ ] `start`
+
+### Was berechnet `np.std(daten)`?
+
+1. [ ] Den Mittelwert
+1. [ ] Den Median
+1. [x] Die Standardabweichung
+    > Richtig! `std` steht für *standard deviation* – Standardabweichung.
+1. [ ] Die Spannweite
+
+### Womit erstellt man eine leere pandas-Tabelle?
+
+1. [ ] `pd.list()`
+1. [x] `pd.DataFrame({})`
+    > Richtig! Ein leerer DataFrame wird mit einem leeren Dictionary erstellt.
+1. [ ] `pd.table()`
+1. [ ] `pandas.create()`
+
+### Welches Modul von scipy brauchen wir für statistische Tests?
+
+1. [ ] `scipy.math`
+1. [ ] `scipy.data`
+1. [x] `scipy.stats`
+    > Richtig! `from scipy import stats` lädt alle statistischen Testfunktionen.
+1. [ ] `scipy.numpy`
+```
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+This page gives you a compact overview of the Python knowledge you need for this tutorial. If you have never worked with Python before, start with the expandable basics block. If you already know Python, you can jump straight to the [statistics libraries](#sec-bibliotheken).
+
+::: {.callout-tip}
+**Don't panic!** You don't have to master Python perfectly. The most important concepts are explained in the chapters whenever they are needed. This page is your reference.
+:::
+
+---
+
+## Python basics for a refresher {#sec-grundlagen}
+
+<details>
+<summary>**Expand here: Python from scratch – variables, lists, loops, etc.**</summary>
+
+::: {.panel-tabset}
+
+## Variables
+
+A **variable** is a named storage location for a value. Assign a value to it – Python remembers it:
+
+```{pyodide-python}
+a = 7
+print(a)
+```
+
+**Try it:** Assign the value `3` to `b` and print `b`.
+
+```{pyodide-python}
+# Your code here
+```
+
+You can calculate with variables. Python knows all the usual operations:
+
+| Operation | Symbol | Example |
+|-----------|--------|---------|
+| Addition | `+` | `3 + 2 = 5` |
+| Subtraction | `-` | `5 - 2 = 3` |
+| Multiplication | `*` | `3 * 4 = 12` |
+| Division | `/` | `10 / 4 = 2.5` |
+| Power | `**` | `2 ** 3 = 8` |
+| Remainder | `%` | `10 % 3 = 1` |
+
+```{pyodide-python}
+a = 4
+b = 5
+print(a + b)   # addition
+print(a * b)   # multiplication
+```
+
+**Try it:** Compute `a - b` and `a ** 2`. What is `a % 3`?
+
+```{pyodide-python}
+a = 4
+b = 5
+# Your code here
+```
+
+Variables can be overwritten – this is different from mathematics:
+
+```{pyodide-python}
+x = 5
+print(x)        # 5
+x = x + 3
+print(x)        # 8 – x was overwritten!
+```
+
+**See it?** Start with `x = 10`. Run `x = x * 2` twice. What is `x` at the end?
+
+```{pyodide-python}
+x = 10
+# Your code here
+```
+
+## Data types
+
+Python distinguishes different types of values:
+
+- **Integer** (`int`): whole numbers like `5`, `-3`, `100`
+- **Float** (`float`): decimal numbers like `3.14`, `-0.5`
+- **String** (`str`): text like `"Hello"`, `"Penguin"`
+- **Boolean** (`bool`): truth values `True` or `False`
+
+```{pyodide-python}
+n = 42
+pi = 3.14159
+species = "Adelie"
+is_large = True
+
+print(type(n).__name__)         # int
+print(type(pi).__name__)        # float
+print(type(species).__name__)   # str
+print(type(is_large).__name__)  # bool
+```
+
+`type()` actually returns `<class 'int'>` – the angle brackets are just Python's internal notation. With `.__name__` we only get the plain name (`int`, `float`, `str`, `bool`), which is much easier to read.
+
+**Try it:** What is the type of `10 / 2`? And of `10 // 2`? (Hint: `print(type(...).__name__)`)
+
+```{pyodide-python}
+# Your code here
+```
+
+::: {.callout-rechnen}
+**Note:** Division `/` always returns a `float` – even `10 / 2` gives `5.0`, not `5`. For integer division there is `//`.
+:::
+
+**Try this too:** What is `5 == 5`? What is `5 == 6`?
+
+```{pyodide-python}
+# Your code here
+```
+
+## Conditional statements
+
+With `if` and `else`, Python can do different things depending on a condition:
+
+```{pyodide-python}
+a = 15
+b = 20
+if a >= b:
+    print("a is greater than or equal to b")
+else:
+    print("b is greater than a")
+```
+
+**Try it:** Change to `a = 25` – which branch runs now?
+
+For more than two cases there is `elif` (short for "else if"):
+
+```{pyodide-python}
+a = 25
+b = 20
+if a == b:
+    print("equal")
+elif a > b:
+    print("a is greater")
+else:
+    print("b is greater")
+```
+
+**Your turn:** Write a conditional statement: if `n > 0`, print `"positive"`. If `n < 0`, print `"negative"`. Otherwise print `"zero"`. Test with `n = 7`, `n = -3` and `n = 0`.
+
+```{pyodide-python}
+n = 7   # ← Change this value!
+
+# Your code here
+```
+
+<details>
+<summary>Show solution</summary>
+
+```{pyodide-python}
+n = 7
+if n > 0:
+    print("positive")
+elif n < 0:
+    print("negative")
+else:
+    print("zero")
+```
+
+</details>
+
+## Lists
+
+A **list** stores several values. The index starts at `0`:
+
+```{pyodide-python}
+grades = [2, 1, 3, 2, 1, 4]
+print(grades[0])   # first element: 2
+print(grades[2])   # third element: 3
+print(len(grades)) # length: 6
+```
+
+**Try it:** What does `grades[5]` return? And `grades[-1]`? (Negative index = count from the end)
+
+```{pyodide-python}
+grades = [2, 1, 3, 2, 1, 4]
+# Your code here
+```
+
+With `append` you add elements, `sort` sorts the list:
+
+```{pyodide-python}
+grades = [2, 1, 3, 2, 1, 4]
+grades.append(2)
+print(grades)
+
+grades.sort()
+print(grades)
+
+print(f"Min: {min(grades)}, Max: {max(grades)}, Sum: {sum(grades)}")
+```
+
+**Your turn:** Add the grade `3` to the list. Then print the min, max and average (`sum(...) / len(...)`).
+
+```{pyodide-python}
+grades = [2, 1, 3, 2, 1, 4]
+# Your code here
+```
+
+<details>
+<summary>Show solution</summary>
+
+```{pyodide-python}
+grades = [2, 1, 3, 2, 1, 4]
+grades.append(3)
+print(f"Min: {min(grades)}, Max: {max(grades)}")
+print(f"Average: {sum(grades) / len(grades):.2f}")
+```
+
+</details>
+
+## Loops
+
+**For loops** repeat code for a certain number of iterations:
+
+```{pyodide-python}
+for i in range(5):
+    print(i)
+```
+
+**Try it:** Change `range(5)` to `range(1, 6)`. Then to `range(0, 10, 2)`. What changes?
+
+```{pyodide-python}
+for i in range(5):   # ← Change range(...)!
+    print(i)
+```
+
+You can also iterate over list elements:
+
+```{pyodide-python}
+grades = [2, 1, 3, 2, 4]
+total = 0
+for grade in grades:
+    total = total + grade
+
+print(f"Sum: {total}, Average: {total / len(grades):.2f}")
+```
+
+In the German school system, 1 is the best grade and 6 the worst. **Your turn:** Use a for loop to count how many grades are ≤ 2. Start with `count = 0` and increase it by 1 for every "good" grade. **Check** tests your result.
+
+```{py-exercise}
+#| label: grundlagen-noten-zaehlen-en
+#| caption: Counting good grades
+grades = [2, 1, 3, 2, 1, 4, 2, 3, 1]
+count = 0
+# Your code here: for grade in grades: if grade <= 2: ...
+print(count)
+
+## TESTS ##
+assert count != 0, "count is still 0. Go through the list with for grade in grades: and increase count if grade <= 2."
+assert count == 6, "Not quite: there are 6 grades ≤ 2. Do you count the 2s as well (<= instead of <)?"
+assert grades == [2, 1, 3, 2, 1, 4, 2, 3, 1], "The list grades should stay unchanged."
+```
+
+<details>
+<summary>Show solution</summary>
+
+```{pyodide-python}
+grades = [2, 1, 3, 2, 1, 4, 2, 3, 1]
+count = 0
+for grade in grades:
+    if grade <= 2:
+        count = count + 1
+print(f"{count} of {len(grades)} grades are good or better")
+```
+
+</details>
+
+**While loops** run as long as a condition holds:
+
+```{pyodide-python}
+i = 1
+while i <= 5:
+    print(i)
+    i = i + 1   # Important! Otherwise an endless loop.
+```
+
+::: {.callout-caution}
+**Endless loops:** If you forget to increase the counter, the loop runs forever. Then the **Stop** button helps, which appears instead of "Run code" while the code is running.
+:::
+
+**Try it:** Change the while loop so that it counts backwards from 5 to 1 (`i = 5`, condition `i >= 1`, then `i = i - 1`).
+
+```{pyodide-python}
+# Your code here
+```
+
+**Final exercise:** Write a function `factorial(n)` that computes $n! = 1 \cdot 2 \cdots n$ with a while loop. `factorial(5)` should return 120, and $0! = 1$.
+
+```{py-exercise}
+#| label: grundlagen-fakultaet-en
+#| caption: Factorial with while
+#| forbidden-imports: math
+#| show-test-hints: false
+def factorial(n):
+    # Start with result = 1 and i = 1
+    # Loop: while i <= n → result = result * i, then i = i + 1
+    pass
+
+print(factorial(5))   # 120
+print(factorial(0))   # 1
+
+## TESTS ##
+assert factorial(5) is not None, "factorial does not return anything yet. Is the return result at the end missing?"
+assert factorial(5) == 120, "factorial(5) should return 120."
+assert factorial(1) == 1, "factorial(1) should return 1."
+assert factorial(0) == 1, "factorial(0) should return 1 (0! = 1)."
+assert factorial(10) == 3628800, "factorial(10) should return 3628800."
+```
+
+<details>
+<summary>Show solution</summary>
+
+```{pyodide-python}
+def factorial(n):
+    if n == 0:
+        return 1
+    result = 1
+    i = 1
+    while i <= n:
+        result = result * i
+        i = i + 1
+    return result
+
+print(factorial(5))    # 120
+print(factorial(10))   # 3628800
+```
+
+</details>
+
+## Functions
+
+A **function** bundles code that is needed more often. Define it with `def`, return a result with `return`:
+
+```{pyodide-python}
+def add(a, b):
+    return a + b
+
+print(add(3, 5))
+print(add(-2, 7))
+```
+
+**Try it:** Write `multiply(a, b)` – just like `add`, but with `*`. Remember to test the function with two numbers afterwards.
+
+```{pyodide-python}
+def multiply(a, b):
+    pass   # Your code here
+
+print(multiply(3, 4))   # 12
+```
+
+Functions can also process lists:
+
+```{pyodide-python}
+def compute_average(values):
+    return sum(values) / len(values)
+
+grades_a = [2, 1, 3, 2, 1, 4]
+grades_b = [3, 3, 2, 4, 3, 2, 1]
+
+print(f"Class A: {compute_average(grades_a):.2f}")
+print(f"Class B: {compute_average(grades_b):.2f}")
+```
+
+**Your turn:** Write `value_range(values)`, which computes the maximum minus the minimum. Use `max()` and `min()`.
+
+```{py-exercise}
+#| label: grundlagen-spannweite-en
+#| caption: Range as a function
+#| show-test-hints: false
+def value_range(values):
+    pass   # Your code here
+
+print(value_range([3, 7, 1, 9, 2]))   # 8
+print(value_range([2, 1, 3, 2, 1, 4]))  # 3
+
+## TESTS ##
+assert value_range([3, 7, 1, 9, 2]) is not None, "value_range does not return anything yet. Replace pass with return ..."
+assert value_range([3, 7, 1, 9, 2]) == 8, "value_range([3, 7, 1, 9, 2]) should return 8 (9 - 1)."
+assert value_range([5]) == 0, "With only one value the range is 0."
+assert value_range([-4, 2, 10]) == 14, "With negative numbers too: value_range([-4, 2, 10]) should return 14."
+```
+
+<details>
+<summary>Show solution</summary>
+
+```{pyodide-python}
+def value_range(values):
+    return max(values) - min(values)
+
+print(value_range([3, 7, 1, 9, 2]))    # 8
+print(value_range([2, 1, 3, 2, 1, 4])) # 3
+```
+
+</details>
+
+:::
+
+</details>
+
+---
+
+## The statistics libraries {#sec-bibliotheken}
+
+In this tutorial we work with four libraries. Each one is loaded with `import`, and once per page is enough (all code blocks on a page share one Python).
+
+::: {.panel-tabset}
+
+## NumPy
+
+**NumPy** (Numerical Python) is the basis for numerical computations. It provides arrays – efficient lists of numbers to which you can apply mathematical operations directly.
+
+```{pyodide-python}
+import numpy as np
+
+# Create arrays
+bill_length = np.array([39.1, 39.5, 40.3, 36.7, 39.3, 38.9, 41.1])
+
+# Operations on the whole array
+print(f"Mean:           {np.mean(bill_length):.2f} mm")
+print(f"Std. deviation: {np.std(bill_length):.2f} mm")
+print(f"Minimum:        {np.min(bill_length):.2f} mm")
+print(f"Maximum:        {np.max(bill_length):.2f} mm")
+```
+
+::: {.callout-python}
+**Python tip:** `np.mean()`, `np.std()`, `np.min()`, `np.max()` – you will need these four functions in almost every chapter. NumPy is always imported with `import numpy as np`. Caution: by default, `np.std()` computes the **uncorrected** standard deviation (divisor $n$), pandas' `.std()` the corrected one (divisor $n-1$). [Chapter 1.5](Kapitel_1/kennzahlen_streuung.qmd) explains the difference.
+:::
+
+## pandas
+
+**pandas** is the main tool for working with datasets. A `DataFrame` is like a table – with columns (variables) and rows (observations).
+
+```{pyodide-python}
+import pandas as pd
+
+# Create a small dataset by hand
+data = pd.DataFrame({
+    "species":  ["Adélie", "Adélie", "Chinstrap", "Gentoo", "Gentoo"],
+    "bill_mm":  [39.1, 39.5, 46.5, 46.1, 50.0],
+    "mass_g":   [3750, 3800, 3500, 4500, 5700]
+})
+
+print(data)
+```
+
+Accessing and filtering columns:
+
+```{pyodide-python}
+import pandas as pd
+
+data = pd.DataFrame({
+    "species": ["Adélie", "Adélie", "Chinstrap", "Gentoo", "Gentoo"],
+    "bill_mm": [39.1, 39.5, 46.5, 46.1, 50.0],
+    "mass_g":  [3750, 3800, 3500, 4500, 5700]
+})
+
+# Single column
+print(data["species"])
+
+# Filter: only Gentoo penguins
+gentoo = data[data["species"] == "Gentoo"]
+print(gentoo)
+
+# Quick overview of all columns
+print(data.describe())
+```
+
+::: {.callout-python}
+**Python tip:** `data.describe()` is your best friend at the start of every analysis – it shows the mean, standard deviation, min/max and quartiles at a glance.
+:::
+
+**Your turn:** Filter only the Gentoo penguins from the dataset above and store their mean body mass in `mean_mass`.
+
+```{py-exercise}
+#| label: grundlagen-gentoo-en
+#| caption: Filtering Gentoo penguins
+#| show-test-hints: false
+import pandas as pd
+
+data = pd.DataFrame({
+    "species": ["Adélie", "Adélie", "Chinstrap", "Gentoo", "Gentoo"],
+    "bill_mm": [39.1, 39.5, 46.5, 46.1, 50.0],
+    "mass_g":  [3750, 3800, 3500, 4500, 5700]
+})
+
+# Filter only Gentoo penguins and compute the mean body mass
+gentoo = None      # Your code here
+mean_mass = None   # Your code here
+print(mean_mass)
+
+## TESTS ##
+assert gentoo is not None, "gentoo is still empty. Filter with data[data[\"species\"] == \"Gentoo\"]."
+assert gentoo is not None and len(gentoo) == 2, "gentoo should contain exactly the 2 Gentoo rows."
+assert mean_mass is not None, "mean_mass is still empty. Use gentoo[\"mass_g\"].mean()."
+assert mean_mass is not None and abs(mean_mass - 5100) < 1e-9, "The mean Gentoo body mass is (4500 + 5700) / 2 = 5100 g. Did you use the right column?"
+```
+
+<details>
+<summary>Show solution</summary>
+
+```{pyodide-python}
+import pandas as pd
+
+data = pd.DataFrame({
+    "species": ["Adélie", "Adélie", "Chinstrap", "Gentoo", "Gentoo"],
+    "bill_mm": [39.1, 39.5, 46.5, 46.1, 50.0],
+    "mass_g":  [3750, 3800, 3500, 4500, 5700]
+})
+
+gentoo = data[data["species"] == "Gentoo"]
+mean_mass = gentoo["mass_g"].mean()
+print(f"Mean body mass (Gentoo): {mean_mass:.0f} g")
+```
+
+</details>
+
+### Counts, missing values and groups
+
+Three tools you need constantly in chapter 1: **counting frequencies** (`value_counts()`), **removing missing values** (`dropna()`) and **computing per group** (`groupby()`). Real datasets such as the penguins often have gaps; here the bill of the fourth animal was not measured (`None`, shown as `NaN` in pandas):
+
+```{pyodide-python}
+#| read-only: true
+import pandas as pd
+
+data = pd.DataFrame({
+    "species": ["Adélie", "Adélie", "Chinstrap", "Gentoo", "Gentoo"],
+    "bill_mm": [39.1, 39.5, 46.5, None, 50.0],
+    "mass_g":  [3750, 3800, 3500, 4500, 5700]
+})
+
+# How often does each species occur?
+print(data["species"].value_counts())
+
+# Missing values: .mean() skips them, .dropna() removes them
+print(data["bill_mm"].mean())
+print(data["bill_mm"].dropna())
+
+# Mean per group
+print(data.groupby("species")["mass_g"].mean())
+```
+
+**Your turn:** With the dataset from the example, compute two things. Store the frequency of each species (`value_counts()`) in `counts` and the mean body mass per species (`groupby()`) in `mean_by_species`.
+
+```{py-exercise}
+#| label: grundlagen-groupby-en
+#| caption: Counts and group means
+#| show-test-hints: false
+import pandas as pd
+
+data = pd.DataFrame({
+    "species": ["Adélie", "Adélie", "Chinstrap", "Gentoo", "Gentoo"],
+    "bill_mm": [39.1, 39.5, 46.5, None, 50.0],
+    "mass_g":  [3750, 3800, 3500, 4500, 5700]
+})
+
+counts = None            # Your code here
+mean_by_species = None   # Your code here
+print(counts)
+print(mean_by_species)
+
+## TESTS ##
+assert counts is not None, "counts is still empty. Use data[\"species\"].value_counts()."
+assert counts is not None and counts["Adélie"] == 2 and counts["Gentoo"] == 2 and counts["Chinstrap"] == 1, "counts is not correct: Adélie and Gentoo occur twice each, Chinstrap once."
+assert mean_by_species is not None, "mean_by_species is still empty. Use data.groupby(\"species\")[\"mass_g\"].mean()."
+assert mean_by_species is not None and abs(mean_by_species["Gentoo"] - 5100) < 1e-9, "Gentoo has the mean body mass (4500 + 5700) / 2 = 5100 g."
+assert mean_by_species is not None and abs(mean_by_species["Adélie"] - 3775) < 1e-9, "Adélie has the mean body mass (3750 + 3800) / 2 = 3775 g."
+```
+
+<details>
+<summary>Show solution</summary>
+
+```python
+counts = data["species"].value_counts()
+mean_by_species = data.groupby("species")["mass_g"].mean()
+```
+
+</details>
+
+## matplotlib
+
+**matplotlib** creates graphics. With `plt.show()` the plot appears directly below the code block, with a toolbar for zooming, panning and downloading. Some more elaborate figures in the tutorial are computed in advance and included as images.
+
+```{pyodide-python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Simple bar chart
+species = ["Adélie", "Chinstrap", "Gentoo"]
+count = [152, 68, 124]
+
+plt.figure(figsize=(6, 4))
+plt.bar(species, count, color=["steelblue", "coral", "seagreen"])
+plt.title("Number of penguins per species")
+plt.ylabel("Count")
+plt.show()
+```
+
+```{pyodide-python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Histogram – for frequency distributions (chapter 1)
+bill_length = np.array([39.1, 39.5, 40.3, 36.7, 39.3, 38.9, 41.1,
+                        42.0, 37.8, 40.6, 38.2, 41.5, 39.8, 40.0])
+
+plt.figure(figsize=(6, 4))
+plt.hist(bill_length, bins=5, color="steelblue", edgecolor="white")
+plt.title("Bill length (Adélie penguins)")
+plt.xlabel("Bill length (mm)")
+plt.ylabel("Frequency")
+plt.show()
+```
+
+::: {.callout-rechnen}
+**Note:** `plt.figure(figsize=(6, 4))` sets the size of the plot – `(width, height)` in inches.
+:::
+
+## scipy
+
+**scipy** provides probability distributions and statistical test procedures. The submodule `scipy.stats` is used mainly in chapter 2.
+
+```{pyodide-python}
+from scipy import stats
+import numpy as np
+
+# Fit a normal distribution to the data
+data = np.array([39.1, 39.5, 40.3, 36.7, 39.3, 38.9, 41.1, 42.0, 37.8])
+
+# Estimate the mean and standard deviation of the normal distribution
+mean, std = np.mean(data), np.std(data)
+print(f"Estimated mean:      {mean:.2f}")
+print(f"Estimated std. dev.: {std:.2f}")
+
+# Probability of observing a value ≤ 40
+p = stats.norm.cdf(40, loc=mean, scale=std)
+print(f"P(X ≤ 40): {p:.3f}")
+```
+
+::: {.callout-python}
+**Python tip:** `from scipy import stats` – note the slightly different import syntax. This makes `stats.norm`, `stats.t` etc. directly available. The functions are explained in the chapters as soon as they are needed.
+:::
+
+:::
+
+---
+
+## Knowledge check {#wissens-check}
+
+```{quizdown}
+---
+locale: en
+---
+
+### What does `type(3.14)` return in Python?
+
+1. [ ] `int`
+1. [x] `float`
+    > Correct! Decimal numbers in Python are of type `float`.
+1. [ ] `str`
+1. [ ] `bool`
+
+### How is NumPy usually imported?
+
+1. [ ] `import numpy`
+1. [x] `import numpy as np`
+    > Exactly! The abbreviation `np` is standard – so you write `np.mean()` instead of `numpy.mean()`.
+1. [ ] `from numpy import *`
+1. [ ] `use numpy as np`
+
+### Which library is used for tables and datasets?
+
+1. [ ] `numpy`
+1. [ ] `matplotlib`
+1. [x] `pandas`
+    > Correct! `pandas` provides DataFrames – the tables for data analysis.
+1. [ ] `scipy`
+
+### What does `data.describe()` do?
+
+1. [ ] It shows the first 5 rows of the DataFrame.
+1. [x] It shows a statistical summary of all columns (mean, std., min, max, ...).
+    > Exactly! `describe()` is the fastest way to get an overview of a dataset.
+1. [ ] It deletes missing values.
+1. [ ] It prints the data type of each column.
+
+### What is the index of the first element of a list?
+
+1. [x] `0`
+    > Correct! Python counts from 0. The first element is always at index 0.
+1. [ ] `1`
+1. [ ] `-1`
+1. [ ] `start`
+
+### What does `np.std(data)` compute?
+
+1. [ ] The mean
+1. [ ] The median
+1. [x] The standard deviation
+    > Correct! `std` stands for *standard deviation*.
+1. [ ] The range
+
+### How do you create an empty pandas table?
+
+1. [ ] `pd.list()`
+1. [x] `pd.DataFrame({})`
+    > Correct! An empty DataFrame is created from an empty dictionary.
+1. [ ] `pd.table()`
+1. [ ] `pandas.create()`
+
+### Which scipy module do we need for statistical tests?
+
+1. [ ] `scipy.math`
+1. [ ] `scipy.data`
+1. [x] `scipy.stats`
+    > Correct! `from scipy import stats` loads all statistical test functions.
+1. [ ] `scipy.numpy`
+```
+
+::::

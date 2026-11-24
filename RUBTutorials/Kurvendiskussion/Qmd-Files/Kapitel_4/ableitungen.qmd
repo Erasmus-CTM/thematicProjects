@@ -1,0 +1,306 @@
+---
+title: "Ableitungen berechnen"
+title-en: "Computing Derivatives"
+format: html
+filters:
+  - ctm-assessment
+engine: markdown
+---
+
+:::: {.content-visible when-profile="deutsch"}
+
+# Was sind Ableitungen?
+Eine Ableitung ist eine Funktion, die den Differentialquotient bzw. die Steigung einer Funktion an jeder Stelle angibt. Konstante Summanden spielen für die Ableitung keine Rolle, da sie keinen Einfluss auf die Steigung haben.  
+Die allgemeinen Ableitungsregeln sollten dir bekannt sein, aber falls sie gerade nicht präsent sind folgt hier eine kurze Zusammenfassung.
+
+# Allgemeine Ableitungsregeln
+Um Funktionen abzuleiten, gibt es grundlegende Regeln, die du kennen solltest. Diese Regeln ermöglichen es dir, fast jede Funktion abzuleiten, indem du sie in kleinere, handhabbare Teile zerlegst.
+
+Hier sind die wichtigsten allgemeinen Ableitungsregeln:
+
+*   **Konstantenregel:**  
+    Die Ableitung einer konstanten Funktion ist immer $0$,
+    d.h.: $f(x) = c \implies f'(x) = 0$.
+
+*   **Potenzregel:**  
+    Für eine Funktion der Form $f(x) = x^n$, lautet die Ableitung:
+    $f'(x) = n \cdot x^{n-1}$
+    Wenn ein konstanter Faktor $c$ dabei ist: $f(x) = c \cdot x^n$, dann ist $f'(x) = c \cdot n \cdot x^{n-1}$.
+
+*   **Summen- und Differenzregel:**  
+    Die Ableitung einer Summe oder Differenz von Funktionen ist die Summe oder Differenz der Ableitungen dieser Funktionen.
+    Wenn $f(x) = u(x) \pm v(x)$, dann ist $f'(x) = u'(x) \pm v'(x)$.
+
+*   **Produktregel:**  
+    Für ein Produkt aus zwei Funktionen $f(x) = u(x) \cdot v(x)$:
+    $f'(x) = u'(x) \cdot v(x) + u(x) \cdot v'(x)$
+
+*   **Kettenregel:**   
+    Wenn eine Funktion aus einer Verkettung zweier Funktionen besteht (eine Funktion in einer anderen Funktion), $f(x) = u(v(x))$:
+    $f'(x) = u'(v(x)) \cdot v'(x)$
+
+*   **Quotientenregel:** 
+    _Im Prinzip ist die Quotientenregel keine eigenständige Regel, sondern eine Folgerung aus der Produkt- und der Kettenregel und wird daher hier nur kurz angeschnitten._
+    Für einen Quotienten zweier Funktionen $f(x) = \frac{u(x)}{v(x)}$:
+    $f'(x) = \frac{u'(x) \cdot v(x) - u(x) \cdot v'(x)}{(v(x))^2}$
+
+## Spezifische Funktionen und ihre Ableitungen
+
+Neben diesen allgemeinen Regeln gibt es bestimmte Funktionen, deren Ableitungen fest definiert sind und die du auswendig kennen solltest. Wenn diese Funktionen in Kombination mit anderen Termen auftreten, wendest du die oben genannten allgemeinen Regeln an.
+
+*   **Exponentialfunktion:** 
+    Die Ableitung der Exponentialfunktion ist:
+    *   $f(x) = e^x \implies f'(x) = e^x$
+*   **Natürlicher Logarithmus:** Die Ableitung des natürlichen Logarithmus ist:
+    *   $f(x) = \ln(x) \implies f'(x) = \frac{1}{x}$
+*   **Trigonometrische Funktionen:** Die Ableitungen der trigonometrischen Funktionen sind:
+    *   $f(x) = \sin(x) \implies f'(x) = \cos(x)$
+    *   $f(x) = \cos(x) \implies f'(x) = -\sin(x)$
+
+## Ableitungsregeln üben
+
+Bevor der Computer übernimmt, einmal selbst: Bilde die Ableitung $f'(x)$ von Hand und tippe sie ein. Jede gleichwertige Schreibweise zählt, Potenzen schreibst du mit `^` oder `**`, $e^x$ als `exp(x)`. Bei der ersten Aufgabe bekommst du bei jedem Laden eine andere Funktion, mit ↻ oben rechts holst du dir eine neue.
+
+```{math-exercise}
+#| label: ableitungen-potenzregel
+#| caption: Potenz-, Summen- und Faktorregel
+#| vars: x
+#| pool: true
+$f(x) = 3x^4 - 2x + 5$
+$f'(x) =$ ___[12*x**3 - 2]
+
+---
+
+$f(x) = 5x^3 - x^2 + 7x$
+$f'(x) =$ ___[15*x**2 - 2*x + 7]
+
+---
+
+$f(x) = -2x^5 + 4x^2 - 1$
+$f'(x) =$ ___[-10*x**4 + 8*x]
+```
+
+```{math-exercise}
+#| label: ableitungen-produktregel
+#| caption: Produktregel
+#| vars: x
+$f(x) = x^2 \cdot e^x$
+$f'(x) =$ ___[2*x*exp(x) + x**2*exp(x)]
+```
+
+```{math-exercise}
+#| label: ableitungen-kettenregel
+#| caption: Kettenregel
+#| vars: x
+$f(x) = \sin(3x^2)$
+$f'(x) =$ ___[6*x*cos(3*x**2)]
+```
+
+Mit `sympy.diff` (siehe unten) kannst du deine Ergebnisse auch selbst kontrollieren.
+
+# Ableitung berechnen
+
+Die Bibliothek `sympy` ist derart ausgefeilt, dass `sympy.diff` eigentlich alle Formen von Ableitungen in der Lage ist zu berechnen.
+Das heißt, der folgende Block reicht meist bereits, um die gewünschte Ableitung zu bestimmen:
+
+```{pyodide-python}
+#| label: ableitungen-beispiel
+import sympy
+
+#Gib hier eine beliebige Funktion ein
+x=sympy.symbols('x')
+f=x**4+27*x**2-50
+
+print("Die 1. Ableitung der Funktion ist:",sympy.diff(f,x))
+
+```
+
+## Aufgabe zum Ableitungen berechnen
+
+Da dieses Kapitel durch die Funktion `sympy.diff` recht einfach ist, eine Aufgabe zum Knobeln!  
+
+Erstelle einen Code, welcher nicht nur die erste, sondern auch die zweite und dritte Ableitung einer beliebigen Funktion bestimmt.   
+**Ziel:** Schreibe `sympy.diff` nicht dreimal untereinander, sondern lass eine `for`-Schleife die Ableitung wiederholt bilden. Jede Ableitung ist die Ableitung der vorherigen.  
+Probier dich ein bisschen aus.  
+_Denk dabei daran, dass es auch eine passende Ausgabe geben sollte._
+
+```{pyodide-python}
+#| label: ableitungen-aufgabe
+
+
+```
+
+Wenn dein Code läuft, mach daraus eine Funktion `ableitungen(funktion_f, n)`, die eine **Liste** mit der 1. bis n-ten Ableitung zurückgibt. Versteckte Tests prüfen sie beim Klick auf **Überprüfen**:
+
+```{py-exercise}
+#| label: ableitungen-liste
+#| caption: ableitungen(funktion_f, n) schreiben
+import sympy
+x = sympy.symbols('x')
+
+def ableitungen(funktion_f, n):
+    # Dein Code hier: gib [f', f'', ..., f^(n)] als Liste zurück
+    pass
+
+print(ableitungen(x**4, 3))
+
+## TESTS ##
+assert ableitungen(x**4, 3) == [4*x**3, 12*x**2, 24*x], "Für x**4 und n=3 sollte [4*x**3, 12*x**2, 24*x] herauskommen"
+assert ableitungen(x**2 + 1, 1) == [2*x], "Für x**2 + 1 und n=1 sollte [2*x] herauskommen"
+assert ableitungen(sympy.sin(x), 4) == [sympy.cos(x), -sympy.sin(x), -sympy.cos(x), sympy.sin(x)], "sin(x) wiederholt sich nach 4 Ableitungen"
+assert len(ableitungen(x**3, 5)) == 5, "Für n=5 sollte die Liste 5 Einträge haben (auch wenn am Ende 0 herauskommt)"
+```
+
+Nachdem du jetzt einen Code zum Ableitungen bestimmen hast, betrachten wir, was wir an den Ableitungen erkennen können.
+Als Nächstes sei **[Monotonieverhalten untersuchen](monotonieverhalten.qmd)** empfohlen.
+
+::::
+
+:::: {.content-visible when-profile="english"}
+
+# What are derivatives?
+A derivative is a function that gives the differential quotient, i.e. the slope, of a function at every point. Constant terms play no role in the derivative, since they have no influence on the slope.  
+You should know the general rules of differentiation, but in case they are not at hand right now, here is a short summary.
+
+# General rules of differentiation
+To differentiate functions, there are basic rules you should know. These rules let you differentiate almost any function by breaking it down into smaller, manageable parts.
+
+Here are the most important general rules of differentiation:
+
+*   **Constant rule:**  
+    The derivative of a constant function is always $0$,
+    i.e.: $f(x) = c \implies f'(x) = 0$.
+
+*   **Power rule:**  
+    For a function of the form $f(x) = x^n$, the derivative is:
+    $f'(x) = n \cdot x^{n-1}$
+    If there is a constant factor $c$: $f(x) = c \cdot x^n$, then $f'(x) = c \cdot n \cdot x^{n-1}$.
+
+*   **Sum and difference rule:**  
+    The derivative of a sum or difference of functions is the sum or difference of the derivatives of these functions.
+    If $f(x) = u(x) \pm v(x)$, then $f'(x) = u'(x) \pm v'(x)$.
+
+*   **Product rule:**  
+    For a product of two functions $f(x) = u(x) \cdot v(x)$:
+    $f'(x) = u'(x) \cdot v(x) + u(x) \cdot v'(x)$
+
+*   **Chain rule:**   
+    If a function is a composition of two functions (one function inside another), $f(x) = u(v(x))$:
+    $f'(x) = u'(v(x)) \cdot v'(x)$
+
+*   **Quotient rule:** 
+    _Strictly speaking, the quotient rule is not an independent rule but a consequence of the product and chain rules, so it is only touched on briefly here._
+    For a quotient of two functions $f(x) = \frac{u(x)}{v(x)}$:
+    $f'(x) = \frac{u'(x) \cdot v(x) - u(x) \cdot v'(x)}{(v(x))^2}$
+
+## Specific functions and their derivatives
+
+Besides these general rules, there are certain functions whose derivatives are fixed and which you should know by heart. When these functions appear in combination with other terms, you apply the general rules above.
+
+*   **Exponential function:** 
+    The derivative of the exponential function is:
+    *   $f(x) = e^x \implies f'(x) = e^x$
+*   **Natural logarithm:** The derivative of the natural logarithm is:
+    *   $f(x) = \ln(x) \implies f'(x) = \frac{1}{x}$
+*   **Trigonometric functions:** The derivatives of the trigonometric functions are:
+    *   $f(x) = \sin(x) \implies f'(x) = \cos(x)$
+    *   $f(x) = \cos(x) \implies f'(x) = -\sin(x)$
+
+## Practising the rules
+
+Before the computer takes over, try it yourself once: find the derivative $f'(x)$ by hand and type it in. Any equivalent form counts; write powers with `^` or `**` and $e^x$ as `exp(x)`. In the first exercise you get a different function every time the page loads; use ↻ at the top right to get a new one.
+
+```{math-exercise}
+#| label: ableitungen-potenzregel-en
+#| caption: Power, sum and constant factor rules
+#| vars: x
+#| pool: true
+$f(x) = 3x^4 - 2x + 5$  
+$f'(x) =$ ___[12*x**3 - 2]
+
+---
+
+$f(x) = 5x^3 - x^2 + 7x$  
+$f'(x) =$ ___[15*x**2 - 2*x + 7]
+
+---
+
+$f(x) = -2x^5 + 4x^2 - 1$  
+$f'(x) =$ ___[-10*x**4 + 8*x]
+```
+
+```{math-exercise}
+#| label: ableitungen-produktregel-en
+#| caption: Product rule
+#| vars: x
+$f(x) = x^2 \cdot e^x$  
+$f'(x) =$ ___[2*x*exp(x) + x**2*exp(x)]
+```
+
+```{math-exercise}
+#| label: ableitungen-kettenregel-en
+#| caption: Chain rule
+#| vars: x
+$f(x) = \sin(3x^2)$  
+$f'(x) =$ ___[6*x*cos(3*x**2)]
+```
+
+With `sympy.diff` (see below) you can also check your results yourself.
+
+# Computing derivatives
+
+The library `sympy` is so sophisticated that `sympy.diff` can compute practically any kind of derivative.
+That means the following block is usually already enough to determine the derivative you want:
+
+```{pyodide-python}
+#| label: ableitungen-beispiel-en
+import sympy
+
+#Enter any function here
+x=sympy.symbols('x')
+f=x**4+27*x**2-50
+
+print("The 1st derivative of the function is:",sympy.diff(f,x))
+
+```
+
+## Exercise on computing derivatives
+
+Since this chapter is quite easy thanks to the function `sympy.diff`, here is an exercise to puzzle over!  
+
+Write code that determines not only the first but also the second and third derivative of any function.   
+**Goal:** Do not write `sympy.diff` three times in a row, but let a `for` loop apply the derivative repeatedly. Every derivative is the derivative of the previous one.  
+Experiment a little.  
+_Remember that there should also be a suitable output._
+
+```{pyodide-python}
+#| label: ableitungen-aufgabe-en
+
+
+```
+
+Once your code works, turn it into a function `derivatives(function_f, n)` that returns a **list** with the 1st to n-th derivative. Hidden tests check it when you click **Check**:
+
+```{py-exercise}
+#| label: ableitungen-liste-en
+#| caption: Write derivatives(function_f, n)
+import sympy
+x = sympy.symbols('x')
+
+def derivatives(function_f, n):
+    # Your code here: return [f', f'', ..., f^(n)] as a list
+    pass
+
+print(derivatives(x**4, 3))
+
+## TESTS ##
+assert derivatives(x**4, 3) == [4*x**3, 12*x**2, 24*x], "For x**4 and n=3 the result should be [4*x**3, 12*x**2, 24*x]"
+assert derivatives(x**2 + 1, 1) == [2*x], "For x**2 + 1 and n=1 the result should be [2*x]"
+assert derivatives(sympy.sin(x), 4) == [sympy.cos(x), -sympy.sin(x), -sympy.cos(x), sympy.sin(x)], "sin(x) repeats after 4 derivatives"
+assert len(derivatives(x**3, 5)) == 5, "For n=5 the list should have 5 entries (even if the last ones are 0)"
+```
+
+Now that you have code for computing derivatives, let's look at what we can tell from the derivatives.
+Next, we recommend **[Examining Monotonicity](monotonieverhalten.qmd)**.
+
+::::
