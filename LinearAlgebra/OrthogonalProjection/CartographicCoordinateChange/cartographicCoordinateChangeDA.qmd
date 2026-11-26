@@ -1,6 +1,7 @@
 ---
 title: "Mindste kvadraters metode og kvadratiske former"
 lang: da
+engine: markdown
 format:
   html:
     embed-resources: true
@@ -255,7 +256,7 @@ uExt = numpy.append(u, [0, -1])
 vExt = numpy.append(v, [0, 0])
 bExt = numpy.append(b, [0, 0, -2, 2])
 
-AExt = genererA(uExt, vExt)
+AExt = generateA(uExt, vExt)
 
 ## B har samme indgange som A, bare uden de første
 ## to søjler
