@@ -1,6 +1,7 @@
 ---
 title: "Trilateration"
 lang: da
+engine: markdown 
 format:
   html:
     embed-resources: true
@@ -50,7 +51,7 @@ v_2
 \end{bmatrix}.$${#eq-linsys}
 
    :::{.callout-tip title="Vink" collapse=true}
-   Første række i ligningssystemet findes ved at trække anden ligning fra tredje ligning i @eq-nonlinear.
+   Første række i ligningssystemet findes ved at trække anden ligning fra første ligning i @eq-nonlinear.
    Tilsvarende kommer anden række fra at trække tredje ligning fra første.
    :::
 
@@ -73,9 +74,9 @@ Dette svarer til, at der er en multiplikativ fejl på $v_1$, der kommer fra mål
 		
 1. Vis at $A_\varepsilon$ er inverterbar for $\lvert \varepsilon \rvert < 1$ og $0 < \alpha < \frac{\pi}{2}$, og at dens inverse er givet ved
 
-$$A_\varepsilon^{-1} = \begin{bmatrix}
-				\frac{1}{1+\varepsilon} & 0 \\[2mm] \frac{-1}{(1+\varepsilon)\tan(\alpha)} & \frac{1}{\tan(\alpha)}
-			\end{bmatrix}.$$
+   $$A_\varepsilon^{-1} = \begin{bmatrix}
+   \frac{1}{1+\varepsilon} & 0 \\[2mm] \frac{-1}{(1+\varepsilon)\tan(\alpha)} & \frac{1}{\tan(\alpha)}
+   \end{bmatrix}.$$
 		
 1. Lad $\mathbf{x}_\varepsilon$ opfylde $A_\varepsilon \mathbf{x}_\varepsilon = \mathbf{v}$. Så betegner vektoren $\mathbf{x}-\mathbf{x}_\varepsilon$ fejlen i positionsbestemmelsen svarende til henholdsvis første og andet koordinat. 
 		
